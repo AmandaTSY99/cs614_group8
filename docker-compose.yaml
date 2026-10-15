@@ -1,0 +1,13 @@
+services:
+  jupyter:
+    build: .
+    container_name: cs614-jupyter
+    ports:
+      - "127.0.0.1:8888:8888"   # only reachable from your own machine
+    volumes:
+      - .:/workspace                         # project folder: notebooks and data are saved on your machine
+      - hf-cache:/root/.cache/huggingface    # keep downloaded embedding models between restarts
+    restart: unless-stopped
+
+volumes:
+  hf-cache:
