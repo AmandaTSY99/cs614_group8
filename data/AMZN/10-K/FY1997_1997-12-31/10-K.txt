@@ -1,0 +1,3037 @@
+<PAGE>   1
+ 
+================================================================================
+ 
+                                 UNITED STATES
+                       SECURITIES AND EXCHANGE COMMISSION
+                             WASHINGTON, D.C. 20549
+ 
+                            ------------------------
+ 
+                                   FORM 10-K
+                 ANNUAL REPORT PURSUANT TO SECTION 13 OR 15(d)
+                     OF THE SECURITIES EXCHANGE ACT OF 1934
+ 
+                            ------------------------
+ 
+FOR THE YEAR ENDED DECEMBER 31, 1997               COMMISSION FILE NO. 000-22513
+ 
+                                AMAZON.COM, INC.
+             (EXACT NAME OF REGISTRANT AS SPECIFIED IN ITS CHARTER)
+ 
+
+                                            
+                   DELAWARE                                      91-1646860
+       (STATE OR OTHER JURISDICTION OF                        (I.R.S. EMPLOYER
+        INCORPORATION OR ORGANIZATION)                      IDENTIFICATION NO.)
+
+ 
+                               1516 SECOND AVENUE
+                           SEATTLE, WASHINGTON 98101
+                                 (206) 622-2335
+ 
+  (ADDRESS, INCLUDING ZIP CODE, AND TELEPHONE NUMBER, INCLUDING AREA CODE, OF
+                   REGISTRANT'S PRINCIPAL EXECUTIVE OFFICES)
+ 
+          SECURITIES REGISTERED PURSUANT TO SECTION 12(b) OF THE ACT:
+                                      NONE
+ 
+          SECURITIES REGISTERED PURSUANT TO SECTION 12(g) OF THE ACT:
+                     COMMON STOCK, PAR VALUE $.01 PER SHARE
+ 
+     Indicate by check mark whether the registrant (1) has filed all reports
+required to be filed by Section 13 or 15(d) of the Securities Exchange Act of
+1934 during the preceding 12 months (or for such shorter period that the
+registrant was required to file such reports), and (2) has been subject to such
+filing requirements for the past 90 days. Yes [X]  No [ ]
+ 
+     Indicate by check mark if disclosure of delinquent filers pursuant to Item
+405 of Regulation S-K is not contained herein, and will not be contained, to the
+best of registrant's knowledge, in definitive proxy or information statements
+incorporated by reference in Part III of this Form 10-K or any amendment to this
+Form 10-K. [X]
+ 
+
+                                                           
+Aggregate market value of voting stock held by
+  non-affiliates of the registrant as of March 13, 1998.....  $787,637,606
+Number of shares of common stock outstanding as of March 13,
+  1998......................................................    24,157,867
+
+ 
+                      DOCUMENTS INCORPORATED BY REFERENCE
+ 
+     The information required by Part III of this Report, to the extent not set
+forth herein, is incorporated herein by reference from the Registrant's
+definitive proxy statement relating to the annual meeting of stockholders to be
+held in 1998, which definitive proxy statement shall be filed with the
+Securities and Exchange Commission within 120 days after the end of the fiscal
+year to which this Report relates.
+ 
+================================================================================
+<PAGE>   2
+ 
+                                AMAZON.COM, INC.
+ 
+                                   FORM 10-K
+                      FOR THE YEAR ENDED DECEMBER 31, 1997
+ 
+                                     INDEX
+ 
+
+
+                                                                            PAGE
+                                                                            ----
+                                                                      
+                                     PART I
+  Item 1.     Business....................................................    1
+  Item 2.     Properties..................................................   12
+  Item 3.     Legal Proceedings...........................................   13
+  Item 4.     Submission of Matters to a Vote of Security Holders.........   13
+ 
+                                    PART II
+  Item 5.     Market for Registrant's Common Stock and Related Stockholder
+              Matters.....................................................   13
+  Item 6.     Selected Financial Data.....................................   14
+  Item 7.     Management's Discussion and Analysis of Financial Condition
+              and Results of Operations...................................   14
+  Item 7A     Quantitative and Qualitative Disclosures about Market
+              Risk........................................................   21
+  Item 8.     Financial Statements and Supplementary Data.................   21
+  Item 9.     Changes in and Disagreements with Accountants on Accounting
+              and Financial Disclosure....................................   36
+ 
+                                    PART III
+  Item 10.    Directors and Executive Officers of the Registrant..........   36
+  Item 11.    Executive Compensation......................................   36
+  Item 12.    Security Ownership of Certain Beneficial Owners and
+              Management..................................................   36
+  Item 13.    Certain Relationships and Related Transactions..............   37
+ 
+                                    PART IV
+  Item 14.    Exhibits, Financial Statement Schedules and Reports on Form
+              8-K.........................................................   37
+Signatures................................................................   39
+
+ 
+                                        i
+<PAGE>   3
+ 
+                                     PART I
+ 
+ITEM 1. BUSINESS
+ 
+     This Annual Report on Form 10-K and the documents incorporated herein by
+reference contain forward-looking statements based on current expectations,
+estimates and projections about the Company's industry, management's beliefs and
+certain assumptions made by management. All statements, trends, analyses and
+other information contained in this report relative to trends in net sales,
+gross margin, anticipated expense levels and liquidity and capital resources, as
+well as other statements including, but not limited to, words such as
+"anticipate," "believe," "plan," "estimate," "expect," "seek," "intend" and
+other similar expressions, constitute forward-looking statements. These
+forward-looking statements are not guarantees of future performance and are
+subject to certain risks and uncertainties that are difficult to predict.
+Accordingly, actual results may differ materially from those anticipated or
+expressed in such statements. Potential risks and uncertainties include, among
+others, those set forth herein under "Additional Factors That May Affect Future
+Results," as well as "Management's Discussion and Analysis of Financial
+Condition and Results of Operations -- Overview" and "-- Liquidity and Capital
+Resources." Particular attention should be paid to the cautionary statements
+involving the Company's limited operating history, the unpredictability of its
+future revenues, the unpredictable and evolving nature of its business model,
+the intensely competitive online commerce and retail book environments and the
+risks associated with capacity constraints, systems development, management of
+growth and business expansion. Except as required by law, the Company undertakes
+no obligation to update any forward-looking statement, whether as a result of
+new information, future events or otherwise. Readers, however, should carefully
+review the factors set forth in other reports or documents that the Company
+files from time to time with the Securities and Exchange Commission ("SEC").
+ 
+GENERAL
+ 
+     Amazon.com, Inc. ("Amazon.com" or the "Company") is the leading online
+retailer of books. Since opening for business as "Earth's Biggest Bookstore" in
+July 1995, Amazon.com has become one of the most widely known, used and cited
+commerce sites on the World Wide Web (the "Web"). Amazon.com strives to offer
+its customers compelling value through innovative use of technology, broad
+selection, high-quality content, a high level of customer service, competitive
+pricing and personalized services. The Company offers a catalog of more than 2.5
+million titles, easy-to-use search and browse features, e-mail services,
+personalized shopping services, Web-based credit card payment and direct
+shipping to customers. The Company intends over time to expand its catalog into
+other information-based products, such as music. Amazon.com has virtually
+unlimited online shelf space and offers customers a vast selection through an
+efficient search-and-retrieval interface.
+ 
+     Operating as an online book retailer, Amazon.com has grown rapidly since
+first opening its Web site in July 1995. Through December 31, 1997, the Company
+had sales of more than $164 million to approximately 1.5 million customer
+accounts in over 150 countries. Repeat customers currently account for over 58%
+of orders. International sales represented 25% of net sales in 1997 and 22% of
+sales in the quarter ended December 31, 1997. No material part of the Company's
+revenue was attributable to a single customer or group of customers, or a
+foreign corporation. No foreign country accounted for more than 10% of revenue.
+Since inception, the Company has grown rapidly; however, percentage growth rates
+experienced to date are not sustainable. The Company incurred net losses of
+$27.6 million and $5.8 million in the fiscal years ended December 31, 1997 and
+1996, respectively. See "Additional Factors That May Affect Future Results --
+Limited Operating History; Accumulated Deficit; Anticipated Losses."
+ 
+     Amazon.com was incorporated in 1994 in the State of Washington and
+reincorporated in 1996 in Delaware. The Company's principal corporate offices
+are located in Seattle, Washington. Amazon.com completed its initial public
+offering in May 1997 and its common stock is listed on the NASDAQ National
+Market under the symbol "AMZN". Information contained on the Company's Web site
+will not be deemed to be a part of this Annual Report on Form 10-K. As used
+herein, "titles" offered by the Company means the number of items offered in the
+Company's catalog and includes primarily books but also a small number of CDs,
+videotapes, audiotapes and other products.
+                                        1
+<PAGE>   4
+ 
+THE AMAZON.COM WEB SITE
+ 
+     Amazon.com strives to offer an online shopping experience that involves
+discovery and fulfillment for its customers. The Company believes that the sale
+of books and other products and services over the Web can offer attractive
+benefits to consumers, including, without limitation, enhanced selection,
+convenience, ease-of-use, competitive pricing, depth of content and information
+and personalization. Customers entering the Amazon.com Web site can, in addition
+to ordering books and other products, purchase gift certificates, conduct
+targeted searches, browse highlighted selections, bestsellers and other
+features, search for books by subject category, read and post reviews, register
+for personalized services, participate in promotions and check order status. The
+key components of Amazon.com's offerings include browsing, searching, reviews
+and content, online community, recommendations and personalization, a gift
+center and an out-of-print book service.
+ 
+     Browsing. The Amazon.com site offers visitors a variety of highlighted
+subject areas and special features arranged in a simple, easy-to-use fashion
+intended to enhance book search, selection and discovery. In addition, the
+Amazon.com home page presents a variety of products and information of topical
+or current-event interest. To enhance the shopping experience and increase
+sales, the Company features a variety of books on a rotating basis throughout
+the store.
+ 
+     Searching. A primary feature of the Amazon.com Web site is its interactive,
+searchable catalog of more than 2.5 million titles, including most of the
+estimated 1.5 million English-language books believed to be in print, more than
+one million out-of-print titles believed to be in circulation and a small number
+of CDs, videotapes, audiotapes and other products. The Company provides a
+selection of search tools to find books and other products based on title,
+subject, author, keyword, publication date or ISBN. Customers can also use more
+complex and precise search tools such as Boolean search queries. The Company
+licenses some of its catalog and other information from third parties.
+ 
+     Reviews and Content. The Amazon.com store offers numerous forms of content
+to entertain and engage readers, enhance the customer's shopping experience and
+encourage purchases. Various types of content are available for particular
+titles, including cover art, synopses, annotations, interviews by authors or
+reviews by other readers. Customers are encouraged to write and post their own
+reviews and authors are invited to "self-administer" interviews by answering
+predefined questions.
+ 
+     Online Community. By creating an online community, the Company hopes to
+provide customers with an inviting and familiar experience that will encourage
+them to return frequently to the site and to interact with other users and that
+will promote loyalty and repeat purchases. Amazon.com invites readers, authors
+and publishers to post reviews, sponsors review competitions and provides a
+forum for author interviews.
+ 
+     Recommendations and Personalization. During its history, Amazon.com has
+continually sought to personalize its product and service offerings. These
+improvements have included greeting customers by name, instant recommendations,
+collaborative filtering and a number of other related features. The Company
+believes that personalization of a customer's shopping experience at the
+Company's Web site is an important element of the value proposition it offers to
+customers and intends to continue to enhance its personalized services.
+ 
+     Gift Center. In November 1997, Amazon.com launched its Gift Center,
+including features such as gift recommendations from Amazon.com editors, dynamic
+personalized gift-matching services and both traditional and electronic gift
+certificates. Customers can select and order gifts, choose from a number of
+gift-wraps and have packages wrapped and sent with a personalized message.
+ 
+     Out-of-Print. Amazon.com began offering an out-of-print book service in
+March 1997. More than one million out-of-print titles are listed in the
+Company's catalog. Because of the difficulty of sourcing out-of-print titles,
+customers are advised to expect one- to three-month delivery times and that such
+titles may not be available at all.
+ 
+     Availability and Fulfillment. Many of the Company's titles are available
+for shipment within 24 hours, others are available within 48 to 72 hours and the
+remainder of in-print titles are generally available within
+ 
+                                        2
+<PAGE>   5
+ 
+four to six weeks, although some titles may not be available at all.
+Out-of-print titles generally are available in one to three months, although
+some titles may not be available at all. Customers may select from a variety of
+delivery options, including overnight and various international shipping
+options, as well as gift-wrapping services. The Company uses e-mail to notify
+customers of order status under various conditions. The Company seeks to provide
+rapid and reliable fulfillment of customer orders and to continue to improve its
+speed of availability and fulfillment.
+ 
+MARKETING AND PROMOTION
+ 
+     Amazon.com's marketing strategy is designed to strengthen the Amazon.com
+brand name, increase customer traffic to the Amazon.com Web site, build strong
+customer loyalty, maximize repeat purchases and develop incremental revenue
+opportunities. Amazon.com seeks to build customer loyalty by creatively applying
+technology to deliver personalized programs and service, as well as creative and
+flexible merchandising. The Company employs a variety of media, business
+development and promotional methods to achieve these goals, including online and
+traditional advertising and public relations activities.
+ 
+     The Company also extends its market presence through its Associates
+Program, which includes thousands of enrolled members. The program enables
+Associate Web sites to make books available to their audiences with order
+fulfillment by Amazon.com.
+ 
+CUSTOMER SERVICE
+ 
+     The Company believes that its ability to establish and maintain long-term
+relationships with its customers and encourage repeat visits and purchases
+depends, in part, on the strength of its customer support and service operations
+and staff. Furthermore, the Company seeks to achieve frequent communication with
+and feedback from its customers to continually improve the Amazon.com store and
+services. Amazon.com offers a number of e-mail addresses to enable customers to
+request information and to encourage feedback and suggestions. The Company has
+automated certain of the tools used by its customer support and service staff
+and intends to actively pursue enhancements to and further automation of its
+customer support and service systems and operations.
+ 
+WAREHOUSING AND FULFILLMENT
+ 
+     The Company sources product from a network of book distributors and
+publishers. Although the Company carries its own inventory (some of which is
+purchased directly from publishers), it also relies on rapid fulfillment from
+major distributors and wholesalers that carry a broad selection of titles. The
+Company purchases a substantial majority of its products from Ingram Book Group
+("Ingram") and Baker & Taylor, Inc. ("B&T"). Ingram is the Company's single
+largest supplier and accounted for 58% and 59% of the Company's inventory
+purchases in 1997 and 1996, respectively. See "Additional Factors That May
+Affect Future Results -- Reliance on Certain Suppliers."
+ 
+     The Company utilizes automated interfaces for sorting and organizing its
+orders to enable it to achieve the most rapid and economic purchase and delivery
+terms possible. The Company's proprietary software selects the orders that can
+be filled via electronic interfaces with vendors and forwards remaining orders
+to its special orders group. Under the Company's arrangements with distributors,
+electronically ordered books often are shipped by the distributor within hours
+of a receipt of an order from Amazon.com. The Company has developed customized
+information systems and trained dedicated ordering personnel who specialize in
+sourcing hard-to-find books.
+ 
+TECHNOLOGY
+ 
+     The Company has implemented an array of site management, search, customer
+interaction, transaction-processing and fulfillment services and systems using a
+combination of its own proprietary technologies and commercially available,
+licensed technologies. The Company's current strategy is to focus its
+development efforts on creating and enhancing the specialized, proprietary
+software that is unique to its business and to license commercially developed
+technology for other applications where available and appropriate.
+                                        3
+<PAGE>   6
+ 
+     The Company uses a set of applications for accepting and validating
+customer orders, organizing, placing and managing orders with suppliers,
+managing inventory, assigning inventory to customer orders and managing shipment
+of product to customers based on various ordering criteria. The Company's
+transaction-processing systems handle millions of items, a number of different
+availability statuses, gift-wrapping requests and multiple shipment methods and
+allow the customer to choose whether to receive single or several shipments
+based on availability. These applications also manage the process of accepting,
+authorizing and charging customer credit cards. The Amazon.com Web site also
+incorporates a variety of search and database tools.
+ 
+     A group of systems administrators and network managers monitor and operate
+the Company's Web site, network operations and transaction-processing systems.
+The continued uninterrupted operation of the Company's Web site and
+transaction-processing systems is essential to its business and it is the job of
+the site operations staff to ensure, to the greatest extent possible, their
+reliability. The Company uses the services of three Internet service providers,
+UUNet Technologies, Inc., InterNAP Network Services LLC and Interconnected
+Associates, Inc., to obtain connectivity to the Internet over multiple dedicated
+lines.
+ 
+COMPETITION
+ 
+     The online commerce market, particularly over the Web, is new, rapidly
+evolving and intensely competitive. In addition, the retail book industry is
+intensely competitive. The Company's current or potential competitors include
+(i) various online booksellers and vendors of other information-based products
+such as CDs and videotapes, including entrants into narrow specialty niches,
+(ii) a number of indirect competitors that specialize in online commerce or
+derive a substantial portion of their revenues from online commerce, through
+which retailers other than the Company may offer products and (iii) publishers,
+distributors and retail vendors of books, music and videotapes, including Barnes
+& Noble, Inc., Bertelsmann AG and other large specialty booksellers and
+integrated media corporations, many of which possess significant brand
+awareness, sales volume and customer bases. The Company believes that the
+principal competitive factors in its market are brand recognition, selection,
+personalized services, convenience, price, accessibility, customer service,
+quality of search tools, quality of editorial and other site content,
+reliability and speed of fulfillment. Many of the Company's competitors have
+longer operating histories, larger customer bases, greater brand recognition and
+significantly greater financial, marketing and other resources than the Company.
+Certain of the Company's competitors may be able to secure merchandise from
+vendors on more favorable terms, devote greater resources to marketing and
+promotional campaigns, adopt more aggressive pricing or inventory availability
+policies and devote substantially more resources to Web site and systems
+development than the Company. Increased competition may result in reduced
+operating margins, loss of market share and a diminished brand franchise. There
+can be no assurance that the Company will be able to compete successfully
+against current and future competitors.
+ 
+     The Company expects that competition in the online commerce market will
+intensify in the future. For example, as various market segments obtain large,
+loyal customer bases, participants in those segments may seek to leverage their
+market power to the detriment of participants in other market segments. In
+addition, new technologies and the expansion of existing technologies may
+increase the competitive pressures on online retailers, including the Company.
+For example, "shopping agent" technologies will permit customers to quickly
+compare the Company's prices with those of its competitors. Competitive
+pressures created by any one of the Company's competitors, or by the Company's
+competitors collectively, could have a material adverse effect on the Company's
+business, prospects, financial condition and results of operations. See
+"Additional Factors That May Affect Future Results -- Competition."
+ 
+INTELLECTUAL PROPERTY
+ 
+     The Company regards its patents, copyrights, service marks, trademarks,
+trade dress, trade secrets, proprietary technology and similar intellectual
+property as critical to its success, and relies on trademark, copyright and
+patent law, trade secret protection and confidentiality and/or license
+agreements with its employees, customers, partners and others to protect its
+proprietary rights. The Company pursues the registration of its trademarks and
+service marks in the U.S. and internationally, and has applied for the
+registration of certain of its trademarks and service marks. In addition, the
+Company has filed U.S. and
+                                        4
+<PAGE>   7
+ 
+international patent applications covering certain of its proprietary
+technology. Effective trademark, service mark, copyright, patent and trade
+secret protection may not be available in every country in which the Company's
+products and services are made available online. The Company has licensed in the
+past, and expects that it may license in the future, certain of its proprietary
+rights, such as trademarks or copyrighted material, to third parties. While the
+Company attempts to ensure that the quality of its brand is maintained by such
+licensees, there can be no assurance that such licensees will not take actions
+that might materially adversely affect the value of the Company's proprietary
+rights or reputation, which could have a material adverse effect on the
+Company's business, prospects, financial condition and results of operations.
+There can be no assurance that the steps taken by the Company to protect its
+proprietary rights will be adequate or that third parties will not infringe or
+misappropriate the Company's copyrights, trademarks, trade dress, patents and
+similar proprietary rights. In addition, there can be no assurance that other
+parties will not assert infringement claims against the Company. The Company has
+been subject to claims and expects to be subject to legal proceedings and claims
+from time to time in the ordinary course of its business, including claims of
+alleged infringement of the trademarks and other intellectual property rights of
+third parties by the Company and its licensees. Such claims, even if not
+meritorious, could result in the expenditure of significant financial and
+managerial resources.
+ 
+EMPLOYEES
+ 
+     As of December 31, 1997, the Company employed 614 full-time employees. The
+Company also employs independent contractors and other temporary employees in
+its editorial, fulfillment and finance departments. None of the Company's
+employees is represented by a labor union, and the Company considers its
+employee relations to be good. Competition for qualified personnel in the
+Company's industry is intense, particularly for software development and other
+technical staff. The Company believes that its future success will depend in
+part on its continued ability to attract, hire and retain qualified personnel.
+See "Additional Factors That May Affect Future Results -- Management of
+Potential Growth" and "-- Dependence on Key Personnel."
+ 
+ADDITIONAL FACTORS THAT MAY AFFECT FUTURE RESULTS
+ 
+     In addition to other information in this Annual Report on Form 10-K, the
+following important factors should be carefully considered in evaluating the
+Company and its business because such factors currently have a significant
+impact or may have a significant impact on the Company's business, prospects,
+financial condition and results of operations.
+ 
+     LIMITED OPERATING HISTORY; ACCUMULATED DEFICIT; ANTICIPATED LOSSES. The
+Company was incorporated in July 1994 and commenced offering products for sale
+on its Web site in July 1995. Accordingly, the Company has a limited operating
+history on which to base an evaluation of its business and prospects. The
+Company's prospects must be considered in light of the risks, expenses and
+difficulties frequently encountered by companies in their early stage of
+development, particularly companies in new and rapidly evolving markets such as
+online commerce. Such risks for the Company include, but are not limited to, an
+evolving and unpredictable business model and the management of growth. To
+address these risks, the Company must, among other things, maintain and increase
+its customer base, implement and successfully execute its business and marketing
+strategy, continue to develop and upgrade its technology and
+transaction-processing systems, improve its Web site, provide superior customer
+service and order fulfillment, respond to competitive developments and attract,
+retain and motivate qualified personnel. There can be no assurance that the
+Company will be successful in addressing such risks, and the failure to do so
+could have a material adverse effect on the Company's business, prospects,
+financial condition and results of operations.
+ 
+     Since inception, the Company has incurred significant losses and as of
+December 31, 1997 had an accumulated deficit of $33.6 million. The Company
+believes that its success will depend in large part on its ability to (i) extend
+its brand position, (ii) provide its customers with outstanding value and a
+superior shopping experience and (iii) achieve sufficient sales volume to
+realize economies of scale. Accordingly, the Company intends to continue to
+invest heavily in marketing and promotion, product development and technology
+and operating infrastructure development. The Company also offers attractive
+pricing programs, which have reduced its gross margins. Because the Company has
+relatively low product gross margins,
+                                        5
+<PAGE>   8
+ 
+achieving profitability given planned investment levels depends upon the
+Company's ability to generate and sustain substantially increased revenue
+levels. As a result, the Company believes that it will continue to incur
+substantial operating losses for the foreseeable future and that the rate at
+which such losses will be incurred may increase significantly from current
+levels. Although the Company has experienced significant revenue growth in
+recent periods, such growth rates are not sustainable and will decrease in the
+future. In view of the rapidly evolving nature of the Company's business and its
+limited operating history, the Company believes that period-to-period
+comparisons of its operating results, including the Company's gross profit and
+operating expenses as a percentage of net sales, are not necessarily meaningful
+and should not be relied upon as an indication of future performance.
+ 
+     UNPREDICTABILITY OF FUTURE REVENUES; POTENTIAL FLUCTUATIONS IN QUARTERLY
+OPERATING RESULTS; SEASONALITY. As a result of the Company's limited operating
+history and the emerging nature of the markets in which it competes, the Company
+is unable to accurately forecast its revenues. The Company's current and future
+expense levels are based largely on its investment plans and estimates of future
+revenues and are to a large extent fixed. Sales and operating results generally
+depend on the volume of, timing of and ability to fulfill orders received, which
+are difficult to forecast. The Company may be unable to adjust spending in a
+timely manner to compensate for any unexpected revenue shortfall. Accordingly,
+any significant shortfall in revenues in relation to the Company's planned
+expenditures would have an immediate adverse effect on the Company's business,
+prospects, financial condition and results of operations. Further, as a
+strategic response to changes in the competitive environment, the Company may
+from time to time make certain pricing, service, marketing or acquisition
+decisions that could have a material adverse effect on its business, prospects,
+financial condition and results of operations. For example, the Company has
+agreed in certain of its promotional arrangements with Internet aggregators to
+make significant fixed payments. There can be no assurance that these
+arrangements will generate adequate revenues to cover the associated
+expenditures and any significant shortfall would have a material adverse effect
+on the Company's financial condition and results of operations. See Note
+4 -- "Commitments" of Notes to Financial Statements.
+ 
+     The Company expects to experience significant fluctuations in its future
+quarterly operating results due to a variety of factors, many of which are
+outside the Company's control. Factors that may adversely affect the Company's
+quarterly operating results include (i) the Company's ability to retain existing
+customers, attract new customers at a steady rate and maintain customer
+satisfaction, (ii) the Company's ability to acquire product, to maintain
+appropriate inventory levels and to manage fulfillment operations, (iii) the
+Company's ability to maintain gross margins in its existing business and in
+future product lines and markets, (iv) the development, announcement or
+introduction of new sites, services and products by the Company and its
+competitors, (v) price competition or higher wholesale prices in the industry,
+(vi) the level of use of the Internet and online services and increasing
+consumer acceptance of the Internet and other online services for the purchase
+of consumer products such as those offered by the Company, (vii) the Company's
+ability to upgrade and develop its systems and infrastructure and attract new
+personnel in a timely and effective manner, (viii) the level of traffic on the
+Company's Web site, (ix) technical difficulties, system downtime or Internet
+brownouts, (x) the amount and timing of operating costs and capital expenditures
+relating to expansion of the Company's business, operations and infrastructure,
+(xi) the number of popular books introduced during the period, (xii) the level
+of merchandise returns experienced by the Company, (xiii) governmental
+regulation and taxation policies, (xiv) disruptions in service by common
+carriers due to strikes or otherwise and (xv) general economic conditions and
+economic conditions specific to the Internet, online commerce and the book
+industry.
+ 
+     The Company expects that it will experience seasonality in its business,
+reflecting a combination of seasonal fluctuations in Internet usage and
+traditional retail seasonality patterns. Internet usage and the rate of Internet
+growth may be expected to decline during the summer. Further, sales in the
+traditional retail book industry are significantly higher in the fourth calendar
+quarter of each year than in the preceding three quarters.
+ 
+     Due to the foregoing factors, in one or more future quarters the Company's
+operating results may fall below the expectations of securities analysts and
+investors. In such event, the trading price of the common stock would likely be
+materially adversely affected.
+                                        6
+<PAGE>   9
+ 
+     COMPETITION. The online commerce market, particularly over the Web, is new,
+rapidly evolving and intensely competitive. In addition, the retail book
+industry is intensely competitive. The Company's current or potential
+competitors include (i) various online booksellers and vendors of other
+information-based products such as CDs and videotapes, including entrants into
+narrow specialty niches, (ii) a number of indirect competitors that specialize
+in online commerce or derive a substantial portion of their revenues from online
+commerce, through which retailers other than the Company may offer products and
+(iii) publishers, distributors and retail vendors of books, music and
+videotapes, including Barnes & Noble, Inc., Bertelsmann AG and other large
+specialty booksellers and integrated media corporations, many of which possess
+significant brand awareness, sales volume and customer bases. The Company
+believes that the principal competitive factors in its market are brand
+recognition, selection, personalized services, convenience, price,
+accessibility, customer service, quality of search tools, quality of editorial
+and other site content and reliability and speed of fulfillment. Many of the
+Company's competitors have longer operating histories, larger customer bases,
+greater brand recognition and significantly greater financial, marketing and
+other resources than the Company. Certain of the Company's competitors may be
+able to secure merchandise from vendors on more favorable terms, devote greater
+resources to marketing and promotional campaigns, adopt more aggressive pricing
+or inventory availability policies and devote substantially more resources to
+Web site and systems development than the Company. Increased competition may
+result in reduced operating margins, loss of market share and a diminished brand
+franchise. There can be no assurance that the Company will be able to compete
+successfully against current and future competitors.
+ 
+     The Company expects that competition in the online commerce market will
+intensify in the future. For example, as various market segments obtain large,
+loyal customer bases, participants in those segments may seek to leverage their
+market power to the detriment of participants in other market segments. In
+addition, new technologies and the expansion of existing technologies may
+increase the competitive pressures on online retailers, including the Company.
+For example, "shopping agent" technologies will permit customers to quickly
+compare the Company's prices with those of its competitors. Competitive
+pressures created by any one of the Company's competitors, or by the Company's
+competitors collectively, could have a material adverse effect on the Company's
+business, prospects, financial condition and results of operations.
+ 
+     SYSTEM DEVELOPMENT AND OPERATION RISKS. The Company's revenues depend on
+the number of visitors who shop on its Web site and the volume of orders it
+fulfills. Any system interruptions that result in the unavailability of the
+Company's Web site or reduced order fulfillment performance would reduce the
+volume of goods sold and the attractiveness of the Company's product and service
+offerings. The Company has experienced periodic system interruptions, which it
+believes will continue to occur from time to time. The Company uses an
+internally developed system for its Web site, search engine and substantially
+all aspects of transaction processing, including order management, cash and
+credit card processing, purchasing, inventory management and shipping. The
+Company will be required to add additional software and hardware and further
+develop and upgrade its existing technology, transaction-processing systems and
+network infrastructure to accommodate increased traffic on its Web site and
+increased sales volume through its transaction-processing systems. Any inability
+to do so may cause unanticipated system disruptions, slower response times,
+degradation in levels of customer service, impaired quality and speed of order
+fulfillment, or delays in reporting accurate financial information. There can be
+no assurance that the Company will be able to accurately project the rate or
+timing of increases, if any, in the use of its Web site or in a timely manner to
+effectively upgrade and expand its transaction-processing systems or to
+integrate smoothly any newly developed or purchased modules with its existing
+systems. Any inability to do so could have a material adverse effect on the
+Company's business, prospects, financial condition and results of operations.
+ 
+     Substantially all of the Company's computer and communications hardware is
+located at a single leased facility in Seattle, Washington. The Company's
+systems and operations are vulnerable to damage or interruption from fire,
+flood, power loss, telecommunications failure, break-ins, earthquake and similar
+events. The Company does not currently have redundant systems or a formal
+disaster recovery plan and does not carry sufficient business interruption
+insurance to compensate it for losses that may occur. Despite the implementation
+of network security measures by the Company, its servers are vulnerable to
+computer viruses, physical or electronic break-ins and similar disruptions,
+which could lead to interruptions, delays, loss of critical data or
+ 
+                                        7
+<PAGE>   10
+ 
+the inability to accept and fulfill customer orders. The occurrence of any of
+the foregoing events could have a material adverse effect on the Company's
+business, prospects, financial condition and results of operations.
+ 
+     MANAGEMENT OF POTENTIAL GROWTH. The Company has rapidly and significantly
+expanded its operations and anticipates that further expansion will be required
+to address potential growth in its customer base, to expand its product and
+service offerings and its international operations and to pursue other market
+opportunities. The Company's employee base has similarly expanded, growing from
+158 employees as of December 31, 1996 to 614 employees as of December 31, 1997.
+The expansion of the Company's operations and employee base has placed, and is
+expected to continue to place, a significant strain on the Company's management,
+operational and financial resources. To manage the expected growth of its
+operations and personnel, the Company will be required to improve existing and
+implement new transaction-processing, operational and financial systems,
+procedures and controls and to expand, train and manage its growing employee
+base. There can be no assurance that the Company's current and planned
+personnel, systems, procedures and controls will be adequate to support the
+Company's future operations, that management will be able to hire, train,
+retain, motivate and manage required personnel or that Company management will
+be able to successfully identify, manage and exploit existing and potential
+market opportunities. If the Company is unable to manage growth effectively,
+such inability could have a material adverse effect on the Company's business,
+prospects, financial condition and results of operations.
+ 
+     RISKS OF NEW BUSINESS AREAS. The Company over time intends to expand its
+operations by promoting new or complementary products or sales formats and by
+expanding the breadth and depth of its product or service offerings. Expansion
+of the Company's operations in this manner would require significant additional
+expenses and development, operations and editorial resources and would strain
+the Company's management, financial and operational resources. Furthermore, the
+Company may not benefit from the first-mover advantage that it experienced in
+the online book market and gross margins attributable to new business areas may
+be lower than those associated with the Company's existing business activities.
+There can be no assurance that the Company will be able to expand its operations
+in a cost-effective or timely manner. Furthermore, any new business launched by
+the Company that is not favorably received by consumers could damage the
+Company's reputation or the Amazon.com brand. The lack of market acceptance of
+such efforts or the Company's inability to generate satisfactory revenues from
+such expanded services or products to offset their cost could have a material
+adverse effect on the Company's business, prospects, financial condition and
+results of operations.
+ 
+     RISKS OF INTERNATIONAL EXPANSION. The Company over time intends to expand
+its presence in foreign markets. To date, the Company has only limited
+experience in sourcing, marketing and distributing products on an international
+basis and in developing localized versions of its Web site and other systems.
+The Company expects to incur significant costs in establishing international
+facilities and operations, in promoting its brand internationally, in developing
+localized versions of its Web site and other systems and in sourcing, marketing
+and distributing products in foreign markets. There can be no assurance that the
+Company's international efforts will be successful. If the revenues resulting
+from international activities are inadequate to offset the expense of
+establishing and maintaining foreign operations, such inadequacy could have a
+material adverse effect on the Company's business, prospects, financial
+condition and results of operations. In addition, there are certain risks
+inherent in doing business on an international level, such as unexpected changes
+in regulatory requirements, export and import restrictions, tariffs and other
+trade barriers, difficulties in staffing and managing foreign operations, longer
+payment cycles, political instability, fluctuations in currency exchange rates,
+seasonal reductions in business activity in other parts of the world and
+potentially adverse tax consequences, any of which could adversely impact the
+success of the Company's international operations. There can be no assurance
+that one or more of such factors will not have a material adverse impact on the
+Company's future international operations and, consequently, on the Company's
+business, prospects, financial condition and results of operations.
+ 
+     RISKS OF BUSINESS COMBINATIONS AND STRATEGIC ALLIANCES. The Company may
+choose to expand its operations or market presence by entering into business
+combinations, investments, joint ventures or other strategic alliances with
+third parties. Any such transaction would be accompanied by the risks commonly
+encountered in such transactions. These include, among others, the difficulty of
+assimilating the operations,
+                                        8
+<PAGE>   11
+ 
+technology and personnel of the combined companies, the potential disruption of
+the Company's ongoing business, the inability to retain key technical and
+managerial personnel, the inability of management to maximize the financial and
+strategic position of the Company through the successful integration of acquired
+businesses, additional expenses associated with amortization of acquired
+intangible assets, the maintenance of uniform standards, controls and policies
+and the impairment of relationships with existing employees and customers. There
+can be no assurance that the Company would be successful in overcoming these
+risks or any other problems encountered in connection with such business
+combinations, investments, joint ventures or other strategic alliances, or that
+such transactions will not have a material adverse effect on the Company's
+business, prospects, financial condition and results of operations.
+ 
+     RAPID TECHNOLOGICAL CHANGE. To remain competitive, the Company must
+continue to enhance and improve the responsiveness, functionality and features
+of the Amazon.com online store. The Internet and the online commerce industry
+are characterized by rapid technological change, changes in user and customer
+requirements and preferences, frequent new product and service introductions
+embodying new technologies and the emergence of new industry standards and
+practices that could render the Company's existing Web site and proprietary
+technology and systems obsolete. The Company's success will depend, in part, on
+its ability to license leading technologies useful in its business, enhance its
+existing services, develop new services and technology that address the
+increasingly sophisticated and varied needs of its prospective customers and
+respond to technological advances and emerging industry standards and practices
+on a cost-effective and timely basis. The development of Web site and other
+proprietary technology entails significant technical, financial and business
+risks. There can be no assurance that the Company will successfully implement
+new technologies or adapt its Web site, proprietary technology and
+transaction-processing systems to customer requirements or emerging industry
+standards. If the Company is unable, for technical, legal, financial or other
+reasons, to adapt in a timely manner in response to changing market conditions
+or customer requirements, such inability could have a material adverse effect on
+the Company's business, prospects, financial condition and results of
+operations.
+ 
+     DEPENDENCE ON KEY PERSONNEL. The Company's performance is substantially
+dependent on the continued services and on the performance of its senior
+management and other key personnel, particularly Jeffrey P. Bezos, its
+President, Chief Executive Officer and Chairman of the Board. The Company does
+not have long-term employment agreements with any of its key personnel and
+maintains no "key person" life insurance policies. The loss of the services of
+any of its executive officers or other key employees could have a material
+adverse effect on the Company's business, prospects, financial condition and
+results of operations.
+ 
+     RELIANCE ON CERTAIN SUPPLIERS. The Company purchases a substantial majority
+of its products from two major vendors, Ingram and B&T. Ingram is the Company's
+single largest supplier and accounted for 58% and 59% of the Company's inventory
+purchases in 1997 and 1996, respectively. The Company has no long-term contracts
+or arrangements with any of its vendors that guarantee the availability of
+merchandise, the continuation of particular payment terms or the extension of
+credit limits. There can be no assurance that the Company's current vendors will
+continue to sell merchandise to the Company on current terms or that the Company
+will be able to establish new or extend current vendor relationships to ensure
+acquisition of merchandise in a timely and efficient manner and on acceptable
+commercial terms. If the Company were unable to develop and maintain
+relationships with vendors that would allow it to obtain sufficient quantities
+of merchandise on acceptable commercial terms, such inability could have a
+material adverse effect on the Company's business, prospects, financial
+condition and results of operations.
+ 
+     IMPACT OF LOAN FACILITY. On December 23, 1997, the Company borrowed $75
+million pursuant to a three-year senior secured term credit agreement (the
+"Loan"). See "Management's Discussion and Analysis of Financial Condition and
+Results of Operations -- Liquidity and Capital Resources." The Loan includes
+covenants restricting certain activities by the Company, including (i) the
+incurrence of additional indebtedness, (ii) consolidations, mergers and sales of
+assets and (iii) dividends and distributions to stockholders. In addition,
+financial covenants require the Company to, among other things, maintain a
+minimum cash balance, maintain certain levels of earnings or losses before
+interest, taxes, depreciation and amortization, limit its accounts payable aging
+and limit its capital and acquisition expenditures. The Loan contains standard
+events of default including, among other things, a change in ownership or
+control. As a result, the Loan may reduce
+                                        9
+<PAGE>   12
+ 
+the Company's operational flexibility and may limit its ability to pursue market
+opportunities. The Company's ability to generate planned future revenues, and
+therefore its ability to comply with the Loan covenants, may be affected by
+events beyond its control. If the Company were unable to satisfy the Loan
+covenants, the lending institutions would be entitled to exercise their
+remedies, including the right to declare all principal and interest immediately
+due and payable. If the Company were unable to make such payment, or were unable
+to repay the amount owing under the Loan at the end of its term, the lending
+institutions could foreclose on the Company's assets, substantially all of which
+are pledged as security for the Loan. In connection with the Loan, the Company
+issued warrants to purchase a total of 750,000 shares of the Company's common
+stock. All or a portion of the warrants will be canceled if the Company repays
+the Loan in full prior to certain specified dates. If the Company does not repay
+the Loan prior to such dates, and if any of the warrants are exercised, such
+exercise may dilute the economic interests of the Company's stockholders.
+ 
+     RISKS ASSOCIATED WITH DOMAIN NAMES. The Company currently holds various Web
+domain names relating to its brand, including the "Amazon.com" domain name. The
+acquisition and maintenance of domain names generally is regulated by
+governmental agencies and their designees. For example, in the United States,
+the National Science Foundation has appointed Network Solutions, Inc. as the
+exclusive registrar for the ".com, " ".net" and ".org" generic top-level
+domains. The regulation of domain names in the United States and in foreign
+countries is subject to change. Governing bodies may establish additional
+top-level domains, appoint additional domain name registrars or modify the
+requirements for holding domain names. As a result, there can be no assurance
+that the Company will be able to acquire or maintain relevant domain names in
+all countries in which it conducts business. Furthermore, the relationship
+between regulations governing domain names and laws protecting trademarks and
+similar proprietary rights is unclear. The Company, therefore, may be unable to
+prevent third parties from acquiring domain names that are similar to, infringe
+upon or otherwise decrease the value of its trademarks and other proprietary
+rights. Any such inability could have a material adverse effect on the Company's
+business, prospects, financial condition and results of operations.
+ 
+     GOVERNMENTAL REGULATION AND LEGAL UNCERTAINTIES. The Company is not
+currently subject to direct regulation by any domestic or foreign governmental
+agency, other than regulations applicable to businesses generally and laws or
+regulations directly applicable to access to online commerce. However, due to
+the increasing popularity and use of the Internet and other online services, it
+is possible that a number of laws and regulations may be adopted with respect to
+the Internet or other online services covering issues such as user privacy,
+pricing, content, copyrights, distribution and characteristics and quality of
+products and services. Furthermore, the growth and development of the market for
+online commerce may prompt calls for more stringent consumer protection laws
+that may impose additional burdens on those companies conducting business
+online. The adoption of any additional laws or regulations may decrease the
+growth of the Internet or other online services, which could, in turn, decrease
+the demand for the Company's products and services and increase the Company's
+cost of doing business, or otherwise have an adverse effect on the Company's
+business, prospects, financial condition and results of operations. Moreover,
+the applicability to the Internet and other online services of existing laws in
+various jurisdictions governing issues such as property ownership, sales and
+other taxes, libel and personal privacy is uncertain and may take years to
+resolve. Any such new legislation or regulation, the application of laws and
+regulations from jurisdictions whose laws do not currently apply to the
+Company's business, or the application of existing laws and regulations to the
+Internet and other online services could have a material adverse effect on the
+Company's business, prospects, financial condition and results of operations.
+ 
+                                       10
+<PAGE>   13
+ 
+EXECUTIVE OFFICERS AND DIRECTORS OF THE REGISTRANT
+ 
+     The following table sets forth certain information regarding the executive
+officers of the Company as of March 27, 1998:
+ 
+
+
+                 NAME                    AGE                  POSITION
+                 ----                    ---                  --------
+                                         
+Jeffrey P. Bezos.......................  34    President, Chief Executive Officer and
+                                               Chairman of the Board
+George T. Aposporos....................  39    Vice President of Business Development
+Joy D. Covey...........................  34    Chief Financial Officer, Vice President
+                                               of Finance and Administration, and
+                                               Secretary
+Richard L. Dalzell.....................  40    Vice President and Chief Information
+                                               Officer
+Mary E. Engstrom.......................  35    Vice President of Publisher Affairs
+Sheldon J. Kaphan......................  45    Vice President and Chief Technology
+                                               Officer
+John D. Risher.........................  32    Senior Vice President of Product
+                                               Development
+Joel R. Spiegel........................  42    Vice President of Engineering
+
+ 
+- ---------------
+     JEFFREY P. BEZOS. Mr. Bezos has been President and Chairman of the Board of
+the Company since founding it in 1994, and Chief Executive Officer since May
+1996, and served as Treasurer and Secretary from May 1996 to March 1997. From
+December 1990 to June 1994, Mr. Bezos was employed by D.E. Shaw & Co., a Wall
+Street investment firm, becoming Senior Vice President in 1992. From April 1988
+to December 1990, Mr. Bezos was employed by Bankers Trust Company, becoming Vice
+President in February 1990. Mr. Bezos received his B.S. in Electrical
+Engineering and Computer Science, Summa Cum Laude, from Princeton University.
+ 
+     GEORGE T. APOSPOROS. Mr. Aposporos joined the Company in May 1997 as Vice
+President of Business Development. From August 1995 to May 1997, Mr. Aposporos
+was founder and President of Digital Brands, Inc., a strategic consulting and
+interactive marketing firm. From March 1994 to August 1995, Mr. Aposporos served
+as Vice President at I.C.E., a Toronto-based multimedia developer and corporate
+communications firm. From 1989 to March 1994, Mr. Aposporos was self-employed as
+an independent producer in a variety of media. Mr. Aposporos was an Olin Scholar
+at Wesleyan University.
+ 
+     JOY D. COVEY. Ms. Covey joined the Company in December 1996 as Chief
+Financial Officer and Vice President of Finance and Administration, and became
+Secretary in March 1997. Ms. Covey also served as Treasurer of the Company from
+March 1997 to February 1998. From June 1995 to February 1996, Ms. Covey served
+as Vice President, Operations of the Broadcast Division of Avid Technology, Inc.
+("Avid"), a developer of digital media systems, and from January 1995 to June
+1995, Ms. Covey served as Vice President of Business Development for Avid. From
+July 1991 to January 1995, Ms. Covey served as Chief Financial Officer of
+Digidesign, Inc., a developer of random access digital audio systems and
+software. Prior to that, she was an associate at Wasserstein Perella & Co., and
+a certified public accountant at Arthur Young & Company (now Ernst & Young LLP).
+Ms. Covey received her B.S. in Business Administration, Summa Cum Laude, from
+California State University, Fresno, her M.B.A., With High Distinction, from
+Harvard Business School and her J.D., Magna Cum Laude, from Harvard Law School.
+She is a Certified Public Accountant and a member of the California State Bar.
+ 
+     RICHARD L. DALZELL. Mr. Dalzell joined the Company in August 1997 as Vice
+President and Chief Information Officer. From February 1990 to August 1997, Mr.
+Dalzell held several management positions within the Information Systems
+Division at Wal-Mart Stores, Inc., including Vice President of Information
+Systems from January 1994 to August 1997. From 1987 to 1990, Mr. Dalzell acted
+as the Business Development Manager for E-Systems, Inc. Prior to joining
+E-Systems, Inc. he served seven years in the United States Army as a
+teleprocessing officer. Mr. Dalzell received a B.S. in Engineering from the
+United States Military Academy, West Point, in 1979.
+ 
+     MARY E. ENGSTROM. Ms. Engstrom joined the Company in February 1997 as Vice
+President of Publisher Affairs. From December 1996 to February 1997, Ms.
+Engstrom served as Vice President of Product
+ 
+                                       11
+<PAGE>   14
+ 
+Marketing of Symantec Corporation ("Symantec"), a developer of information
+management and productivity enhancement software, and from February 1996 to
+February 1997, Ms. Engstrom served as General Manager of the Security Business
+Unit of Symantec. From July 1989 to September 1994, Ms. Engstrom held several
+management positions at Microsoft Corporation, including Group Product Manager
+for Microsoft Access, Group Product Manager for Microsoft Project and Director
+of Marketing, Strategic Relations. Ms. Engstrom received her B.A. in Economics
+from the University of California, Berkeley, and her M.B.A. from the Anderson
+Graduate School of Management at the University of California, Los Angeles.
+ 
+     SHELDON J. KAPHAN. Mr. Kaphan has served as the Company's Vice President
+and Chief Technology Officer since March 1997. From October 1994 to March 1997,
+Mr. Kaphan served as Vice President of Research and Development of the Company.
+From October 1992 to July 1994, Mr. Kaphan served as senior engineer at Kaleida
+Labs Inc., a multimedia joint venture between Apple Computer Inc. and
+International Business Machines Corporation. Mr. Kaphan received his B.A. in
+Mathematics from the University of California, Santa Cruz.
+ 
+     JOHN D. RISHER. Mr. Risher joined the Company in February 1997 as Vice
+President of Product Development. Mr. Risher was promoted to Senior Vice
+President of Product Development in November 1997. From July 1991 to February
+1997, Mr. Risher held a variety of marketing and project management positions at
+Microsoft Corporation, including Team Manager for Microsoft Access and Founder
+and Product Unit Manager for MS Investor, Microsoft's Web site for personal
+investment. Mr. Risher received his B.A. in Comparative Literature, Magna Cum
+Laude, from Princeton University and his M.B.A. from Harvard Business School.
+ 
+     JOEL R. SPIEGEL. Mr. Spiegel joined the Company in March 1997 as Vice
+President of Engineering. From March 1995 to March 1997, Mr. Spiegel held
+several positions with Microsoft Corporation, including Windows 95 Multimedia
+Development Manager, Windows Multimedia Group Manager and Product Unit Manager,
+Information Retrieval. From June 1986 to March 1995, he held a variety of
+positions at Apple Computer Inc., most recently as Senior Manager responsible
+for new product development in the Apple Business Systems Division. Prior to
+that, Mr. Spiegel held software product development positions at a number of
+companies, including Hewlett-Packard Company and VisiCorp. Mr. Spiegel received
+his B.A. in Biology with Honors from Grinnell College.
+ 
+BOARD OF DIRECTORS AT DECEMBER 31, 1997
+ 
+
+                           
+Jeffrey P. Bezos..........   34  Chairman of the Board, President and Chief Executive
+                                 Officer of the Company
+Tom A. Alberg.............   57  Principal in Madrona Investment Group, L.L.C.
+Scott D. Cook.............   44  Chairman of the Board of Intuit, Inc.
+L. John Doerr.............   45  General Partner, Kleiner Perkins Caufield & Byers
+Patricia Q. Stonesifer....   41  Chairman of the Gates Library Foundation and Former
+                                 Senior Vice President of the Interactive Media
+                                 Division of Microsoft Corporation
+
+ 
+ITEM 2. PROPERTIES
+ 
+     The Company's principal administrative, engineering, marketing and customer
+service facilities total approximately 88,000 square feet and are located in
+Seattle, Washington under leases that expire in May 1999, July 1999 and January
+2003. The Company's warehousing and merchandising operations are housed in an
+approximately 85,000-square-foot facility in Seattle, Washington under a lease
+that expires in October 1999, and in a 200,000-square-foot facility located in
+New Castle, Delaware under a lease that expires in October 2002. The Company
+anticipates that it will require additional administrative, customer service,
+warehouse and fulfillment space within the next 12 months, but that suitable
+additional space will be available on commercially reasonable terms, although
+there can be no assurance in this regard. The Company does not own any real
+estate.
+ 
+                                       12
+<PAGE>   15
+ 
+ITEM 3. LEGAL PROCEEDINGS
+ 
+     From time to time, the Company is subject to legal proceedings and claims
+in the ordinary course of business, including claims of alleged infringement of
+trademarks and other intellectual property rights. The Company currently is not
+aware of any legal proceedings or claims that the Company believes will have,
+individually or in the aggregate, a material adverse effect on the Company's
+business, prospects, financial condition and results of operations.
+ 
+ITEM 4. SUBMISSION OF MATTERS TO A VOTE OF SECURITY HOLDERS
+ 
+     No matters were submitted for a vote of stockholders of the Company during
+the fourth quarter of the year ended December 31, 1997.
+ 
+                                    PART II
+ 
+ITEM 5. MARKET FOR THE REGISTRANT'S COMMON STOCK AND RELATED STOCKHOLDER MATTERS
+ 
+  Market Information
+ 
+     The common stock is traded on The NASDAQ National Market under the symbol
+"AMZN." Information regarding the market prices of the Company's common stock
+may be found in Note 8 -- "Quarterly Results" of Notes to Financial Statements.
+ 
+  Holders
+ 
+     As of March 13, 1998 there were 304 stockholders of record of the common
+stock.
+ 
+  Dividends
+ 
+     The Company has never declared or paid cash dividends on its common stock.
+The Company currently intends to retain all future earnings to finance future
+growth and, therefore, does not anticipate paying any cash dividends in the
+foreseeable future. In addition, the Company is prohibited from paying cash
+dividends under the Loan. See Note 3 -- "Debt" of Notes to Financial Statements.
+ 
+  Use of Proceeds
+ 
+     The Company's registration statement under the Securities Act of 1933, as
+amended, for its initial public offering (the "Registration Statement") became
+effective on May 14, 1997. Offering proceeds, net of aggregate expenses of
+approximately $4.9 million, were $49.1 million. The Company has used
+approximately $9.6 million of the net offering proceeds for working capital paid
+directly or indirectly to third parties, approximately $7.2 million for the
+purchase or installation of machinery and equipment and approximately $32.3
+million for the purchase of temporary investments consisting of cash, cash
+equivalents and short-term investments. The Company has not used any of the net
+offering proceeds for construction of plant, building or facilities, purchases
+of real estate, acquisition of other businesses, or repayment of indebtedness.
+None of the net offering proceeds were paid directly or indirectly to directors,
+officers, or general partners of the Company or their associates, persons owning
+10% or more of any class of the Company's securities, or affiliates of the
+Company.
+ 
+  Recent Sales of Unregistered Securities
+ 
+     In connection with the Loan, the Company issued warrants to purchase a
+total of 750,000 shares of the Company's common stock. The warrants will be
+canceled if the Company repays the Loan in full according to the following
+schedule: all warrants if repayment occurs within 12 months; warrants to
+purchase 675,000 shares if repayment occurs within 15 months; warrants to
+purchase 562,500 shares if repayment occurs within 18 months; warrants to
+purchase 450,000 shares if repayment occurs within 24 months; warrants to
+purchase 225,000 shares if repayment occurs within 30 months; and no warrants if
+repayment occurs after 30 months. Warrants become exercisable when they can no
+longer be canceled and remain exercisable for five years after such date. The
+exercise price for the warrants is $52.11 per share.
+ 
+                                       13
+<PAGE>   16
+ 
+ITEM 6. SELECTED FINANCIAL DATA
+ 
+     The following selected financial data should be read in conjunction with
+the financial statements and the notes thereto and the information contained
+herein in Item 7, "Management's Discussion and Analysis of Financial Condition
+and Results of Operations."
+ 
+
+
+                                                                                      FOR THE PERIOD
+                                                                                           FROM
+                                                                                       JULY 5, 1994
+                                                                                       (INCEPTION)
+                                                         YEARS ENDED DECEMBER 31,           TO
+                                                       ----------------------------    DECEMBER 31,
+                                                         1997      1996      1995          1994
+                                                       --------   -------   -------   --------------
+                                                           (IN THOUSANDS, EXCEPT PER SHARE DATA)
+                                                                          
+STATEMENT OF OPERATIONS DATA:
+Net sales............................................  $147,758   $15,746   $   511      $    --
+Cost of sales........................................   118,945    12,287       409           --
+                                                       --------   -------   -------      -------
+Gross profit.........................................    28,813     3,459       102           --
+Operating expenses:
+  Marketing and sales................................    38,964     6,090       200           --
+  Product development................................    12,485     2,313       171           38
+  General and administrative.........................     6,573     1,035        35           14
+                                                       --------   -------   -------      -------
+          Total operating expenses...................    58,022     9,438       406           52
+                                                       --------   -------   -------      -------
+Loss from operations.................................   (29,209)   (5,979)     (304)         (52)
+Interest income......................................     1,898       202         1           --
+Interest expense.....................................      (279)       --        --           --
+                                                       --------   -------   -------      -------
+Net loss.............................................  $(27,590)  $(5,777)  $  (303)     $   (52)
+                                                       ========   =======   =======      =======
+Pro forma basic and diluted loss per share(1)........  $  (1.27)  $ (0.31)  $ (0.02)     $ (0.00)
+                                                       ========   =======   =======      =======
+Shares used in computation of pro forma basic and
+  diluted loss per share(1)..........................    21,651    18,544    14,394       13,191
+                                                       ========   =======   =======      =======
+
+ 
+
+
+                                                                        DECEMBER 31,
+                                                              ---------------------------------
+                                                                1997      1996     1995    1994
+                                                              --------   ------   ------   ----
+                                                                       (IN THOUSANDS)
+                                                                               
+BALANCE SHEET DATA:
+Cash and cash equivalents...................................  $109,810   $6,248   $  996   $ 52
+Working capital (deficiency)................................    93,517    2,270      920    (16)
+          Total assets......................................   149,006    8,271    1,084     76
+Long-term debt, net of current portion......................    76,702       --       --     --
+Stockholders' equity........................................    28,486    3,401      977      8
+
+ 
+- ---------------
+(1) See Note 1 -- "Accounting Policies" of Notes to Financial Statements.
+ 
+ITEM 7. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS
+OF OPERATIONS
+ 
+     This Annual Report on Form 10-K and the documents incorporated herein by
+reference contain forward-looking statements based on current expectations,
+estimates and projections about the Company's industry, management's beliefs and
+certain assumptions made by management. All statements, trends, analyses and
+other information contained in this report relative to trends in net sales,
+gross margin, anticipated expense levels and liquidity and capital resources, as
+well as other statements, including, but not limited to, words such as
+"anticipate," "believe," "plan," "estimate," "expect," "seek" and "intend" and
+other similar expressions, constitute forward-looking statements. These
+forward-looking statements are not guarantees of future performance and are
+subject to certain risks and uncertainties that are difficult to predict.
+Accordingly, actual
+ 
+                                       14
+<PAGE>   17
+ 
+results may differ materially from those anticipated or expressed in such
+statements. Potential risks and uncertainties include, among others, those set
+forth below as well as in "Business -- Additional Factors That May Affect Future
+Results." Particular attention should be paid to the cautionary statements
+involving the Company's limited operating history, the unpredictability of its
+future revenues, the unpredictable and evolving nature of its business model,
+the intensely competitive online commerce and retail book environments and the
+risks associated with capacity constraints, systems development, management of
+growth and business expansion. Except as required by law, the Company undertakes
+no obligation to update any forward-looking statement, whether as a result of
+new information, future events or otherwise. Readers, however, should carefully
+review the factors set forth in other reports or documents that the Company
+files from time to time with the SEC.
+ 
+OVERVIEW
+ 
+     Amazon.com is the leading online retailer of books. The Company also sells
+a smaller number of CDs, videotapes, audiotapes and other products. All of these
+products are sold through the Company's Web site. The Company was incorporated
+in July 1994 and commenced offering products for sale on its Web site in July
+1995. Accordingly, the Company has a limited operating history on which to base
+an evaluation of its business and prospects. The Company's prospects must be
+considered in light of the risks, expenses and difficulties frequently
+encountered by companies in their early stage of development, particularly
+companies in new and rapidly evolving markets such as online commerce. Such
+risks for the Company include, but are not limited to, an evolving and
+unpredictable business model and the management of growth. To address these
+risks, the Company must, among other things, maintain and increase its customer
+base, implement and successfully execute its business and marketing strategy,
+continue to develop and upgrade its technology and transaction-processing
+systems, improve its Web site, provide superior customer service and order
+fulfillment, respond to competitive developments, and attract, retain and
+motivate qualified personnel. There can be no assurance that the Company will be
+successful in addressing such risks, and the failure to do so could have a
+material adverse effect on the Company's business, prospects, financial
+condition and results of operations.
+ 
+     Since inception, the Company has incurred significant losses and as of
+December 31, 1997 had an accumulated deficit of $33.6 million. The Company
+believes that its success will depend in large part on its ability to (i) extend
+its brand position, (ii) provide its customers with outstanding value and a
+superior shopping experience and (iii) achieve sufficient sales volume to
+realize economies of scale. Accordingly, the Company intends to continue to
+invest heavily in marketing and promotion, product development and technology
+and operating infrastructure development. The Company also offers attractive
+pricing programs, which have reduced its gross margins. Because the Company has
+relatively low product gross margins, achieving profitability given planned
+investment levels depends upon the Company's ability to generate and sustain
+substantially increased revenue levels. As a result, the Company believes that
+it will continue to incur substantial operating losses for the foreseeable
+future and that the rate at which such losses will be incurred may increase
+significantly from current levels. Although the Company has experienced
+significant revenue growth in recent periods, such growth rates are not
+sustainable and will decrease in the future. In view of the rapidly evolving
+nature of the Company's business and its limited operating history, the Company
+believes that period-to-period comparisons of its operating results, including
+the Company's gross profit and operating expenses as a percentage of net sales,
+are not necessarily meaningful and should not be relied upon as an indication of
+future performance.
+ 
+     As a result of the Company's limited operating history and the emerging
+nature of the markets in which it competes, the Company is unable to accurately
+forecast its revenues. The Company's current and future expense levels are based
+largely on its investment plans and estimates of future revenues and are to a
+large extent fixed. Sales and operating results generally depend on the volume
+of, timing of and ability to fulfill orders received, which are difficult to
+forecast. The Company may be unable to adjust spending in a timely manner to
+compensate for any unexpected revenue shortfall. Accordingly, any significant
+shortfall in revenues in relation to the Company's planned expenditures would
+have an immediate adverse effect on the Company's business, prospects, financial
+condition and results of operations. Further, as a strategic response to changes
+in the competitive environment, the Company may from time to time make certain
+pricing, service, marketing or
+ 
+                                       15
+<PAGE>   18
+ 
+acquisition decisions that could have a material adverse effect on its business,
+prospects, financial condition and results of operations. For example, the
+Company has agreed in certain of its promotional arrangements with Internet
+aggregators to make significant fixed payments. There can be no assurance that
+these arrangements will generate adequate revenues to cover the associated
+expenditures and any significant shortfall would have a material adverse effect
+on the Company's financial condition and results of operations.
+ 
+     The Company expects to experience significant fluctuations in its future
+quarterly operating results due to a variety of factors, many of which are
+outside the Company's control. Factors that may adversely affect the Company's
+quarterly operating results include (i) the Company's ability to retain existing
+customers, attract new customers at a steady rate and maintain customer
+satisfaction, (ii) the Company's ability to acquire product, to maintain
+appropriate inventory levels and to manage fulfillment operations, (iii) the
+Company's ability to maintain gross margins in its existing business and in
+future product lines and markets, (iv) the development, announcement or
+introduction of new sites, services and products by the Company and its
+competitors, (v) price competition or higher wholesale prices in the industry,
+(vi) the level of use of the Internet and online services and increasing
+consumer acceptance of the Internet and other online services for the purchase
+of consumer products such as those offered by the Company, (vii) the Company's
+ability to upgrade and develop its systems and infrastructure and attract new
+personnel in a timely and effective manner, (viii) the level of traffic on the
+Company's Web site, (ix) technical difficulties, system downtime or Internet
+brownouts, (x) the amount and timing of operating costs and capital expenditures
+relating to expansion of the Company's business, operations and infrastructure,
+(xi) the number of popular books introduced during the period, (xii) the level
+of merchandise returns experienced by the Company, (xiii) governmental
+regulation and taxation policies, (xiv) disruptions in service by common
+carriers due to strikes or otherwise and (xv) general economic conditions and
+economic conditions specific to the Internet, online commerce and the book
+industry.
+ 
+     The Company expects that it will experience seasonality in its business,
+reflecting a combination of seasonal fluctuations in Internet usage and
+traditional retail seasonality patterns. Internet usage and the rate of Internet
+growth may be expected to decline during the summer. Further, sales in the
+traditional retail book industry are significantly higher in the fourth calendar
+quarter of each year than in the preceding three quarters.
+ 
+     Due to the foregoing factors, in one or more future quarters the Company's
+operating results may fall below the expectations of securities analysts and
+investors. In such event, the trading price of the common stock would likely be
+materially adversely affected.
+ 
+     The Company has recorded aggregate deferred compensation of approximately
+$3.3 million. The amount recorded represents the difference between the grant
+price and the deemed fair value of the Company's common stock for shares subject
+to options granted in 1997 and 1996. Deferred compensation is amortized over the
+vesting period of the options, which is typically five years. Amortization for
+the year ended December 31, 1997 was $1.4 million. No amortization expense was
+recognized in 1996.
+ 
+RESULTS OF OPERATIONS
+ 
+Net Sales
+ 
+
+
+                                              1997      % CHANGE     1996      % CHANGE    1995
+                                            --------    --------    -------    --------    ----
+                                                              (IN THOUSANDS)
+                                                                            
+Net sales.................................  $147,758      838%      $15,746     2,981%     $511
+
+ 
+     Net sales are composed of the selling price of books and other merchandise
+sold by the Company, net of returns, as well as outbound shipping and handling
+charges. Growth in net sales reflects a significant increase in units sold due
+to the significant growth of the Company's customer base and repeat purchases
+from the Company's existing customers. This increase was partially offset by a
+decrease in prices during 1997. International sales represented 25%, 33% and 39%
+of net sales for the years ended December 31, 1997, 1996 and 1995, respectively.
+ 
+                                       16
+<PAGE>   19
+ 
+Gross Profit
+ 
+
+
+                                             1997      % CHANGE     1996     % CHANGE     1995
+                                            -------    --------    ------    --------    -------
+                                                               (IN THOUSANDS)
+                                                                          
+Gross profit..............................  $28,813      733%      $3,459     3,291%     $   102
+Gross margin..............................     19.5%                 22.0%                  20.0%
+
+ 
+     Gross profit equals sales less cost of sales, which consists of the cost of
+merchandise sold to customers and outbound and inbound shipping costs. Gross
+profit increased in absolute dollars reflecting the Company's increased sales
+volume. The Company's gross margin decreased due to a combination of lower
+prices and lower overall shipping margins, partially offset by improvements in
+product cost.
+ 
+     The Company believes that offering its customers attractive prices is an
+essential component of its business strategy. Accordingly, the Company offers
+20% and 30% discounts on more than 400,000 titles, with featured titles
+discounted at 40% and certain "special value" editions discounted up to 89%. The
+Company may in the future expand or increase the discounts it offers to its
+customers and may otherwise alter its pricing structure and policies.
+ 
+     The Company over time intends to expand its operations by promoting new or
+complementary products or sales formats and by expanding the breadth and depth
+of its product or service offerings. Gross margins attributable to new business
+areas may be lower than those associated with the Company's existing business
+activities.
+ 
+Marketing and Sales
+ 
+
+
+                                             1997      % CHANGE     1996     % CHANGE     1995
+                                            -------    --------    ------    --------    -------
+                                                               (IN THOUSANDS)
+                                                                          
+Marketing and sales.......................  $38,964       540%     $6,090     2,945%     $   200
+Percentage of net sales...................     26.4%                 38.7%                  39.1%
+
+ 
+     Marketing and sales expenses consist primarily of advertising, public
+relations and promotional expenditures, as well as payroll and related expenses
+for personnel engaged in marketing, selling and fulfillment activities. All
+fulfillment costs not included in cost of sales, including the cost of operating
+and staffing distribution centers and customer service, are included in
+marketing and sales. Marketing and sales expenses increased primarily due to
+increases in the Company's advertising and promotional expenditures (including
+expenses associated with Internet aggregator promotional relationships),
+increased costs associated with fulfilling customer demand, increased personnel
+and related expenses required to implement the Company's marketing strategy and
+increased credit card merchant fees resulting from higher sales. Such expenses
+decreased as a percentage of net sales due to the significant increase in net
+sales. The Company intends to continue to pursue its aggressive branding and
+marketing campaign and expects its costs of fulfillment to increase based on
+anticipated sales growth. Therefore, the Company expects marketing and sales
+expenses to increase significantly in absolute dollars.
+ 
+Product Development
+ 
+
+
+                                             1997      % CHANGE     1996     % CHANGE     1995
+                                            -------    --------    ------    --------    -------
+                                                               (IN THOUSANDS)
+                                                                          
+Product development.......................  $12,485      440%      $2,313     1,253%     $   171
+Percentage of net sales...................      8.4%                 14.7%                  33.5%
+
+ 
+     Product development expenses consist principally of payroll and related
+expenses for development, editorial, systems and telecommunications operations
+personnel and consultants, systems and telecommunications infrastructure and
+costs of acquired content. The increases in product development expenses were
+primarily attributable to increased staffing and associated costs related to
+enhancing the features, content and functionality of the Company's Web site and
+transaction-processing systems, as well as increased investment in systems and
+telecommunications infrastructure. Such expenses decreased significantly as a
+percentage of
+ 
+                                       17
+<PAGE>   20
+ 
+net sales due to the significant increase in net sales. To date, all product
+development costs have been expensed as incurred. The Company believes that
+continued investment in product development is critical to attaining its
+strategic objectives and, as a result, expects product development expenses to
+increase significantly in absolute dollars.
+ 
+General and Administrative
+ 
+
+
+                                              1997     % CHANGE     1996     % CHANGE     1995
+                                             ------    --------    ------    --------    -------
+                                                               (IN THOUSANDS)
+                                                                          
+General and administrative.................  $6,573      535%      $1,035     2,857%     $    35
+Percentage of net sales....................     4.4%                  6.6%                   6.8%
+
+ 
+     General and administrative expenses consist of payroll and related expenses
+for executive, accounting and administrative personnel, recruiting, professional
+fees and other general corporate expenses. The increase in general and
+administrative expenses was primarily due to increased salaries and related
+expenses associated with the hiring of additional personnel, increases in
+professional fees and, in 1997, costs attributable to being a public company.
+Such expenses decreased as a percentage of net sales due to the significant
+increase in net sales. The Company expects general and administrative expenses
+to increase in absolute dollars as the Company expands its staff and incurs
+additional costs related to the growth of its business.
+ 
+INTEREST INCOME AND EXPENSE
+ 
+
+
+                                              1997     % CHANGE     1996     % CHANGE     1995
+                                             ------    --------    ------    --------    -------
+                                                               (IN THOUSANDS)
+                                                                          
+Interest income............................  $1,898      840%      $  202      N/M       $     1
+Interest expense...........................    (279)     N/A           --      N/A            --
+
+ 
+     Interest income on cash, cash equivalents and short-term investments
+increased due to higher cash, cash equivalents and short-term investment
+balances resulting from the Company's financing activities.
+ 
+     Interest expense in 1997 consists of interest and amortization of deferred
+charges related to the Loan and interest on asset acquisitions financed through
+loans and capital leases.
+ 
+INCOME TAXES
+ 
+     The Company has not generated any taxable income to date and therefore has
+not paid any federal income taxes since inception. Utilization of the Company's
+net operating loss carryforwards, which begin to expire in 2011, may be subject
+to certain limitations under Section 382 of the Internal Revenue Code of 1986,
+as amended. The Company has provided a full valuation allowance on the deferred
+tax asset, consisting primarily of net operating loss carryforwards, because of
+uncertainty regarding its realizability.
+ 
+LIQUIDITY AND CAPITAL RESOURCES
+ 
+     At December 31, 1997 the Company's cash and cash equivalents were $109.8
+million, compared to $6.2 million at December 31, 1996.
+ 
+     Net cash provided by operating activities of $3.5 million for the year
+ended December 31, 1997 was primarily attributable to increases of $29.8 million
+in accounts payable, $5.1 million in other accrued expenses and $2.9 million in
+accrued advertising, plus $4.7 million in depreciation and amortization, largely
+offset by a net loss of $27.6 million and increases of $8.4 million in
+inventories and $3.0 million in prepaid expenses and other assets. For 1996,
+cash used in operating activities was $1.7 million and resulted from a net loss
+of $5.8 million and increases of $554,000 in inventories, $307,000 in prepaid
+expenses and other assets and $146,000 in deposits, largely offset by increases
+of $2.8 million in accounts payable, $598,000 in accrued advertising and $1.4
+million in other liabilities and accrued expenses, plus $286,000 in depreciation
+and amortization. Net cash used in investing activities was $22.5 million for
+the year ended December 31, 1997
+ 
+                                       18
+<PAGE>   21
+ 
+and consisted of purchases of short-term investments of $20.5 million and
+purchases of fixed assets of $7.2 million, partially offset by maturities of
+short-term investments of $5.2 million. For 1996, net cash used in investing
+activities consisted of $1.2 million for the purchase of fixed assets. The large
+increases in the components of working capital on a period-to-period basis are a
+direct result of the rapid growth of the Company's revenues and related
+activities. Such growth has required the Company to purchase additional fixed
+assets and increase purchases of products, which resulted in corresponding
+increases in inventories and accounts payable.
+ 
+     Cash flows provided by financing activities of $122.5 million for the year
+ended December 31, 1997 consisted of net proceeds of approximately $72.7 million
+from the Loan obtained in December 1997, $49.1 million from the Company's May
+1997 initial public offering, $518,000 from the exercise of common stock options
+and $200,000 from the issuance of preferred stock. Cash flows of $8.2 million
+attributable to financing activities for the year ended December 31, 1996
+consisted primarily of net proceeds from the issuance of preferred stock.
+ 
+     On December 23, 1997, the Company borrowed $75 million pursuant to a
+three-year senior secured term Loan. The purpose of the Loan is to finance
+working capital, capital additions, operations, acquisitions, joint ventures and
+general corporate purposes. The Loan is secured by a first priority lien on
+substantially all of the Company's assets. The Company has the option to choose
+from the following interest rate options: (i) a variable rate adjusted every
+one, two, three or six months at the Company's option and based on the London
+Interbank Offered Rate ("LIBOR") plus 3.50% per annum for the first six months
+of the Loan and 4.00% thereafter, or (ii) a variable rate of interest based on
+the lender's Base Rate plus 1.50% per annum for the first six months of the Loan
+and 2.00% thereafter. In connection with the Loan, in January 1998 the Company
+entered into certain interest rate risk management agreements. The Company is
+required to make mandatory prepayments on the Loan equal to 50% of the proceeds
+from any debt and/or equity offerings (other than the proceeds of certain
+permitted debt) and 100% of the proceeds from certain sales of assets that are
+not reinvested in replacement assets.
+ 
+     The Loan includes covenants restricting certain activities by the Company,
+including (i) the incurrence of additional indebtedness, (ii) consolidations,
+mergers and sales of assets and (iii) dividends and distributions to
+stockholders. In addition, financial covenants require the Company to, among
+other things, maintain a minimum cash balance, maintain certain levels of
+earnings or losses before interest, taxes, depreciation and amortization, limit
+its accounts payable aging and limit its capital and acquisition expenditures.
+The Loan contains standard events of default, including, among other things, a
+change in ownership or control. As a result, the Loan may reduce the Company's
+operational flexibility and may limit its ability to pursue market
+opportunities. The Company met all Loan covenants at December 31, 1997.
+ 
+     In connection with the Loan, the Company issued warrants to purchase a
+total of 750,000 shares of the Company's common stock. All or a portion of the
+warrants will be canceled if the Company repays the Loan in full prior to
+certain specified dates. If the Company does not repay the Loan prior to such
+dates, and if any of the warrants are exercised, such exercise may dilute the
+economic interests of the Company's stockholders. Warrants become exercisable
+when they can no longer be canceled and remain exercisable for five years after
+such date. The exercise price for the warrants is $52.11 per share.
+ 
+     The Company expects to use the proceeds of the Loan to support its strategy
+of investing heavily in marketing and promotion, product development and
+technology and operating infrastructure development and may commit to
+significant fixed expenditures. The Company's ability to generate planned future
+revenues, and therefore its ability to comply with the Loan covenants, may be
+affected by events beyond its control. If the Company were unable to satisfy the
+Loan covenants, the lending institutions would be entitled to exercise their
+remedies, including the right to declare all principal and interest immediately
+due and payable. If the Company were unable to make such payment, or were unable
+to repay the amount owing under the Loan at the end of its term, the lending
+institutions could foreclose on the Company's assets, substantially all of which
+are pledged as security for the Loan.
+ 
+                                       19
+<PAGE>   22
+ 
+     In November 1997, the Company purchased fixed assets through a financing
+agreement totaling approximately $3.0 million and having an imputed interest
+rate of 7.7% and a term of three years. The debt is to be repaid in four equal
+payments.
+ 
+     As of December 31, 1997 the Company's principal sources of liquidity
+consisted of $109.8 million of cash and cash equivalents and $15.3 million of
+short-term investments. As of that date, the Company's principal commitments
+consisted of obligations outstanding under the Loan, obligations in connection
+with the acquisition of fixed assets, operating leases and commitments for
+advertising and promotional arrangements. Although the Company has no material
+commitments for capital expenditures, it anticipates a substantial increase in
+its capital expenditures and lease commitments consistent with anticipated
+growth in operations, infrastructure and personnel. In November 1997 the Company
+opened a 200,000-square-foot distribution center in Delaware and expanded its
+Seattle distribution center to 85,000 square feet. The Company may establish one
+or more additional distribution centers within the next 12 months, which would
+require it to commit to lease obligations, stock inventories, purchase fixed
+assets and install leasehold improvements. In addition, the Company has
+announced plans to continue to increase its merchandise inventory in order to
+provide better availability to customers and achieve purchasing efficiencies.
+ 
+     The Company has developed a plan to modify its information technology to
+recognize the Year 2000 and has, to the extent necessary, begun converting its
+critical data processing systems. Since the Company's systems and software are
+relatively new, management does not expect Year 2000 issues related to its own
+internal systems to be significant. The Company has initiated formal
+communications with all of its significant suppliers and service providers to
+determine the extent to which the Company's interface systems are vulnerable to
+those third parties' failure to remediate their own Year 2000 issues. There can
+be no guarantee that the systems of other companies, on which the Company
+relies, will be converted timely and will not have an adverse effect on the
+Company's systems. The Company currently expects the project to be complete in
+1999.
+ 
+     The Company purchases a substantial majority of its products from two major
+vendors, Ingram and B&T. Ingram is the Company's largest supplier and accounted
+for 58% and 59% of the Company's inventory purchases in 1997 and 1996,
+respectively. The Company has no long-term contracts or arrangements with any of
+its vendors that guarantee the availability of merchandise, the continuation of
+particular payment terms or the extension of credit limits. There can be no
+assurance that the Company's current vendors will continue to sell merchandise
+to the Company on current terms or that the Company will be able to establish
+new or extend current vendor relationships to ensure acquisition of merchandise
+in a timely and efficient manner and on acceptable commercial terms. If the
+Company were unable to develop and maintain relationships with vendors that
+would allow it to obtain sufficient quantities of merchandise on acceptable
+commercial terms, such inability could have a material adverse effect on the
+Company's business, prospects, financial condition and results of operations.
+ 
+     The Company believes that current cash and cash equivalent balances and
+short-term investments will be sufficient to meet its anticipated cash needs for
+at least 12 months. However, any projections of future cash needs and cash flows
+are subject to substantial uncertainty. If cash generated from operations is
+insufficient to satisfy the Company's liquidity requirements, the Company may
+seek to sell additional equity or debt securities or to obtain a line of credit.
+The sale of additional equity or convertible debt securities could result in
+additional dilution to the Company's stockholders. There can be no assurance
+that financing will be available in amounts or on terms acceptable to the
+Company, if at all. In addition, the Company will, from time to time, consider
+the acquisition of or investment in complementary businesses, products and
+technologies, which might increase the Company's liquidity requirements or cause
+the Company to issue additional equity or debt securities.
+ 
+     In 1997, the Financial Accounting Standards Board ("FASB") issued Statement
+of Financial Accounting Standard ("SFAS") No. 128, Earnings per Share. SFAS No.
+128 replaced the previously reported primary and fully diluted earnings per
+share with basic and diluted earnings per share. Prior to SFAS No. 128, the SEC
+required that, even where antidilutive, common and common equivalent shares
+issued during the 12-month period prior to the filing of an initial public
+offering be included in the calculation of earnings per
+ 
+                                       20
+<PAGE>   23
+ 
+share as if they were outstanding for all periods presented (using the treasury
+stock method and the initial public offering price). Because of new requirements
+issued in 1998 by the SEC for companies that recently completed an initial
+public offering and interpretation by FASB of the initial application of SFAS
+No. 128, the number of shares used in the calculation of basic net loss per
+share has changed to exclude common equivalent shares, even when antidilutive,
+and exercised but unvested shares subject to repurchase by the Company.
+Previously reported periods affected by these changes in requirements include
+net loss per share calculations for the years ended December 31, 1997, 1996 and
+1995.
+ 
+     The Company's total net loss for these periods has not changed. However,
+share count for the years ended December 31, 1997, 1996 and 1995 has been
+revised from 23,602,000, 22,655,000 and 18,933,000 to 21,651,000, 18,544,000 and
+14,394,000, respectively. As a result, net loss per share for the years ended
+December 31, 1997, 1996 and 1995 has been revised from $1.17, $0.25 and $0.02 to
+$1.27, $0.31 and $0.02, respectively.
+ 
+ITEM 7A. QUANTITATIVE AND QUALITATIVE DISCLOSURES ABOUT MARKET RISK
+ 
+     Not applicable.
+ 
+ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA
+ 
+                         INDEX TO FINANCIAL STATEMENTS
+ 
+
+
+                                                              PAGE
+                                                              ----
+                                                           
+Report of Ernst & Young LLP, Independent Auditors...........   22
+Balance Sheets..............................................   23
+Statements of Operations....................................   24
+Statements of Stockholders' Equity..........................   25
+Statements of Cash Flows....................................   26
+Notes to Financial Statements...............................   27
+
+ 
+                                       21
+<PAGE>   24
+ 
+               REPORT OF ERNST & YOUNG LLP, INDEPENDENT AUDITORS
+ 
+Board of Directors
+Amazon.com, Inc.
+ 
+     We have audited the accompanying balance sheets of Amazon.com, Inc. as of
+December 31, 1997 and 1996, and the related statements of operations,
+stockholders' equity and cash flows for each of the three years in the period
+ended December 31, 1997. Our audits also included the financial statement
+schedule listed in the Index at Item 14(a). These financial statements and
+schedule are the responsibility of the Company's management. Our responsibility
+is to express an opinion on these financial statements and schedule based on our
+audits.
+ 
+     We conducted our audits in accordance with generally accepted auditing
+standards. Those standards require that we plan and perform the audit to obtain
+reasonable assurance about whether the financial statements are free of material
+misstatement. An audit includes examining, on a test basis, evidence supporting
+the amounts and disclosures in the financial statements. An audit also includes
+assessing the accounting principles used and significant estimates made by
+management, as well as evaluating the overall financial statement presentation.
+We believe that our audits provide a reasonable basis for our opinion.
+ 
+     In our opinion, the financial statements referred to above present fairly,
+in all material respects, the financial position of Amazon.com, Inc. at December
+31, 1997 and 1996 and the results of its operations and its cash flows for each
+of the three years in the period ended December 31, 1997, in conformity with
+generally accepted accounting principles. Also, in our opinion, the related
+financial statement schedule, when considered in relation to the basic financial
+statements taken as a whole, presents fairly in all material respects the
+information set forth therein.
+ 
+                                                         ERNST & YOUNG LLP
+Seattle, Washington
+January 19, 1998
+ 
+                                       22
+<PAGE>   25
+ 
+                                AMAZON.COM, INC.
+ 
+                                 BALANCE SHEETS
+                (IN THOUSANDS, EXCEPT SHARE AND PER SHARE DATA)
+ 
+
+
+                                                                 DECEMBER 31,
+                                                              -------------------
+                                                                1997       1996
+                                                              --------    -------
+                                                                    
+                                     ASSETS
+Current Assets:
+  Cash and cash equivalents.................................  $109,810    $ 6,248
+  Short-term investments....................................    15,256         --
+  Inventories...............................................     8,971        571
+  Prepaid expenses and other................................     3,298        321
+                                                              --------    -------
+          Total current assets..............................   137,335      7,140
+Fixed assets, net...........................................     9,265        985
+Deposits....................................................       166        146
+Deferred charges............................................     2,240         --
+                                                              --------    -------
+          Total assets......................................  $149,006    $ 8,271
+                                                              ========    =======
+                      LIABILITIES AND STOCKHOLDERS' EQUITY
+Current Liabilities:
+  Accounts payable..........................................  $ 32,697    $ 2,852
+  Accrued advertising.......................................     3,454        598
+  Accrued product development...............................        --        500
+  Other liabilities and accrued expenses....................     6,167        920
+  Current portion of long-term debt.........................     1,500         --
+                                                              --------    -------
+          Total current liabilities.........................    43,818      4,870
+Long-term portion of debt...................................    76,521         --
+Long-term portion of capital lease obligation...............       181         --
+Stockholders' Equity:
+  Preferred stock, $0.01 par value:
+     Authorized shares -- 10,000,000
+     Issued and outstanding shares -- none and 569,396
+      shares in 1997 and 1996, respectively.................        --          6
+  Common stock, $0.01 par value:
+     Authorized shares -- 100,000,000
+     Issued and outstanding shares -- 23,937,169 and
+      15,900,229 shares in 1997 and 1996, respectively......       239        159
+  Additional paid-in capital................................    63,792      9,873
+  Deferred compensation.....................................    (1,930)      (612)
+  Accumulated deficit.......................................   (33,615)    (6,025)
+                                                              --------    -------
+          Total stockholders' equity........................    28,486      3,401
+                                                              --------    -------
+            Total liabilities and stockholders' equity......  $149,006    $ 8,271
+                                                              ========    =======
+
+ 
+                            See accompanying notes.
+                                       23
+<PAGE>   26
+ 
+                                AMAZON.COM, INC.
+ 
+                            STATEMENTS OF OPERATIONS
+                     (IN THOUSANDS, EXCEPT PER SHARE DATA)
+ 
+
+
+                                                                 YEARS ENDED DECEMBER 31,
+                                                              ------------------------------
+                                                                1997       1996       1995
+                                                              --------    -------    -------
+                                                                            
+Net sales...................................................  $147,758    $15,746    $   511
+Cost of sales...............................................   118,945     12,287        409
+                                                              --------    -------    -------
+Gross profit................................................    28,813      3,459        102
+Operating expenses:
+  Marketing and sales.......................................    38,964      6,090        200
+  Product development.......................................    12,485      2,313        171
+  General and administrative................................     6,573      1,035         35
+                                                              --------    -------    -------
+          Total operating expenses..........................    58,022      9,438        406
+Loss from operations........................................   (29,209)    (5,979)      (304)
+Interest income.............................................     1,898        202          1
+Interest expense............................................      (279)        --         --
+                                                              --------    -------    -------
+Net loss....................................................  $(27,590)   $(5,777)   $  (303)
+                                                              ========    =======    =======
+Pro forma basic and diluted loss per share..................  $  (1.27)   $ (0.31)   $ (0.02)
+                                                              ========    =======    =======
+Shares used in computation of pro forma basic and diluted
+  loss
+  per share.................................................    21,651     18,544     14,394
+                                                              ========    =======    =======
+
+ 
+                            See accompanying notes.
+                                       24
+<PAGE>   27
+ 
+                                AMAZON.COM, INC.
+ 
+                       STATEMENTS OF STOCKHOLDERS' EQUITY
+                       (IN THOUSANDS, EXCEPT SHARE DATA)
+
+
+                                 PREFERRED STOCK       COMMON STOCK         ADVANCES     ADDITIONAL
+                                -----------------   -------------------   RECEIVED FOR    PAID-IN       DEFERRED     ACCUMULATED
+                                 SHARES    AMOUNT     SHARES     AMOUNT   COMMON STOCK    CAPITAL     COMPENSATION     DEFICIT
+                                --------   ------   ----------   ------   ------------   ----------   ------------   -----------
+                                                                                             
+Balance at December 31,
+  1994........................        --    $ --    10,200,000   $  10       $  50        $    --       $    --       $    (52)
+  Sale of common stock........        --      --     4,235,244   1,172         (50)            --            --             --
+  Reclassification of
+    accumulated deficit due to
+    termination of S
+    Corporation status........        --      --            --    (107)         --             --            --            107
+  Advances received for common
+    stock.....................        --      --            --      --         150             --            --             --
+  Exercise of common stock
+    options...................        --      --       120,000      --          --             --            --             --
+  Net loss for the year ended
+    December 31, 1995.........        --      --            --      --          --             --            --           (303)
+                                --------    ----    ----------   ------      -----        -------       -------       --------
+Balance at December 31,
+  1995........................        --      --    14,555,244   1,075         150             --            --           (248)
+  Reincorporation in
+    Delaware..................        --      --            --    (929)         --            929            --             --
+  Sale of preferred stock, net
+    of $30 issuance costs.....   569,396       6            --      --          --          7,964            --             --
+  Sale of common stock........        --      --       840,528       8        (150)           178            --             --
+  Exercise of common stock
+    options...................        --      --       504,457       5          --            190            --             --
+  Unearned compensation
+    related to stock
+    options...................        --      --            --      --          --            612          (612)            --
+  Net loss for the year ended
+    December 31, 1996.........        --      --            --      --          --             --            --         (5,777)
+                                --------    ----    ----------   ------      -----        -------       -------       --------
+Balance at December 31,
+  1996........................   569,396       6    15,900,229     159          --          9,873          (612)        (6,025)
+  Sale of preferred stock.....     5,000      --            --      --          --            200            --             --
+  Exercise of common stock
+    options...................        --      --     1,365,564      14          --            504            --             --
+  Public stock offering, net
+    of $1,117 issuance
+    costs.....................        --      --     3,000,000      30          --         49,073            --             --
+  Conversion of preferred
+    stock into common stock...  (574,396)     (6)    3,446,376      34          --            (28)           --             --
+  Issuance of common stock for
+    fixed assets and accrued
+    product development.......        --      --       225,000       2          --          1,498            --             --
+  Unearned compensation
+    related to stock
+    options...................        --      --            --      --          --          2,741        (2,741)            --
+  Amortization of unearned
+    compensation related to
+    stock options.............        --      --            --      --          --            (69)        1,423             --
+  Net loss for the year ended
+    December 31, 1997.........        --      --            --      --          --             --            --        (27,590)
+                                --------    ----    ----------   ------      -----        -------       -------       --------
+Balance at December 31,
+  1997........................        --    $ --    23,937,169   $ 239       $  --        $63,792       $(1,930)      $(33,615)
+                                ========    ====    ==========   ======      =====        =======       =======       ========
+ 
+
+                                    TOTAL
+                                STOCKHOLDERS'
+                                   EQUITY
+                                -------------
+                             
+Balance at December 31,
+  1994........................    $      8
+  Sale of common stock........       1,122
+  Reclassification of
+    accumulated deficit due to
+    termination of S
+    Corporation status........          --
+  Advances received for common
+    stock.....................         150
+  Exercise of common stock
+    options...................          --
+  Net loss for the year ended
+    December 31, 1995.........        (303)
+                                  --------
+Balance at December 31,
+  1995........................         977
+  Reincorporation in
+    Delaware..................          --
+  Sale of preferred stock, net
+    of $30 issuance costs.....       7,970
+  Sale of common stock........          36
+  Exercise of common stock
+    options...................         195
+  Unearned compensation
+    related to stock
+    options...................          --
+  Net loss for the year ended
+    December 31, 1996.........      (5,777)
+                                  --------
+Balance at December 31,
+  1996........................       3,401
+  Sale of preferred stock.....         200
+  Exercise of common stock
+    options...................         518
+  Public stock offering, net
+    of $1,117 issuance
+    costs.....................      49,103
+  Conversion of preferred
+    stock into common stock...          --
+  Issuance of common stock for
+    fixed assets and accrued
+    product development.......       1,500
+  Unearned compensation
+    related to stock
+    options...................          --
+  Amortization of unearned
+    compensation related to
+    stock options.............       1,354
+  Net loss for the year ended
+    December 31, 1997.........     (27,590)
+                                  --------
+Balance at December 31,
+  1997........................    $ 28,486
+                                  ========
+
+ 
+                            See accompanying notes.
+                                       25
+<PAGE>   28
+ 
+                                AMAZON.COM, INC.
+ 
+                            STATEMENTS OF CASH FLOWS
+                                 (IN THOUSANDS)
+ 
+
+
+                                                               YEARS ENDED DECEMBER 31,
+                                                              --------------------------
+                                                                1997      1996     1995
+                                                              --------   -------   -----
+                                                                          
+OPERATING ACTIVITIES
+Net loss....................................................  $(27,590)  $(5,777)  $(303)
+Adjustments to reconcile net loss to net cash provided by
+  (used in) operating activities:
+  Depreciation and amortization.............................     3,388       286      19
+  Amortization of unearned compensation related to stock
+     options................................................     1,354        --      --
+  Changes in operating assets and liabilities:
+       Inventories..........................................    (8,400)     (554)    (17)
+       Prepaid expenses and other...........................    (2,977)     (307)    (14)
+       Deposits.............................................       (20)     (146)     --
+       Accounts payable.....................................    29,845     2,753      99
+       Accrued advertising..................................     2,856       598      --
+       Other liabilities and accrued expenses...............     5,066     1,412     (16)
+                                                              --------   -------   -----
+          Net cash provided by (used in) operating
+            activities......................................     3,522    (1,735)   (232)
+INVESTING ACTIVITIES
+Maturities of short-term investments........................     5,198        --      --
+Purchases of short-term investments.........................   (20,454)       --      --
+Purchases of fixed assets...................................    (7,221)   (1,214)    (52)
+                                                              --------   -------   -----
+          Net cash used in investing activities.............   (22,477)   (1,214)    (52)
+FINANCING ACTIVITIES
+Proceeds from initial public offering.......................    49,103        --      --
+Proceeds from exercise of stock options and sale of common
+  stock.....................................................       518       231   1,272
+Proceeds from sale of preferred stock.......................       200     7,970      --
+Proceeds from (repayment of) notes payable and long-term
+  debt......................................................    75,000        --     (44)
+Financing costs.............................................    (2,304)       --      --
+                                                              --------   -------   -----
+          Net cash provided by financing activities.........   122,517     8,201   1,228
+                                                              --------   -------   -----
+Net increase in cash........................................   103,562     5,252     944
+Cash and cash equivalents at beginning of period............     6,248       996      52
+                                                              --------   -------   -----
+Cash and cash equivalents at end of period..................  $109,810   $ 6,248   $ 996
+                                                              ========   =======   =====
+SUPPLEMENTAL CASH FLOW INFORMATION
+Common stock issued for fixed assets and accrued product
+  development...............................................  $  1,500   $    --   $  --
+Fixed assets acquired under capital lease...................  $    362   $    --   $  --
+Fixed assets acquired under financing agreement.............  $  3,021   $    --   $  --
+Interest paid...............................................  $     30   $    --   $  --
+
+ 
+                            See accompanying notes.
+                                       26
+<PAGE>   29
+ 
+                                AMAZON.COM, INC.
+ 
+                         NOTES TO FINANCIAL STATEMENTS
+ 
+NOTE 1 -- ACCOUNTING POLICIES
+ 
+  Description of Business
+ 
+     Amazon.com, Inc. ("Amazon.com" or the "Company") was incorporated on July
+5, 1994. The Company is an online retailer of books and other information-based
+products on the Company's Web site and offers more than 2.5 million titles.
+ 
+  Use of Estimates
+ 
+     The preparation of financial statements in conformity with generally
+accepted accounting principles requires management to make estimates and
+assumptions that affect the reported amounts of assets and liabilities and
+disclosure of contingent assets and liabilities at the date of the financial
+statements and the reported amounts of revenues and expenses during the
+reporting period. Actual results could differ from those estimates.
+ 
+  Cash and Cash Equivalents
+ 
+     The Company invests certain of its excess cash in debt instruments of the
+U.S. government and its agencies, foreign governments and high-quality corporate
+issuers. The Company considers all highly liquid instruments with an original
+maturity of three months or less to be cash equivalents. Cash and cash
+equivalents are carried at cost, which approximates market.
+ 
+  Short-term Investments
+ 
+     At December 31, 1997, short-term investments consist primarily of
+high-quality corporate notes, and were classified as held-to-maturity and
+carried at cost, which approximates market. The average maturity of short-term
+investments at December 31, 1997 was 139 days with a weighted-average yield of
+5.7%. Unrealized holding gains and losses at December 31, 1997 were not
+significant. At December 31, 1996, the Company did not hold any short-term
+investments.
+ 
+  Deferred Charges
+ 
+     On December 23, 1997, the Company borrowed $75 million pursuant to a
+three-year senior secured term credit agreement (the "Loan"). At December 31,
+1997, deferred charges consisted of fees associated with the Loan. The fees will
+be amortized over the life of the Loan using the straight-line method. During
+1997 the Company recognized $64,000 in deferred charge amortization.
+ 
+  Inventories
+ 
+     Inventories are valued at the lower of average cost or market.
+ 
+     The Company purchases a substantial majority of its products from two major
+vendors, Ingram Book Group ("Ingram") and Baker & Taylor, Inc. ("B&T"). Ingram
+is the Company's largest supplier and accounted for 58% and 59% of the Company's
+inventory purchases in 1997 and 1996, respectively. The Company has no long-term
+contracts or arrangements with any of its vendors that guarantee the
+availability of merchandise, the continuation of particular payment terms or the
+extension of credit limits. There can be no assurance that the Company's current
+vendors will continue to sell merchandise to the Company on current terms or
+that the Company will be able to establish new or extend current vendor
+relationships to ensure acquisition of merchandise in a timely and efficient
+manner and on acceptable commercial terms. If the Company were unable to develop
+and maintain relationships with vendors that would allow it to obtain sufficient
+quantities of merchandise on acceptable commercial terms, such inability could
+have a material adverse effect on the Company's business, prospects, financial
+condition and results of operations.
+ 
+                                       27
+<PAGE>   30
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+  Fixed Assets
+ 
+     Fixed assets are recorded at cost less accumulated depreciation.
+Depreciation of fixed assets is provided using primarily the straight-line
+method over the estimated useful lives of two to five years.
+ 
+  Income Taxes
+ 
+     The Company recognizes deferred tax assets and liabilities based on
+differences between the financial reporting and tax bases of assets and
+liabilities using the enacted tax rates and laws that are expected to be in
+effect when the differences are expected to be recovered. The Company has
+provided a full valuation allowance on the deferred tax asset, consisting
+primarily of net operating loss carryforwards, because of uncertainty regarding
+its realizability.
+ 
+  Revenue Recognition
+ 
+     The Company recognizes revenue from product sales, net of any discounts,
+when the products are shipped to customers. Outbound shipping and handling
+charges are included in net sales. Revenue from gift certificates is recognized
+upon product shipment following redemption. The Company provides an allowance
+for sales returns, which have been insignificant, based on historical
+experience. International sales were $36.2 million, $5.1 million and $198,000
+for the years ended December 31, 1997, 1996 and 1995, representing 25%, 33% and
+39% of sales, respectively. No foreign country or geographical area accounted
+for more than 10% of revenue in any of the periods presented.
+ 
+  Advertising Costs
+ 
+     The cost of advertising is expensed as incurred. For the years ended
+December 31, 1997, 1996 and 1995, the Company incurred advertising expense of
+$21.2 million, $3.4 million and $30,000, respectively.
+ 
+  Product Development
+ 
+     Product development expenses consist principally of payroll and related
+expenses for development, editorial, systems and telecommunications operations
+personnel and consultants, systems and telecommunications infrastructure and
+costs of acquired content. To date, all product development costs have been
+expensed as incurred.
+ 
+  Stock Compensation
+ 
+     The Company has elected to apply the disclosure-only provisions of
+Statement of Financial Accounting Standard ("SFAS") No. 123, Accounting for
+Stock-Based Compensation. Accordingly, the Company accounts for stock-based
+compensation using the intrinsic value method prescribed in Accounting
+Principles Board Opinion No. 25, Accounting for Stock Issued to Employees, and
+related interpretations. Compensation cost for stock options is measured as the
+excess, if any, of the fair value of the Company's common stock at the date of
+grant over the stock option exercise price.
+ 
+  Concentrations of Credit Risk
+ 
+     The Company is subject to concentrations of credit risk from its holdings
+of cash, cash equivalents and short-term investments. The Company's credit risk
+is managed by investing its cash in high-quality money market instruments and
+securities of the U.S. government and its agencies, foreign governments and
+high-quality corporate issuers. In addition, the Company's accounts receivable
+are not significant and are due from domestic banks. The Company believes it had
+no unusual concentrations of credit risk at December 31, 1997.
+ 
+                                       28
+<PAGE>   31
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+  Net Loss Per Share
+ 
+     In 1997, the Financial Accounting Standards Board ("FASB") issued SFAS No.
+128, Earnings per Share. SFAS No. 128 replaced the previously reported primary
+and fully diluted earnings per share with basic and diluted earnings per share.
+Unlike primary earnings per share, basic earnings per share excludes any
+dilutive effects of options, warrants and convertible securities. Diluted
+earnings per share is very similar to the previously reported fully diluted
+earnings per share. Basic earnings per share is computed using the weighted-
+average number of common shares outstanding during the period. Diluted earnings
+per share is computed using the weighted-average number of common and common
+stock equivalent shares outstanding during the period. Common equivalent shares
+are excluded from the computation if their effect is antidilutive. Net loss per
+share amounts for all periods have been restated to conform to SFAS No. 128
+requirements.
+ 
+     Pro forma loss per share is based on the weighted average number of common
+and common equivalent shares outstanding during each period. To calculate pro
+forma loss per share, all outstanding shares of convertible preferred stock are
+assumed to have been converted to common stock for all periods presented.
+ 
+     Prior to SFAS No. 128, the SEC required that, even where antidilutive,
+common and common equivalent shares issued during the 12-month period prior to
+the filing of an initial public offering be included in the calculation of
+earnings per share as if they were outstanding for all periods presented (using
+the treasury stock method and the initial public offering price). Because of new
+requirements issued in 1998 by the SEC for companies that recently completed an
+initial public offering and interpretation by FASB of the initial application of
+SFAS No. 128, the number of shares used in the calculation of basic net loss per
+share has changed to exclude common equivalent shares, even when antidilutive,
+and exercised but unvested shares subject to repurchase by the Company.
+Previously reported periods affected by these changes in requirements include
+net loss per share calculations for the years ended December 31, 1997, 1996 and
+1995.
+ 
+     The Company's total net loss for these periods has not changed. However,
+share count for the years ended December 31, 1997, 1996 and 1995 has been
+revised from 23,602,000, 22,655,000 and 18,933,000 to 21,651,000, 18,544,000 and
+14,394,000, respectively. As a result, net loss per share for the years ended
+December 31, 1997, 1996 and 1995 has been revised from $1.17, $0.25 and $0.02 to
+$1.27, $0.31 and $0.02, respectively.
+ 
+  New Accounting Pronouncements
+ 
+     In June 1997, FASB issued SFAS No. 130, Reporting Comprehensive Income,
+which establishes standards for reporting comprehensive income, and SFAS No.
+131, Disclosures about Segments of an Enterprise and Related Information, which
+establishes standards for reporting information about operating segments. The
+Company is required to adopt these statements in 1998. The Company does not
+expect the impact of these statements to be material.
+ 
+  Reclassifications
+ 
+     Certain prior-year balances have been reclassified to conform to the
+current-year presentation.
+ 
+                                       29
+<PAGE>   32
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+NOTE 2 -- FIXED ASSETS
+ 
+     Fixed assets, at cost, consist of the following:
+ 
+
+
+                                                                DECEMBER 31,
+                                                              -----------------
+                                                               1997       1996
+                                                              -------    ------
+                                                               (IN THOUSANDS)
+                                                                   
+Computers and equipment.....................................  $ 7,118    $1,031
+Purchased software..........................................    4,505       134
+Leasehold improvements......................................      914       130
+Leased assets...............................................      362        --
+                                                              -------    ------
+                                                               12,899     1,295
+Less accumulated depreciation and amortization..............    3,634       310
+                                                              -------    ------
+          Fixed assets, net.................................  $ 9,265    $  985
+                                                              =======    ======
+
+ 
+NOTE 3 -- DEBT
+ 
+  Financing Arrangements
+ 
+     On December 23, 1997, the Company borrowed $75 million pursuant to a
+three-year senior secured term Loan. The purpose of the Loan is to finance
+working capital, capital additions, operations, acquisitions, joint ventures and
+general corporate purposes. The Loan is secured by a first priority lien on
+substantially all of the Company's assets. The Company has the option to choose
+from the following interest rate options: (i) a variable rate adjusted every
+one, two, three or six months at the Company's option and based on the London
+Interbank Offered Rate ("LIBOR") plus 3.50% per annum for the first six months
+of the Loan and 4.00% thereafter, or (ii) a variable rate of interest based on
+the lender's Base Rate plus 1.50% per annum for the first six months of the Loan
+and 2.00% thereafter. In connection with the Loan, in January 1998 the Company
+entered into certain interest rate risk management agreements. The Company is
+required to make mandatory prepayments on the Loan equal to 50% of the proceeds
+from any debt and/or equity offerings (other than the proceeds of certain
+permitted debt) and 100% of the proceeds from certain sales of assets that are
+not reinvested in replacement assets.
+ 
+     The Loan includes covenants restricting certain activities by the Company,
+including (i) the incurrence of additional indebtedness, (ii) consolidations,
+mergers and sales of assets and (iii) dividends and distributions to
+stockholders. In addition, financial covenants require the Company to, among
+other things, maintain a minimum cash balance, maintain certain levels of
+earnings or losses before interest, taxes, depreciation and amortization, limit
+its accounts payable aging and limit its capital and acquisition expenditures.
+The Loan contains standard events of default, including, among other things, a
+change in ownership or control. As a result, the Loan may reduce the Company's
+operational flexibility and may limit its ability to pursue market
+opportunities. The Company met all Loan covenants at December 31, 1997.
+ 
+     In connection with the Loan, the Company issued warrants to purchase a
+total of 750,000 shares of the Company's common stock. All or a portion of the
+warrants will be canceled if the Company repays the Loan in full according to
+the following schedule: all warrants if repayment occurs within 12 months;
+warrants to purchase 675,000 shares if repayment occurs within 15 months;
+warrants to purchase 562,500 shares if repayment occurs within 18 months;
+warrants to purchase 450,000 shares if repayment occurs within 24 months;
+warrants to purchase 225,000 shares if repayment occurs within 30 months; and no
+warrants if repayment occurs after 30 months. Warrants become exercisable when
+they can no longer be canceled and remain exercisable for five years after such
+date. The exercise price for the warrants is $52.11 per share.
+ 
+                                       30
+<PAGE>   33
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+  Financing Agreement for Purchase of Fixed Assets
+ 
+     In November 1997, the Company purchased fixed assets through a financing
+agreement with a vendor having an imputed interest rate of 7.7% and a term of
+three years. The debt is to be repaid in four equal payments.
+ 
+     Future minimum debt payments at December 31, 1997 are as follows:
+ 
+
+
+             YEAR ENDING DECEMBER 31,
+             ------------------------
+                  (IN THOUSANDS)
+                                                  
+  1998.............................................  $ 1,500
+  1999.............................................      761
+  2000.............................................   75,760
+                                                     -------
+Total debt.........................................   78,021
+Less current portion...............................    1,500
+                                                     -------
+Long-term debt.....................................  $76,521
+                                                     =======
+
+ 
+NOTE 4 -- COMMITMENTS
+ 
+     The Company currently leases office and distribution center facilities and
+fixed assets under non-cancelable operating and capital leases. Rental expense
+under operating lease agreements for 1997, 1996 and 1995 was $2 million,
+$257,000 and $12,000, respectively. The Company has also entered into certain
+advertising agreements.
+ 
+     Future minimum commitments as of December 31, 1997 are as follows:
+ 
+
+
+                                                                        OPERATING
+                                                             CAPITAL   LEASES AND
+                 YEAR ENDING DECEMBER 31,                     LEASE    ADVERTISING
+                 ------------------------                    -------   -----------
+                      (IN THOUSANDS)
+                                                                 
+  1998.....................................................   $145       $13,908
+  1999.....................................................    145        15,507
+  2000.....................................................     60        13,171
+  2001.....................................................     --         1,406
+  2002.....................................................     --         1,176
+  Thereafter...............................................     --            23
+                                                              ----       -------
+          Total minimum lease payments.....................   $350       $45,191
+                                                                         =======
+Less imputed interest......................................     55
+                                                              ----
+Present value of net minimum lease payments................    295
+          Less current portion.............................    114
+                                                              ----
+Long-term capital lease obligation.........................   $181
+                                                              ====
+
+ 
+NOTE 5 -- STOCKHOLDERS' EQUITY
+ 
+  Reincorporation and Authorized Capital
+ 
+     On May 28, 1996, the Company reincorporated in the state of Delaware with
+authorized capital of 5,000,000 shares of $0.01 par value preferred stock and
+25,000,000 shares of $0.01 par value common stock. The accompanying financial
+statements have been restated to reflect the reincorporation. On April 18, 1997,
+the Company increased its authorized common stock to 100,000,000 shares and
+increased its authorized preferred stock to 10,000,000 shares.
+ 
+                                       31
+<PAGE>   34
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+  Preferred Stock
+ 
+     In June 1996, the Company issued 569,396 shares of Series A convertible
+preferred stock at a price of $14.05 per share. In January and February 1997,
+the Company sold an additional 5,000 shares of Series A preferred stock at $40
+per share. While outstanding, the preferred stock was convertible into common
+stock at the option of the holder, at any time, at a rate of six shares of
+common stock for one share of preferred stock. As of the closing of the initial
+public offering, all of the preferred stock outstanding was converted into an
+aggregate of 3,446,376 shares of common stock.
+ 
+  Common Stock
+ 
+     On November 23, 1996, the Company effected a four-for-one common stock
+split. On April 18, 1997, the Company effected a three-for-two common stock
+split. The accompanying financial statements have been restated to reflect these
+stock splits.
+ 
+  Initial Public Offering
+ 
+     On May 15, 1997, the Company completed an initial public offering of
+3,000,000 shares of its common stock. Net proceeds to the Company aggregated
+$49.1 million.
+ 
+  Stock Options
+ 
+     The Company's stock option plans consist of the 1997 Stock Option Plan and
+the 1994 Stock Option Plan (collectively, the "Plans"). Shares reserved under
+the Plans consist of 6,000,000 shares in the 1997 plan and 4,800,000 shares in
+the 1994 plan. Any shares of common stock available for issuance under the 1994
+Stock Option Plan that are not issued under that plan may be added to the
+aggregate number of shares available for issuance under the 1997 Stock Option
+Plan.
+ 
+     Generally, options are granted by the Company's Board of Directors at an
+exercise price of not less than the fair market value of the Company's common
+stock at the date of grant. Each outstanding option granted prior to December
+20, 1996 has a term of five years from the date of vesting. Each outstanding
+option granted on or subsequent to December 20, 1996 has a term of ten years
+from the date of grant. Subject to IRS limitations, options granted under the
+Plans generally become exercisable immediately. Options generally vest at the
+rate of 20% after year one, 20% after year two and 5% at the end of each quarter
+for years three through five. Shares issued upon exercise of options that are
+unvested are subject to repurchase by the Company upon termination of employment
+or services. At December 31, 1997, 809,921 shares of common stock were subject
+to repurchase.
+ 
+     During 1995, the Company granted a total of 360,000 nonqualified stock
+options outside of the Plans under separate agreements with three individuals.
+Under the terms of these agreements, the option prices range from $0.333 to
+$0.667 and vest at the rate of 40% on the date of grant, 30% after two years and
+30% after four years. Unexercised options expire five years after the date of
+grant. At December 31, 1997, options for 156,000 shares of common stock were
+exercisable and options for 96,000 shares had been exercised.
+ 
+                                       32
+<PAGE>   35
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+     The following table summarizes the Company's stock option activity:
+ 
+
+
+                                                                      WEIGHTED
+                                                          NUMBER      AVERAGE
+                                                            OF        EXERCISE
+                                                          SHARES       PRICE
+                                                        ----------    --------
+                                                                
+Balance, December 31, 1994............................   1,176,816    $ 0.001
+  Options granted.....................................     742,464      0.344
+  Options canceled....................................     (30,000)     0.172
+  Options exercised...................................    (120,000)     0.001
+                                                        ----------
+Balance December 31, 1995.............................   1,769,280      0.142
+  Options granted:
+     At fair market value.............................   1,038,600      0.333
+     At less than fair market value...................   1,554,150      0.796
+  Options canceled....................................    (528,722)     0.278
+  Options exercised...................................    (504,457)     0.387
+                                                        ----------
+Balance December 31, 1996.............................   3,328,851      0.448
+  Options granted:
+     At fair market value.............................   1,592,425     23.128
+     At less than fair market value...................   1,378,350      2.840
+  Options canceled....................................    (424,230)     3.195
+  Options exercised...................................  (1,365,564)     0.380
+                                                        ----------
+Balance December 31, 1997.............................   4,509,832      8.949
+                                                        ==========
+
+ 
+     At December 31, 1997, 4,660,145 shares of common stock were available for
+future grant under the Plans.
+ 
+     The following table summarizes information about options outstanding and
+exercisable at December 31, 1997:
+ 
+
+
+                            OPTIONS OUTSTANDING
+                 ------------------------------------------
+                                WEIGHTED-                         OPTIONS EXERCISABLE
+                                 AVERAGE                      ----------------------------
+                                REMAINING      WEIGHTED-                      WEIGHTED-
+   RANGE OF        OPTIONS     CONTRACTUAL      AVERAGE         OPTIONS        AVERAGE
+EXERCISE PRICES  OUTSTANDING      LIFE       EXERCISE PRICE   EXERCISABLE   EXERCISE PRICE
+- ---------------  -----------   -----------   --------------   -----------   --------------
+                                                             
+$ 0.001 - $ 0.332    169,964    6.3 years       $ 0.172          169,964       $ 0.172
+  0.333 -   1.000  1,528,035    6.5 years         0.599        1,379,433         0.596
+  1.001 -   2.667    970,608    9.1 years         2.231          573,108         2.173
+  2.668 -   4.667    320,200    9.2 years         4.416          283,574         4.444
+  4.668 -  12.000    789,475    9.3 years        11.861          511,909        11.848
+ 12.001 -  25.313    283,100    9.6 years        21.978          234,363        21.983
+ 25.314 -  55.250    373,200    9.8 years        42.549          236,091        41.520
+ 55.251 -  62.563     75,250    9.9 years        58.078           36,773        58.006
+                   ---------                                   ---------
+$ 0.001 - $62.563  4,509,832    8.2 years       $ 8.949        3,425,215       $ 7.739
+                   =========                                   =========
+
+ 
+     The Company follows the intrinsic value method in accounting for its stock
+options. Had compensation cost been recognized based on the fair value at the
+date of grant for options granted in 1997, 1996 and 1995,
+ 
+                                       33
+<PAGE>   36
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+the pro forma amounts of the Company's net loss and net loss per share for the
+years ended December 31, 1997, 1996 and 1995 would have been as follows:
+ 
+
+
+                                                   FOR THE YEARS ENDED DECEMBER 31,
+                                                --------------------------------------
+                                                   1997           1996         1995
+                                                -----------    ----------    ---------
+                                                (IN THOUSANDS, EXCEPT PER SHARE DATA)
+                                                                    
+Net loss -- as reported.....................      $(27,590)      $(5,777)      $ (303)
+Net loss -- pro forma.......................       (32,543)       (5,808)        (304)
+Pro forma basic and diluted loss per common
+  share -- as reported......................      $  (1.27)      $ (0.31)      $(0.02)
+Pro forma basic and diluted loss per common
+  share -- pro forma........................         (1.50)        (0.31)       (0.02)
+
+ 
+     The fair value of each option grant was estimated using the Black-Scholes
+option-pricing model. For the year ended December 31, 1997, the weighted-average
+value was estimated using an expected life of three years, no dividends,
+risk-free interest rates ranging from 5.70% to 6.93% and a volatility of .50.
+For 1996 and 1995 the value was estimated using risk-free interest rates of
+5.16% to 7.60%, an expected option life of three years and no expected
+dividends. As the Company was privately held in 1996 and 1995, expected
+volatility was not applicable. The weighted-average fair value of options
+granted during the years 1997, 1996 and 1995 was $12.69, $0.08 and $0.06,
+respectively, for options granted at fair market value. The weighted-average
+fair value of options granted at less than fair market value during 1997 and
+1996 was $3.31 and $0.53, respectively.
+ 
+  Deferred Compensation
+ 
+     The Company recorded aggregate deferred compensation of $2.7 million and
+$612,000 in 1997 and 1996, respectively. The amounts recorded represent the
+difference between the grant price and the deemed fair value of the Company's
+common stock for shares subject to options granted in 1997 and 1996. The
+amortization of deferred compensation will be charged to operations over the
+vesting period of the options, which is typically five years. Total amortization
+recognized in 1997 was $1.4 million. No amortization was recognized in 1996.
+ 
+  Common Stock Reserved
+ 
+     At December 31, 1997, common stock reserved for future issuance was as
+follows:
+ 
+
+                                                           
+Stock options...............................................  9,169,977
+Common stock warrants.......................................    750,000
+                                                              ---------
+          Total.............................................  9,919,977
+                                                              =========
+
+ 
+NOTE 6 -- INCOME TAXES
+ 
+     The Company did not provide an income tax benefit for any of the periods
+presented because it has experienced operating losses since inception. At
+December 31, 1997, the Company had net operating loss carryforwards of
+approximately $29.9 million. Utilization of net operating loss carryforwards may
+be subject to certain limitations under Section 382 of the Internal Revenue
+Code. The carryforwards begin to expire in 2011.
+ 
+                                       34
+<PAGE>   37
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+     Deferred income taxes reflect the net tax effects of temporary differences
+between the carrying amounts of assets and liabilities for financial reporting
+purposes and the amounts used for income tax purposes. Significant components of
+the Company's deferred tax assets are as follows:
+ 
+
+
+                                                             DECEMBER 31,
+                                                          -------------------
+                                                            1997       1996
+                                                          --------    -------
+                                                            (IN THOUSANDS)
+                                                                
+Deferred tax assets:
+  Net operating loss carryforwards......................  $  8,201    $ 1,855
+  Reserves..............................................     1,395         --
+  Compensation expense..................................       460         --
+  Other.................................................       306         --
+                                                          --------    -------
+          Total deferred tax assets.....................    10,362      1,855
+Valuation allowance for deferred tax assets.............   (10,362)    (1,855)
+                                                          --------    -------
+Net deferred tax assets.................................  $     --    $    --
+                                                          ========    =======
+
+ 
+NOTE 7 -- EMPLOYEE BENEFIT PLAN
+ 
+     The Company has a 401(k) savings plan covering substantially all of its
+employees. Eligible employees may contribute through payroll deductions. The
+Company matches employees' contributions at the discretion of the Company's
+Board of Directors. To date, the Company has not matched employee contributions
+to the 401(k) savings plan.
+ 
+NOTE 8 -- QUARTERLY RESULTS (UNAUDITED)
+ 
+     The following tables contain selected unaudited Statement of Operations and
+stock price data for each quarter of 1997 and 1996. The Company believes that
+the following information reflects all normal recurring adjustments necessary
+for a fair presentation of the information for the periods presented. The
+operating results for any quarter are not necessarily indicative of results for
+any future period.
+ 
+
+
+                                                                1997
+                                              ----------------------------------------
+                                                4TH        3RD        2ND        1ST
+                                              QUARTER    QUARTER    QUARTER    QUARTER
+                                              -------    -------    -------    -------
+                                               (IN THOUSANDS, EXCEPT PER SHARE DATA)
+                                                                   
+Net sales...................................  $66,011    $37,887    $27,855    $16,005
+Gross profit................................   12,892      7,178      5,222      3,521
+Net loss....................................   (9,337)    (8,510)    (6,705)    (3,038)
+Pro forma basic and diluted loss per
+  share.....................................    (0.41)     (0.37)     (0.31)     (0.16)
+Shares used in computation of pro forma
+  basic and diluted loss per share..........   23,021     22,863     21,317     19,402
+Stock sales prices per share:
+  High......................................  $ 65.50    $ 57.75    $ 30.00        N/A
+  Low.......................................  $ 42.25    $ 18.13    $ 15.75        N/A
+
+ 
+                                       35
+<PAGE>   38
+                                AMAZON.COM, INC.
+ 
+                  NOTES TO FINANCIAL STATEMENTS -- (CONTINUED)
+ 
+
+
+                                                                        1996
+                                                      ----------------------------------------
+                                                        4TH        3RD        2ND        1ST
+                                                      QUARTER    QUARTER    QUARTER    QUARTER
+                                                      -------    -------    -------    -------
+                                                       (IN THOUSANDS, EXCEPT PER SHARE DATA)
+                                                                           
+Net sales...........................................  $ 8,468    $ 4,173    $ 2,230    $   875
+Gross profit........................................    1,891        911        477        180
+Net loss............................................   (2,299)    (2,380)      (767)      (331)
+Pro forma basic and diluted loss per share..........    (0.12)     (0.12)     (0.04)     (0.02)
+Shares used in computation of pro forma basic and
+  diluted loss per share............................   19,085     19,041     18,339     17,712
+Stock sales prices per share:
+  High..............................................      N/A        N/A        N/A        N/A
+  Low...............................................      N/A        N/A        N/A        N/A
+
+ 
+     Because of new requirements issued in 1998 by the SEC for companies that
+recently completed an initial public offering and interpretation by FASB of the
+initial application of SFAS No. 128, the number of shares used in the
+calculation of basic net loss per share has changed to exclude common equivalent
+shares, even when antidilutive, and exercised but unvested shares subject to
+repurchase by the Company. Previously reported periods affected by these changes
+in requirements include net loss per share calculations for the years ended
+December 31, 1997, 1996 and 1995.
+ 
+     The Company's total net loss for these periods has not changed. However,
+share count for the years ended December 31, 1997 and 1996 has been revised from
+23,602,000 and 22,655,000 to 21,651,000 and 18,544,000, respectively. As a
+result, net loss per share for the years ended December 31, 1997 and 1996 has
+been revised from $1.17 and $0.25 to $1.27 and $0.31, respectively.
+ 
+ITEM 9. CHANGES IN AND DISAGREEMENTS WITH ACCOUNTANTS ON ACCOUNTING AND
+FINANCIAL DISCLOSURE
+ 
+     None.
+ 
+                                    PART III
+ 
+ITEM 10. DIRECTORS AND EXECUTIVE OFFICERS OF THE REGISTRANT
+ 
+     Information regarding the Registrant's executive officers called for by
+Part III, Item 10, is set forth in Item 1 of Part I herein under the caption
+"Executive Officers of the Registrant." Information called for by Part III, Item
+10, regarding the Registrant's directors is included in the Company's Proxy
+Statement relating to the Company's annual meeting of stockholders to be held on
+May 28, 1998, and is incorporated herein by reference. The information appears
+in the Proxy Statement under the caption "Election of Directors." Such Proxy
+Statement will be filed within 120 days of December 31, 1997, the Company's year
+end.
+ 
+ITEM 11. EXECUTIVE COMPENSATION
+ 
+     Information called for by Part III, Item 11, is included in the Company's
+Proxy Statement relating to the Company's annual meeting of stockholders to be
+held on May 28, 1998, and is incorporated herein by reference. The information
+appears in the Proxy Statement under the caption "Executive Compensation." Such
+Proxy Statement will be filed within 120 days of December 31, 1997, the
+Company's year end.
+ 
+ITEM 12. SECURITY OWNERSHIP OF CERTAIN BENEFICIAL OWNERS AND MANAGEMENT
+ 
+     Information called for by Part III, Item 12, is included in the Company's
+Proxy Statement relating to the Company's annual meeting of stockholders to be
+held on May 28, 1998, and is incorporated herein by
+ 
+                                       36
+<PAGE>   39
+ 
+reference. The information appears in the Proxy Statement under the caption
+"Beneficial Ownership of Shares." Such Proxy Statement will be filed within 120
+days of December 31, 1997, the Company's year end.
+ 
+ITEM 13. CERTAIN RELATIONSHIPS AND RELATED TRANSACTIONS
+ 
+     Information regarding certain of the Company's relationships and related
+transactions is set forth under "Certain Transactions" in the Company's Proxy
+Statement relating to the Company's annual meeting of stockholders to be held on
+May 28, 1998, and is incorporated herein by reference. Such Proxy Statement will
+be filed within 120 days of December 31, 1997, the Company's year end.
+ 
+                                    PART IV
+ 
+ITEM 14. EXHIBITS, FINANCIAL STATEMENT SCHEDULES AND REPORTS ON FORM 8-K
+ 
+(A) LIST OF DOCUMENTS FILED AS A PART OF THIS REPORT:
+ 
+     (1) Index to Financial Statements:
+ 
+         Report of Ernst & Young LLP, Independent Auditors
+ 
+         Balance Sheets as of December 31, 1997 and 1996
+ 
+         Statements of Operations for each of the three years ended December 31,
+         1997, 1996 and 1995
+ 
+         Statements of Stockholders' Equity for each of the three years ended
+         December 31, 1997, 1996 and 1995
+ 
+         Statements of Cash Flows for each of the three years ended December 31,
+         1997, 1996 and 1995
+ 
+         Notes to Financial Statements
+ 
+     (2) Index to Financial Statement Schedules:
+ 
+         II  Valuation and Qualifying Accounts
+ 
+     All other schedules not listed above have been omitted because the required
+information is included in the financial statements or the notes thereto, or is
+not applicable or required.
+ 
+     (3) Index to Exhibits:
+ 
+
+
+    EXHIBIT
+    NUMBER                                DESCRIPTION
+    -------                               -----------
+            
+     3.1*     --  Restated Certificate of Incorporation of the Company.
+     3.2*     --  Bylaws of the Company.
+    10.1*+    --  Amended and Restated 1994 Stock Option Plan (version as of
+                  December 20, 1996 for Amended and Restated Grants and
+                  version as of December 20, 1996 for New Grants).
+    10.2*+    --  1997 Stock Option Plan.
+    10.3*+    --  Form of Indemnification Agreement between the Company and
+                  each of its Directors and Executive Officers.
+    10.4*+    --  Amended and Restated Incentive Stock Option Letter
+                  Agreement, effective October 24, 1994, from the Company to
+                  Sheldon J. Kaphan, as amended January 14, 1997.
+    10.5*+    --  Non-Qualified Stock Option Letter Agreement, effective
+                  December 6, 1995, from the Company to Tom A. Alberg.
+    10.6*+    --  Non-Qualified Stock Option Letter Agreement, effective
+                  December 6, 1995, from the Company to Tom A. Alberg.
+    10.7*+    --  Non-Qualified Stock Option Letter Agreement, effective
+                  December 20, 1996, from the Company to Joy D. Covey.
+
+ 
+                                       37
+<PAGE>   40
+ 
+
+
+    EXHIBIT
+    NUMBER                                DESCRIPTION
+    -------                               -----------
+            
+    10.8*+    --  Incentive Stock Option Letter Agreement, effective December
+                  20, 1996, from the Company to Joy D. Covey.
+    10.9*     --  Investor Rights Agreement, dated as of June 21, 1996, by and
+                  among the Company, Kleiner Perkins Caufield & Byers VIII,
+                  KPCB Information Sciences Zaibatsu Fund II and Jeffrey P.
+                  Bezos.
+    10.10*    --  Lease Agreement, dated July 1, 1996, as amended on December
+                  21, 1996, January 9, 1997 and February 27, 1997, by and
+                  between the Company and Trident Investments, Inc.
+    10.11*    --  Lease Agreement, dated September 30, 1996, by and between
+                  the Company and Pacific Northwest Group A.
+    10.12**   --  Amendment No. 1 to Lease Agreement, dated July 16, 1997, by
+                  and between the Company and Pacific Northwest Group A.
+    10.13**   --  Amendment No. 2 to Lease Agreement, dated September 11,
+                  1997, by and between the Company and Pacific Northwest Group
+                  A.
+    10.14*    --  Sublease Agreement, dated February 19, 1997, by and between
+                  C.C. Filson Company and the Company.
+    10.15*    --  Sublease Agreement, dated January 19, 1996, by and between
+                  the Company and Coast Wide Supply Co.
+    10.16*    --  Master Lease Agreement No. 6672336, dated February 12, 1997,
+                  by and between the Company and Digital Financial Services, a
+                  division of General Electric Capital Corporation.
+    10.17**   --  Lease Agreement, dated August 22, 1997, by and between the
+                  Company and McConnell Development, Inc.
+    10.18++   --  Credit Agreement, dated December 23, 1997, by and between
+                  the Company, Deutsche Bank AG, New York Branch/Cayman
+                  Islands Branch, Banque Paribas, BankBoston, N.A., Van Kampen
+                  American Capital and Silicon Valley Bank, with Deutsche Bank
+                  AG, New York Branch, as Administrative Agent.
+    10.19     --  Stock Purchase Warrant, Certificate No. 1, issued December
+                  23, 1997 to Deutsche Bank AG, New York Branch.
+    10.20*+   --  Subrogation Agreement dated as of June 19, 1996, by and
+                  between the Company and Jeffrey P. Bezos.
+    10.21     --  Lease Agreement, dated March 23, 1998, by and between
+                  Pacific NW Title Building, Inc. and the Company.
+    23.1      --  Consent of Ernst & Young LLP, Independent Auditors.
+    27.1      --  Financial Data Schedule.
+
+ 
+- ---------------
+ + Executive Compensation Plan or Agreement
+ 
+++ Confidential Treatment Requested
+ 
+ * Incorporated by reference to the Company's Registration Statement on Form S-1
+   (Registration No. 333-23795).
+ 
+** Incorporated by reference to the Company's Quarterly Report on Form 10-Q for
+   the Quarterly Period Ended September 30, 1997.
+ 
+(b) FORM 8-K:
+ 
+     On November 10, 1997, the Company filed a Form 8-K in connection with the
+Loan.
+ 
+                                       38
+<PAGE>   41
+ 
+                                   SIGNATURES
+ 
+     Pursuant to the requirements of Section 13 or 15(d) of the Securities
+Exchange Act of 1934, the Registrant has duly caused this Report to be signed on
+its behalf by the undersigned, thereunto duly authorized.
+ 
+
+                                                       
+                                                          AMAZON.COM, INC.
+ 
+                  Date: March 30, 1998                              By: /s/ JEFFREY P. BEZOS
+                                                          --------------------------------------------
+ 
+                                                                  Jeffrey P. Bezos, President
+ 
+                                                                  and Chief Executive Officer
+
+ 
+     Pursuant to the requirements of the Securities Exchange Act of 1934, this
+Report has been signed below by the following persons on behalf of the
+Registrant and in the capacities indicated on the 30th day of March 1998.
+ 
+
+                                                       
+                  /s/ JEFFREY P. BEZOS                    President, Chief Executive Officer and
+- --------------------------------------------------------    Chairman of the Board (Principal Executive
+                    Jeffrey P. Bezos                        Officer)
+ 
+                    /s/ JOY D. COVEY                      Chief Financial Officer, Vice President of
+- --------------------------------------------------------    Finance and Administration (Principal
+                      Joy D. Covey                          Financial and Accounting Officer)
+ 
+                   /s/ TOM A. ALBERG                      Director
+- --------------------------------------------------------
+                     Tom A. Alberg
+ 
+                   /s/ SCOTT D. COOK                      Director
+- --------------------------------------------------------
+                     Scott D. Cook
+ 
+                   /s/ L. JOHN DOERR                      Director
+- --------------------------------------------------------
+                     L. John Doerr
+ 
+               /s/ PATRICIA Q. STONESIFER                 Director
+- --------------------------------------------------------
+                 Patricia Q. Stonesifer
+
+ 
+                                       39
+<PAGE>   42
+ 
+                                AMAZON.COM, INC.
+ 
+                SCHEDULE II -- VALUATION AND QUALIFYING ACCOUNTS
+ 
+ALLOWANCE FOR DOUBTFUL ACCOUNTS
+ 
+
+
+                                                      CHARGED/
+                                                     (CREDITED)    COLLECTION OF
+                                       BALANCE AT     TO COSTS       ACCOUNTS       ACCOUNTS    BALANCE AT
+                                       BEGINNING        AND         PREVIOUSLY      WRITTEN       END OF
+             YEAR ENDED                OF PERIOD      EXPENSES      WRITTEN OFF       OFF         PERIOD
+             ----------                ----------    ----------    -------------    --------    ----------
+                                                                 (IN THOUSANDS)
+                                                                                 
+December 31, 1997....................     $20           $203           $ --          $(154)        $69
+                                          ===           ====           ====          =====         ===
+December 31, 1996....................      --             30             --            (10)         20
+                                          ===           ====           ====          =====         ===
+December 31, 1995....................      --             --             --             --          --
+                                          ===           ====           ====          =====         ===
+
+ 
+INVENTORY VALUATION ALLOWANCE
+ 
+
+
+                                                               CHARGED/
+                                                              (CREDITED)
+                                                BALANCE AT     TO COSTS       INVENTORY       BALANCE AT
+                                                BEGINNING        AND           DISPOSED         END OF
+                  YEAR ENDED                    OF PERIOD      EXPENSES     OR WRITTEN OFF      PERIOD
+                  ----------                    ----------    ----------    --------------    ----------
+                                                                     (IN THOUSANDS)
+                                                                                  
+December 31, 1997.............................     $ --          $800           $  --            $800
+                                                   ====          ====           =====            ====
+December 31, 1996.............................       --            --              --              --
+                                                   ====          ====           =====            ====
+December 31, 1995.............................       --            --              --              --
+                                                   ====          ====           =====            ====
+
+ 
+                                       40
+<PAGE>   43
+ 
+                               INDEX TO EXHIBITS
+ 
+
+
+NUMBER                                 DESCRIPTION
+- -------                                -----------
+         
+ 3.1*      --  Restated Certificate of Incorporation of the Company.
+ 3.2*      --  Bylaws of the Company.
+10.1*+     --  Amended and Restated 1994 Stock Option Plan (version as of
+               December 20, 1996 for Amended and Restated Grants and
+               version as of December 20, 1996 for New Grants).
+10.2*+     --  1997 Stock Option Plan.
+10.3*+     --  Form of Indemnification Agreement between the Company and
+               each of its Directors and Executive Officers.
+10.4*+     --  Amended and Restated Incentive Stock Option Letter
+               Agreement, effective October 24, 1994, from the Company to
+               Sheldon J. Kaphan, as amended January 14, 1997.
+10.5*+     --  Non-Qualified Stock Option Letter Agreement, effective
+               December 6, 1995, from the Company to Tom A. Alberg.
+10.6*+     --  Non-Qualified Stock Option Letter Agreement, effective
+               December 6, 1995, from the Company to Tom A. Alberg.
+10.7*+     --  Non-Qualified Stock Option Letter Agreement, effective
+               December 20, 1996, from the Company to Joy D. Covey.
+10.8*+     --  Incentive Stock Option Letter Agreement, effective December
+               20, 1996, from the Company to Joy D. Covey.
+10.9*      --  Investor Rights Agreement, dated as of June 21, 1996, by and
+               among the Company, Kleiner Perkins Caufield & Byers VIII,
+               KPCB Information Sciences Zaibatsu Fund II and Jeffrey P.
+               Bezos.
+10.10*     --  Lease Agreement, dated July 1, 1996, as amended on December
+               21, 1996, January 9, 1997 and February 27, 1997, by and
+               between the Company and Trident Investments, Inc.
+10.11*     --  Lease Agreement, dated September 30, 1996, by and between
+               the Company and Pacific Northwest Group A.
+10.12**    --  Amendment No. 1 to Lease Agreement, dated July 16, 1997, by
+               and between the Company and Pacific Northwest Group A.
+10.13**    --  Amendment No. 2 to Lease Agreement, dated September 11,
+               1997, by and between the Company and Pacific Northwest Group
+               A.
+10.14*     --  Sublease Agreement, dated February 19, 1997, by and between
+               C.C. Filson Company and the Company.
+10.15*     --  Sublease Agreement, dated January 19, 1996, by and between
+               the Company and Coast Wide Supply Co.
+10.16*     --  Master Lease Agreement No. 6672336, dated February 12, 1997,
+               by and between the Company and Digital Financial Services, a
+               division of General Electric Capital Corporation.
+10.17**    --  Lease Agreement, dated August 22, 1997, by and between the
+               Company and McConnell Development, Inc.
+10.18++    --  Credit Agreement, dated December 23, 1997, by and between
+               the Company, Deutsche Bank AG, New York Branch/Cayman
+               Islands Branch, Banque Paribas, BankBoston, N.A., Van Kampen
+               American Capital and Silicon Valley Bank, with Deutsche Bank
+               AG, New York Branch, as Administrative Agent.
+10.19      --  Stock Purchase Warrant, Certificate No. 1, issued December
+               23, 1997 to Deutsche Bank AG, New York Branch.
+10.20*+    --  Subrogation Agreement dated as of June 19, 1996, by and
+               between the Company and Jeffrey P. Bezos.
+
+ 
+                                       41
+<PAGE>   44
+ 
+
+
+NUMBER                                 DESCRIPTION
+- -------                                -----------
+         
+10.21      --  Lease Agreement, dated March 23, 1998, by and between
+               Pacific NW Title Building, Inc. and the Company.
+23.1       --  Consent of Ernst & Young LLP, Independent Auditors.
+27.1       --  Financial Data Schedule.
+
+ 
+- ---------------
++ Executive Compensation Plan or Agreement
+ 
+++ Confidential Treatment Requested
+ 
+ * Incorporated by reference to the Company's Registration Statement on Form S-1
+   (Registration No. 333-23795).
+ 
+** Incorporated by reference to the Company's Quarterly Report on Form 10-Q for
+   the Quarterly Period Ended September 30, 1997.
+ 
+                                       42

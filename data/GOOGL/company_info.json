@@ -1,0 +1,60 @@
+{
+  "cik": "0001652044",
+  "entityType": "operating",
+  "sic": "7370",
+  "sicDescription": "Services-Computer Programming, Data Processing, Etc.",
+  "ownerOrg": "06 Technology",
+  "insiderTransactionForOwnerExists": 1,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "Alphabet Inc.",
+  "tickers": [
+    "GOOGL",
+    "GOOG",
+    "GOOGM",
+    "GOOGN"
+  ],
+  "exchanges": [
+    "Nasdaq",
+    "Nasdaq",
+    "Nasdaq",
+    "Nasdaq"
+  ],
+  "ein": "611767919",
+  "lei": null,
+  "description": "",
+  "website": "",
+  "investorWebsite": "",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "1231",
+  "stateOfIncorporation": "DE",
+  "stateOfIncorporationDescription": "DE",
+  "addresses": {
+    "mailing": {
+      "street1": "1600 AMPHITHEATRE PARKWAY",
+      "street2": null,
+      "city": "MOUNTAIN VIEW",
+      "stateOrCountry": "CA",
+      "zipCode": "94043",
+      "stateOrCountryDescription": "CA",
+      "isForeignLocation": 0,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    },
+    "business": {
+      "street1": "1600 AMPHITHEATRE PARKWAY",
+      "street2": null,
+      "city": "MOUNTAIN VIEW",
+      "stateOrCountry": "CA",
+      "zipCode": "94043",
+      "stateOrCountryDescription": "CA",
+      "isForeignLocation": null,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    }
+  },
+  "phone": "650-253-0000",
+  "flags": "",
+  "formerNames": []
+}

@@ -1,0 +1,65 @@
+{
+  "cik": "0000104169",
+  "entityType": "operating",
+  "sic": "5331",
+  "sicDescription": "Retail-Variety Stores",
+  "ownerOrg": "07 Trade & Services",
+  "insiderTransactionForOwnerExists": 1,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "Walmart Inc.",
+  "tickers": [
+    "WMT"
+  ],
+  "exchanges": [
+    "Nasdaq"
+  ],
+  "ein": "710415188",
+  "lei": null,
+  "description": "",
+  "website": "",
+  "investorWebsite": "",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "0131",
+  "stateOfIncorporation": "DE",
+  "stateOfIncorporationDescription": "DE",
+  "addresses": {
+    "mailing": {
+      "street1": "1 CUSTOMER DRIVE",
+      "street2": null,
+      "city": "BENTONVILLE",
+      "stateOrCountry": "AR",
+      "zipCode": "72716",
+      "stateOrCountryDescription": "AR",
+      "isForeignLocation": 0,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    },
+    "business": {
+      "street1": "1 CUSTOMER DRIVE",
+      "street2": null,
+      "city": "BENTONVILLE",
+      "stateOrCountry": "AR",
+      "zipCode": "72716",
+      "stateOrCountryDescription": "AR",
+      "isForeignLocation": null,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    }
+  },
+  "phone": "5012734000",
+  "flags": "",
+  "formerNames": [
+    {
+      "name": "Walmart Inc.",
+      "from": "2018-01-31T05:00:00.000Z",
+      "to": "2026-10-14T04:00:00.000Z"
+    },
+    {
+      "name": "WAL MART STORES INC",
+      "from": "1994-02-14T05:00:00.000Z",
+      "to": "2018-01-30T05:00:00.000Z"
+    }
+  ]
+}
