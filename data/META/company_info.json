@@ -1,0 +1,60 @@
+{
+  "cik": "0001326801",
+  "entityType": "operating",
+  "sic": "7370",
+  "sicDescription": "Services-Computer Programming, Data Processing, Etc.",
+  "ownerOrg": "06 Technology",
+  "insiderTransactionForOwnerExists": 0,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "Meta Platforms, Inc.",
+  "tickers": [
+    "META"
+  ],
+  "exchanges": [
+    "Nasdaq"
+  ],
+  "ein": "201665019",
+  "lei": null,
+  "description": "",
+  "website": "",
+  "investorWebsite": "",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "1231",
+  "stateOfIncorporation": "DE",
+  "stateOfIncorporationDescription": "DE",
+  "addresses": {
+    "mailing": {
+      "street1": "1 META WAY",
+      "street2": null,
+      "city": "MENLO PARK",
+      "stateOrCountry": "CA",
+      "zipCode": "94025",
+      "stateOrCountryDescription": "CA",
+      "isForeignLocation": 0,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    },
+    "business": {
+      "street1": "1 META WAY",
+      "street2": null,
+      "city": "MENLO PARK",
+      "stateOrCountry": "CA",
+      "zipCode": "94025",
+      "stateOrCountryDescription": "CA",
+      "isForeignLocation": null,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    }
+  },
+  "phone": "650-543-4800",
+  "flags": "",
+  "formerNames": [
+    {
+      "name": "Facebook Inc",
+      "from": "2005-05-06T04:00:00.000Z",
+      "to": "2021-10-27T04:00:00.000Z"
+    }
+  ]
+}

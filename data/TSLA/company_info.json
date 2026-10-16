@@ -1,0 +1,60 @@
+{
+  "cik": "0001318605",
+  "entityType": "operating",
+  "sic": "3711",
+  "sicDescription": "Motor Vehicles & Passenger Car Bodies",
+  "ownerOrg": "04 Manufacturing",
+  "insiderTransactionForOwnerExists": 0,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "Tesla, Inc.",
+  "tickers": [
+    "TSLA"
+  ],
+  "exchanges": [
+    "Nasdaq"
+  ],
+  "ein": "912197729",
+  "lei": null,
+  "description": "",
+  "website": "",
+  "investorWebsite": "",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "1231",
+  "stateOfIncorporation": "TX",
+  "stateOfIncorporationDescription": "TX",
+  "addresses": {
+    "mailing": {
+      "street1": "1 TESLA ROAD",
+      "street2": null,
+      "city": "AUSTIN",
+      "stateOrCountry": "TX",
+      "zipCode": "78725",
+      "stateOrCountryDescription": "TX",
+      "isForeignLocation": 0,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    },
+    "business": {
+      "street1": "1 TESLA ROAD",
+      "street2": null,
+      "city": "AUSTIN",
+      "stateOrCountry": "TX",
+      "zipCode": "78725",
+      "stateOrCountryDescription": "TX",
+      "isForeignLocation": null,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    }
+  },
+  "phone": "512-516-8177",
+  "flags": "",
+  "formerNames": [
+    {
+      "name": "TESLA MOTORS INC",
+      "from": "2005-02-17T00:00:00.000Z",
+      "to": "2017-01-27T00:00:00.000Z"
+    }
+  ]
+}

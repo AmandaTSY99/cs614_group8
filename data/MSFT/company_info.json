@@ -1,0 +1,54 @@
+{
+  "cik": "0000789019",
+  "entityType": "operating",
+  "sic": "7372",
+  "sicDescription": "Services-Prepackaged Software",
+  "ownerOrg": "06 Technology",
+  "insiderTransactionForOwnerExists": 1,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "MICROSOFT CORP",
+  "tickers": [
+    "MSFT"
+  ],
+  "exchanges": [
+    "Nasdaq"
+  ],
+  "ein": "911144442",
+  "lei": null,
+  "description": "",
+  "website": "",
+  "investorWebsite": "",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "0630",
+  "stateOfIncorporation": "WA",
+  "stateOfIncorporationDescription": "WA",
+  "addresses": {
+    "mailing": {
+      "street1": "ONE MICROSOFT WAY",
+      "street2": null,
+      "city": "REDMOND",
+      "stateOrCountry": "WA",
+      "zipCode": "98052-6399",
+      "stateOrCountryDescription": "WA",
+      "isForeignLocation": 0,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    },
+    "business": {
+      "street1": "ONE MICROSOFT WAY",
+      "street2": null,
+      "city": "REDMOND",
+      "stateOrCountry": "WA",
+      "zipCode": "98052-6399",
+      "stateOrCountryDescription": "WA",
+      "isForeignLocation": null,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    }
+  },
+  "phone": "425-882-8080",
+  "flags": "",
+  "formerNames": []
+}

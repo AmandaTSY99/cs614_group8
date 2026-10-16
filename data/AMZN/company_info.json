@@ -1,0 +1,54 @@
+{
+  "cik": "0001018724",
+  "entityType": "operating",
+  "sic": "5961",
+  "sicDescription": "Retail-Catalog & Mail-Order Houses",
+  "ownerOrg": "07 Trade & Services",
+  "insiderTransactionForOwnerExists": 1,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "AMAZON COM INC",
+  "tickers": [
+    "AMZN"
+  ],
+  "exchanges": [
+    "Nasdaq"
+  ],
+  "ein": "911646860",
+  "lei": null,
+  "description": "",
+  "website": "",
+  "investorWebsite": "",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "1231",
+  "stateOfIncorporation": "DE",
+  "stateOfIncorporationDescription": "DE",
+  "addresses": {
+    "mailing": {
+      "street1": "410 TERRY AVENUE NORTH",
+      "street2": null,
+      "city": "SEATTLE",
+      "stateOrCountry": "WA",
+      "zipCode": "98109",
+      "stateOrCountryDescription": "WA",
+      "isForeignLocation": 0,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    },
+    "business": {
+      "street1": "410 TERRY AVENUE NORTH",
+      "street2": null,
+      "city": "SEATTLE",
+      "stateOrCountry": "WA",
+      "zipCode": "98109",
+      "stateOrCountryDescription": "WA",
+      "isForeignLocation": null,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    }
+  },
+  "phone": "2062661000",
+  "flags": "",
+  "formerNames": []
+}

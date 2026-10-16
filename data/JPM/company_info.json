@@ -1,0 +1,91 @@
+{
+  "cik": "0000019617",
+  "entityType": "operating",
+  "sic": "6021",
+  "sicDescription": "National Commercial Banks",
+  "ownerOrg": "02 Finance",
+  "insiderTransactionForOwnerExists": 1,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "JPMORGAN CHASE & CO",
+  "tickers": [
+    "JPM",
+    "JPM-PC",
+    "AMJB",
+    "JPM-PD",
+    "JPM-PJ",
+    "JPM-PK",
+    "JPM-PL",
+    "JPM-PM",
+    "VYLD"
+  ],
+  "exchanges": [
+    "NYSE",
+    "NYSE",
+    "NYSE",
+    "NYSE",
+    "NYSE",
+    "NYSE",
+    "NYSE",
+    "NYSE",
+    "NYSE"
+  ],
+  "ein": "132624428",
+  "lei": null,
+  "description": "",
+  "website": "",
+  "investorWebsite": "",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "1231",
+  "stateOfIncorporation": "DE",
+  "stateOfIncorporationDescription": "DE",
+  "addresses": {
+    "mailing": {
+      "street1": "270 PARK AVENUE",
+      "street2": null,
+      "city": "NEW YORK",
+      "stateOrCountry": "NY",
+      "zipCode": "10017",
+      "stateOrCountryDescription": "NY",
+      "isForeignLocation": 0,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    },
+    "business": {
+      "street1": "270 PARK AVENUE",
+      "street2": null,
+      "city": "NEW YORK",
+      "stateOrCountry": "NY",
+      "zipCode": "10017",
+      "stateOrCountryDescription": "NY",
+      "isForeignLocation": null,
+      "foreignStateTerritory": null,
+      "country": null,
+      "countryCode": null
+    }
+  },
+  "phone": "2122706000",
+  "flags": "",
+  "formerNames": [
+    {
+      "name": "JPMORGAN CHASE & CO",
+      "from": "2009-02-02T00:00:00.000Z",
+      "to": "2026-10-15T00:00:00.000Z"
+    },
+    {
+      "name": "J P MORGAN CHASE & CO",
+      "from": "2001-02-08T00:00:00.000Z",
+      "to": "2011-10-06T00:00:00.000Z"
+    },
+    {
+      "name": "CHASE MANHATTAN CORP /DE/",
+      "from": "1996-10-17T00:00:00.000Z",
+      "to": "2000-11-21T00:00:00.000Z"
+    },
+    {
+      "name": "CHEMICAL BANKING CORP",
+      "from": "1994-02-02T00:00:00.000Z",
+      "to": "1996-03-28T00:00:00.000Z"
+    }
+  ]
+}
