@@ -31,7 +31,7 @@ htmlcov/
 .ruff_cache/
 
 # --- Data (regenerate with get_nvda_10k.ipynb) ---
-data/
+data_test/
 
 # --- RAG artifacts (local vector stores, model caches) ---
 chroma_db/
