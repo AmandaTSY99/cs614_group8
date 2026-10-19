@@ -1,0 +1,21 @@
+# --- LLM ---
+openai==3.31.0 # OpenAI API
+groq==1.7.0 # Groq API (fast hosted open models, e.g. Llama)
+
+# --- Embeddings ---
+sentence-transformers==6.1.0 # local embedding models (e.g. all-MiniLM-L6-v2), no API key needed
+
+# --- Vector store ---
+chromadb==1.5.9 # embedded vector DB, persists to a local folder
+
+# --- Data loading ---
+pypdf==6.20.1 # read PDF documents
+pandas==3.0.6 # tabular data handling
+
+# --- Config ---
+python-dotenv==1.2.4 # load API keys from .env
+
+# --- Notebook environment ---
+jupyterlab==4.6.4
+ipykernel==7.4.0
+ipywidgets==8.1.9 # progress bars (tqdm) render properly in notebooks
