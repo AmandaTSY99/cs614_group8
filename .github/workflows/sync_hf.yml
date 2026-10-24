@@ -15,10 +15,27 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: Push to Hugging Face Space
+      - name: Push Clean Application to Hugging Face Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://siranishkd9x:$HF_TOKEN@huggingface.co/spaces/siranishkd9x/rag_experimentation HEAD:main
+          # Configure Git Author
+          git config --global user.email "bot@huggingface.co"
+          git config --global user.name "HuggingFace Sync Bot"
+
+          # Create a lightweight deploy package (excludes 948MB of raw .htm files)
+          mkdir -p /tmp/hf_deploy
+          cp -r app.py requirements.txt README.md src /tmp/hf_deploy/
+          mkdir -p /tmp/hf_deploy/data
+          cp data/financials.csv data/filings_index.csv /tmp/hf_deploy/data/
+
+          # Initialize a clean, lightweight Git repository (only ~3 MB)
+          cd /tmp/hf_deploy
+          git init -b main
+          git add .
+          git commit -m "Deploy System C Streamlit to Hugging Face Spaces"
+
+          # Push to Hugging Face Space
+          git push --force https://siranishkd9x:$HF_TOKEN@huggingface.co/spaces/siranishkd9x/rag_experimentation main
