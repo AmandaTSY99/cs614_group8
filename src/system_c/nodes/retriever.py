@@ -61,10 +61,16 @@ def _fetch_chunks_from_supabase(
                 records = []
                 for r in rows:
                     meta = r[3] if isinstance(r[3], dict) else json.loads(r[3] or "{}")
+                    doc_hdr = (
+                        f"{meta.get('filer', '')} ({meta.get('ticker', '')}) 10-K, "
+                        f"fiscal year {meta.get('fiscal_year', '')}, "
+                        f"period ended {meta.get('fiscal_year_end', '')}"
+                    )
                     records.append({
                         "id": r[0],
                         "text": r[2],
                         "meta": meta,
+                        "embed_text": f"{doc_hdr}\n{r[2]}",
                     })
                 return records
     except Exception:
@@ -111,16 +117,33 @@ def _get_cached_chunks(
     return records
 
 
+STOPWORDS = {
+    "what", "was", "and", "where", "its", "the", "for", "with", "from",
+    "between", "how", "did", "which", "about", "under", "are", "were",
+    "that", "this", "these", "those", "have", "has", "had", "been",
+}
+
+
 def _bm25_and_lexical_score(query: str, text: str) -> float:
-    """Fast BM25-style TF-IDF/keyword overlap scoring with section/table boost."""
-    q_terms = [t for t in re.findall(r"[a-z0-9]+", query.lower()) if len(t) > 2]
+    """Enhanced BM25-style TF-IDF scoring with bigram phrase matching and term coverage."""
+    q_all = [t for t in re.findall(r"[a-z0-9]+", query.lower()) if len(t) > 2]
+    q_terms = [t for t in q_all if t not in STOPWORDS] or q_all
     if not q_terms:
         return 0.0
     t_lower = text.lower()
-    hits = sum(1 for term in q_terms if term in t_lower)
-    tf_bonus = sum(min(3, t_lower.count(term)) * 0.15 for term in q_terms)
-    table_bonus = 0.25 if "(table)" in t_lower or "|" in text else 0.0
-    return round((hits / len(q_terms)) + tf_bonus + table_bonus, 4)
+    matched = [
+        t for t in q_terms
+        if t in t_lower or (t.endswith("s") and t[:-1] in t_lower) or (t + "s" in t_lower)
+    ]
+    cov = len(matched) / len(q_terms)
+    phrase = 0.0
+    for i in range(len(q_terms) - 1):
+        bg = f"{q_terms[i]} {q_terms[i+1]}"
+        if bg in t_lower or (bg + "s") in t_lower:
+            phrase += 1.5
+    tf = sum(min(2, t_lower.count(t)) * 0.05 for t in matched)
+    table_bonus = 0.20 if "(table)" in t_lower or "|" in text else 0.0
+    return round(cov * 3.0 + phrase + tf + table_bonus, 4)
 
 
 def _rerank_with_cross_encoder(query: str, candidates: List[Dict[str, Any]], top_k: int) -> List[Dict[str, Any]]:
@@ -232,7 +255,7 @@ def retriever_node(
                 query=sub_query,
                 ticker=ticker,
                 fiscal_years=years,
-                top_k=4,
+                top_k=6,
                 hop=hop,
                 tickers=tickers,
             )
@@ -242,7 +265,7 @@ def retriever_node(
                 query=sub_query,
                 ticker=ticker,
                 fiscal_years=years,
-                top_k=4,
+                top_k=6,
                 hop=hop,
             )
 

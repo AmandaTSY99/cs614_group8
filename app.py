@@ -226,9 +226,9 @@ with st.sidebar:
     max_hops = st.slider(
         "Max Retrieval Hops",
         min_value=1,
-        max_value=4,
+        max_value=10,
         value=3,
-        help="Defines the maximum sequential search-and-reasoning iterations (1 to 4) allowed for the multi-hop agent. Simple factual lookups resolve in 1 hop. Complex cross-company comparisons (e.g. comparing cloud revenues and operating footnotes across Apple, Microsoft, and Amazon) require 2 to 3 hops. A hard ceiling prevents runaway loops and token exhaustion.",
+        help="Defines the maximum sequential search-and-reasoning iterations (1 to 10) allowed for the multi-hop agent. Simple factual lookups resolve in 1 hop. Complex cross-company comparisons (e.g. comparing cloud revenues and operating footnotes across Apple, Microsoft, and Amazon) require 2 to 3 hops. A hard ceiling prevents runaway loops and token exhaustion.",
     )
     sufficiency_threshold = st.slider(
         "Critic Sufficiency Threshold",

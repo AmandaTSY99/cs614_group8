@@ -107,7 +107,11 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
 
         # 2. Parse laser-focused missing entities and years
         raw_entities = parsed.get("missing_entities") or []
-        missing_entities = [str(e).strip() for e in raw_entities if str(e).strip()]
+        SENTINELS = {"none", "n/a", "na", "null", "nothing", "[]", "no missing entities", "none."}
+        missing_entities = [
+            str(e).strip() for e in raw_entities
+            if str(e).strip() and str(e).strip().lower() not in SENTINELS
+        ]
 
         raw_years = parsed.get("missing_years") or []
         missing_years = []
@@ -118,7 +122,10 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
                 pass
 
         raw_premises = parsed.get("missing_premises") or []
-        missing_premises = [str(m).strip() for m in raw_premises if str(m).strip()]
+        missing_premises = [
+            str(m).strip() for m in raw_premises
+            if str(m).strip() and str(m).strip().lower() not in SENTINELS
+        ]
 
         # Align missing_premises with missing_entities & missing_years if omitted
         if not missing_premises and (missing_entities or missing_years):
@@ -195,7 +202,13 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
                 reasoning += f" [Multi-company coverage incomplete: missing evidence for {', '.join(missing_tickers)}]."
 
         # 4. Apply quantitative early-stopping threshold (>= threshold triggers early stop)
-        if score >= threshold and not missing_entities and not missing_years:
+        if score >= threshold and not missing_years and not missing_entities:
+            is_sufficient = True
+            missing_premises = []
+            missing_entities = []
+            missing_years = []
+        elif score >= threshold and bool(parsed.get("is_sufficient", False)) and not missing_years:
+            # LLM explicitly certified completeness with score >= threshold
             is_sufficient = True
             missing_premises = []
             missing_entities = []
