@@ -4,10 +4,31 @@ services:
     container_name: cs614-jupyter
     ports:
       - "127.0.0.1:8888:8888"   # only reachable from your own machine
+    environment:
+      - PYTHONPATH=/workspace
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - .:/workspace                         # project folder: notebooks and data are saved on your machine
       - hf-cache:/root/.cache/huggingface    # keep downloaded embedding models between restarts
     restart: unless-stopped
+
+  system-c:
+    build: .
+    container_name: cs614-system-c
+    environment:
+      - PYTHONPATH=/workspace
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - LLM_PROVIDER=ollama
+      - LLM_MODEL=qwen2.5:7b
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/workspace
+      - hf-cache:/root/.cache/huggingface
+    working_dir: /workspace
+    command: ["python", "scripts/demo_milestone1_system_c.py", "--mock"]
 
 volumes:
   hf-cache:

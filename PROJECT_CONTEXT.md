@@ -44,8 +44,29 @@ See detailed breakdown in [`docs/context/COURSE_MATERIALS_INDEX.md`](file:///Use
 ---
 
 ## 4. Key Reference Docs in This Repo
+* System C Architecture (v1.0 Mermaid State Graph): [`ARCHITECTURE.md`](file:///Users/anishdobz/projects/cs614_group8/ARCHITECTURE.md)
+* Milestone 1 Demo Guide & Speaking Script: [`reports/MILESTONE1_DEMO_SCRIPT.md`](file:///Users/anishdobz/projects/cs614_group8/reports/MILESTONE1_DEMO_SCRIPT.md)
+* Aryan Integration & Handoff Guide: [`ARYAN_HANDOFF.md`](file:///Users/anishdobz/projects/cs614_group8/ARYAN_HANDOFF.md)
+* Active Task Checklist: [`ACTIVE_TASK.md`](file:///Users/anishdobz/projects/cs614_group8/ACTIVE_TASK.md)
 * Detailed Sprint & Gantt: [`docs/context/SPRINT_GANTT.md`](file:///Users/anishdobz/projects/cs614_group8/docs/context/SPRINT_GANTT.md)
 * Full Research Hypotheses & Metrics: [`docs/context/RESEARCH_QUESTIONS.md`](file:///Users/anishdobz/projects/cs614_group8/docs/context/RESEARCH_QUESTIONS.md)
-* System C Architecture Specification: [`docs/context/SYSTEM_C_SPEC.md`](file:///Users/anishdobz/projects/cs614_group8/docs/context/SYSTEM_C_SPEC.md)
-* Course Materials Index: [`docs/context/COURSE_MATERIALS_INDEX.md`](file:///Users/anishdobz/projects/cs614_group8/docs/context/COURSE_MATERIALS_INDEX.md)
 * Original Academic Proposal: [`docs/context/CS614_Adaptive_MultiHop_RAG_Proposal.md`](file:///Users/anishdobz/projects/cs614_group8/docs/context/CS614_Adaptive_MultiHop_RAG_Proposal.md)
+* Course Materials Index: [`docs/context/COURSE_MATERIALS_INDEX.md`](file:///Users/anishdobz/projects/cs614_group8/docs/context/COURSE_MATERIALS_INDEX.md)
+
+---
+
+## 5. Milestone 1 Verified Artifacts & Reports
+* **Live Demo Runner:** [`scripts/demo_milestone1_system_c.py`](file:///Users/anishdobz/projects/cs614_group8/scripts/demo_milestone1_system_c.py) (Single-hop early-stopping, MD&A + Footnotes multi-hop, XBRL tabular comparison)
+* **RQ3 Ablation Harness:** [`scripts/run_rq3_ablation.py`](file:///Users/anishdobz/projects/cs614_group8/scripts/run_rq3_ablation.py) (Fixed 1-Hop vs. Fixed 3-Hop vs. Adaptive v1 vs. Agentic v2)
+* **Pareto Frontier Plotter:** [`scripts/plot_rq3_pareto.py`](file:///Users/anishdobz/projects/cs614_group8/scripts/plot_rq3_pareto.py)
+* **Generated Figures:** [`reports/figures/`](file:///Users/anishdobz/projects/cs614_group8/reports/figures) (`rq3_executive_dashboard.png`, `rq3_pareto_frontier.png`, `rq3_latency_breakdown.png`, `rq3_hop_distribution.png`)
+* **Unit Tests:** `pytest tests/test_system_c.py -v` (9/9 passing in 0.86s)
+
+---
+
+## 6. Docker & Containerized Deployment Protocol
+The project repository is containerized via `Dockerfile` and `docker-compose.yaml`:
+* **Jupyter Lab Service:** `docker compose up jupyter` (serves port 8888 with local data volume)
+* **System C Demo Execution:** `docker compose run --rm system-c python scripts/demo_milestone1_system_c.py --mock`
+* **Unit Tests via Docker:** `docker compose run --rm system-c pytest tests/test_system_c.py -v`
+* **Host Ollama Connectivity:** Configured with `host.docker.internal:host-gateway` and `OLLAMA_HOST=http://host.docker.internal:11434` for seamless local LLM inference from inside containers.

@@ -254,7 +254,7 @@ def run_ablation(
                 max_hops=cond["max_hops"],
                 mode=cond["mode"],
                 target_ticker=q.get("ticker"),
-                fiscal_years=q.get("years"),
+                fiscal_years=q.get("fiscal_years") or q.get("years"),
                 force_max_hops=cond["force_max_hops"],
             )
             elapsed_ms = (time.perf_counter() - t0) * 1000.0
@@ -301,7 +301,7 @@ def run_ablation(
                 "query_id": q["id"],
                 "query_category": q["category"],
                 "ticker": q.get("ticker"),
-                "fiscal_years": str(q.get("years")),
+                "fiscal_years": str(q.get("fiscal_years") or q.get("years")),
                 "hops_executed": h_count,
                 "max_hops": cond["max_hops"],
                 "early_stopped": is_early,
