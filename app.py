@@ -18,6 +18,15 @@ if REPO_ROOT not in sys.path:
 
 load_dotenv(override=True)
 
+# Seamlessly inject Streamlit Cloud secrets into os.environ
+try:
+    if hasattr(st, "secrets"):
+        for sec_key, sec_val in st.secrets.items():
+            if isinstance(sec_val, str):
+                os.environ[sec_key] = sec_val
+except Exception:
+    pass
+
 # Page configuration
 st.set_page_config(
     page_title="System C | Financial RAG",

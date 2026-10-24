@@ -113,10 +113,12 @@ def _call_groq_or_openai(
     """Call Groq or OpenAI chat completions API (matches `build_vdb_base_RAG.ipynb` Cell 6)."""
     if provider == "groq":
         from groq import Groq
-        client = Groq()
+        api_key = os.getenv("GROQ_API_KEY")
+        client = Groq(api_key=api_key) if api_key else Groq()
     else:
         from openai import OpenAI
-        client = OpenAI()
+        api_key = os.getenv("OPENAI_API_KEY")
+        client = OpenAI(api_key=api_key) if api_key else OpenAI()
 
     kwargs: Dict[str, Any] = {
         "model": model,
