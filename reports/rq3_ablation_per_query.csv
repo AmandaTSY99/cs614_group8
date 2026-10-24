@@ -1,9 +1,201 @@
 condition_key,condition_label,query_id,query_category,ticker,fiscal_years,hops_executed,max_hops,early_stopped,chunks_retrieved,latency_ms,prompt_tokens,completion_tokens,total_tokens,estimated_cost_usd,cost_per_1k_usd,guardrail_passed,numerical_grounding_error_rate,faithfulness_score
-fixed_1hop,Fixed 1-Hop Baseline,GOLD-01,single_hop_factual,NVDA,[2026],1,1,False,4,17.32,1962,114,2076,0.0002304,0.2304,True,0.0,1.0
-fixed_1hop,Fixed 1-Hop Baseline,GOLD-02,single_hop_factual,AAPL,[2024],1,1,False,4,12.07,2005,112,2117,0.0002341,0.2341,True,0.0,1.0
-fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-01,single_hop_factual,NVDA,[2026],3,3,False,9,27.66,6234,248,6482,0.0006978,0.6978,True,0.0,1.0
-fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-02,single_hop_factual,AAPL,[2024],3,3,False,9,17.97,6413,246,6659,0.0007151,0.7151,True,0.0,1.0
-adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-01,single_hop_factual,NVDA,[2026],1,3,True,4,8.0,1962,114,2076,0.0002304,0.2304,True,0.0,1.0
-adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-02,single_hop_factual,AAPL,[2024],1,3,True,4,7.67,2005,112,2117,0.0002341,0.2341,True,0.0,1.0
-agentic_v2,Agentic Adaptive (AAMR v2),GOLD-01,single_hop_factual,NVDA,[2026],1,3,True,4,9.36,1962,114,2076,0.0002304,0.2304,True,0.0,1.0
-agentic_v2,Agentic Adaptive (AAMR v2),GOLD-02,single_hop_factual,AAPL,[2024],1,3,True,4,5.12,2005,112,2117,0.0002341,0.2341,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-01,single_hop_factual,NVDA,[2026],1,1,False,4,21.62,1962,114,2076,0.0002304,0.2304,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-02,single_hop_factual,AAPL,[2024],1,1,False,4,12.08,2005,112,2117,0.0002341,0.2341,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-03,single_hop_factual,AAPL,[2024],1,1,False,4,5.15,2025,135,2160,0.000243,0.243,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-04,single_hop_factual,MSFT,[2024],1,1,False,4,18.58,2019,103,2122,0.0002328,0.2328,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-05,single_hop_factual,MSFT,[2024],1,1,False,4,10.02,2047,113,2160,0.0002386,0.2386,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-06,single_hop_factual,AMZN,[2024],1,1,False,4,16.22,2065,109,2174,0.0002392,0.2392,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-07,single_hop_factual,AMZN,[2024],1,1,False,4,6.68,2017,104,2121,0.0002329,0.2329,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-08,single_hop_factual,GOOGL,[2024],1,1,False,4,19.95,2077,112,2189,0.0002413,0.2413,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-09,single_hop_factual,GOOGL,[2024],1,1,False,4,11.14,2093,126,2219,0.0002471,0.2471,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-10,single_hop_factual,META,[2024],1,1,False,4,22.95,1914,117,2031,0.0002265,0.2265,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-11,single_hop_factual,META,[2024],1,1,False,4,11.6,2078,127,2205,0.0002459,0.2459,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-12,single_hop_factual,TSLA,[2024],1,1,False,4,21.98,2081,120,2201,0.0002441,0.2441,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-13,single_hop_factual,JPM,[2024],1,1,False,4,86.89,2077,118,2195,0.0002431,0.2431,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-14,single_hop_factual,JNJ,[2024],1,1,False,4,24.59,2131,129,2260,0.0002518,0.2518,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-15,single_hop_factual,WMT,[2025],1,1,False,4,20.41,1975,113,2088,0.0002314,0.2314,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-16,quantitative_tabular,NVDA,"[2025, 2026]",1,1,False,4,24.79,1606,119,1725,0.0001963,0.1963,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-17,quantitative_tabular,NVDA,"[2025, 2026]",1,1,False,4,16.85,2166,123,2289,0.0002535,0.2535,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-18,quantitative_tabular,AAPL,"[2023, 2024]",1,1,False,4,22.55,2233,126,2359,0.0002611,0.2611,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-19,quantitative_tabular,AAPL,"[2023, 2024]",1,1,False,4,6.19,1997,130,2127,0.0002387,0.2387,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-20,quantitative_tabular,MSFT,"[2023, 2024]",1,1,False,4,26.81,1601,116,1717,0.0001949,0.1949,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-21,quantitative_tabular,MSFT,"[2023, 2024]",1,1,False,4,14.85,2140,100,2240,0.000244,0.244,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-22,quantitative_tabular,AMZN,"[2023, 2024]",1,1,False,4,21.67,1753,116,1869,0.0002101,0.2101,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-23,quantitative_tabular,AMZN,"[2023, 2024]",1,1,False,4,8.18,1765,116,1881,0.0002113,0.2113,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-24,quantitative_tabular,GOOGL,"[2023, 2024]",1,1,False,4,27.37,1803,121,1924,0.0002166,0.2166,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-25,quantitative_tabular,GOOGL,"[2023, 2024]",1,1,False,4,17.88,2094,117,2211,0.0002445,0.2445,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-26,quantitative_tabular,META,"[2023, 2024]",1,1,False,4,31.57,2366,174,2540,0.0002888,0.2888,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-27,quantitative_tabular,META,"[2023, 2024]",1,1,False,4,23.06,2205,124,2329,0.0002577,0.2577,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-28,quantitative_tabular,TSLA,"[2023, 2024]",1,1,False,4,28.31,1869,134,2003,0.0002271,0.2271,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-29,quantitative_tabular,TSLA,"[2023, 2024]",1,1,False,4,17.12,2169,111,2280,0.0002502,0.2502,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-30,quantitative_tabular,JPM,"[2023, 2024]",1,1,False,4,98.54,2014,129,2143,0.0002401,0.2401,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-31,quantitative_tabular,JPM,"[2023, 2024]",1,1,False,4,35.98,2021,129,2150,0.0002408,0.2408,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-32,quantitative_tabular,JNJ,"[2023, 2024]",1,1,False,4,33.2,2248,157,2405,0.0002719,0.2719,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-33,quantitative_tabular,JNJ,"[2023, 2024]",1,1,False,4,24.44,2255,141,2396,0.0002678,0.2678,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-34,quantitative_tabular,WMT,"[2024, 2025]",1,1,False,4,26.77,1814,143,1957,0.0002243,0.2243,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-35,quantitative_tabular,WMT,"[2024, 2025]",1,1,False,4,19.32,2069,132,2201,0.0002465,0.2465,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-36,cross_section_multihop,NVDA,[2026],1,1,False,4,4.49,1744,118,1862,0.0002098,0.2098,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-37,cross_section_multihop,NVDA,[2026],1,1,False,4,11.69,1950,143,2093,0.0002379,0.2379,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-38,cross_section_multihop,AAPL,[2024],1,1,False,4,3.33,2070,130,2200,0.000246,0.246,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-39,cross_section_multihop,MSFT,[2024],1,1,False,4,14.27,1833,115,1948,0.0002178,0.2178,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-40,cross_section_multihop,AMZN,[2024],1,1,False,4,4.54,2063,124,2187,0.0002435,0.2435,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-41,cross_section_multihop,GOOGL,[2024],1,1,False,4,13.8,2105,131,2236,0.0002498,0.2498,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-42,cross_section_multihop,META,[2024],1,1,False,4,7.08,2252,176,2428,0.000278,0.278,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-43,cross_section_multihop,TSLA,[2024],1,1,False,4,6.01,2027,147,2174,0.0002468,0.2468,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-44,cross_section_multihop,TSLA,[2024],1,1,False,4,13.58,1998,125,2123,0.0002373,0.2373,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-45,cross_section_multihop,JPM,[2024],1,1,False,4,46.12,2071,131,2202,0.0002464,0.2464,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-46,cross_section_multihop,JPM,[2024],1,1,False,4,45.01,2112,124,2236,0.0002484,0.2484,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-47,cross_section_multihop,JNJ,[2024],1,1,False,4,13.07,2080,143,2223,0.0002509,0.2509,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-48,cross_section_multihop,JNJ,[2024],1,1,False,4,6.85,1938,160,2098,0.0002418,0.2418,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-49,cross_section_multihop,WMT,[2025],1,1,False,4,13.28,2212,143,2355,0.0002641,0.2641,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,GOLD-50,cross_section_multihop,WMT,[2025],1,1,False,4,12.01,1940,131,2071,0.0002333,0.2333,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-01,single_hop_factual,NVDA,[2026],3,3,False,9,29.49,6234,248,6482,0.0006978,0.6978,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-02,single_hop_factual,AAPL,[2024],3,3,False,9,18.83,6413,246,6659,0.0007151,0.7151,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-03,single_hop_factual,AAPL,[2024],3,3,False,9,19.67,6515,269,6784,0.0007322,0.7322,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-04,single_hop_factual,MSFT,[2024],3,3,False,9,31.25,6181,237,6418,0.0006892,0.6892,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-05,single_hop_factual,MSFT,[2024],3,3,False,9,33.6,6283,247,6530,0.0007024,0.7024,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-06,single_hop_factual,AMZN,[2024],3,3,False,9,33.4,6436,243,6679,0.0007165,0.7165,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-07,single_hop_factual,AMZN,[2024],3,3,False,9,25.27,6334,238,6572,0.0007048,0.7048,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-08,single_hop_factual,GOOGL,[2024],3,3,False,9,32.37,6270,246,6516,0.0007008,0.7008,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-09,single_hop_factual,GOOGL,[2024],3,3,False,9,34.39,6277,260,6537,0.0007057,0.7057,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-10,single_hop_factual,META,[2024],3,3,False,9,42.06,6359,251,6610,0.0007112,0.7112,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-11,single_hop_factual,META,[2024],3,3,False,9,42.13,6540,261,6801,0.0007323,0.7323,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-12,single_hop_factual,TSLA,[2024],3,3,False,9,36.86,6555,254,6809,0.0007317,0.7317,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-13,single_hop_factual,JPM,[2024],3,3,False,9,111.27,6215,252,6467,0.0006971,0.6971,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-14,single_hop_factual,JNJ,[2024],3,3,False,8,39.69,6268,263,6531,0.0007057,0.7057,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-15,single_hop_factual,WMT,[2025],3,3,False,9,32.03,6194,247,6441,0.0006935,0.6935,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-16,quantitative_tabular,NVDA,"[2025, 2026]",3,3,False,9,50.28,5842,240,6082,0.0006562,0.6562,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-17,quantitative_tabular,NVDA,"[2025, 2026]",3,3,False,9,62.63,6573,257,6830,0.0007344,0.7344,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-18,quantitative_tabular,AAPL,"[2023, 2024]",3,3,False,9,43.54,6850,260,7110,0.000763,0.763,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-19,quantitative_tabular,AAPL,"[2023, 2024]",3,3,False,9,36.16,6416,251,6667,0.0007169,0.7169,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-20,quantitative_tabular,MSFT,"[2023, 2024]",3,3,False,9,55.62,5983,237,6220,0.0006694,0.6694,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-21,quantitative_tabular,MSFT,"[2023, 2024]",3,3,False,9,64.09,6778,234,7012,0.000748,0.748,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-22,quantitative_tabular,AMZN,"[2023, 2024]",3,3,False,9,46.02,6210,237,6447,0.0006921,0.6921,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-23,quantitative_tabular,AMZN,"[2023, 2024]",3,3,False,9,45.5,6237,237,6474,0.0006948,0.6948,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-24,quantitative_tabular,GOOGL,"[2023, 2024]",3,3,False,9,56.98,6075,242,6317,0.0006801,0.6801,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-25,quantitative_tabular,GOOGL,"[2023, 2024]",3,3,False,9,63.49,6509,251,6760,0.0007262,0.7262,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-26,quantitative_tabular,META,"[2023, 2024]",3,3,False,9,72.78,6960,295,7255,0.0007845,0.7845,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-27,quantitative_tabular,META,"[2023, 2024]",3,3,False,9,82.73,6668,258,6926,0.0007442,0.7442,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-28,quantitative_tabular,TSLA,"[2023, 2024]",3,3,False,9,62.9,6322,255,6577,0.0007087,0.7087,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-29,quantitative_tabular,TSLA,"[2023, 2024]",3,3,False,9,68.97,6760,245,7005,0.0007495,0.7495,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-30,quantitative_tabular,JPM,"[2023, 2024]",3,3,False,9,199.25,6149,250,6399,0.0006899,0.6899,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-31,quantitative_tabular,JPM,"[2023, 2024]",3,3,False,9,192.53,6166,250,6416,0.0006916,0.6916,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-32,quantitative_tabular,JNJ,"[2023, 2024]",3,3,False,9,64.59,6737,278,7015,0.0007571,0.7571,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-33,quantitative_tabular,JNJ,"[2023, 2024]",3,3,False,9,75.16,6869,275,7144,0.0007694,0.7694,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-34,quantitative_tabular,WMT,"[2024, 2025]",3,3,False,9,53.08,5999,264,6263,0.0006791,0.6791,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-35,quantitative_tabular,WMT,"[2024, 2025]",3,3,False,9,60.67,6388,266,6654,0.0007186,0.7186,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-36,cross_section_multihop,NVDA,[2026],3,3,False,9,24.5,5969,239,6208,0.0006686,0.6686,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-37,cross_section_multihop,NVDA,[2026],3,3,False,8,31.32,6048,277,6325,0.0006879,0.6879,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-38,cross_section_multihop,AAPL,[2024],3,3,False,9,16.54,6502,251,6753,0.0007255,0.7255,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-39,cross_section_multihop,MSFT,[2024],3,3,False,9,34.47,6045,249,6294,0.0006792,0.6792,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-40,cross_section_multihop,AMZN,[2024],3,3,False,9,21.22,6469,245,6714,0.0007204,0.7204,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-41,cross_section_multihop,GOOGL,[2024],3,3,False,8,34.04,6023,265,6288,0.0006818,0.6818,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-42,cross_section_multihop,META,[2024],3,3,False,9,34.44,6862,297,7159,0.0007753,0.7753,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-43,cross_section_multihop,TSLA,[2024],3,3,False,9,29.43,6601,268,6869,0.0007405,0.7405,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-44,cross_section_multihop,TSLA,[2024],3,3,False,9,36.62,6573,259,6832,0.000735,0.735,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-45,cross_section_multihop,JPM,[2024],3,3,False,9,121.12,6344,265,6609,0.0007139,0.7139,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-46,cross_section_multihop,JPM,[2024],3,3,False,9,119.3,6375,258,6633,0.0007149,0.7149,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-47,cross_section_multihop,JNJ,[2024],3,3,False,9,38.07,6524,277,6801,0.0007355,0.7355,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-48,cross_section_multihop,JNJ,[2024],3,3,False,9,32.73,6407,281,6688,0.000725,0.725,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-49,cross_section_multihop,WMT,[2025],3,3,False,9,34.83,6664,277,6941,0.0007495,0.7495,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,GOLD-50,cross_section_multihop,WMT,[2025],3,3,False,9,32.14,6164,265,6429,0.0006959,0.6959,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-01,single_hop_factual,NVDA,[2026],1,3,True,4,7.84,1962,114,2076,0.0002304,0.2304,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-02,single_hop_factual,AAPL,[2024],1,3,True,4,4.86,2005,112,2117,0.0002341,0.2341,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-03,single_hop_factual,AAPL,[2024],1,3,True,4,5.17,2025,135,2160,0.000243,0.243,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-04,single_hop_factual,MSFT,[2024],1,3,True,4,8.63,2019,103,2122,0.0002328,0.2328,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-05,single_hop_factual,MSFT,[2024],1,3,True,4,10.02,2047,113,2160,0.0002386,0.2386,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-06,single_hop_factual,AMZN,[2024],1,3,True,4,7.41,2065,109,2174,0.0002392,0.2392,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-07,single_hop_factual,AMZN,[2024],1,3,True,4,6.57,2017,104,2121,0.0002329,0.2329,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-08,single_hop_factual,GOOGL,[2024],1,3,True,4,8.59,2077,112,2189,0.0002413,0.2413,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-09,single_hop_factual,GOOGL,[2024],1,3,True,4,10.66,2093,126,2219,0.0002471,0.2471,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-10,single_hop_factual,META,[2024],1,3,True,4,11.56,1914,117,2031,0.0002265,0.2265,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-11,single_hop_factual,META,[2024],1,3,True,4,11.26,2078,127,2205,0.0002459,0.2459,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-12,single_hop_factual,TSLA,[2024],1,3,True,4,10.41,2081,120,2201,0.0002441,0.2441,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-13,single_hop_factual,JPM,[2024],1,3,True,4,30.58,2077,118,2195,0.0002431,0.2431,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-14,single_hop_factual,JNJ,[2024],1,3,True,4,13.03,2131,129,2260,0.0002518,0.2518,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-15,single_hop_factual,WMT,[2025],1,3,True,4,10.04,1975,113,2088,0.0002314,0.2314,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-16,quantitative_tabular,NVDA,"[2025, 2026]",2,3,True,8,24.09,4128,182,4310,0.0004674,0.4674,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-17,quantitative_tabular,NVDA,"[2025, 2026]",1,3,True,4,16.59,2166,123,2289,0.0002535,0.2535,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-18,quantitative_tabular,AAPL,"[2023, 2024]",1,3,True,4,11.14,2233,126,2359,0.0002611,0.2611,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-19,quantitative_tabular,AAPL,"[2023, 2024]",2,3,True,8,16.07,4520,193,4713,0.0005099,0.5099,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-20,quantitative_tabular,MSFT,"[2023, 2024]",2,3,True,8,25.61,4199,179,4378,0.0004736,0.4736,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-21,quantitative_tabular,MSFT,"[2023, 2024]",1,3,True,4,14.76,2140,100,2240,0.000244,0.244,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-22,quantitative_tabular,AMZN,"[2023, 2024]",2,3,True,8,20.97,3992,179,4171,0.0004529,0.4529,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-23,quantitative_tabular,AMZN,"[2023, 2024]",2,3,True,8,21.13,4011,179,4190,0.0004548,0.4548,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-24,quantitative_tabular,GOOGL,"[2023, 2024]",2,3,True,8,26.8,4274,184,4458,0.0004826,0.4826,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-25,quantitative_tabular,GOOGL,"[2023, 2024]",1,3,True,4,18.01,2094,117,2211,0.0002445,0.2445,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-26,quantitative_tabular,META,"[2023, 2024]",2,3,True,8,34.07,5210,237,5447,0.0005921,0.5921,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-27,quantitative_tabular,META,"[2023, 2024]",1,3,True,4,23.38,2205,124,2329,0.0002577,0.2577,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-28,quantitative_tabular,TSLA,"[2023, 2024]",2,3,True,8,29.91,4479,197,4676,0.000507,0.507,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-29,quantitative_tabular,TSLA,"[2023, 2024]",1,3,True,4,17.44,2169,111,2280,0.0002502,0.2502,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-30,quantitative_tabular,JPM,"[2023, 2024]",2,3,True,8,94.44,4603,192,4795,0.0005179,0.5179,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-31,quantitative_tabular,JPM,"[2023, 2024]",2,3,True,8,94.69,4616,192,4808,0.0005192,0.5192,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-32,quantitative_tabular,JNJ,"[2023, 2024]",2,3,True,8,32.44,4516,220,4736,0.0005176,0.5176,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-33,quantitative_tabular,JNJ,"[2023, 2024]",1,3,True,4,22.42,2255,141,2396,0.0002678,0.2678,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-34,quantitative_tabular,WMT,"[2024, 2025]",2,3,True,8,26.34,4214,206,4420,0.0004832,0.4832,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-35,quantitative_tabular,WMT,"[2024, 2025]",1,3,True,4,17.76,2069,132,2201,0.0002465,0.2465,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-36,cross_section_multihop,NVDA,[2026],2,3,True,8,12.13,4212,181,4393,0.0004755,0.4755,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-37,cross_section_multihop,NVDA,[2026],1,3,True,4,11.38,1950,143,2093,0.0002379,0.2379,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-38,cross_section_multihop,AAPL,[2024],2,3,True,8,8.59,4546,193,4739,0.0005125,0.5125,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-39,cross_section_multihop,MSFT,[2024],1,3,True,4,13.06,1833,115,1948,0.0002178,0.2178,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-40,cross_section_multihop,AMZN,[2024],2,3,True,8,10.76,4537,187,4724,0.0005098,0.5098,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-41,cross_section_multihop,GOOGL,[2024],1,3,True,4,12.58,2105,131,2236,0.0002498,0.2498,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-42,cross_section_multihop,META,[2024],2,3,True,8,17.16,4822,239,5061,0.0005539,0.5539,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-43,cross_section_multihop,TSLA,[2024],2,3,True,8,14.98,4712,210,4922,0.0005342,0.5342,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-44,cross_section_multihop,TSLA,[2024],1,3,True,4,12.67,1998,125,2123,0.0002373,0.2373,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-45,cross_section_multihop,JPM,[2024],1,3,True,4,43.43,2071,131,2202,0.0002464,0.2464,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-46,cross_section_multihop,JPM,[2024],1,3,True,4,41.38,2112,124,2236,0.0002484,0.2484,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-47,cross_section_multihop,JNJ,[2024],1,3,True,4,12.25,2080,143,2223,0.0002509,0.2509,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-48,cross_section_multihop,JNJ,[2024],2,3,True,8,16.29,4263,223,4486,0.0004932,0.4932,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-49,cross_section_multihop,WMT,[2025],1,3,True,4,12.39,2212,143,2355,0.0002641,0.2641,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),GOLD-50,cross_section_multihop,WMT,[2025],1,3,True,4,11.28,1940,131,2071,0.0002333,0.2333,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-01,single_hop_factual,NVDA,[2026],1,3,True,4,8.82,1962,114,2076,0.0002304,0.2304,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-02,single_hop_factual,AAPL,[2024],1,3,True,4,4.95,2005,112,2117,0.0002341,0.2341,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-03,single_hop_factual,AAPL,[2024],1,3,True,5,13.63,2079,121,2200,0.0002442,0.2442,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-04,single_hop_factual,MSFT,[2024],1,3,True,5,9.77,2073,104,2177,0.0002385,0.2385,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-05,single_hop_factual,MSFT,[2024],1,3,True,5,11.31,2102,110,2212,0.0002432,0.2432,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-06,single_hop_factual,AMZN,[2024],1,3,True,5,8.36,2119,109,2228,0.0002446,0.2446,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-07,single_hop_factual,AMZN,[2024],1,3,True,4,6.65,2017,104,2121,0.0002329,0.2329,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-08,single_hop_factual,GOOGL,[2024],1,3,True,5,9.71,2131,109,2240,0.0002458,0.2458,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-09,single_hop_factual,GOOGL,[2024],1,3,True,4,11.19,2093,126,2219,0.0002471,0.2471,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-10,single_hop_factual,META,[2024],1,3,True,5,12.86,1968,110,2078,0.0002298,0.2298,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-11,single_hop_factual,META,[2024],1,3,True,4,11.99,2078,127,2205,0.0002459,0.2459,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-12,single_hop_factual,TSLA,[2024],1,3,True,5,11.5,2135,116,2251,0.0002483,0.2483,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-13,single_hop_factual,JPM,[2024],1,3,True,4,31.2,2077,118,2195,0.0002431,0.2431,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-14,single_hop_factual,JNJ,[2024],1,3,True,4,12.98,2131,129,2260,0.0002518,0.2518,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-15,single_hop_factual,WMT,[2025],1,3,True,5,11.25,2029,113,2142,0.0002368,0.2368,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-16,quantitative_tabular,NVDA,"[2025, 2026]",2,3,True,10,26.16,4238,181,4419,0.0004781,0.4781,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-17,quantitative_tabular,NVDA,"[2025, 2026]",1,3,True,6,18.67,2276,103,2379,0.0002585,0.2585,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-18,quantitative_tabular,AAPL,"[2023, 2024]",1,3,True,6,12.74,2342,103,2445,0.0002651,0.2651,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-19,quantitative_tabular,AAPL,"[2023, 2024]",2,3,True,10,18.1,4630,180,4810,0.000517,0.517,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-20,quantitative_tabular,MSFT,"[2023, 2024]",2,3,True,10,27.36,4308,180,4488,0.0004848,0.4848,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-21,quantitative_tabular,MSFT,"[2023, 2024]",1,3,True,6,16.55,2249,99,2348,0.0002546,0.2546,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-22,quantitative_tabular,AMZN,"[2023, 2024]",2,3,True,10,23.49,4102,180,4282,0.0004642,0.4642,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-23,quantitative_tabular,AMZN,"[2023, 2024]",2,3,True,10,22.99,4121,180,4301,0.0004661,0.4661,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-24,quantitative_tabular,GOOGL,"[2023, 2024]",2,3,True,10,28.09,4384,180,4564,0.0004924,0.4924,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-25,quantitative_tabular,GOOGL,"[2023, 2024]",1,3,True,6,19.53,2203,101,2304,0.0002506,0.2506,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-26,quantitative_tabular,META,"[2023, 2024]",2,3,True,10,36.34,5319,180,5499,0.0005859,0.5859,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-27,quantitative_tabular,META,"[2023, 2024]",1,3,True,6,26.48,2314,101,2415,0.0002617,0.2617,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-28,quantitative_tabular,TSLA,"[2023, 2024]",2,3,True,10,33.09,4589,180,4769,0.0005129,0.5129,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-29,quantitative_tabular,TSLA,"[2023, 2024]",1,3,True,6,19.89,2278,99,2377,0.0002575,0.2575,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-30,quantitative_tabular,JPM,"[2023, 2024]",2,3,True,10,100.18,4711,180,4891,0.0005251,0.5251,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-31,quantitative_tabular,JPM,"[2023, 2024]",2,3,True,10,99.94,4725,180,4905,0.0005265,0.5265,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-32,quantitative_tabular,JNJ,"[2023, 2024]",2,3,True,10,36.26,4626,180,4806,0.0005166,0.5166,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-33,quantitative_tabular,JNJ,"[2023, 2024]",1,3,True,6,33.3,2365,108,2473,0.0002689,0.2689,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-34,quantitative_tabular,WMT,"[2024, 2025]",2,3,True,10,29.21,4324,181,4505,0.0004867,0.4867,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-35,quantitative_tabular,WMT,"[2024, 2025]",1,3,True,6,20.64,2178,103,2281,0.0002487,0.2487,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-36,cross_section_multihop,NVDA,[2026],2,3,True,9,13.89,4266,181,4447,0.0004809,0.4809,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-37,cross_section_multihop,NVDA,[2026],1,3,True,5,12.16,2004,131,2135,0.0002397,0.2397,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-38,cross_section_multihop,AAPL,[2024],2,3,True,9,10.14,4600,194,4794,0.0005182,0.5182,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-39,cross_section_multihop,MSFT,[2024],1,3,True,5,15.33,1888,117,2005,0.0002239,0.2239,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-40,cross_section_multihop,AMZN,[2024],2,3,True,8,11.21,4537,187,4724,0.0005098,0.5098,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-41,cross_section_multihop,GOOGL,[2024],1,3,True,4,13.77,2105,131,2236,0.0002498,0.2498,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-42,cross_section_multihop,META,[2024],2,3,True,9,19.01,4877,210,5087,0.0005507,0.5507,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-43,cross_section_multihop,TSLA,[2024],2,3,True,9,17.19,4766,181,4947,0.0005309,0.5309,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-44,cross_section_multihop,TSLA,[2024],1,3,True,4,12.9,1998,125,2123,0.0002373,0.2373,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-45,cross_section_multihop,JPM,[2024],1,3,True,5,48.53,2125,123,2248,0.0002494,0.2494,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-46,cross_section_multihop,JPM,[2024],1,3,True,4,44.79,2112,124,2236,0.0002484,0.2484,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-47,cross_section_multihop,JNJ,[2024],1,3,True,4,13.26,2080,143,2223,0.0002509,0.2509,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-48,cross_section_multihop,JNJ,[2024],2,3,True,9,18.25,4317,201,4518,0.000492,0.492,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-49,cross_section_multihop,WMT,[2025],1,3,True,5,13.88,2267,133,2400,0.0002666,0.2666,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),GOLD-50,cross_section_multihop,WMT,[2025],1,3,True,4,12.11,1940,131,2071,0.0002333,0.2333,True,0.0,1.0
