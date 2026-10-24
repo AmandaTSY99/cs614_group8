@@ -56,7 +56,7 @@ def get_llm_config() -> Tuple[str, str]:
         if provider == "ollama":
             model = "qwen2.5:7b"
         elif provider == "groq":
-            model = "llama-3.3-70b-versatile"
+            model = "llama-3.1-8b-instant"
         elif provider == "openai":
             model = "gpt-4o-mini"
         elif provider == "gemini":
@@ -144,7 +144,20 @@ def _call_groq_or_openai(
     if "gpt-oss" in model:
         kwargs["reasoning_effort"] = "low"
 
-    resp = client.chat.completions.create(**kwargs)
+    try:
+        resp = client.chat.completions.create(**kwargs)
+    except Exception as err:
+        err_msg = str(err).lower()
+        if provider == "groq" and ("does not exist" in err_msg or "model_not_found" in err_msg or "404" in err_msg):
+            fallback_model = "llama-3.1-8b-instant"
+            if kwargs["model"] != fallback_model:
+                kwargs["model"] = fallback_model
+                resp = client.chat.completions.create(**kwargs)
+            else:
+                raise err
+        else:
+            raise err
+
     content = resp.choices[0].message.content or ""
     usage = getattr(resp, "usage", None)
     prompt_tokens = getattr(usage, "prompt_tokens", None) or _estimate_tokens(

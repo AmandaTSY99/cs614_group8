@@ -220,8 +220,8 @@ with st.sidebar:
     # Dynamic Model Selection based on Provider
     if selected_provider == "groq":
         model_options = {
+            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Universal Free (Recommended)",
             "llama-3.3-70b-versatile": "Llama 3.3 (70B) — Flagship",
-            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Ultra-Fast",
         }
     elif selected_provider == "openai":
         model_options = {
