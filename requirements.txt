@@ -26,3 +26,11 @@ langchain-core
 pydantic
 pytest
 matplotlib
+
+# --- Web UI & Microservice Gateway ---
+streamlit
+fastapi
+uvicorn
+psycopg[binary,pool]
+langgraph-checkpoint-postgres
+
