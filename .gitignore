@@ -52,3 +52,7 @@ chroma_db_nvda/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# --- QA sets ---
+FinQA/
+TAT-QA/
