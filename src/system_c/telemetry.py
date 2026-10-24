@@ -14,8 +14,11 @@ MODEL_PRICING_PER_1M: Dict[str, Dict[str, float]] = {
     # Cloud providers (used in team benchmarks)
     "openai/gpt-oss-120b": {"prompt": 0.15, "completion": 0.60},
     "llama-3.3-70b-versatile": {"prompt": 0.59, "completion": 0.79},
+    "llama-3.1-8b-instant": {"prompt": 0.05, "completion": 0.08},
     "gpt-4o-mini": {"prompt": 0.15, "completion": 0.60},
     "gpt-4o": {"prompt": 2.50, "completion": 10.00},
+    "gemini-1.5-flash": {"prompt": 0.075, "completion": 0.30},
+    "gemini-2.0-flash": {"prompt": 0.10, "completion": 0.40},
     # Local Ollama models (imputed cloud-equivalent 7B/8B cost for RQ3 Pareto comparison)
     "qwen2.5:7b": {"prompt": 0.10, "completion": 0.30},
     "llama3.1:8b": {"prompt": 0.10, "completion": 0.30},

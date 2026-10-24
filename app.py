@@ -125,7 +125,7 @@ with st.sidebar:
     )
     st.title("System C Settings")
 
-    st.subheader("1. Pipeline & Model")
+    st.subheader("1. Pipeline & Provider Setup")
     mode_selection = st.selectbox(
         "Architecture Mode",
         options=["v2_aamr", "adaptive_v1", "fixed_1hop", "fixed_3hop"],
@@ -139,22 +139,64 @@ with st.sidebar:
         help="System C v2 routes quantitative requests to Supabase XBRL tables and qualitative context to SEC text chunks.",
     )
 
-    # Cloud LLM Model Selector (Cloud-first, zero local dependency)
-    available_models = [
-        ("llama-3.3-70b-versatile", "Groq Llama 3.3 (70B) — Flagship"),
-        ("llama-3.1-8b-instant", "Groq Llama 3.1 (8B) — Ultra-Fast"),
-        ("openai/gpt-oss-120b", "Groq GPT-OSS (120B) — Reasoning"),
-    ]
-    model_choice = st.selectbox(
-        "Cloud LLM Engine",
-        options=[m[0] for m in available_models],
+    # Provider Selection
+    provider_options = {
+        "groq": "🚀 Groq Cloud (Free & 500 tok/sec)",
+        "openai": "🤖 OpenAI (GPT-4o-mini / GPT-4o)",
+        "gemini": "✨ Google Gemini (1.5 Flash)",
+        "mock": "🧪 Mock Mode (Zero-API-Key Test)",
+    }
+    selected_provider = st.selectbox(
+        "LLM Provider",
+        options=list(provider_options.keys()),
         index=0,
-        format_func=lambda k: dict(available_models).get(k, k),
-        help="Runs directly on Groq's high-speed cloud LPUs (~500 tokens/sec) with zero local machine dependency.",
+        format_func=lambda k: provider_options[k],
     )
-    # Inject model selection into environment
-    os.environ["LLM_PROVIDER"] = "groq"
-    os.environ["LLM_MODEL"] = model_choice
+
+    # Dynamic Model Selection based on Provider
+    if selected_provider == "groq":
+        model_options = {
+            "llama-3.3-70b-versatile": "Llama 3.3 (70B) — Flagship",
+            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Ultra-Fast",
+        }
+    elif selected_provider == "openai":
+        model_options = {
+            "gpt-4o-mini": "GPT-4o-mini (Fast & Cheap)",
+            "gpt-4o": "GPT-4o (High Performance)",
+        }
+    elif selected_provider == "gemini":
+        model_options = {
+            "gemini-1.5-flash": "Gemini 1.5 Flash (Fast)",
+            "gemini-2.0-flash": "Gemini 2.0 Flash (Next-Gen)",
+        }
+    else:
+        model_options = {"mock": "Mock Engine"}
+
+    selected_model = st.selectbox(
+        "Model Selection",
+        options=list(model_options.keys()),
+        index=0,
+        format_func=lambda k: model_options[k],
+    )
+
+    # Optional Custom API Key with fallback to Secrets
+    user_api_key = st.text_input(
+        f"Custom {selected_provider.upper()} API Key (Optional):",
+        type="password",
+        help=f"If left blank, automatically uses your default pre-configured Streamlit secrets for {selected_provider.upper()}.",
+    )
+
+    # Configure Environment Variables
+    os.environ["LLM_PROVIDER"] = selected_provider
+    os.environ["LLM_MODEL"] = selected_model
+    if user_api_key.strip():
+        if selected_provider == "groq":
+            os.environ["GROQ_API_KEY"] = user_api_key.strip()
+        elif selected_provider == "openai":
+            os.environ["OPENAI_API_KEY"] = user_api_key.strip()
+        elif selected_provider == "gemini":
+            os.environ["GEMINI_API_KEY"] = user_api_key.strip()
+            os.environ["GOOGLE_API_KEY"] = user_api_key.strip()
 
     max_hops = st.slider("Max Retrieval Hops", min_value=1, max_value=4, value=3)
     sufficiency_threshold = st.slider(
@@ -237,104 +279,111 @@ col_run, col_clear = st.columns([1, 6])
 run_btn = col_run.button("🚀 Run Query", type="primary", use_container_width=True)
 
 if run_btn and query_text.strip():
-    with st.spinner("Executing System C Multi-Hop Pipeline..."):
-        from src.system_c.graph import run_system_c
+    try:
+        with st.spinner("Executing System C Multi-Hop Pipeline..."):
+            from src.system_c.graph import run_system_c
 
-        start_time = time.perf_counter()
-        target_ticker_arg = selected_tickers[0] if len(selected_tickers) == 1 else None
+            start_time = time.perf_counter()
+            target_ticker_arg = selected_tickers[0] if len(selected_tickers) == 1 else None
 
-        # Execute pipeline
-        result = run_system_c(
-            query=query_text.strip(),
-            max_hops=max_hops,
-            mode=mode_selection,
-            target_ticker=target_ticker_arg,
-            sufficiency_threshold=sufficiency_threshold,
-        )
-        total_wall_time = time.perf_counter() - start_time
+            # Execute pipeline
+            result = run_system_c(
+                query=query_text.strip(),
+                max_hops=max_hops,
+                mode=mode_selection,
+                target_ticker=target_ticker_arg,
+                sufficiency_threshold=sufficiency_threshold,
+            )
+            total_wall_time = time.perf_counter() - start_time
 
-    # ---------------- RESULTS PRESENTATION ----------------
-    st.divider()
+        # ---------------- RESULTS PRESENTATION ----------------
+        st.divider()
 
-    # Executive Summary Metrics
-    m1, m2, m3, m4, m5 = st.columns(5)
-    m1.metric("Hops Executed", f"{result['current_hop']} / {result['max_hops']}")
-    m2.metric("Early Stopped", "Yes (≥ 0.85)" if result.get("early_stopped") else "No (Max Hops)")
-    m3.metric("Sufficiency Score", f"{result.get('sufficiency_score', 0.0):.2f}")
-    m4.metric("Evidence Chunks", f"{len(result.get('accumulated_evidence', []))}")
-    m5.metric("Latency", f"{total_wall_time:.2f}s")
+        # Executive Summary Metrics
+        m1, m2, m3, m4, m5 = st.columns(5)
+        m1.metric("Hops Executed", f"{result['current_hop']} / {result['max_hops']}")
+        m2.metric("Early Stopped", "Yes (≥ 0.85)" if result.get("early_stopped") else "No (Max Hops)")
+        m3.metric("Sufficiency Score", f"{result.get('sufficiency_score', 0.0):.2f}")
+        m4.metric("Evidence Chunks", f"{len(result.get('accumulated_evidence', []))}")
+        m5.metric("Latency", f"{total_wall_time:.2f}s")
 
-    # 1. Final Synthesized Answer
-    st.subheader("📝 Synthesized Financial Answer")
-    final_answer = result.get("final_answer", "")
-    st.info(final_answer if final_answer else "No synthesis generated.")
+        # 1. Final Synthesized Answer
+        st.subheader("📝 Synthesized Financial Answer")
+        final_answer = result.get("final_answer", "")
+        st.info(final_answer if final_answer else "No synthesis generated.")
 
-    # 2. Citations & Numerical Grounding Guardrail
-    col_cit, col_guard = st.columns(2)
+        # 2. Citations & Numerical Grounding Guardrail
+        col_cit, col_guard = st.columns(2)
 
-    with col_cit:
-        st.subheader("📚 Verified SEC Citations")
-        citations = result.get("citations", [])
-        if citations:
-            for cit in citations:
-                with st.expander(f"📍 {cit.get('tag', 'Citation')} — {cit.get('section', 'SEC Disclosure')}"):
-                    st.write(f"**Chunk ID**: `{cit.get('chunk_id')}`")
-                    st.write(f"**Ticker / Year**: {cit.get('ticker')} (FY{cit.get('fiscal_year')})")
-                    st.write(f"**Disclosure Excerpt**:")
-                    st.caption(cit.get("supported_claim", ""))
-        else:
-            st.caption("No citations recorded.")
+        with col_cit:
+            st.subheader("📚 Verified SEC Citations")
+            citations = result.get("citations", [])
+            if citations:
+                for cit in citations:
+                    with st.expander(f"📍 {cit.get('tag', 'Citation')} — {cit.get('section', 'SEC Disclosure')}"):
+                        st.write(f"**Chunk ID**: `{cit.get('chunk_id')}`")
+                        st.write(f"**Ticker / Year**: {cit.get('ticker')} (FY{cit.get('fiscal_year')})")
+                        st.write(f"**Disclosure Excerpt**:")
+                        st.caption(cit.get("supported_claim", ""))
+            else:
+                st.caption("No citations recorded.")
 
-    with col_guard:
-        st.subheader("🛡️ Factuality & Numerical Guardrail")
-        guard_report = result.get("guardrail_report", {})
-        passed = result.get("guardrail_passed", True)
-        if passed:
-            st.success("✅ **Guardrail Passed**: All extracted financial figures match SEC ground-truth filings.")
-        else:
-            st.warning("⚠️ **Guardrail Warning**: Ungrounded numbers detected during audit.")
+        with col_guard:
+            st.subheader("🛡️ Factuality & Numerical Guardrail")
+            guard_report = result.get("guardrail_report", {})
+            passed = result.get("guardrail_passed", True)
+            if passed:
+                st.success("✅ **Guardrail Passed**: All extracted financial figures match SEC ground-truth filings.")
+            else:
+                st.warning("⚠️ **Guardrail Warning**: Ungrounded numbers detected during audit.")
 
-        st.markdown(
-            f"""
-        * **Numerical Error Rate**: `{guard_report.get('numerical_grounding_error_rate', 0.0) * 100:.1f}%`
-        * **Faithfulness Score**: `{guard_report.get('faithfulness_score', 1.0):.2f}`
-        * **Repairs Executed**: `{result.get('repair_count', 0)}`
-        """
-        )
-        if guard_report.get("verified_numbers"):
-            st.write("**Verified Numbers**:", guard_report["verified_numbers"])
-        if guard_report.get("ungrounded_numbers"):
-            st.write("**Ungrounded Numbers**:", guard_report["ungrounded_numbers"])
+            st.markdown(
+                f"""
+            * **Numerical Error Rate**: `{guard_report.get('numerical_grounding_error_rate', 0.0) * 100:.1f}%`
+            * **Faithfulness Score**: `{guard_report.get('faithfulness_score', 1.0):.2f}`
+            * **Repairs Executed**: `{result.get('repair_count', 0)}`
+            """
+            )
+            if guard_report.get("verified_numbers"):
+                st.write("**Verified Numbers**:", guard_report["verified_numbers"])
+            if guard_report.get("ungrounded_numbers"):
+                st.write("**Ungrounded Numbers**:", guard_report["ungrounded_numbers"])
 
-    # 3. Hop-by-Hop Reasoning Trace (Inspection for Prof / TAs)
-    st.subheader("🔍 Autonomous Multi-Hop Execution Trace")
-    with st.expander("Click to inspect Hop-by-Hop Decomposer Plans & Critic Decisions", expanded=False):
-        intermediate = result.get("intermediate_answers", [])
-        if intermediate:
-            for item in intermediate:
-                hop_num = item.get("hop", 1)
-                st.markdown(f"#### Hop {hop_num}")
-                st.write(f"**Sub-Query Executed**: `{item.get('sub_query_executed')}`")
-                st.write(f"**Sufficiency Score**: `{item.get('sufficiency_score', 0.0):.2f}` (Sufficient: `{item.get('is_sufficient')}`)")
-                st.write(f"**Critic Reasoning**: {item.get('critic_reasoning')}")
-                if item.get("missing_premises"):
-                    st.write(f"**Missing Premises Identified**: {item.get('missing_premises')}")
-                st.divider()
-        else:
-            st.caption("No intermediate hop records logged.")
+        # 3. Hop-by-Hop Reasoning Trace (Inspection for Prof / TAs)
+        st.subheader("🔍 Autonomous Multi-Hop Execution Trace")
+        with st.expander("Click to inspect Hop-by-Hop Decomposer Plans & Critic Decisions", expanded=False):
+            intermediate = result.get("intermediate_answers", [])
+            if intermediate:
+                for item in intermediate:
+                    hop_num = item.get("hop", 1)
+                    st.markdown(f"#### Hop {hop_num}")
+                    st.write(f"**Sub-Query Executed**: `{item.get('sub_query_executed')}`")
+                    st.write(f"**Sufficiency Score**: `{item.get('sufficiency_score', 0.0):.2f}` (Sufficient: `{item.get('is_sufficient')}`)")
+                    st.write(f"**Critic Reasoning**: {item.get('critic_reasoning')}")
+                    if item.get("missing_premises"):
+                        st.write(f"**Missing Premises Identified**: {item.get('missing_premises')}")
+                    st.divider()
+            else:
+                st.caption("No intermediate hop records logged.")
 
-    # 4. Telemetry & Cost Analysis (RQ3)
-    st.subheader("📊 Inference Economics (RQ3 Telemetry)")
-    with st.expander("Click to view token counts and cost breakdown", expanded=False):
-        telemetry = result.get("telemetry", {})
-        calls = telemetry.get("calls", [])
-        if calls:
-            df_calls = pd.DataFrame(calls)
-            st.dataframe(df_calls, use_container_width=True)
-            summary = telemetry.get("rq3_summary", {})
-            st.json(summary)
-        else:
-            st.caption("No LLM calls recorded in telemetry.")
+        # 4. Telemetry & Cost Analysis (RQ3)
+        st.subheader("📊 Inference Economics (RQ3 Telemetry)")
+        with st.expander("Click to view token counts and cost breakdown", expanded=False):
+            telemetry = result.get("telemetry", {})
+            calls = telemetry.get("calls", [])
+            if calls:
+                df_calls = pd.DataFrame(calls)
+                st.dataframe(df_calls, use_container_width=True)
+                summary = telemetry.get("rq3_summary", {})
+                st.json(summary)
+            else:
+                st.caption("No LLM calls recorded in telemetry.")
+
+    except Exception as exc:
+        import traceback
+        st.error(f"❌ **Execution Error**: `{str(exc)}`")
+        st.markdown("📋 **Error Details & Stack Trace** *(use the copy button in the top right to copy)*:")
+        st.code(traceback.format_exc(), language="python")
 
 # ---------------- SEC COMPANY DATA EXPLORER TAB ----------------
 st.divider()

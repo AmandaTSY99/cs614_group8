@@ -56,9 +56,11 @@ def get_llm_config() -> Tuple[str, str]:
         if provider == "ollama":
             model = "qwen2.5:7b"
         elif provider == "groq":
-            model = "openai/gpt-oss-120b"
+            model = "llama-3.3-70b-versatile"
         elif provider == "openai":
             model = "gpt-4o-mini"
+        elif provider == "gemini":
+            model = "gemini-1.5-flash"
         else:
             model = "mock"
     return provider, model
@@ -110,15 +112,28 @@ def _call_groq_or_openai(
     temperature: float = 0.0,
     max_tokens: int = 1024,
 ) -> Tuple[str, int, int]:
-    """Call Groq or OpenAI chat completions API (matches `build_vdb_base_RAG.ipynb` Cell 6)."""
+    """Call Groq, OpenAI, or Gemini chat completions API."""
     if provider == "groq":
         from groq import Groq
         api_key = os.getenv("GROQ_API_KEY")
-        client = Groq(api_key=api_key) if api_key else Groq()
+        if not api_key:
+            raise ValueError("GROQ_API_KEY is not set. Please provide your Groq API key in the UI or in Streamlit Secrets.")
+        client = Groq(api_key=api_key)
+    elif provider == "gemini":
+        from openai import OpenAI
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY (or GOOGLE_API_KEY) is not set. Please provide your key in the UI or in Streamlit Secrets.")
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        )
     else:
         from openai import OpenAI
         api_key = os.getenv("OPENAI_API_KEY")
-        client = OpenAI(api_key=api_key) if api_key else OpenAI()
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY is not set. Please provide your OpenAI API key in the UI or in Streamlit Secrets.")
+        client = OpenAI(api_key=api_key)
 
     kwargs: Dict[str, Any] = {
         "model": model,
@@ -363,10 +378,10 @@ def call_llm(
         content, p_tok, c_tok = _call_mock(node_name, messages, state)
     elif provider == "ollama":
         content, p_tok, c_tok = _call_ollama(model, messages, temperature=temperature, json_mode=json_mode)
-    elif provider in ("groq", "openai"):
+    elif provider in ("groq", "openai", "gemini"):
         content, p_tok, c_tok = _call_groq_or_openai(provider, model, messages, temperature=temperature)
     else:
-        raise ValueError(f"Unsupported LLM_PROVIDER='{provider}'. Use 'ollama', 'groq', 'openai', or 'mock'.")
+        raise ValueError(f"Unsupported LLM_PROVIDER='{provider}'. Use 'groq', 'openai', 'gemini', 'ollama', or 'mock'.")
 
     latency_ms = (time.perf_counter() - start) * 1000.0
     updated_telemetry = record_llm_call(
