@@ -519,6 +519,7 @@ def export_ablation_results(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="RQ3 Inference Economics Ablation Benchmark.")
+    parser.add_argument("--eval-set", type=str, default="data/golden_eval_set.json", help="Path to golden eval set JSON.")
     parser.add_argument("--provider", type=str, default=None, choices=["ollama", "groq", "openai", "mock"], help="LLM Provider override.")
     parser.add_argument("--model", type=str, default=None, help="LLM Model name override.")
     parser.add_argument("--mock", action="store_true", help="Shortcut to run with --provider mock.")
@@ -530,7 +531,12 @@ def main() -> None:
     args = parser.parse_args()
 
     provider = "mock" if args.mock else args.provider
-    queries = ABLATION_EVAL_DATASET[: args.limit_queries] if args.limit_queries else ABLATION_EVAL_DATASET
+    if args.eval_set and Path(args.eval_set).exists():
+        with open(args.eval_set, "r", encoding="utf-8") as f:
+            loaded_queries = json.load(f)
+        queries = loaded_queries[: args.limit_queries] if args.limit_queries else loaded_queries
+    else:
+        queries = ABLATION_EVAL_DATASET[: args.limit_queries] if args.limit_queries else ABLATION_EVAL_DATASET
 
     ablation_data = run_ablation(
         queries=queries,

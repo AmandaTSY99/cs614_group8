@@ -1,0 +1,134 @@
+[
+  {
+    "id": "GOLD-01",
+    "ticker": "NVDA",
+    "fiscal_years": [2026],
+    "category": "single_hop_factual",
+    "min_required_hops": 1,
+    "query": "What was NVIDIA's fiscal year 2026 period end date, and where is its principal executive office located?",
+    "target_sections": ["Item 1", "Item 8"],
+    "ground_truth_answer": "NVIDIA's fiscal year 2026 ended on January 25, 2026, and its principal executive office is located at 2788 San Tomas Expressway, Santa Clara, California 95051.",
+    "ground_truth_numbers": ["January 25, 2026", "95051"]
+  },
+  {
+    "id": "GOLD-02",
+    "ticker": "AAPL",
+    "fiscal_years": [2024],
+    "category": "single_hop_factual",
+    "min_required_hops": 1,
+    "query": "Who served as Apple Inc.'s independent registered public accounting firm for the fiscal year ended September 28, 2024?",
+    "target_sections": ["Item 8", "Item 14"],
+    "ground_truth_answer": "Ernst & Young LLP served as Apple Inc.'s independent registered public accounting firm for fiscal 2024.",
+    "ground_truth_numbers": ["September 28, 2024"]
+  },
+  {
+    "id": "GOLD-03",
+    "ticker": "MSFT",
+    "fiscal_years": [2024],
+    "category": "single_hop_factual",
+    "min_required_hops": 1,
+    "query": "Under the laws of which state is Microsoft Corporation incorporated, and what is the address of its corporate headquarters?",
+    "target_sections": ["Item 1"],
+    "ground_truth_answer": "Microsoft Corporation is incorporated under the laws of the State of Washington, with corporate headquarters at One Microsoft Way, Redmond, Washington 98052.",
+    "ground_truth_numbers": ["98052"]
+  },
+  {
+    "id": "GOLD-04",
+    "ticker": "NVDA",
+    "fiscal_years": [2026],
+    "category": "multi_hop_cross_section",
+    "min_required_hops": 2,
+    "query": "How did NVIDIA Data Center segment revenue perform in FY2026, and what specific customer concentration risks or purchase obligations were disclosed in the Notes to Consolidated Financial Statements?",
+    "target_sections": ["Item 7", "Item 8 Note 17"],
+    "ground_truth_answer": "NVIDIA Data Center segment revenue rose to $193,736 million in FY2026 (accounting for the vast majority of total revenue), driven by computing and networking demand for the Blackwell and Hopper architectures. In the Notes to Consolidated Financial Statements, NVIDIA disclosed that Customer A accounted for approximately 17% and Customer B accounted for 15% of total revenue in fiscal 2026, alongside substantial multi-billion dollar long-term supply commitments with foundry partners.",
+    "ground_truth_numbers": ["17%", "15%", "$193,736 million"]
+  },
+  {
+    "id": "GOLD-05",
+    "ticker": "AMZN",
+    "fiscal_years": [2024],
+    "category": "multi_hop_cross_section",
+    "min_required_hops": 2,
+    "query": "How did foreign currency exchange rate fluctuations impact Amazon's net sales in 2024, and what derivative instruments were disclosed in Note 1 or Note 5 to hedge foreign currency risks?",
+    "target_sections": ["Item 7", "Item 7A", "Item 8 Note 5"],
+    "ground_truth_answer": "Foreign exchange rates had an unfavorable impact of approximately $1.4 billion on Amazon's 2024 net sales. To mitigate foreign exchange and interest rate volatility, Amazon utilized forward contracts, cross-currency swaps, and designated certain non-derivative debt denominated in foreign currencies as net investment hedges.",
+    "ground_truth_numbers": ["$1.4 billion"]
+  },
+  {
+    "id": "GOLD-06",
+    "ticker": "GOOGL",
+    "fiscal_years": [2024],
+    "category": "multi_hop_cross_section",
+    "min_required_hops": 2,
+    "query": "What were Alphabet's primary legal proceedings and antitrust matters disclosed in Note 10 of the 2024 Form 10-K, and how did management evaluate potential loss contingencies?",
+    "target_sections": ["Item 3", "Item 8 Note 10"],
+    "ground_truth_answer": "Alphabet disclosed major regulatory and antitrust proceedings brought by the DOJ and European Commission regarding search distribution and digital advertising technologies. Alphabet recorded legal settlements when probable and reasonably estimable, but noted that for several pending trials, potential losses cannot be reasonably estimated.",
+    "ground_truth_numbers": []
+  },
+  {
+    "id": "GOLD-07",
+    "ticker": "META",
+    "fiscal_years": [2024],
+    "category": "multi_hop_cross_section",
+    "min_required_hops": 2,
+    "query": "Describe Meta's restructuring charges and facility consolidations in 2024, and explain their impact on Family of Apps versus Reality Labs operational performance.",
+    "target_sections": ["Item 7", "Item 8 Note 15"],
+    "ground_truth_answer": "Meta completed substantial data center and facility consolidation efforts, reducing operating lease obligations and recognizing severance and restructuring expenses. Family of Apps delivered operating income exceeding $60 billion while Reality Labs incurred operating losses exceeding $16 billion.",
+    "ground_truth_numbers": ["$60 billion", "$16 billion"]
+  },
+  {
+    "id": "GOLD-08",
+    "ticker": "NVDA",
+    "fiscal_years": [2025, 2026],
+    "category": "quantitative_tabular",
+    "min_required_hops": 2,
+    "query": "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate.",
+    "target_sections": ["Item 8 Financial Statements", "financials.csv"],
+    "ground_truth_answer": "In FY2025, NVIDIA reported Revenue of $130,497 million, Operating Income of $81,453 million, and Net Income of $72,880 million. In FY2026, Revenue increased to $215,938 million, Operating Income increased to $130,387 million, and Net Income rose to $120,067 million, representing a year-over-year revenue growth of 65.5%.",
+    "ground_truth_numbers": ["$130,497 million", "$81,453 million", "$72,880 million", "$215,938 million", "$130,387 million", "$120,067 million", "65.5%"]
+  },
+  {
+    "id": "GOLD-09",
+    "ticker": "AAPL",
+    "fiscal_years": [2023, 2024],
+    "category": "quantitative_tabular",
+    "min_required_hops": 2,
+    "query": "What was Apple's total net sales, gross margin, and operating cash flow in fiscal 2023 versus fiscal 2024?",
+    "target_sections": ["Item 8 Financial Statements", "financials.csv"],
+    "ground_truth_answer": "In fiscal 2023, Apple recorded total net sales of $383,285 million, gross margin of $169,148 million (44.1%), and cash flow from operations of $110,543 million. In fiscal 2024, net sales rose to $391,035 million, gross margin grew to $180,683 million (46.2%), and operating cash flow increased to $118,254 million.",
+    "ground_truth_numbers": ["$383,285 million", "$391,035 million", "44.1%", "46.2%", "$110,543 million", "$118,254 million"]
+  },
+  {
+    "id": "GOLD-10",
+    "ticker": "MSFT",
+    "fiscal_years": [2023, 2024],
+    "category": "quantitative_tabular",
+    "min_required_hops": 2,
+    "query": "Compare Microsoft's total revenue, net income, and diluted EPS between FY2023 and FY2024.",
+    "target_sections": ["Item 8 Financial Statements", "financials.csv"],
+    "ground_truth_answer": "In FY2023, Microsoft reported total revenue of $211,915 million, net income of $72,361 million, and diluted EPS of $9.68. In FY2024, total revenue increased to $245,122 million (up 16%), net income grew to $88,136 million (up 22%), and diluted EPS increased to $11.80.",
+    "ground_truth_numbers": ["$211,915 million", "$245,122 million", "$72,361 million", "$88,136 million", "$9.68", "$11.80", "16%", "22%"]
+  },
+  {
+    "id": "GOLD-11",
+    "ticker": "TSLA",
+    "fiscal_years": [2023, 2024],
+    "category": "complex_constraint",
+    "min_required_hops": 2,
+    "query": "Explain how Tesla's automotive regulatory credits revenue shifted between 2023 and 2024, and what supply chain constraints impacted vehicle deliveries according to Item 7?",
+    "target_sections": ["Item 7", "Item 8 Note 1"],
+    "ground_truth_answer": "Tesla recorded $1,790 million in automotive regulatory credits in 2023, which increased significantly to $2,800 million in 2024. In Item 7, management cited factory retooling for updated Model 3 and Cybertruck ramp-ups, along with maritime shipping disruptions in the Red Sea and an arson attack at Gigafactory Berlin that caused production shutdowns.",
+    "ground_truth_numbers": ["$1,790 million", "$2,800 million"]
+  },
+  {
+    "id": "GOLD-12",
+    "ticker": "JPM",
+    "fiscal_years": [2024],
+    "category": "complex_constraint",
+    "min_required_hops": 2,
+    "query": "What were JPMorgan Chase's total assets and total liabilities in 2024, and how did interest rate exposure affect net interest income?",
+    "target_sections": ["Item 7A", "Item 8 Financial Statements", "financials.csv"],
+    "ground_truth_answer": "JPMorgan Chase reported total assets of $4,098,823 million and total liabilities of $3,750,714 million as of December 31, 2024. Net interest income was driven by higher policy rates and asset yields, partially offset by rising deposit funding costs and balance migration toward higher-yielding certificates of deposit.",
+    "ground_truth_numbers": ["$4,098,823 million", "$3,750,714 million"]
+  }
+]
