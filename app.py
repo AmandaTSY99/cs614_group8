@@ -887,11 +887,13 @@ def render_visual_state_graph(
         f'<div style="font-family:var(--quant-mono); font-size:0.72rem; color:{loop_stroke}; font-weight:700;">'
         f"{html.escape(loop_label)}"
         f"</div>"
-        f'<svg width="220" height="18" viewBox="0 0 220 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">'
-        f'<path d="M208 2 L208 14 L12 14 L12 2" stroke="{loop_stroke}" stroke-width="1.8" fill="none" style="{loop_anim_style}"/>'
-        f'<polygon points="12,1 8,7 16,7" fill="{loop_stroke}"/>'
-        f'<rect x="106" y="11" width="8" height="5" fill="{loop_stroke}"/>'
-        f"</svg>"
+        f'<div style="display:flex; align-items:center; gap:6px; font-family:var(--quant-mono); font-size:0.68rem; font-weight:800; flex-shrink:0;">'
+        f'<span style="color:#F59E0B; background:rgba(245,158,11,0.15); padding:2px 6px; border-radius:3px; border:1px solid rgba(245,158,11,0.4);">[04 CRITIC]</span>'
+        f'<span style="color:{loop_stroke};">➔</span>'
+        f'<span style="color:#06B6D4; background:rgba(6,182,212,0.15); padding:2px 6px; border-radius:3px; border:1px solid rgba(6,182,212,0.4);">🧠 [GENERATOR]</span>'
+        f'<span style="color:{loop_stroke};">➔</span>'
+        f'<span style="color:#3B82F6; background:rgba(59,130,246,0.15); padding:2px 6px; border-radius:3px; border:1px solid rgba(59,130,246,0.4);">↩ [03 RETRIEVER]</span>'
+        f"</div>"
         f"</div>"
     )
 
