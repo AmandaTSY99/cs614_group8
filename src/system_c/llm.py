@@ -55,14 +55,14 @@ def get_llm_config() -> Tuple[str, str]:
     if not model:
         if provider == "ollama":
             model = "qwen2.5:7b"
+        elif provider == "gemini":
+            model = "gemini-flash-latest"
         elif provider == "groq":
             model = "llama-3.1-8b-instant"
-        elif provider == "openai":
-            model = "gpt-4o-mini"
-        elif provider == "gemini":
-            model = "gemini-1.5-flash"
         elif provider == "cohere":
             model = "command-r"
+        elif provider == "openai":
+            model = "gpt-4o-mini"
         else:
             model = "mock"
     return provider, model
@@ -107,6 +107,49 @@ def _call_ollama(
     return content, int(prompt_tokens), int(completion_tokens)
 
 
+DEFAULT_GEMINI_API_KEY = "AIzaSyCRjeOAKS9-Lb7zXpwW294GOLD6vM6pUxw"
+
+
+def _call_gemini_native(
+    model: str,
+    messages: List[Dict[str, str]],
+    temperature: float = 0.0,
+    json_mode: bool = False,
+) -> Tuple[str, int, int]:
+    """Call Google Gemini generateContent REST API natively without needing third-party SDKs."""
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or DEFAULT_GEMINI_API_KEY
+    if not model or "1.5" in model or "2.0" in model:
+        model = "gemini-flash-latest"
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+    contents = []
+    for m in messages:
+        role = "user" if m.get("role") in ["user", "system"] else "model"
+        contents.append({"role": role, "parts": [{"text": m.get("content", "")}]})
+
+    gen_config: Dict[str, Any] = {"temperature": temperature, "maxOutputTokens": 1024}
+    if json_mode:
+        gen_config["responseMimeType"] = "application/json"
+
+    payload = {"contents": contents, "generationConfig": gen_config}
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=45) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+        candidates = data.get("candidates", [])
+        if not candidates:
+            raise ValueError(f"Gemini returned no candidates: {data}")
+        content = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+        usage = data.get("usageMetadata", {})
+        p_tok = usage.get("promptTokenCount") or _estimate_tokens(" ".join(m.get("content", "") for m in messages))
+        c_tok = usage.get("candidatesTokenCount") or _estimate_tokens(content)
+        return content, int(p_tok), int(c_tok)
+
+
 def _call_groq_or_openai(
     provider: str,
     model: str,
@@ -114,22 +157,13 @@ def _call_groq_or_openai(
     temperature: float = 0.0,
     max_tokens: int = 1024,
 ) -> Tuple[str, int, int]:
-    """Call Groq, OpenAI, or Gemini chat completions API."""
+    """Call Groq, OpenAI, or Cohere chat completions API."""
     if provider == "groq":
         from groq import Groq
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("GROQ_API_KEY is not set. Please provide your Groq API key in the UI or in Streamlit Secrets.")
         client = Groq(api_key=api_key)
-    elif provider == "gemini":
-        from openai import OpenAI
-        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        if not api_key:
-            raise ValueError("GEMINI_API_KEY (or GOOGLE_API_KEY) is not set. Please provide your key in the UI or in Streamlit Secrets.")
-        client = OpenAI(
-            api_key=api_key,
-            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-        )
     elif provider == "cohere":
         from openai import OpenAI
         api_key = os.getenv("COHERE_API_KEY")
@@ -416,10 +450,12 @@ def call_llm(
         content, p_tok, c_tok = _call_mock(node_name, messages, state)
     elif provider == "ollama":
         content, p_tok, c_tok = _call_ollama(model, messages, temperature=temperature, json_mode=json_mode)
-    elif provider in ("groq", "openai", "gemini", "cohere"):
+    elif provider == "gemini":
+        content, p_tok, c_tok = _call_gemini_native(model, messages, temperature=temperature, json_mode=json_mode)
+    elif provider in ("groq", "openai", "cohere"):
         content, p_tok, c_tok = _call_groq_or_openai(provider, model, messages, temperature=temperature)
     else:
-        raise ValueError(f"Unsupported LLM_PROVIDER='{provider}'. Use 'groq', 'openai', 'gemini', 'cohere', 'ollama', or 'mock'.")
+        raise ValueError(f"Unsupported LLM_PROVIDER='{provider}'. Use 'gemini', 'groq', 'cohere', 'openai', 'ollama', or 'mock'.")
 
     latency_ms = (time.perf_counter() - start) * 1000.0
     updated_telemetry = record_llm_call(

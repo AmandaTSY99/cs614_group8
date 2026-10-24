@@ -203,12 +203,12 @@ with st.sidebar:
         help="System C v2 routes quantitative requests to Supabase XBRL tables and qualitative context to SEC text chunks.",
     )
 
-    # Provider Selection
+    # Provider Selection (Gemini pre-configured as instant default)
     provider_options = {
-        "groq": "🚀 Groq Cloud (Free & 500 tok/sec)",
+        "gemini": "✨ Google Gemini (Pre-Configured & Ready)",
+        "groq": "🚀 Groq Cloud (Llama 3.1 8B / GPT-OSS 120B)",
         "cohere": "🔮 Cohere (Command R / Command R+)",
         "openai": "🤖 OpenAI (GPT-4o-mini / GPT-4o)",
-        "gemini": "✨ Google Gemini (1.5 Flash)",
         "mock": "🧪 Mock Mode (Zero-API-Key Test)",
     }
     selected_provider = st.selectbox(
@@ -219,11 +219,15 @@ with st.sidebar:
     )
 
     # Dynamic Model Selection based on Provider
-    if selected_provider == "groq":
+    if selected_provider == "gemini":
+        model_options = {
+            "gemini-flash-latest": "Gemini Flash (Latest — Fast & Free)",
+        }
+    elif selected_provider == "groq":
         model_options = {
             "llama-3.1-8b-instant": "Llama 3.1 (8B) — Fast",
-            "llama-3.3-70b-versatile": "Llama 3.3 (70B) — Flagship",
             "openai/gpt-oss-120b": "OpenAI GPT-OSS (120B) — Team Notebook Default",
+            "llama-3.3-70b-versatile": "Llama 3.3 (70B) — Flagship",
             "gemma2-9b-it": "Google Gemma 2 (9B)",
         }
     elif selected_provider == "cohere":
@@ -236,11 +240,6 @@ with st.sidebar:
             "gpt-4o-mini": "GPT-4o-mini (Fast & Cheap)",
             "gpt-4o": "GPT-4o (High Performance)",
         }
-    elif selected_provider == "gemini":
-        model_options = {
-            "gemini-1.5-flash": "Gemini 1.5 Flash (Fast)",
-            "gemini-2.0-flash": "Gemini 2.0 Flash (Next-Gen)",
-        }
     else:
         model_options = {"mock": "Mock Engine (Deterministic, Zero-API-Key)"}
 
@@ -251,28 +250,35 @@ with st.sidebar:
         format_func=lambda k: model_options[k],
     )
 
-    # Optional Custom API Key with fallback to Secrets
+    # Universal Custom API Key with fallback to pre-configured keys
     user_api_key = st.text_input(
-        f"Custom {selected_provider.upper()} API Key (Optional):",
+        f"Enter Any Custom {selected_provider.upper()} API Key (Optional):",
         type="password",
-        help=f"If left blank, automatically uses your default pre-configured Streamlit secrets for {selected_provider.upper()}.",
+        placeholder="Leave blank to use pre-configured system key",
+        help=f"You can paste your own {selected_provider.upper()} key here. If left blank, it automatically uses the pre-configured key so your classmates don't have to enter anything!",
     )
-    if selected_provider == "mock":
+    if selected_provider == "gemini":
+        st.caption("✨ Pre-configured with Google Gemini Flash. Ready to test out of the box!")
+    elif selected_provider == "mock":
         st.caption("💡 Mock mode tests the full LangGraph pipeline, Supabase DB, and guardrails without needing an API key.")
 
     # Configure Environment Variables
     os.environ["LLM_PROVIDER"] = selected_provider
     os.environ["LLM_MODEL"] = selected_model
     if user_api_key.strip():
-        if selected_provider == "groq":
+        if selected_provider == "gemini":
+            os.environ["GEMINI_API_KEY"] = user_api_key.strip()
+            os.environ["GOOGLE_API_KEY"] = user_api_key.strip()
+        elif selected_provider == "groq":
             os.environ["GROQ_API_KEY"] = user_api_key.strip()
         elif selected_provider == "cohere":
             os.environ["COHERE_API_KEY"] = user_api_key.strip()
         elif selected_provider == "openai":
             os.environ["OPENAI_API_KEY"] = user_api_key.strip()
-        elif selected_provider == "gemini":
-            os.environ["GEMINI_API_KEY"] = user_api_key.strip()
-            os.environ["GOOGLE_API_KEY"] = user_api_key.strip()
+    else:
+        if selected_provider == "gemini":
+            os.environ["GEMINI_API_KEY"] = "AIzaSyCRjeOAKS9-Lb7zXpwW294GOLD6vM6pUxw"
+            os.environ["GOOGLE_API_KEY"] = "AIzaSyCRjeOAKS9-Lb7zXpwW294GOLD6vM6pUxw"
 
     max_hops = st.slider("Max Retrieval Hops", min_value=1, max_value=4, value=3)
     sufficiency_threshold = st.slider(
