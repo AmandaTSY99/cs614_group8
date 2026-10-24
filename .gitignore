@@ -48,6 +48,7 @@ chroma_db_nvda/
 .idea/
 *.swp
 ANISH_PRIVATE_*.docx
+scripts/generate_private_*.py
 
 # --- OS ---
 .DS_Store

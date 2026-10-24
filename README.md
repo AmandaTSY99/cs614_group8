@@ -11,7 +11,7 @@
 * 🐳 **[Docker Quickstart Guide](DOCKER_QUICKSTART.md)** — One-line commands to run tests, demos, and ablations inside Docker.
 * 🏛️ **[System Architecture & Mermaid State Graph](ARCHITECTURE.md)** — Complete LangGraph specification (AMR v1 & AAMR v2).
 * 🎤 **[Milestone 1 Demo Guide & Speaking Script](reports/MILESTONE1_DEMO_SCRIPT.md)** — Step-by-step presentation script and query traces.
-* 🤝 **[Aryan Handoff & Module Contracts](ARYAN_HANDOFF.md)** — Plug-and-play contracts for Citations, Guardrails, and RQ2.
+* 🤝 **[Aryan Handoff & Module Contracts](docs/handoffs/ARYAN_HANDOFF.md)** — Plug-and-play contracts for Citations, Guardrails, and RQ2.
 * 📊 **[RQ3 Publication Figures](reports/figures/)** — Pareto frontier, latency distributions, and hop convergence charts.
 
 ---

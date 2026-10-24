@@ -2,7 +2,7 @@
   "metadata": {
     "provider": "mock",
     "model": "mock",
-    "timestamp": "2026-10-24T10:27:51Z"
+    "timestamp": "2026-10-24T10:59:16Z"
   },
   "summary_table": [
     {
@@ -15,7 +15,7 @@
       "chunks": 4,
       "guardrail_passed": true,
       "grounding_err": 0.0,
-      "latency_ms": 18.92,
+      "latency_ms": 24.62,
       "total_tokens": 2184,
       "cost_per_1k": 0.2432,
       "estimated_cost_usd": 0.0002432
@@ -30,7 +30,7 @@
       "chunks": 8,
       "guardrail_passed": true,
       "grounding_err": 0.0,
-      "latency_ms": 12.73,
+      "latency_ms": 13.82,
       "total_tokens": 4405,
       "cost_per_1k": 0.4767,
       "estimated_cost_usd": 0.0004767
@@ -45,7 +45,7 @@
       "chunks": 8,
       "guardrail_passed": true,
       "grounding_err": 0.0,
-      "latency_ms": 41.67,
+      "latency_ms": 44.15,
       "total_tokens": 4310,
       "cost_per_1k": 0.4674,
       "estimated_cost_usd": 0.0004674
@@ -60,7 +60,7 @@
       "chunks": 10,
       "guardrail_passed": true,
       "grounding_err": 0.0,
-      "latency_ms": 30.69,
+      "latency_ms": 37.35,
       "total_tokens": 4419,
       "cost_per_1k": 0.4781,
       "estimated_cost_usd": 0.0004781
@@ -130,7 +130,7 @@
             "prompt_tokens": 639,
             "completion_tokens": 23,
             "total_tokens": 662,
-            "latency_ms": 0.03,
+            "latency_ms": 0.04,
             "cost_usd": 7.08e-05
           },
           {
@@ -141,16 +141,16 @@
             "prompt_tokens": 1203,
             "completion_tokens": 65,
             "total_tokens": 1268,
-            "latency_ms": 0.03,
+            "latency_ms": 0.04,
             "cost_usd": 0.0001398
           }
         ],
         "node_latencies_ms": {
           "decomposer": 0.03,
-          "retriever": 18.72,
-          "critic": 0.03,
-          "synthesizer": 0.03,
-          "guardrail": 0.11
+          "retriever": 24.39,
+          "critic": 0.04,
+          "synthesizer": 0.04,
+          "guardrail": 0.12
         },
         "total_prompt_tokens": 2060,
         "total_completion_tokens": 124,
@@ -164,7 +164,7 @@
           "hop_count": 1,
           "max_hops": 3,
           "early_stopped": true,
-          "total_latency_ms": 18.92,
+          "total_latency_ms": 24.62,
           "total_prompt_tokens": 2060,
           "total_completion_tokens": 124,
           "total_tokens": 2184,
@@ -172,10 +172,10 @@
           "cost_per_1k_queries_usd": 0.2432,
           "node_latencies_ms": {
             "decomposer": 0.03,
-            "retriever": 18.72,
-            "critic": 0.03,
-            "synthesizer": 0.03,
-            "guardrail": 0.11
+            "retriever": 24.39,
+            "critic": 0.04,
+            "synthesizer": 0.04,
+            "guardrail": 0.12
           },
           "hop_attribution_chunk_ids": {
             "1": [
@@ -251,7 +251,7 @@
             "prompt_tokens": 596,
             "completion_tokens": 36,
             "total_tokens": 632,
-            "latency_ms": 0.02,
+            "latency_ms": 0.03,
             "cost_usd": 7.04e-05
           },
           {
@@ -262,7 +262,7 @@
             "prompt_tokens": 418,
             "completion_tokens": 40,
             "total_tokens": 458,
-            "latency_ms": 0.01,
+            "latency_ms": 0.02,
             "cost_usd": 5.38e-05
           },
           {
@@ -273,7 +273,7 @@
             "prompt_tokens": 1092,
             "completion_tokens": 23,
             "total_tokens": 1115,
-            "latency_ms": 0.03,
+            "latency_ms": 0.04,
             "cost_usd": 0.0001161
           },
           {
@@ -284,17 +284,17 @@
             "prompt_tokens": 1888,
             "completion_tokens": 46,
             "total_tokens": 1934,
-            "latency_ms": 0.04,
+            "latency_ms": 0.05,
             "cost_usd": 0.0002026
           }
         ],
         "node_latencies_ms": {
           "decomposer": 0.02,
-          "retriever": 12.6,
-          "critic": 0.05,
-          "generator": 0.01,
-          "synthesizer": 0.04,
-          "guardrail": 0.01
+          "retriever": 13.64,
+          "critic": 0.07,
+          "generator": 0.02,
+          "synthesizer": 0.05,
+          "guardrail": 0.02
         },
         "total_prompt_tokens": 4224,
         "total_completion_tokens": 181,
@@ -308,7 +308,7 @@
           "hop_count": 2,
           "max_hops": 3,
           "early_stopped": true,
-          "total_latency_ms": 12.73,
+          "total_latency_ms": 13.82,
           "total_prompt_tokens": 4224,
           "total_completion_tokens": 181,
           "total_tokens": 4405,
@@ -316,11 +316,11 @@
           "cost_per_1k_queries_usd": 0.4767,
           "node_latencies_ms": {
             "decomposer": 0.02,
-            "retriever": 12.6,
-            "critic": 0.05,
-            "generator": 0.01,
-            "synthesizer": 0.04,
-            "guardrail": 0.01
+            "retriever": 13.64,
+            "critic": 0.07,
+            "generator": 0.02,
+            "synthesizer": 0.05,
+            "guardrail": 0.02
           },
           "hop_attribution_chunk_ids": {
             "1": [
@@ -442,11 +442,11 @@
         ],
         "node_latencies_ms": {
           "decomposer": 0.02,
-          "retriever": 41.51,
+          "retriever": 43.98,
           "critic": 0.07,
           "generator": 0.02,
           "synthesizer": 0.04,
-          "guardrail": 0.01
+          "guardrail": 0.02
         },
         "total_prompt_tokens": 4128,
         "total_completion_tokens": 182,
@@ -460,7 +460,7 @@
           "hop_count": 2,
           "max_hops": 3,
           "early_stopped": true,
-          "total_latency_ms": 41.67,
+          "total_latency_ms": 44.15,
           "total_prompt_tokens": 4128,
           "total_completion_tokens": 182,
           "total_tokens": 4310,
@@ -468,11 +468,11 @@
           "cost_per_1k_queries_usd": 0.4674,
           "node_latencies_ms": {
             "decomposer": 0.02,
-            "retriever": 41.51,
+            "retriever": 43.98,
             "critic": 0.07,
             "generator": 0.02,
             "synthesizer": 0.04,
-            "guardrail": 0.01
+            "guardrail": 0.02
           },
           "hop_attribution_chunk_ids": {
             "1": [
@@ -566,7 +566,7 @@
             "prompt_tokens": 410,
             "completion_tokens": 40,
             "total_tokens": 450,
-            "latency_ms": 0.01,
+            "latency_ms": 0.02,
             "cost_usd": 5.3e-05
           },
           {
@@ -577,7 +577,7 @@
             "prompt_tokens": 1110,
             "completion_tokens": 23,
             "total_tokens": 1133,
-            "latency_ms": 0.03,
+            "latency_ms": 0.04,
             "cost_usd": 0.0001179
           },
           {
@@ -588,17 +588,17 @@
             "prompt_tokens": 1857,
             "completion_tokens": 45,
             "total_tokens": 1902,
-            "latency_ms": 0.04,
+            "latency_ms": 0.05,
             "cost_usd": 0.0001992
           }
         ],
         "node_latencies_ms": {
           "decomposer": 0.02,
-          "tabular_tool": 5.53,
-          "retriever": 25.01,
-          "critic": 0.06,
-          "generator": 0.01,
-          "synthesizer": 0.04,
+          "tabular_tool": 10.15,
+          "retriever": 27.02,
+          "critic": 0.07,
+          "generator": 0.02,
+          "synthesizer": 0.05,
           "guardrail": 0.02
         },
         "total_prompt_tokens": 4238,
@@ -613,7 +613,7 @@
           "hop_count": 2,
           "max_hops": 3,
           "early_stopped": true,
-          "total_latency_ms": 30.69,
+          "total_latency_ms": 37.35,
           "total_prompt_tokens": 4238,
           "total_completion_tokens": 181,
           "total_tokens": 4419,
@@ -621,11 +621,11 @@
           "cost_per_1k_queries_usd": 0.4781,
           "node_latencies_ms": {
             "decomposer": 0.02,
-            "tabular_tool": 5.53,
-            "retriever": 25.01,
-            "critic": 0.06,
-            "generator": 0.01,
-            "synthesizer": 0.04,
+            "tabular_tool": 10.15,
+            "retriever": 27.02,
+            "critic": 0.07,
+            "generator": 0.02,
+            "synthesizer": 0.05,
             "guardrail": 0.02
           },
           "hop_attribution_chunk_ids": {
