@@ -13,13 +13,18 @@ import json
 import re
 from typing import Any, Dict, List
 
-from src.system_c.corpus import extract_tickers_and_years_from_query, to_ticker
-from src.system_c.llm import call_llm
+from src.system_c.corpus import (
+    extract_all_tickers_and_years_from_query,
+    extract_tickers_and_years_from_query,
+    to_ticker,
+)
+from src.system_c.llm import call_llm, clean_and_parse_json
 from src.system_c.state import AdaptiveRAGState
 
 DECOMPOSER_SYSTEM_PROMPT = """You are a Senior Financial Analyst & Query Planner for SEC 10-K filings.
 Given a user's financial question, return a strict JSON object with the following keys:
 - "target_ticker": primary stock ticker (one of AAPL, AMZN, GOOGL, JNJ, JPM, META, MSFT, NVDA, TSLA, WMT, or null)
+- "target_tickers": list of all stock tickers mentioned if comparing multiple companies, e.g. ["AAPL", "MSFT"]
 - "fiscal_years": list of integer fiscal years mentioned (e.g. [2024, 2025]), or empty list []
 - "query_complexity": "single_hop" if it asks for one isolated fact, or "multi_hop" if it connects multiple sections, years, drivers, or footnotes
 - "needs_tabular_tool": true if the question asks for reported financial metrics (revenue, net income, operating income, assets, liabilities, equity, cash flow, EPS, margins)
@@ -29,21 +34,15 @@ Respond ONLY with valid JSON."""
 
 
 def _parse_json_safely(raw_text: str) -> Dict[str, Any]:
-    """Extract and parse JSON object from LLM output, handling markdown code fences."""
-    cleaned = raw_text.strip()
-    fence_match = re.search(r"\{.*\}", cleaned, flags=re.DOTALL)
-    if fence_match:
-        cleaned = fence_match.group(0)
-    try:
-        return json.loads(cleaned)
-    except Exception:
-        return {}
+    """Extract and parse JSON object from LLM output with syntax repair."""
+    return clean_and_parse_json(raw_text)
 
 
 def decomposer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     """LangGraph Node: Decompose `original_query` into sub-goals and extract metadata filters."""
     query = state["original_query"]
-    regex_ticker, regex_years = extract_tickers_and_years_from_query(query)
+    regex_tickers, regex_years = extract_all_tickers_and_years_from_query(query)
+    regex_ticker = regex_tickers[0] if regex_tickers else None
 
     messages = [
         {"role": "system", "content": DECOMPOSER_SYSTEM_PROMPT},
@@ -58,9 +57,21 @@ def decomposer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     )
     parsed = _parse_json_safely(raw_resp)
 
-    # Resolve ticker & fiscal years (combining explicit state overrides, LLM extraction, and regex fallback)
+    # Resolve primary ticker & all tickers (combining explicit state overrides, LLM extraction, and regex fallback)
     llm_ticker = to_ticker(str(parsed.get("target_ticker") or "")) if parsed.get("target_ticker") else None
-    ticker = state.get("target_ticker") or llm_ticker or regex_ticker
+    primary_ticker = state.get("target_ticker") or llm_ticker or regex_ticker
+
+    all_tickers: List[str] = list(state.get("target_tickers") or [])
+    if not all_tickers:
+        for t in parsed.get("target_tickers") or []:
+            res_t = to_ticker(str(t))
+            if res_t and res_t not in all_tickers:
+                all_tickers.append(res_t)
+        for t in regex_tickers:
+            if t not in all_tickers:
+                all_tickers.append(t)
+    if primary_ticker and primary_ticker not in all_tickers:
+        all_tickers.insert(0, primary_ticker)
 
     llm_years: List[int] = []
     for y in parsed.get("fiscal_years") or []:
@@ -71,9 +82,9 @@ def decomposer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     fiscal_years = state.get("fiscal_years") or llm_years or regex_years
 
     pairs = (
-        [[ticker, y] for y in fiscal_years]
-        if (ticker and fiscal_years)
-        else ([[ticker, None]] if ticker else [])
+        [[t, y] for t in all_tickers for y in fiscal_years]
+        if (all_tickers and fiscal_years)
+        else ([[t, None] for t in all_tickers] if all_tickers else ([[primary_ticker, None]] if primary_ticker else []))
     )
 
     sub_queries = parsed.get("sub_queries")
@@ -93,7 +104,8 @@ def decomposer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
         needs_tabular = True
 
     return {
-        "target_ticker": ticker,
+        "target_ticker": primary_ticker,
+        "target_tickers": all_tickers,
         "fiscal_years": fiscal_years,
         "target_pairs": pairs,
         "query_complexity": complexity,

@@ -14,6 +14,7 @@ token consumption, latency, and cost metrics are automatically logged into `stat
 
 import json
 import os
+import re
 import time
 import urllib.request
 from typing import Any, Dict, List, Optional, Tuple
@@ -23,6 +24,28 @@ from dotenv import load_dotenv
 from src.system_c.telemetry import record_llm_call
 
 load_dotenv()
+
+
+def clean_and_parse_json(raw_text: str) -> Dict[str, Any]:
+    """
+    Robust JSON parser for LLM responses.
+    Handles markdown code fences, trailing commas, and returns an empty dict on failure.
+    """
+    cleaned = raw_text.strip()
+    fence_match = re.search(r"\{.*\}", cleaned, flags=re.DOTALL)
+    if fence_match:
+        cleaned = fence_match.group(0)
+    # Strip trailing commas before closing braces/brackets (common local LLM issue)
+    cleaned = re.sub(r",\s*([\]}])", r"\1", cleaned)
+    try:
+        return json.loads(cleaned)
+    except Exception:
+        try:
+            import ast
+            parsed = ast.literal_eval(cleaned)
+            return parsed if isinstance(parsed, dict) else {}
+        except Exception:
+            return {}
 
 
 def get_llm_config() -> Tuple[str, str]:

@@ -22,24 +22,29 @@ _CORPUS_CACHE: Dict[str, List[Dict[str, Any]]] = {}
 _CROSS_ENCODER: Any = None
 
 
-def _get_cached_chunks(ticker: Optional[str], fiscal_years: Optional[List[int]]) -> List[Dict[str, Any]]:
-    """Load and structure-chunk the relevant 10-K filings (defaults to latest filing if year not specified)."""
-    tkr = ticker or "NVDA"
+def _get_cached_chunks(
+    ticker: Optional[str] = None,
+    fiscal_years: Optional[List[int]] = None,
+    tickers: Optional[List[str]] = None,
+) -> List[Dict[str, Any]]:
+    """Load and structure-chunk relevant 10-K filings (supports single or multi-company comparison queries)."""
+    target_tickers = tickers or ([ticker] if ticker else ["NVDA"])
+    tickers_key = ",".join(sorted(target_tickers))
     years_key = ",".join(str(y) for y in sorted(fiscal_years)) if fiscal_years else "LATEST"
-    cache_key = f"{tkr}:{years_key}"
+    cache_key = f"{tickers_key}:{years_key}"
     if cache_key in _CORPUS_CACHE:
         return _CORPUS_CACHE[cache_key]
 
     filings = load_filings(
-        tickers=[tkr],
+        tickers=target_tickers,
         fiscal_years=fiscal_years if fiscal_years else None,
         min_year=2023 if not fiscal_years else None,
     )
     if not filings and fiscal_years:
         # Fallback to latest filing for that ticker if specific year isn't on disk
-        filings = load_filings(tickers=[tkr], min_year=2024)
+        filings = load_filings(tickers=target_tickers, min_year=2024)
     if not filings:
-        filings = load_filings(tickers=[tkr])[-2:]
+        filings = load_filings(tickers=target_tickers)[-4:]
 
     records = chunk_corpus(filings, header=True)
     _CORPUS_CACHE[cache_key] = records
@@ -89,12 +94,13 @@ def retrieve_10k_chunks(
     fiscal_years: Optional[List[int]] = None,
     top_k: int = 4,
     hop: int = 1,
+    tickers: Optional[List[str]] = None,
 ) -> List[EvidenceChunk]:
     """
     Retrieve and rerank top-k structure-preserved 10-K chunks for `query`.
-    Compatible with both live corpus files in `data/<TICKER>/10-K/` and mock testing.
+    Supports single-company or multi-company comparison queries.
     """
-    records = _get_cached_chunks(ticker, fiscal_years)
+    records = _get_cached_chunks(ticker=ticker, fiscal_years=fiscal_years, tickers=tickers)
     if not records:
         # Synthetic fallback only if data directory is absent
         return [
@@ -156,17 +162,29 @@ def retriever_node(
     hop = state.get("current_hop", 1)
     sub_query = state.get("current_sub_query") or state["original_query"]
     ticker = state.get("target_ticker") or "NVDA"
+    tickers = state.get("target_tickers") or ([ticker] if ticker else ["NVDA"])
     years = state.get("fiscal_years") or []
 
     with track_node_latency(telemetry, "retriever"):
         fn = custom_retriever_fn or retrieve_10k_chunks
-        new_chunks = fn(
-            query=sub_query,
-            ticker=ticker,
-            fiscal_years=years,
-            top_k=4,
-            hop=hop,
-        )
+        try:
+            new_chunks = fn(
+                query=sub_query,
+                ticker=ticker,
+                fiscal_years=years,
+                top_k=4,
+                hop=hop,
+                tickers=tickers,
+            )
+        except TypeError:
+            # Fallback for custom_retriever_fn that only takes original args
+            new_chunks = fn(
+                query=sub_query,
+                ticker=ticker,
+                fiscal_years=years,
+                top_k=4,
+                hop=hop,
+            )
 
         existing = list(state.get("accumulated_evidence", []))
         seen_ids = {c["chunk_id"] for c in existing}

@@ -15,7 +15,7 @@ import json
 import re
 from typing import Any, Dict
 
-from src.system_c.llm import call_llm
+from src.system_c.llm import call_llm, clean_and_parse_json
 from src.system_c.state import AdaptiveRAGState
 
 CRITIC_SYSTEM_PROMPT = """You are an Evidence Sufficiency Critic for an SEC 10-K Financial RAG system.
@@ -28,14 +28,7 @@ Return ONLY a valid JSON object with keys:
 
 
 def _parse_critic_json(raw_text: str) -> Dict[str, Any]:
-    cleaned = raw_text.strip()
-    match = re.search(r"\{.*\}", cleaned, flags=re.DOTALL)
-    if match:
-        cleaned = match.group(0)
-    try:
-        return json.loads(cleaned)
-    except Exception:
-        return {}
+    return clean_and_parse_json(raw_text)
 
 
 def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:

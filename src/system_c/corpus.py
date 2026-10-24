@@ -58,22 +58,26 @@ def to_ticker(name: str) -> Optional[str]:
     return COMPANY_TICKERS.get(clean.lower())
 
 
-def extract_tickers_and_years_from_query(query: str) -> Tuple[Optional[str], List[int]]:
-    """Fast regex/lexicon extractor for tickers and fiscal years mentioned in a natural language query."""
+def extract_all_tickers_and_years_from_query(query: str) -> Tuple[List[str], List[int]]:
+    """Extract all mentioned company tickers (for comparative multi-company queries) and fiscal years."""
     q_lower = query.lower()
-    detected_ticker = None
+    detected = []
     for t in KNOWN_TICKERS:
         if re.search(rf"\b{t.lower()}\b", q_lower):
-            detected_ticker = t
-            break
-    if not detected_ticker:
-        for name, t in COMPANY_TICKERS.items():
-            if name in q_lower:
-                detected_ticker = t
-                break
+            detected.append(t)
+    for name, t in COMPANY_TICKERS.items():
+        if name in q_lower and t not in detected:
+            detected.append(t)
 
     years = sorted({int(m) for m in re.findall(r"\b(199\d|20[0-2]\d)\b", query)})
-    return detected_ticker, years
+    return detected, years
+
+
+def extract_tickers_and_years_from_query(query: str) -> Tuple[Optional[str], List[int]]:
+    """Fast regex/lexicon extractor for primary ticker and fiscal years mentioned in a query."""
+    tickers, years = extract_all_tickers_and_years_from_query(query)
+    primary = tickers[0] if tickers else None
+    return primary, years
 
 
 def load_filings(

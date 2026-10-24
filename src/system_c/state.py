@@ -37,6 +37,7 @@ class AdaptiveRAGState(TypedDict):
     original_query: str
     mode: str                                  # "v1_amr" (Adaptive Multi-Hop) or "v2_aamr" (Agentic with Tabular Tool + Auditor)
     target_ticker: Optional[str]               # Primary ticker (e.g. "NVDA")
+    target_tickers: List[str]                  # All tickers mentioned (e.g. ["AAPL", "MSFT"] for comparative queries)
     target_pairs: List[ List[Any] ]            # List of [ticker, fiscal_year] pairs (compatible with build_vdb_base_RAG.ipynb)
     fiscal_years: List[int]
 
@@ -77,16 +78,27 @@ def create_initial_state(
     target_ticker: Optional[str] = None,
     fiscal_years: Optional[List[int]] = None,
     force_max_hops: bool = False,
+    target_tickers: Optional[List[str]] = None,
 ) -> AdaptiveRAGState:
     """Factory helper to initialize a clean AdaptiveRAGState for a new query execution."""
     f_years = fiscal_years or []
-    pairs = [[target_ticker, y] for y in f_years] if (target_ticker and f_years) else (
-        [[target_ticker, None]] if target_ticker else []
-    )
+    all_tickers = target_tickers or ([target_ticker] if target_ticker else [])
+    
+    pairs = []
+    if all_tickers and f_years:
+        pairs = [[t, y] for t in all_tickers for y in f_years]
+    elif all_tickers:
+        pairs = [[t, None] for t in all_tickers]
+    elif f_years:
+        pairs = [[None, y] for y in f_years]
+
+    primary_ticker = target_ticker or (all_tickers[0] if all_tickers else None)
+
     return AdaptiveRAGState(
         original_query=query,
         mode=mode,
-        target_ticker=target_ticker,
+        target_ticker=primary_ticker,
+        target_tickers=all_tickers,
         target_pairs=pairs,
         fiscal_years=f_years,
         query_complexity="multi_hop",

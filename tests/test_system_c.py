@@ -140,3 +140,42 @@ def test_rq3_ablation_force_max_hops():
     )
     assert res["current_hop"] == 3
     assert res["telemetry"]["rq3_summary"]["early_stopped"] is False
+
+
+def test_clean_and_parse_json_robustness():
+    """Verify clean_and_parse_json handles markdown fences, commentary, and trailing commas."""
+    from src.system_c.llm import clean_and_parse_json
+
+    raw_with_trailing_comma = """
+    Here is the requested output:
+    ```json
+    {
+        "is_sufficient": true,
+        "missing_premises": [],
+        "critic_reasoning": "Context contains all required facts.",
+    }
+    ```
+    """
+    parsed = clean_and_parse_json(raw_with_trailing_comma)
+    assert parsed.get("is_sufficient") is True
+    assert parsed.get("missing_premises") == []
+
+    malformed = "Not a json response at all"
+    assert clean_and_parse_json(malformed) == {}
+
+
+def test_multi_company_query_decomposition():
+    """Verify decomposer extracts multiple tickers and formats multi-company target pairs."""
+    from src.system_c.nodes.decomposer import decomposer_node
+    from src.system_c.state import create_initial_state
+
+    state = create_initial_state(
+        query="Compare Apple and Microsoft total revenue in 2024 and 2025",
+        max_hops=2,
+    )
+    out = decomposer_node(state)
+    assert "AAPL" in out["target_tickers"]
+    assert "MSFT" in out["target_tickers"]
+    assert 2024 in out["fiscal_years"]
+    assert 2025 in out["fiscal_years"]
+    assert len(out["target_pairs"]) >= 4
