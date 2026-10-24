@@ -91,13 +91,77 @@ COMPANIES = {
     "WMT": {"name": "Walmart Inc.", "sector": "Retail / Consumer Staples", "filings": "1995 - 2026"},
 }
 
-SAMPLE_QUERIES = [
-    "What was Apple's total revenue, operating income, and net income in fiscal 2024?",
-    "Compare Nvidia and Apple operating income and profit margins in fiscal 2024.",
-    "What risk factors and supply chain constraints impacted Tesla's operations in 2023?",
-    "What was Microsoft's Intelligent Cloud revenue and Azure growth in fiscal 2024?",
-    "How did Amazon's operating cash flow and capital expenditures trend from 2022 to 2024?",
-]
+# Tiered Golden Evaluation Queries (Pulled directly from data/golden_eval_set.json)
+TIERED_GOLDEN_QUERIES = {
+    "🟢 Tier 1: Simple (Single-Hop Factual)": [
+        (
+            "GOLD-01",
+            "NVIDIA FY2026 period end date & headquarters",
+            "What was NVIDIA's fiscal year 2026 period end date, and where is its principal executive office located?",
+        ),
+        (
+            "GOLD-02",
+            "Apple FY2024 independent accounting firm",
+            "Who served as Apple Inc.'s independent registered public accounting firm for the fiscal year ended September 28, 2024?",
+        ),
+        (
+            "GOLD-03",
+            "Apple Inc. state of incorporation & IRS EIN",
+            "What is Apple Inc.'s state of incorporation, corporate headquarters address, and IRS employer identification number in its 2024 Form 10-K?",
+        ),
+    ],
+    "🟡 Tier 2: Moderate (Quantitative Tabular YoY)": [
+        (
+            "GOLD-16",
+            "NVIDIA FY25 vs FY26 revenue & YoY growth",
+            "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate.",
+        ),
+        (
+            "GOLD-17",
+            "NVIDIA FY25 vs FY26 cash flow & diluted EPS",
+            "What was NVIDIA's operating cash flow, total assets, and diluted earnings per share in FY2025 versus FY2026?",
+        ),
+        (
+            "GOLD-18",
+            "Apple FY23 vs FY24 net sales & cash flow",
+            "What was Apple's total net sales, gross margin, and operating cash flow in fiscal 2023 versus fiscal 2024?",
+        ),
+    ],
+    "🟠 Tier 3: Complex (Cross-Section MD&A + Notes)": [
+        (
+            "GOLD-36",
+            "NVIDIA Compute segment vs customer concentration",
+            "How did NVIDIA's Compute & Networking segment perform in FY2026, and what specific direct customer concentration percentages were disclosed in the Notes to Consolidated Financial Statements?",
+        ),
+        (
+            "GOLD-37",
+            "NVIDIA Item 7A interest rate risk vs Note 11 debt",
+            "What sensitivity to interest rate shifts and public equity price movements did NVIDIA disclose in Item 7A, and what senior notes balance was reported in Note 11?",
+        ),
+        (
+            "GOLD-38",
+            "Apple Item 7 product sales vs Note 13 regional revenue",
+            "How did Apple's iPhone and Services product revenues perform in fiscal 2024 according to Item 7, and how did this compare to regional net sales in Americas and Greater China disclosed in Note 13?",
+        ),
+    ],
+    "🔴 Tier 4: Expert (Multi-Company Comparative RAG)": [
+        (
+            "GOLD-51",
+            "Cloud Battle: Microsoft vs AWS vs Google Cloud (2024)",
+            "Compare the 2024 enterprise cloud segment revenue, operating income, and operating margin across Microsoft (Intelligent Cloud), Amazon (AWS), and Alphabet (Google Cloud). Which cloud provider generated the highest operating margin in 2024, and which achieved the highest year-over-year revenue growth rate?",
+        ),
+        (
+            "GOLD-52",
+            "AI Capex: NVIDIA vs Meta vs Microsoft capital commitments",
+            "Compare the AI infrastructure capital expenditure and lease commitments across NVIDIA, Meta Platforms, and Microsoft in their most recent annual filings. What future data center lease obligations did NVIDIA disclose commencing between fiscal 2027 and 2030, and what were the total additions to property and equipment or capital expenditures for Microsoft and Meta in 2024?",
+        ),
+        (
+            "GOLD-53",
+            "Ad Growth: Meta Platforms vs Alphabet digital ad growth",
+            "Compare the digital advertising revenue performance and year-over-year growth rate of Meta Platforms versus Alphabet in 2024. Which company achieved a higher percentage growth rate in advertising?",
+        ),
+    ],
+}
 
 
 @st.cache_data(ttl=3600)
@@ -221,11 +285,14 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("3. Golden Presets")
-    st.caption("Click a question to populate:")
-    for sq in SAMPLE_QUERIES:
-        if st.button(f"📌 {sq[:40]}...", use_container_width=True, key=f"sq_{sq}"):
-            st.session_state["user_query_input"] = sq
+    st.subheader("3. Golden Benchmark Presets")
+    st.caption("Click any preset below (Simple → Complex):")
+    for tier_title, questions in TIERED_GOLDEN_QUERIES.items():
+        with st.expander(tier_title, expanded=(tier_title.startswith("🟢"))):
+            for q_id, q_label, full_q in questions:
+                if st.button(f"📌 {q_id}: {q_label}", use_container_width=True, key=f"side_{q_id}"):
+                    st.session_state["user_query_input"] = full_q
+                    st.rerun()
 
     st.divider()
 
@@ -260,6 +327,23 @@ with col_b3:
     st.markdown('<span class="metric-badge badge-info">10 SEC 10-K Corpora (1993–2026)</span>', unsafe_allow_html=True)
 with col_b4:
     st.markdown('<span class="metric-badge badge-warning">Zero-Hallucination Guardrail</span>', unsafe_allow_html=True)
+
+st.write("")
+
+# Main Page Golden Benchmark Tier Selector
+st.markdown("##### 🎯 Golden Benchmark Presets (Select to populate question)")
+tier_tabs = st.tabs(["🟢 Tier 1: Simple", "🟡 Tier 2: Moderate", "🟠 Tier 3: Complex", "🔴 Tier 4: Expert"])
+tier_keys = list(TIERED_GOLDEN_QUERIES.keys())
+
+for t_idx, tab in enumerate(tier_tabs):
+    with tab:
+        q_list = TIERED_GOLDEN_QUERIES[tier_keys[t_idx]]
+        cols = st.columns(len(q_list))
+        for c_idx, (q_id, q_label, full_q) in enumerate(q_list):
+            with cols[c_idx]:
+                if st.button(f"**{q_id}**\n\n{q_label}", key=f"main_{q_id}", use_container_width=True):
+                    st.session_state["user_query_input"] = full_q
+                    st.rerun()
 
 st.write("")
 
