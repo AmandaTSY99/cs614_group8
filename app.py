@@ -1,12 +1,15 @@
 """
-System C: Adaptive Multi-Hop Financial RAG (Streamlit UI)
-Interactive Web Demo for CS614 Milestone 1 & Presentation
+System C: Adaptive Multi-Hop Financial RAG (Institutional Quant Terminal UI — Option A)
+Interactive Real-Time Streaming Web Demo for SEC 10-K Filings
 """
 
+import html
 import os
+import re
 import sys
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
+
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
@@ -18,7 +21,7 @@ if REPO_ROOT not in sys.path:
 
 load_dotenv(override=True)
 
-# Seamlessly inject Streamlit Cloud secrets into os.environ
+# Seamlessly inject Streamlit Cloud / Hugging Face Spaces secrets into os.environ
 try:
     if hasattr(st, "secrets"):
         for sec_key, sec_val in st.secrets.items():
@@ -29,68 +32,587 @@ except Exception:
 
 # Page configuration
 st.set_page_config(
-    page_title="System C | Financial RAG",
+    page_title="System C | Institutional SEC 10-K Financial Terminal",
     page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS for executive financial dashboard styling (Theme-Adaptive for Light & Dark Mode)
+# ---------------------------------------------------------------------------
+# OPTION A: INSTITUTIONAL QUANTITATIVE (BLOOMBERG / KOYFIN PRECISION) CSS
+# ---------------------------------------------------------------------------
 st.markdown(
     """
-    <style>
-    .main-header {
-        font-size: 2.2rem;
-        font-weight: 800;
-        background: linear-gradient(90deg, #3B82F6 0%, #6366F1 50%, #8B5CF6 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.2rem;
+<meta name="color-scheme" content="light dark">
+<style>
+:root {
+    color-scheme: light dark;
+    /* Light Mode (Warm Institutional Paper & Crisp White) */
+    --bg-canvas-light: #F4F5F7;
+    --bg-surface-light: #FFFFFF;
+    --bg-elevated-light: #ECEEF2;
+    --text-primary-light: #0F172A;
+    --text-secondary-light: #334155;
+    --text-muted-light: #64748B;
+    --border-grid-light: #CBD5E1;
+
+    /* Dark Mode (Deep Carbon Obsidian & Terminal Slate) */
+    --bg-canvas-dark: #0A0D12;
+    --bg-surface-dark: #11161F;
+    --bg-elevated-dark: #161D28;
+    --text-primary-dark: #F1F5F9;
+    --text-secondary-dark: #CBD5E1;
+    --text-muted-dark: #94A3B8;
+    --border-grid-dark: #263040;
+
+    /* Default Fallback (Light) */
+    --term-bg-canvas: var(--bg-canvas-light);
+    --term-bg-surface: var(--bg-surface-light);
+    --term-bg-elevated: var(--bg-elevated-light);
+    --term-text-primary: var(--text-primary-light);
+    --term-text-secondary: var(--text-secondary-light);
+    --term-text-muted: var(--text-muted-light);
+    --term-border: var(--border-grid-light);
+
+    /* Semantic Institutional Signal Palette */
+    --quant-amber: #F59E0B;
+    --quant-emerald: #10B981;
+    --quant-cyan: #06B6D4;
+    --quant-blue: #3B82F6;
+    --quant-indigo: #6366F1;
+    --quant-violet: #8B5CF6;
+    --quant-rose: #F43F5E;
+    --quant-radius: 4px;
+    --quant-mono: ui-monospace, "JetBrains Mono", "IBM Plex Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    --brand-accent-light: #2563EB;
+    --brand-accent-dark: #F59E0B;
+    --accent-color: var(--brand-accent-light);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --term-bg-canvas: var(--bg-canvas-dark);
+        --term-bg-surface: var(--bg-surface-dark);
+        --term-bg-elevated: var(--bg-elevated-dark);
+        --term-text-primary: var(--text-primary-dark);
+        --term-text-secondary: var(--text-secondary-dark);
+        --term-text-muted: var(--text-muted-dark);
+        --term-border: var(--border-grid-dark);
+        --accent-color: var(--brand-accent-dark);
     }
-    .sub-header {
-        font-size: 1.05rem;
-        color: #475569;
-        margin-bottom: 1.2rem;
+}
+
+@supports (color: light-dark(white, black)) {
+    :root {
+        --term-bg-canvas: light-dark(var(--bg-canvas-light), var(--bg-canvas-dark));
+        --term-bg-surface: light-dark(var(--bg-surface-light), var(--bg-surface-dark));
+        --term-bg-elevated: light-dark(var(--bg-elevated-light), var(--bg-elevated-dark));
+        --term-text-primary: light-dark(var(--text-primary-light), var(--text-primary-dark));
+        --term-text-secondary: light-dark(var(--text-secondary-light), var(--text-secondary-dark));
+        --term-text-muted: light-dark(var(--text-muted-light), var(--text-muted-dark));
+        --term-border: light-dark(var(--border-grid-light), var(--border-grid-dark));
+        --accent-color: light-dark(var(--brand-accent-light), var(--brand-accent-dark));
     }
-    .arch-banner {
-        background-color: rgba(59, 130, 246, 0.08);
-        border: 1px solid rgba(59, 130, 246, 0.25);
-        border-radius: 8px;
-        padding: 12px 18px;
-        margin-bottom: 16px;
+}
+
+html {
+    accent-color: var(--accent-color);
+    font-variant-numeric: tabular-nums;
+}
+
+/* High-Contrast / Forced Colors Mode Accessibility Fallback */
+@media (forced-colors: active) {
+    .pipeline-shell, .node-box, .gauge-card, .grounding-pill, .timeline-card, .dossier-shell {
+        border: 2px solid CanvasText !important;
     }
-    .arch-title {
-        font-size: 0.80rem;
-        font-weight: 700;
-        color: #2563EB;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+}
+
+/* Sidebar Institutional Terminal Brand Header */
+.sidebar-brand-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 11px 13px;
+    border-radius: var(--quant-radius);
+    background: var(--term-bg-surface);
+    border: 1px solid var(--term-border);
+    border-left: 3.5px solid var(--quant-amber);
+}
+.sidebar-brand-title {
+    font-family: var(--quant-mono);
+    font-weight: 800;
+    font-size: 1.05rem;
+    line-height: 1.2;
+    color: var(--text-color, var(--term-text-primary)) !important;
+    letter-spacing: -0.02em;
+}
+.sidebar-brand-sub {
+    font-family: var(--quant-mono);
+    font-size: 0.68rem;
+    color: var(--quant-amber) !important;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+/* Top Institutional Header Bar */
+.terminal-top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--term-border);
+}
+.terminal-eyebrow {
+    font-family: var(--quant-mono);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--quant-amber);
+    margin-bottom: 2px;
+}
+.main-header {
+    font-size: 1.95rem;
+    font-weight: 800;
+    color: var(--text-color, var(--term-text-primary));
+    letter-spacing: -0.025em;
+    margin-bottom: 0.1rem;
+    line-height: 1.15;
+}
+.sub-header {
+    font-size: 0.90rem;
+    color: var(--text-color, var(--term-text-secondary));
+    opacity: 0.85;
+    font-weight: 500;
+}
+.terminal-status-cluster {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.metric-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border-radius: var(--quant-radius);
+    font-family: var(--quant-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: var(--term-bg-surface);
+    color: var(--text-color, var(--term-text-primary));
+    border: 1px solid var(--term-border);
+}
+.badge-emerald {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10B981;
+    border-color: rgba(16, 185, 129, 0.45);
+}
+.badge-amber {
+    background: rgba(245, 158, 11, 0.14);
+    color: #F59E0B;
+    border-color: rgba(245, 158, 11, 0.5);
+}
+.badge-cyan {
+    background: rgba(6, 182, 212, 0.12);
+    color: #06B6D4;
+    border-color: rgba(6, 182, 212, 0.45);
+}
+.badge-blue {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3B82F6;
+    border-color: rgba(59, 130, 246, 0.45);
+}
+
+/* Authoritative Enterprise Primary CTA Button */
+div.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #4F46E5 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(96, 165, 250, 0.55) !important;
+    border-radius: var(--quant-radius) !important;
+    font-family: var(--quant-mono) !important;
+    font-weight: 700 !important;
+    font-size: 0.84rem !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    padding: 0.55rem 1.15rem !important;
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3) !important;
+    transition: all 0.18s ease !important;
+}
+div.stButton > button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #6366F1 100%) !important;
+    box-shadow: 0 0 18px rgba(59, 130, 246, 0.55) !important;
+    border-color: #60A5FA !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Animations for Active Node & Schematic Reflection Loop */
+@keyframes quantActivePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+@keyframes dashFlow {
+    to { stroke-dashoffset: -20; }
+}
+
+/* Interactive State Graph Shell */
+.pipeline-shell {
+    background: var(--term-bg-surface);
+    border: 1px solid var(--term-border);
+    border-radius: var(--quant-radius);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    font-variant-numeric: tabular-nums;
+}
+.pipeline-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--term-border);
+}
+.pipeline-title {
+    font-family: var(--quant-mono);
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-color, var(--term-text-primary));
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.hop-banner {
+    padding: 4px 10px;
+    border-radius: var(--quant-radius);
+    font-family: var(--quant-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.hop-banner-active {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.55);
+}
+.hop-banner-normal {
+    background: rgba(59, 130, 246, 0.12);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.45);
+}
+.hop-banner-complete {
+    background: rgba(16, 185, 129, 0.13);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.45);
+}
+
+.nodes-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(130px, 1fr));
+    gap: 8px;
+    align-items: stretch;
+}
+@media (max-width: 1100px) {
+    .nodes-grid {
+        grid-template-columns: repeat(3, minmax(140px, 1fr));
     }
-    .arch-text {
-        font-size: 0.90rem;
-        color: #1E293B;
-        font-weight: 500;
+}
+@media (max-width: 640px) {
+    .nodes-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-    @media (prefers-color-scheme: dark) {
-        .sub-header { color: #94A3B8 !important; }
-        .arch-title { color: #60A5FA !important; }
-        .arch-text { color: #F1F5F9 !important; }
-        .arch-banner { background-color: rgba(59, 130, 246, 0.12) !important; border-color: rgba(96, 165, 250, 0.3) !important; }
+}
+
+.node-box {
+    position: relative;
+    border-radius: var(--quant-radius);
+    padding: 10px 11px;
+    background: var(--term-bg-elevated);
+    border: 1px solid var(--term-border);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 88px;
+}
+.node-box.state-idle {
+    opacity: 0.5;
+}
+.node-box.state-skipped {
+    opacity: 0.4;
+    border-style: dashed;
+}
+.node-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 5px;
+}
+.node-step-num {
+    font-family: var(--quant-mono);
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--text-color, var(--term-text-muted));
+}
+.node-status-tag {
+    font-family: var(--quant-mono);
+    font-size: 0.64rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+.node-name {
+    font-size: 0.80rem;
+    font-weight: 800;
+    color: var(--text-color, var(--term-text-primary));
+    line-height: 1.25;
+    margin-bottom: 4px;
+}
+.node-telemetry {
+    font-family: var(--quant-mono);
+    font-size: 0.70rem;
+    color: var(--text-color, var(--term-text-secondary));
+    opacity: 0.88;
+    line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Schematic Multi-Hop Loop Bar */
+.loop-trace-bar {
+    margin-top: 8px;
+    padding: 6px 12px;
+    border-radius: var(--quant-radius);
+    background: var(--term-bg-elevated);
+    border: 1px solid var(--term-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Consolidated 5-Column Institutional Telemetry Ribbon */
+.telemetry-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--term-border);
+}
+@media (max-width: 1024px) {
+    .telemetry-strip {
+        grid-template-columns: repeat(3, 1fr);
     }
-    .citation-tag {
-        background-color: rgba(99, 102, 241, 0.15);
-        color: #6366F1;
-        font-family: monospace;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.85em;
+}
+@media (max-width: 640px) {
+    .telemetry-strip {
+        grid-template-columns: repeat(2, 1fr);
     }
-    </style>
-    """,
+}
+.gauge-card {
+    background: var(--term-bg-elevated);
+    border: 1px solid var(--term-border);
+    border-radius: var(--quant-radius);
+    padding: 7px 10px;
+}
+.gauge-label {
+    font-family: var(--quant-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-color, var(--term-text-muted));
+    opacity: 0.85;
+    font-weight: 700;
+}
+.gauge-val {
+    font-family: var(--quant-mono);
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--text-color, var(--term-text-primary));
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+}
+.gauge-bar-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+.gauge-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* Numerical Grounding Pills (Institutional Quant Style) */
+.pills-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+}
+.grounding-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: var(--quant-radius);
+    font-family: var(--quant-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.12s ease;
+    cursor: help;
+}
+.grounding-pill:hover {
+    transform: translateY(-1px);
+}
+.pill-verified {
+    background: rgba(16, 185, 129, 0.11);
+    color: #10B981;
+    border: 1px solid rgba(16, 185, 129, 0.45);
+}
+.pill-verified .pill-source {
+    font-size: 0.68rem;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: rgba(16, 185, 129, 0.16);
+    color: var(--text-color, var(--term-text-primary));
+    font-weight: 600;
+}
+.pill-ungrounded {
+    background: rgba(244, 63, 94, 0.12);
+    color: #F43F5E;
+    border: 1px solid rgba(244, 63, 94, 0.5);
+}
+.pill-ungrounded .strike-num {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+}
+.pill-ungrounded .pill-flag-tag {
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: rgba(245, 158, 11, 0.22);
+    color: #F59E0B;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+/* Executive Equity Research Dossier Box */
+.dossier-shell {
+    background: var(--term-bg-surface);
+    border: 1px solid var(--term-border);
+    border-left: 3.5px solid var(--quant-amber);
+    border-radius: var(--quant-radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    font-variant-numeric: tabular-nums;
+}
+.dossier-tape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--term-bg-elevated);
+    border-bottom: 1px solid var(--term-border);
+    font-family: var(--quant-mono);
+    font-size: 0.72rem;
+    color: var(--text-color, var(--term-text-secondary));
+}
+.dossier-body {
+    padding: 16px 20px;
+    line-height: 1.65;
+    font-size: 0.95rem;
+}
+.citation-chip {
+    display: inline-block;
+    background: var(--term-bg-elevated);
+    color: var(--text-color, var(--term-text-secondary));
+    border: 1px solid var(--term-border);
+    font-family: var(--quant-mono);
+    padding: 0px 6px;
+    border-radius: 3px;
+    font-size: 0.74em;
+    font-weight: 700;
+    vertical-align: baseline;
+    margin: 0 1px;
+}
+
+/* Interactive Multi-Hop Audit Timeline */
+.timeline-container {
+    position: relative;
+    padding-left: 22px;
+    margin-top: 10px;
+    font-variant-numeric: tabular-nums;
+}
+.timeline-container::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--term-border);
+}
+.timeline-card {
+    position: relative;
+    background: var(--term-bg-surface);
+    border: 1px solid var(--term-border);
+    border-radius: var(--quant-radius);
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+.timeline-dot {
+    position: absolute;
+    left: -20px;
+    top: 16px;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    border: 2px solid var(--term-bg-surface);
+}
+.timeline-loop-edge {
+    position: relative;
+    margin: -2px 0 10px 0;
+    padding: 8px 12px;
+    border-radius: var(--quant-radius);
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px dashed rgba(245, 158, 11, 0.55);
+    color: #F59E0B;
+    font-family: var(--quant-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+</style>
+""",
     unsafe_allow_html=True,
 )
 
-# Company directory
+# ---------------------------------------------------------------------------
+# STATIC DATA & BENCHMARK PRESETS
+# ---------------------------------------------------------------------------
 COMPANIES = {
     "AAPL": {"name": "Apple Inc.", "sector": "Consumer Electronics / Services", "filings": "1994 - 2025"},
     "MSFT": {"name": "Microsoft Corporation", "sector": "Enterprise Software / Cloud", "filings": "1994 - 2026"},
@@ -104,7 +626,6 @@ COMPANIES = {
     "WMT": {"name": "Walmart Inc.", "sector": "Retail / Consumer Staples", "filings": "1995 - 2026"},
 }
 
-# Tiered Golden Evaluation Queries (Pulled directly from data/golden_eval_set.json)
 TIERED_GOLDEN_QUERIES = {
     "Tier 1: Simple (Single-Hop Factual)": [
         (
@@ -176,6 +697,51 @@ TIERED_GOLDEN_QUERIES = {
     ],
 }
 
+NODE_META = [
+    {
+        "id": "decomposer",
+        "step": "01",
+        "title": "Planner / Decomposer",
+        "color": "#06B6D4",
+        "default_desc": "Ticker & Sub-Query Plan",
+    },
+    {
+        "id": "tabular_tool",
+        "step": "02",
+        "title": "Tabular XBRL Router",
+        "color": "#10B981",
+        "default_desc": "Deterministic SQL/XBRL",
+    },
+    {
+        "id": "retriever",
+        "step": "03",
+        "title": "Hybrid 10-K Retriever",
+        "color": "#3B82F6",
+        "default_desc": "Dense + BM25 + Rerank",
+    },
+    {
+        "id": "critic",
+        "step": "04",
+        "title": "Sufficiency Critic",
+        "color": "#F59E0B",
+        "default_desc": "Self-RAG Premise Audit",
+    },
+    {
+        "id": "synthesizer",
+        "step": "05",
+        "title": "Executive Synthesizer",
+        "color": "#6366F1",
+        "default_desc": "Inline Citation Mapper",
+    },
+    {
+        "id": "guardrail",
+        "step": "06",
+        "title": "Active Guardrail",
+        "color": "#8B5CF6",
+        "default_desc": "Scale-Aware Verifier",
+    },
+]
+
 
 @st.cache_data(ttl=3600)
 def load_financials_data() -> pd.DataFrame:
@@ -194,24 +760,530 @@ def get_llm_status() -> Dict[str, str]:
     return {"provider": provider, "model": model}
 
 
-# ---------------- SIDEBAR ----------------
+# ---------------------------------------------------------------------------
+# REAL-TIME INTERACTIVE VISUAL STATE GRAPH RENDERER (OPTION A: QUANT)
+# ---------------------------------------------------------------------------
+def render_visual_state_graph(
+    state: Dict[str, Any],
+    active_node: Optional[str],
+    visited_nodes: List[str],
+    elapsed_sec: float = 0.0,
+    is_finished: bool = False,
+    loop_triggered: bool = False,
+) -> str:
+    """
+    Build a single-block, unindented HTML5/SVG Institutional Quant State Machine visualization.
+    - Desaturates completed nodes into unified neutral borders with crisp Emerald `✓ OK` tags.
+    - Highlights the currently active node with its semantic accent border + left bar.
+    - Uses theme-adaptive CSS variables (zero hardcoded dark-mode background leaks in Light Mode).
+    """
+    current_hop = max(1, int(state.get("current_hop", 1) or 1))
+    max_hops = int(state.get("max_hops", 3) or 3)
+    threshold = float(state.get("sufficiency_threshold", 0.85) or 0.85)
+    suff_score = float(state.get("sufficiency_score", 0.0) or 0.0)
+    is_sufficient = bool(state.get("is_sufficient", False))
+    evidence = state.get("accumulated_evidence", []) or []
+    tabular = state.get("tabular_evidence", []) or []
+    intermediate = state.get("intermediate_answers", []) or []
+    guard_report = state.get("guardrail_report", {}) or {}
+    telemetry = state.get("telemetry", {}) or {}
+
+    # Score progression string (e.g. 0.62 ➔ 0.94)
+    score_history = [f"{float(item.get('sufficiency_score', 0.0)):.2f}" for item in intermediate]
+    if score_history:
+        score_prog_str = " ➔ ".join(score_history)
+    elif "critic" in visited_nodes:
+        score_prog_str = f"{suff_score:.2f}"
+    else:
+        score_prog_str = "Pending Audit"
+
+    # Determine dynamic Hop Banner
+    missing_premises = state.get("missing_premises", []) or []
+    if loop_triggered or active_node == "generator":
+        gap_preview = html.escape(str(missing_premises[0])[:56]) if missing_premises else "Targeted Follow-Up Sub-Query"
+        hop_banner_cls = "hop-banner hop-banner-active"
+        hop_banner_txt = f"↻ [HOP {min(current_hop + (1 if active_node == 'generator' else 0), max_hops)} / {max_hops}: Resolving Missing Premises — {gap_preview}]"
+    elif is_finished:
+        early_stop = is_sufficient and current_hop < max_hops
+        hop_banner_cls = "hop-banner hop-banner-complete"
+        if early_stop:
+            hop_banner_txt = f"✓ [EARLY STOP AT HOP {current_hop} / {max_hops} — Sufficiency {suff_score:.2f} ≥ {threshold:.2f}]"
+        else:
+            hop_banner_txt = f"✓ [EXECUTION COMPLETE — {current_hop} / {max_hops} Hops | Latency {elapsed_sec:.2f}s]"
+    elif active_node:
+        hop_banner_cls = "hop-banner hop-banner-normal"
+        hop_banner_txt = f"● [HOP {current_hop} / {max_hops}: Executing `{active_node.upper()}`]"
+    else:
+        hop_banner_cls = "hop-banner hop-banner-normal"
+        hop_banner_txt = f"[STANDBY — Max {max_hops} Hops | Critic Threshold ≥ {threshold:.2f}]"
+
+    # Build per-node live telemetry strings
+    sub_queries = state.get("sub_queries", []) or []
+    tickers = state.get("target_tickers", []) or ([state.get("target_ticker")] if state.get("target_ticker") else [])
+    citations = state.get("citations", []) or []
+    verified_nums = guard_report.get("verified_numbers", []) or []
+    ungrounded_nums = guard_report.get("ungrounded_numbers", []) or []
+    repair_count = int(state.get("repair_count", 0) or 0)
+
+    node_tele_map = {
+        "decomposer": (
+            f"Tickers: {', '.join(tickers) if tickers else 'Auto'} | {len(sub_queries)} Sub-Q(s)"
+            if "decomposer" in visited_nodes
+            else "Ticker & Sub-Query Plan"
+        ),
+        "tabular_tool": (
+            f"{len(tabular)} XBRL Table(s) Injected"
+            if "tabular_tool" in visited_nodes
+            else ("Bypassed (Text Route)" if ("retriever" in visited_nodes and "tabular_tool" not in visited_nodes) else "Deterministic SQL/XBRL")
+        ),
+        "retriever": (
+            f"{len(evidence)} Chunks (Hop {current_hop}/{max_hops})"
+            if "retriever" in visited_nodes
+            else "Dense + BM25 + Rerank"
+        ),
+        "critic": (
+            f"Score: {suff_score:.2f} ({'PASS ✓' if is_sufficient else 'LOOP ↻'})"
+            if "critic" in visited_nodes
+            else f"Threshold ≥ {threshold:.2f}"
+        ),
+        "synthesizer": (
+            f"{len(citations)} Citations Mapped"
+            if "synthesizer" in visited_nodes
+            else "Inline Citation Mapper"
+        ),
+        "guardrail": (
+            f"{len(verified_nums)} Verified | {len(ungrounded_nums)} Flagged"
+            + (f" ({repair_count} Repaired)" if repair_count > 0 else "")
+            if "guardrail" in visited_nodes
+            else "Scale-Aware Verifier"
+        ),
+    }
+
+    cards_html: List[str] = []
+    for meta in NODE_META:
+        nid = meta["id"]
+        color = meta["color"]
+
+        is_active = (
+            (active_node == nid)
+            or (nid == "retriever" and active_node == "generator")
+            or (nid == "guardrail" and active_node == "repair")
+        )
+        is_visited = nid in visited_nodes
+        is_skipped = nid == "tabular_tool" and ("retriever" in visited_nodes) and ("tabular_tool" not in visited_nodes)
+
+        if is_active:
+            state_cls = "node-box state-active"
+            inline_style = (
+                f"border-color: {color}; border-left: 3.5px solid {color}; "
+                f"box-shadow: 0 0 16px {color}33;"
+            )
+            badge_html = (
+                f'<span class="node-status-tag" style="background:{color}24; color:{color}; '
+                f'border:1px solid {color}; animation: quantActivePulse 1.2s infinite;">● ACTIVE</span>'
+            )
+        elif is_visited:
+            # Desaturated unified slate border for completed nodes + subtle semantic left bar + Emerald ✓ OK
+            state_cls = "node-box state-completed"
+            inline_style = f"border-left: 2.5px solid {color}AA;"
+            badge_html = '<span class="node-status-tag" style="background:rgba(16,185,129,0.14); color:#10B981;">✓ OK</span>'
+        elif is_skipped:
+            state_cls = "node-box state-skipped"
+            inline_style = ""
+            badge_html = '<span class="node-status-tag" style="background:rgba(148,163,184,0.12); color:#64748B;">BYPASSED</span>'
+        else:
+            state_cls = "node-box state-idle"
+            inline_style = ""
+            badge_html = '<span class="node-status-tag" style="background:rgba(148,163,184,0.1); color:#64748B;">WAIT</span>'
+
+        tele_text = html.escape(node_tele_map.get(nid, meta["default_desc"]))
+        card = (
+            f'<div class="{state_cls}" style="{inline_style}">'
+            f'<div class="node-top">'
+            f'<span class="node-step-num">[{meta["step"]}]</span>'
+            f"{badge_html}"
+            f"</div>"
+            f'<div class="node-name">{html.escape(meta["title"])}</div>'
+            f'<div class="node-telemetry">{tele_text}</div>'
+            f"</div>"
+        )
+        cards_html.append(card)
+
+    # Orthogonal Technical Schematic Loop Trace (Node [04 Critic] -> Generator -> Node [03 Retriever])
+    is_loop_live = loop_triggered or active_node == "generator"
+    loop_stroke = "#F59E0B" if is_loop_live else ("#10B981" if (is_finished and current_hop > 1) else "#64748B")
+    loop_anim_style = (
+        "stroke-dasharray: 5 4; animation: dashFlow 0.7s linear infinite;"
+        if is_loop_live
+        else "stroke-dasharray: 4 3;"
+    )
+    if is_loop_live:
+        loop_label = f"↻ REFLECTION LOOP ACTIVE — Critic Score {suff_score:.2f} < {threshold:.2f} ➔ Formulating Hop {current_hop} Follow-Up Sub-Query"
+    elif current_hop > 1:
+        loop_label = f"↻ Multi-Hop Reflection Trace Executed ({current_hop} Hops Total — Sufficiency {score_prog_str})"
+    else:
+        loop_label = f"↻ Conditional Reflection Trace: Node [04 Critic] (< {threshold:.2f}) ➔ Sub-Query Generator ➔ Node [03 Retriever]"
+
+    svg_loop_bar = (
+        f'<div class="loop-trace-bar" style="border-color:{loop_stroke}55;">'
+        f'<div style="font-family:var(--quant-mono); font-size:0.72rem; color:{loop_stroke}; font-weight:700;">'
+        f"{html.escape(loop_label)}"
+        f"</div>"
+        f'<svg width="220" height="18" viewBox="0 0 220 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">'
+        f'<path d="M208 2 L208 14 L12 14 L12 2" stroke="{loop_stroke}" stroke-width="1.8" fill="none" style="{loop_anim_style}"/>'
+        f'<polygon points="12,1 8,7 16,7" fill="{loop_stroke}"/>'
+        f'<rect x="106" y="11" width="8" height="5" fill="{loop_stroke}"/>'
+        f"</svg>"
+        f"</div>"
+    )
+
+    # Consolidated 5-Column Institutional Telemetry Ribbon (Segmented Hop Blocks + True Ratios)
+    filled_blocks = min(current_hop, max_hops) if (visited_nodes or active_node) else 0
+    empty_blocks = max(0, max_hops - filled_blocks)
+    hop_blocks_str = "[" + ("■" * filled_blocks) + ("□" * empty_blocks) + "]"
+    early_stop_flag = is_finished and is_sufficient and current_hop < max_hops
+    hop_status_tag = "EARLY STOP" if early_stop_flag else ("COMPLETE" if is_finished else ("ACTIVE" if active_node else "READY"))
+    hop_col = "#10B981" if early_stop_flag else ("#F59E0B" if is_loop_live else "var(--term-text-primary)")
+
+    suff_pct = int(round(min(max(suff_score, 0.0), 1.0) * 100))
+    suff_bar_color = "#10B981" if suff_score >= threshold else ("#F59E0B" if suff_score > 0 else "#64748B")
+
+    total_ver = len(verified_nums)
+    total_ungr = len(ungrounded_nums)
+    faith_score = float(guard_report.get("faithfulness_score", 1.0 if "guardrail" in visited_nodes else 0.0))
+    faith_pct = int(round(faith_score * 100)) if "guardrail" in visited_nodes else 0
+    faith_color = "#10B981" if (total_ungr == 0 and "guardrail" in visited_nodes) else ("#F43F5E" if total_ungr > 0 else "#64748B")
+
+    total_tokens = int(telemetry.get("total_tokens", 0) or 0)
+    est_cost = float(telemetry.get("estimated_cost_usd", 0.0) or 0.0)
+
+    gauges_html = (
+        f'<div class="telemetry-strip">'
+        # Col 1: Hop Execution & Segmented Blocks
+        f'<div class="gauge-card">'
+        f'<div class="gauge-label">Hop Execution</div>'
+        f'<div class="gauge-val" style="color:{hop_col};">{current_hop} / {max_hops} <span style="font-size:0.72rem;">{html.escape(hop_blocks_str)} {hop_status_tag}</span></div>'
+        f"</div>"
+        # Col 2: Critic Sufficiency Ratio
+        f'<div class="gauge-card">'
+        f'<div class="gauge-label">Critic Sufficiency Audit</div>'
+        f'<div class="gauge-val" style="color:{suff_bar_color};">{html.escape(score_prog_str)} <span style="font-size:0.70rem; opacity:0.75;">(≥{threshold:.2f})</span></div>'
+        f'<div class="gauge-bar-track"><div class="gauge-bar-fill" style="width:{suff_pct}%; background:{suff_bar_color};"></div></div>'
+        f"</div>"
+        # Col 3: Retrieved Corpus
+        f'<div class="gauge-card">'
+        f'<div class="gauge-label">Retrieved SEC Corpus</div>'
+        f'<div class="gauge-val">{len(evidence)} Chunks <span style="font-size:0.74rem; color:#10B981;">| {len(tabular)} XBRL</span></div>'
+        f"</div>"
+        # Col 4: Numerical Grounding Ratio
+        f'<div class="gauge-card">'
+        f'<div class="gauge-label">Numerical Grounding (RQ2)</div>'
+        f'<div class="gauge-val" style="color:{faith_color};">{total_ver} Verified / {total_ungr} Flagged</div>'
+        f'<div class="gauge-bar-track"><div class="gauge-bar-fill" style="width:{faith_pct}%; background:{faith_color};"></div></div>'
+        f"</div>"
+        # Col 5: Latency & Token Economics
+        f'<div class="gauge-card">'
+        f'<div class="gauge-label">Latency &amp; Economics (RQ3)</div>'
+        f'<div class="gauge-val">{elapsed_sec:.2f}s <span style="font-size:0.72rem; opacity:0.8;">| {total_tokens:,} tok (${est_cost:.5f})</span></div>'
+        f"</div>"
+        f"</div>"
+    )
+
+    return (
+        f'<div class="pipeline-shell">'
+        f'<div class="pipeline-header-bar">'
+        f'<div class="pipeline-title">⚡ SYS.C // LANGGRAPH STATE MACHINE TOPOLOGY</div>'
+        f'<div class="{hop_banner_cls}">{hop_banner_txt}</div>'
+        f"</div>"
+        f'<div class="nodes-grid">{"".join(cards_html)}</div>'
+        f"{svg_loop_bar}"
+        f"{gauges_html}"
+        f"</div>"
+    )
+
+
+# ---------------------------------------------------------------------------
+# HELPER: NUMERICAL GROUNDING PILL ATTRIBUTION & DOSSIER FORMATTING
+# ---------------------------------------------------------------------------
+def match_number_to_source_badge(
+    num_token: str,
+    citations: List[Dict[str, Any]],
+    evidence_chunks: List[Dict[str, Any]],
+    default_ticker: Optional[str] = None,
+) -> Tuple[str, str]:
+    """
+    Find the best matching SEC 10-K source tag and tooltip excerpt for a verified number token.
+    Returns (short_badge_label, tooltip_excerpt).
+    """
+    clean_tok = num_token.rstrip("%").replace(",", "")
+
+    # 1. Check structured citations first
+    for cit in citations:
+        claim = str(cit.get("supported_claim", ""))
+        if num_token in claim or clean_tok in claim.replace(",", ""):
+            tkr = cit.get("ticker") or default_ticker or "SEC"
+            fy = cit.get("fiscal_year") or ""
+            sec = str(cit.get("section") or "10-K")
+            short_sec = sec[:14] + ".." if len(sec) > 16 else sec
+            fy_str = f" FY{str(fy)[-2:]}" if fy else ""
+            label = f"{tkr}{fy_str} {short_sec}".strip()
+            tooltip = f"Source Chunk: {cit.get('chunk_id', 'N/A')} | Claim: {claim[:160]}"
+            return label, tooltip
+
+    # 2. Check evidence chunks directly
+    for ch in evidence_chunks:
+        content = str(ch.get("content", ""))
+        if num_token in content or clean_tok in content.replace(",", ""):
+            meta = ch.get("metadata", {}) or {}
+            cid = str(ch.get("chunk_id", ""))
+            tkr = meta.get("ticker") or default_ticker or (cid.split("_")[0] if "_" in cid else "SEC")
+            fy = meta.get("fiscal_year") or ""
+            sec = str(meta.get("section") or ("XBRL Table" if cid.startswith("F-") else "10-K"))
+            short_sec = sec[:14] + ".." if len(sec) > 16 else sec
+            fy_str = f" FY{str(fy)[-2:]}" if fy else ""
+            label = f"{tkr}{fy_str} {short_sec}".strip()
+            tooltip = f"Chunk {cid} (Hop {ch.get('hop_retrieved', 1)}): {content[:160].replace(chr(10), ' ')}"
+            return label, tooltip
+
+    fallback_label = f"{default_ticker} 10-K Verified" if default_ticker else "SEC 10-K Verified"
+    return fallback_label, "Scale-normalized match verified against retrieved SEC 10-K filing corpus."
+
+
+def render_grounding_pills_html(
+    verified_numbers: List[str],
+    ungrounded_numbers: List[str],
+    citations: List[Dict[str, Any]],
+    evidence_chunks: List[Dict[str, Any]],
+    default_ticker: Optional[str] = None,
+) -> Tuple[str, str]:
+    """Return HTML strings for (verified_pills_html, ungrounded_pills_html)."""
+    if verified_numbers:
+        v_pills: List[str] = []
+        seen_v = set()
+        for num in verified_numbers:
+            if num in seen_v:
+                continue
+            seen_v.add(num)
+            src_label, tooltip = match_number_to_source_badge(num, citations, evidence_chunks, default_ticker)
+            v_pills.append(
+                f'<span class="grounding-pill pill-verified" title="{html.escape(tooltip)}">'
+                f"<span>✓ {html.escape(str(num))}</span>"
+                f'<span class="pill-source">[{html.escape(src_label)}]</span>'
+                f"</span>"
+            )
+        verified_html = f'<div class="pills-wrap">{"".join(v_pills)}</div>'
+    else:
+        verified_html = (
+            '<div class="pills-wrap">'
+            '<span class="grounding-pill pill-verified" title="Qualitative response or no numerical claims required verification.">'
+            "<span>✓ Qualitative Synthesis (0 Unverified Figures)</span>"
+            "</span></div>"
+        )
+
+    if ungrounded_numbers:
+        u_pills: List[str] = []
+        seen_u = set()
+        for num in ungrounded_numbers:
+            if num in seen_u:
+                continue
+            seen_u.add(num)
+            tooltip = (
+                f"Flagged by Active Guardrail: '{num}' could not be exact-matched or scale-normalized "
+                f"against retrieved SEC 10-K chunks or XBRL tables."
+            )
+            u_pills.append(
+                f'<span class="grounding-pill pill-ungrounded" title="{html.escape(tooltip)}">'
+                f"<span>⚠</span>"
+                f'<span class="strike-num">{html.escape(str(num))}</span>'
+                f'<span class="pill-flag-tag">UNGROUNDED</span>'
+                f"</span>"
+            )
+        ungrounded_html = f'<div class="pills-wrap">{"".join(u_pills)}</div>'
+    else:
+        ungrounded_html = (
+            '<div class="pills-wrap">'
+            '<span class="grounding-pill pill-verified" title="Every extracted numerical claim matched SEC ground-truth context.">'
+            "<span>🛡️ 0 Hallucinated Figures — 100% Grounded</span>"
+            "</span></div>"
+        )
+
+    return verified_html, ungrounded_html
+
+
+def format_executive_synthesis_md(raw_answer: str) -> str:
+    """
+    Sanitize `$` signs before digits so Streamlit KaTeX does not turn financial prose into math mode,
+    and style inline bracketed citations (`[NVDA ...]` or `[F-NVDA-2026]`) as compact `.citation-chip` badges.
+    """
+    safe_md = re.sub(r"\$(\d)", r"\\$\1", raw_answer)
+
+    def _replace_citation(match: re.Match) -> str:
+        inner = match.group(1)
+        # Only style SEC/XBRL citations, not markdown links
+        if any(k in inner for k in ("FY", "Item", "Note", "Chunk", "F-", "10-K", "202", "199")):
+            return f'<span class="citation-chip">[{html.escape(inner)}]</span>'
+        return match.group(0)
+
+    return re.sub(r"\[([^\[\]]{3,80})\](?!\()", _replace_citation, safe_md)
+
+
+def render_multihop_timeline_html(state: Dict[str, Any]) -> str:
+    """Render Tab 3's vertical Institutional Quant audit timeline from `intermediate_answers` and `state`."""
+    intermediate = state.get("intermediate_answers", []) or []
+    evidence = state.get("accumulated_evidence", []) or []
+    tabular = state.get("tabular_evidence", []) or []
+    sub_queries = state.get("sub_queries", []) or []
+    tickers = state.get("target_tickers", []) or ([state.get("target_ticker")] if state.get("target_ticker") else [])
+    years = state.get("fiscal_years", []) or []
+    threshold = float(state.get("sufficiency_threshold", 0.85) or 0.85)
+    max_hops = int(state.get("max_hops", 3) or 3)
+
+    blocks: List[str] = []
+
+    # Stage 0: Planner & Router Card
+    tkr_str = ", ".join(tickers) if tickers else "Auto-Detected"
+    yr_str = ", ".join(str(y) for y in years) if years else "All Relevant Years"
+    tab_badge = (
+        f'<span class="metric-badge badge-emerald">XBRL Router Active ({len(tabular)} tables)</span>'
+        if tabular
+        else '<span class="metric-badge badge-blue">10-K Text Hybrid Route</span>'
+    )
+    planned_list = "".join(
+        f'<li style="margin-bottom:3px; font-family:var(--quant-mono); font-size:0.78rem;">{html.escape(str(sq))}</li>'
+        for sq in sub_queries
+    )
+    blocks.append(
+        f'<div class="timeline-card" style="border-left: 3px solid #06B6D4;">'
+        f'<div class="timeline-dot" style="background:#06B6D4;"></div>'
+        f'<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">'
+        f'<div style="font-family:var(--quant-mono); font-weight:800; font-size:0.86rem; color:#06B6D4;">STAGE 00 // QUERY DECOMPOSITION &amp; TOOL ROUTING</div>'
+        f"{tab_badge}"
+        f"</div>"
+        f'<div style="font-size:0.82rem; margin-bottom:8px;">'
+        f"<strong>Target Entities:</strong> <code>{html.escape(tkr_str)}</code> &nbsp;|&nbsp; "
+        f"<strong>Fiscal Years:</strong> <code>{html.escape(yr_str)}</code> &nbsp;|&nbsp; "
+        f"<strong>Complexity:</strong> <code>{html.escape(str(state.get('query_complexity', 'multi_hop')))}</code>"
+        f"</div>"
+        f'<div style="font-family:var(--quant-mono); font-size:0.72rem; font-weight:700; text-transform:uppercase; opacity:0.8; margin-bottom:4px;">Planned Atomic Sub-Queries:</div>'
+        f'<ul style="margin:0; padding-left:18px;">{planned_list}</ul>'
+        f"</div>"
+    )
+
+    # Hop Cards
+    for idx, item in enumerate(intermediate):
+        hop_num = int(item.get("hop", idx + 1))
+        sub_q = str(item.get("sub_query_executed", ""))
+        score = float(item.get("sufficiency_score", 0.0) or 0.0)
+        is_suff = bool(item.get("is_sufficient", False))
+        reasoning = str(item.get("critic_reasoning", ""))
+        missing_p = item.get("missing_premises", []) or []
+        missing_e = item.get("missing_entities", []) or []
+        redundant_prev = bool(item.get("redundant_search_prevented", False))
+
+        hop_chunks = [c for c in evidence if int(c.get("hop_retrieved", 1)) == hop_num]
+        chunk_tags = "".join(
+            f'<span class="citation-chip" style="margin-right:5px; margin-bottom:4px;">{html.escape(str(c.get("chunk_id", "")))}</span>'
+            for c in hop_chunks[:8]
+        )
+        if len(hop_chunks) > 8:
+            chunk_tags += f'<span class="citation-chip">+{len(hop_chunks) - 8} more</span>'
+
+        border_col = "#10B981" if is_suff else "#F59E0B"
+        status_badge = (
+            f'<span class="metric-badge badge-emerald">✓ SUFFICIENT (Score {score:.2f} ≥ {threshold:.2f})</span>'
+            if is_suff
+            else f'<span class="metric-badge badge-amber">⚠ INSUFFICIENT (Score {score:.2f} &lt; {threshold:.2f})</span>'
+        )
+
+        gaps_html = ""
+        if missing_p or missing_e:
+            all_gaps = list(dict.fromkeys([*(str(x) for x in missing_e), *(str(x) for x in missing_p)]))
+            gap_chips = "".join(
+                f'<span class="metric-badge badge-amber" style="margin-right:6px; margin-bottom:4px; text-transform:none;">Missing: {html.escape(g)}</span>'
+                for g in all_gaps
+            )
+            gaps_html = f'<div style="margin-top:8px;">{gap_chips}</div>'
+
+        redundant_html = (
+            '<div style="margin-top:6px; font-family:var(--quant-mono); font-size:0.74rem; color:#06B6D4; font-weight:700;">🛡️ Saturation Guard: Prevented duplicate retrieval loop.</div>'
+            if redundant_prev
+            else ""
+        )
+
+        blocks.append(
+            f'<div class="timeline-card" style="border-left: 3px solid {border_col};">'
+            f'<div class="timeline-dot" style="background:{border_col};"></div>'
+            f'<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">'
+            f'<div style="font-family:var(--quant-mono); font-weight:800; font-size:0.88rem; color:{border_col};">HOP 0{hop_num} / 0{max_hops} // RETRIEVAL &amp; SUFFICIENCY AUDIT</div>'
+            f"{status_badge}"
+            f"</div>"
+            f'<div style="font-size:0.83rem; margin-bottom:8px;">'
+            f"<strong>Executed Sub-Query:</strong> <code>{html.escape(sub_q)}</code>"
+            f"</div>"
+            f'<div style="font-size:0.81rem; margin-bottom:8px;">'
+            f"<strong>Chunks Retrieved in Hop {hop_num} ({len(hop_chunks)}):</strong> "
+            f'{chunk_tags if chunk_tags else "<em>Cached / Tabular Context</em>"}'
+            f"</div>"
+            f'<div style="font-size:0.83rem; padding:8px 12px; border-radius:4px; background:var(--term-bg-elevated); border-left:3px solid {border_col};">'
+            f"<strong>Critic Audit Verdict:</strong> {html.escape(reasoning)}"
+            f"</div>"
+            f"{gaps_html}"
+            f"{redundant_html}"
+            f"</div>"
+        )
+
+        if idx + 1 < len(intermediate):
+            next_sub_q = str(intermediate[idx + 1].get("sub_query_executed", ""))
+            blocks.append(
+                f'<div class="timeline-loop-edge">'
+                f"↻ CONDITIONAL REFLECTION EDGE (Hop {hop_num} ➔ Hop {hop_num + 1}): Critic detected missing premises. "
+                f"Sub-Query Generator formulated targeted follow-up: <code>{html.escape(next_sub_q)}</code>"
+                f"</div>"
+            )
+
+    # Terminal outcome banner
+    final_suff = bool(state.get("is_sufficient", False))
+    curr_hop = int(state.get("current_hop", len(intermediate) or 1))
+    if final_suff and curr_hop < max_hops:
+        blocks.append(
+            f'<div class="timeline-card" style="border-left: 3px solid #10B981; background:rgba(16,185,129,0.07);">'
+            f'<div class="timeline-dot" style="background:#10B981;"></div>'
+            f'<div style="font-family:var(--quant-mono); font-weight:800; color:#10B981; font-size:0.84rem;">'
+            f"⚡ EARLY STOPPING TRIGGERED AT HOP {curr_hop} / {max_hops} — Bypassed {max_hops - curr_hop} redundant hop(s), routing directly to Synthesizer &amp; Active Guardrail."
+            f"</div></div>"
+        )
+    else:
+        blocks.append(
+            f'<div class="timeline-card" style="border-left: 3px solid #3B82F6; background:rgba(59,130,246,0.07);">'
+            f'<div class="timeline-dot" style="background:#3B82F6;"></div>'
+            f'<div style="font-family:var(--quant-mono); font-weight:800; color:#3B82F6; font-size:0.84rem;">'
+            f"✓ RETRIEVAL CONCLUDED AT HOP {curr_hop} / {max_hops} — Evidence routed to Citation Synthesizer &amp; Scale-Normalized Guardrail."
+            f"</div></div>"
+        )
+
+    return f'<div class="timeline-container">{"".join(blocks)}</div>'
+
+
+# ---------------------------------------------------------------------------
+# SIDEBAR CONFIGURATION
+# ---------------------------------------------------------------------------
 with st.sidebar:
     st.markdown(
         """
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid rgba(128, 128, 128, 0.2);">
-          <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="48" height="48" rx="10" fill="#0F172A"/>
-            <path d="M12 34V22M20 34V14M28 34V24M36 34V18" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="20" cy="14" r="2.5" fill="#38BDF8"/>
-            <circle cx="36" cy="18" r="2.5" fill="#38BDF8"/>
-            <path d="M20 14L28 20L36 18" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 2"/>
-          </svg>
-          <div>
-            <div style="font-weight: 700; font-size: 1.15rem; line-height: 1.2; color: var(--text-color, #0F172A);">System C</div>
-            <div style="font-size: 0.72rem; color: #64748B; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;">Adaptive Multi-Hop RAG</div>
-          </div>
-        </div>
-        """,
+<div class="sidebar-brand-wrap">
+<svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+<rect width="48" height="48" rx="6" fill="#0A0D12" stroke="#F59E0B" stroke-width="1.8"/>
+<path d="M12 34V22M20 34V14M28 34V24M36 34V18" stroke="#10B981" stroke-width="3.5" stroke-linecap="round"/>
+<circle cx="20" cy="14" r="3" fill="#F59E0B"/>
+<circle cx="36" cy="18" r="3" fill="#10B981"/>
+<path d="M20 14L28 20L36 18" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 2"/>
+</svg>
+<div>
+<div class="sidebar-brand-title">SYS.C // TERMINAL</div>
+<div class="sidebar-brand-sub">ADAPTIVE MULTI-HOP RAG</div>
+</div>
+</div>
+""",
         unsafe_allow_html=True,
     )
 
@@ -234,7 +1306,7 @@ with st.sidebar:
         min_value=1,
         max_value=10,
         value=3,
-        help="Defines the maximum sequential search-and-reasoning iterations (1 to 10) allowed for the multi-hop agent. Simple factual lookups resolve in 1 hop. Complex cross-company comparisons (e.g. comparing cloud revenues and operating footnotes across Apple, Microsoft, and Amazon) require 2 to 3 hops. A hard ceiling prevents runaway loops and token exhaustion.",
+        help="Maximum sequential search-and-reasoning iterations allowed for the multi-hop agent.",
     )
     sufficiency_threshold = st.slider(
         "Critic Sufficiency Threshold",
@@ -242,7 +1314,7 @@ with st.sidebar:
         max_value=1.00,
         value=0.85,
         step=0.05,
-        help="The quantitative sufficiency score threshold ([0.0, 1.0], default: 0.85). After each retrieval hop, the Critic Node audits whether all requested financial metrics, target fiscal years, and qualitative disclosures (risk factors, notes) have been completely satisfied. If the score >= threshold, System C executes Early Stopping—bypassing subsequent hops and saving up to 70% in token cost and latency.",
+        help="Quantitative sufficiency threshold ([0.0, 1.0]). If Critic score >= threshold, System C triggers Early Stopping.",
     )
 
     st.divider()
@@ -262,7 +1334,6 @@ with st.sidebar:
         format_func=lambda k: provider_options[k],
     )
 
-    # Dynamic Model Selection based on Provider
     if selected_provider == "groq":
         model_options = {
             "llama-3.1-8b-instant": "Llama 3.1 (8B) — Universal Free (Instant)",
@@ -294,17 +1365,22 @@ with st.sidebar:
         format_func=lambda k: model_options[k],
     )
 
-    # Universal API Key Input with clean fallback
     user_api_key = st.text_input(
         "API Key (Optional)",
         type="password",
         placeholder="Leave blank to use pre-configured system key",
-        help="Paste your private Gemini, Groq, Cohere, or OpenAI key here. If left blank, the app uses pre-configured keys so you and your team can query immediately without typing.",
+        help="Paste your private Gemini, Groq, Cohere, or OpenAI key here. If left blank, the app uses pre-configured keys.",
     )
     if user_api_key.strip():
-        st.markdown('<span style="color:#2563EB;font-size:0.80rem;font-weight:600;">● Custom User Key Active</span>', unsafe_allow_html=True)
+        st.markdown(
+            '<span class="metric-badge badge-amber">● Custom User Key Active</span>',
+            unsafe_allow_html=True,
+        )
     else:
-        st.markdown('<span style="color:#059669;font-size:0.80rem;font-weight:600;">● Built-in System Key Active</span>', unsafe_allow_html=True)
+        st.markdown(
+            '<span class="metric-badge badge-emerald">● Built-in System Key Active</span>',
+            unsafe_allow_html=True,
+        )
 
     # Configure Environment Variables
     os.environ["LLM_PROVIDER"] = selected_provider
@@ -338,7 +1414,7 @@ with st.sidebar:
     st.divider()
 
     st.subheader("4. Golden Benchmark Presets")
-    st.caption("Click any preset below (Simple → Complex):")
+    st.caption("Load verified multi-hop SEC 10-K evaluation queries:")
     for tier_title, questions in TIERED_GOLDEN_QUERIES.items():
         with st.expander(tier_title, expanded=(tier_title.startswith("Tier 1"))):
             for q_id, q_label, full_q in questions:
@@ -348,225 +1424,465 @@ with st.sidebar:
 
     st.divider()
 
-    # System Status Indicator
     llm_info = get_llm_status()
     st.subheader("Cloud Infrastructure")
     st.markdown(
         f"""
-    * **LLM Engine**: `{selected_provider.upper()}` (`{selected_model}`)
-    * **Cloud DB**: `Supabase PostgreSQL` (`ap-southeast-1`)
-    * **Relational Table**: `sec_financials` (272 XBRL rows)
-    * **Pre-Computed Chunks**: `sec_chunks` (20,125 rows in Supabase Cloud)
-    * **LangGraph State**: `PostgresSaver Checkpointing`
-    * **Numerical Guardrail**: Active Self-Healing Loop
-    """
+* **LLM Engine**: `{selected_provider.upper()}` (`{selected_model}`)
+* **Cloud DB**: `Supabase PostgreSQL` (`ap-southeast-1`)
+* **Relational Table**: `sec_financials` (272 XBRL rows)
+* **Pre-Computed Chunks**: `sec_chunks` (20,125 rows)
+* **LangGraph State**: `Real-Time Node Streaming`
+* **Numerical Guardrail**: `Scale-Normalized Self-Healing`
+"""
     )
 
 
-# ---------------- MAIN CONTENT ----------------
-st.markdown('<div class="main-header">System C: Adaptive Multi-Hop Financial RAG</div>', unsafe_allow_html=True)
+# ---------------------------------------------------------------------------
+# MAIN INSTITUTIONAL TERMINAL HEADER & STATUS BAR
+# ---------------------------------------------------------------------------
 st.markdown(
-    '<div class="sub-header">Autonomous SEC 10-K Intelligence, Continuous Sufficiency Auditing, and Scale-Normalized Numerical Grounding</div>',
+    f"""
+<div class="terminal-top-bar">
+<div>
+<div class="terminal-eyebrow">SYS.C // SEC FORM 10-K QUANTITATIVE &amp; QUALITATIVE INTELLIGENCE</div>
+<div class="main-header">System C: Adaptive Multi-Hop Financial RAG</div>
+<div class="sub-header">Autonomous Sub-Query Decomposition &bull; Deterministic XBRL + Hybrid 10-K Routing &bull; Scale-Normalized Grounding Guardrail</div>
+</div>
+<div class="terminal-status-cluster">
+<span class="metric-badge badge-emerald">● SUPABASE PG: ONLINE</span>
+<span class="metric-badge badge-amber">ENGINE: {html.escape(selected_provider.upper())}</span>
+<span class="metric-badge">10 SEC CORPORA (1993–2026)</span>
+<span class="metric-badge badge-cyan">🛡️ GUARDRAIL: ACTIVE</span>
+</div>
+</div>
+""",
     unsafe_allow_html=True,
 )
 
-# Visual Architecture Flow Banner
-st.markdown(
-    """
-    <div class="arch-banner">
-      <span class="arch-title">Autonomous Pipeline Architecture:</span><br/>
-      <span class="arch-text">
-        1. Decompose Query &bull; 2. Heterogeneous Router (XBRL SQL vs. 10-K Text) &bull; 3. Critic Sufficiency Audit (&ge;0.85 Early Stop) &bull; 4. Inline Citation Synthesis &bull; 5. Closed-Loop Numerical Repair
-      </span>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Badges bar
-col_b1, col_b2, col_b3, col_b4 = st.columns(4)
-with col_b1:
-    st.markdown('<span class="metric-badge badge-success">Supabase Cloud PG Connected</span>', unsafe_allow_html=True)
-with col_b2:
-    st.markdown(f'<span class="metric-badge badge-info">Engine: {selected_provider.upper()}</span>', unsafe_allow_html=True)
-with col_b3:
-    st.markdown('<span class="metric-badge badge-info">10 SEC 10-K Corpora (1993–2026)</span>', unsafe_allow_html=True)
-with col_b4:
-    st.markdown('<span class="metric-badge badge-warning">Zero-Hallucination Guardrail</span>', unsafe_allow_html=True)
-
-st.write("")
-
-# Query Input
+# Query Input Console
 default_query = st.session_state.get(
     "user_query_input",
     "What was Apple's total revenue, operating income, and net income in fiscal 2024?",
 )
 query_text = st.text_area(
-    "Enter your financial question (or pick a preset from the sidebar):",
+    "SEC 10-K Financial Intelligence Prompt (enter custom query or select a Golden Preset from the sidebar):",
     value=default_query,
     height=80,
     placeholder="e.g. Compare NVIDIA and Microsoft cloud and data center performance in 2024...",
 )
 
-col_run, col_clear = st.columns([1, 6])
-run_btn = col_run.button("Run Query", type="primary", use_container_width=True)
+col_run, col_hint = st.columns([1.45, 5.55])
+with col_run:
+    run_btn = st.button("⚡ Execute Terminal Query", type="primary", use_container_width=True)
+with col_hint:
+    st.caption(
+        f"**Profile**: `{mode_selection.upper()}` &bull; **Max Hops**: `{max_hops}` &bull; "
+        f"**Critic Threshold**: `≥ {sufficiency_threshold:.2f}` &bull; **Model**: `{selected_model}`"
+    )
 
+# Interactive Pipeline Slot (renders topology + 5-column telemetry ribbon above the fold)
+pipeline_viz_slot = st.empty()
+status_log_slot = st.empty()
+
+if not run_btn and "last_system_c_result" not in st.session_state:
+    pipeline_viz_slot.markdown(
+        render_visual_state_graph(
+            state={"max_hops": max_hops, "sufficiency_threshold": sufficiency_threshold, "current_hop": 1},
+            active_node=None,
+            visited_nodes=[],
+            elapsed_sec=0.0,
+            is_finished=False,
+        ),
+        unsafe_allow_html=True,
+    )
+
+# ---------------------------------------------------------------------------
+# REAL-TIME STREAMING EXECUTION ENGINE (BREAKING THE BLACK BOX)
+# ---------------------------------------------------------------------------
 if run_btn and query_text.strip():
     try:
-        with st.spinner("Executing System C Multi-Hop Pipeline..."):
-            from src.system_c.graph import run_system_c
+        from src.system_c.graph import build_system_c_graph
+        from src.system_c.state import create_initial_state
+        from src.system_c.telemetry import summarize_rq3_metrics
 
-            start_time = time.perf_counter()
-            target_ticker_arg = selected_tickers[0] if len(selected_tickers) == 1 else None
+        effective_max_hops = max_hops
+        force_max = False
+        graph_mode = mode_selection
+        if mode_selection == "fixed_1hop":
+            effective_max_hops = 1
+            force_max = True
+            graph_mode = "v1_amr"
+        elif mode_selection == "fixed_3hop":
+            effective_max_hops = 3
+            force_max = True
+            graph_mode = "v1_amr"
+        elif mode_selection == "adaptive_v1":
+            graph_mode = "v1_amr"
 
-            # Execute pipeline
-            result = run_system_c(
+        target_ticker_arg = selected_tickers[0] if len(selected_tickers) == 1 else None
+        target_tickers_arg = list(selected_tickers) if selected_tickers else None
+
+        live_state: Dict[str, Any] = dict(
+            create_initial_state(
                 query=query_text.strip(),
-                max_hops=max_hops,
-                mode=mode_selection,
+                max_hops=effective_max_hops,
+                mode=graph_mode,
                 target_ticker=target_ticker_arg,
+                target_tickers=target_tickers_arg,
+                force_max_hops=force_max,
                 sufficiency_threshold=sufficiency_threshold,
             )
+        )
+
+        compiled_graph = build_system_c_graph()
+        visited_nodes: List[str] = []
+        start_time = time.perf_counter()
+
+        # Highlight Node 01 (Decomposer) immediately upon click
+        pipeline_viz_slot.markdown(
+            render_visual_state_graph(
+                state=live_state,
+                active_node="decomposer",
+                visited_nodes=visited_nodes,
+                elapsed_sec=0.0,
+                is_finished=False,
+            ),
+            unsafe_allow_html=True,
+        )
+
+        with status_log_slot.status("⚡ Executing System C Multi-Hop LangGraph State Machine...", expanded=True) as status_box:
+            for step_event in compiled_graph.stream(live_state):
+                for node_name, node_update in step_event.items():
+                    if isinstance(node_update, dict):
+                        live_state.update(node_update)
+                    if node_name not in visited_nodes:
+                        visited_nodes.append(node_name)
+
+                    elapsed = time.perf_counter() - start_time
+                    cur_hop = int(live_state.get("current_hop", 1) or 1)
+
+                    next_active: Optional[str] = None
+                    loop_just_triggered = False
+                    if node_name == "decomposer":
+                        if live_state.get("mode") == "v2_aamr" and live_state.get("needs_tabular_tool"):
+                            next_active = "tabular_tool"
+                        else:
+                            next_active = "retriever"
+                        t_list = live_state.get("target_tickers") or []
+                        sq_list = live_state.get("sub_queries") or []
+                        status_box.write(
+                            f"🧭 **[01 Planner / Decomposer]** Extracted tickers `{t_list}` & planned `{len(sq_list)}` atomic sub-queries ({elapsed:.2f}s)"
+                        )
+                    elif node_name == "tabular_tool":
+                        next_active = "retriever"
+                        tab_cnt = len(live_state.get("tabular_evidence", []) or [])
+                        status_box.write(
+                            f"📊 **[02 Tabular XBRL Router]** Injected `{tab_cnt}` deterministic SEC XBRL financial block(s) ({elapsed:.2f}s)"
+                        )
+                    elif node_name == "retriever":
+                        next_active = "critic"
+                        ev_cnt = len(live_state.get("accumulated_evidence", []) or [])
+                        status_box.write(
+                            f"🔎 **[03 Hybrid 10-K Retriever — Hop {cur_hop}]** Accumulated `{ev_cnt}` total evidence chunks ({elapsed:.2f}s)"
+                        )
+                    elif node_name == "critic":
+                        s_score = float(live_state.get("sufficiency_score", 0.0) or 0.0)
+                        is_suff = bool(live_state.get("is_sufficient", False))
+                        if is_suff or cur_hop >= effective_max_hops:
+                            next_active = "synthesizer"
+                            status_box.write(
+                                f"⚖️ **[04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` ≥ `{sufficiency_threshold:.2f}` ➔ **Sufficient! Routing to Synthesizer** ({elapsed:.2f}s)"
+                            )
+                        else:
+                            next_active = "generator"
+                            loop_just_triggered = True
+                            gaps = live_state.get("missing_premises", []) or []
+                            status_box.write(
+                                f"🔄 **[04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` < `{sufficiency_threshold:.2f}` ➔ **Triggering Hop {cur_hop + 1} Reflection Loop** (Missing: `{gaps[:2]}`) ({elapsed:.2f}s)"
+                            )
+                    elif node_name == "generator":
+                        next_active = "retriever"
+                        loop_just_triggered = True
+                        new_sq = live_state.get("current_sub_query", "")
+                        status_box.write(
+                            f"🧠 **[Hop {cur_hop} Sub-Query Generator]** Formulated targeted follow-up: `{new_sq}` ({elapsed:.2f}s)"
+                        )
+                    elif node_name == "synthesizer":
+                        next_active = "guardrail"
+                        c_cnt = len(live_state.get("citations", []) or [])
+                        status_box.write(
+                            f"✍️ **[05 Executive Synthesizer]** Drafted response with `{c_cnt}` inline SEC citations ({elapsed:.2f}s)"
+                        )
+                    elif node_name == "guardrail":
+                        g_rep = live_state.get("guardrail_report", {}) or {}
+                        passed = bool(live_state.get("guardrail_passed", True))
+                        rep_cnt = int(live_state.get("repair_count", 0) or 0)
+                        max_rep = int(live_state.get("max_repairs", 1) or 1)
+                        if not passed and rep_cnt < max_rep:
+                            next_active = "repair"
+                            status_box.write(
+                                f"🛠️ **[06 Active Guardrail]** Flagged `{len(g_rep.get('ungrounded_numbers', []))}` ungrounded figure(s) ➔ Routing to Self-Healing Repair ({elapsed:.2f}s)"
+                            )
+                        else:
+                            next_active = None
+                            status_box.write(
+                                f"🛡️ **[06 Active Guardrail]** Verified `{len(g_rep.get('verified_numbers', []))}` financial figures (Faithfulness: `{g_rep.get('faithfulness_score', 1.0):.2f}`) ({elapsed:.2f}s)"
+                            )
+                    elif node_name == "repair":
+                        next_active = "guardrail"
+                        status_box.write(
+                            f"🔧 **[Self-Healing Repair]** Completed closed-loop numerical grounding repair pass ({elapsed:.2f}s)"
+                        )
+
+                    pipeline_viz_slot.markdown(
+                        render_visual_state_graph(
+                            state=live_state,
+                            active_node=next_active,
+                            visited_nodes=visited_nodes,
+                            elapsed_sec=elapsed,
+                            is_finished=(next_active is None),
+                            loop_triggered=loop_just_triggered,
+                        ),
+                        unsafe_allow_html=True,
+                    )
+
             total_wall_time = time.perf_counter() - start_time
+            live_state.setdefault("telemetry", {})["rq3_summary"] = summarize_rq3_metrics(live_state)
+            status_box.update(
+                label=f"✅ Execution Log — Completed in {total_wall_time:.2f}s ({live_state.get('current_hop', 1)}/{effective_max_hops} Hops | Sufficiency: {live_state.get('sufficiency_score', 0.0):.2f})",
+                state="complete",
+                expanded=False,
+            )
 
-        # ---------------- RESULTS PRESENTATION ----------------
-        st.divider()
-
-        # Determine early stopping status accurately
-        is_early_stopped = bool(
-            result.get("early_stopped")
-            or result.get("telemetry", {}).get("early_stopped")
-            or (result.get("is_sufficient") and result.get("current_hop", 1) < result.get("max_hops", 3))
+        pipeline_viz_slot.markdown(
+            render_visual_state_graph(
+                state=live_state,
+                active_node=None,
+                visited_nodes=visited_nodes,
+                elapsed_sec=total_wall_time,
+                is_finished=True,
+                loop_triggered=False,
+            ),
+            unsafe_allow_html=True,
         )
 
-        # Executive Summary Metrics
-        m1, m2, m3, m4, m5 = st.columns(5)
-        m1.metric("Hops Executed", f"{result['current_hop']} / {result['max_hops']}")
-        stop_reason_label = f"Early Stopped (Hop {result['current_hop']})" if is_early_stopped else f"Max Hops Reached ({result['current_hop']}/{result['max_hops']})"
-        m2.metric("Stop Reason", stop_reason_label)
-        m3.metric("Sufficiency Score", f"{result.get('sufficiency_score', 0.0):.2f}")
-        m4.metric("Evidence Chunks", f"{len(result.get('accumulated_evidence', []))}")
-        m5.metric("Latency", f"{total_wall_time:.2f}s")
-
-        # Tabbed Results Console
-        res_tab1, res_tab2, res_tab3, res_tab4 = st.tabs(
-            [
-                "Synthesized Answer & Citations",
-                "Factuality & Grounding Audit",
-                "Multi-Hop Reasoning Trace",
-                "Inference Economics (RQ3)",
-            ]
-        )
-
-        with res_tab1:
-            st.subheader("Executive Financial Synthesis")
-            final_answer = result.get("final_answer", "")
-            if final_answer:
-                st.markdown(final_answer)
-            else:
-                st.info("No synthesis generated.")
-
-            st.write("")
-            st.markdown("##### Ground-Truth Citations Mapped (RQ2)")
-            citations = result.get("citations", [])
-            if citations:
-                for cit in citations:
-                    with st.expander(f"[{cit.get('tag', 'Citation')}] — {cit.get('section', 'SEC Disclosure')}"):
-                        st.write(f"**Chunk ID**: `{cit.get('chunk_id')}`")
-                        st.write(f"**Ticker / Year**: {cit.get('ticker')} (FY{cit.get('fiscal_year')})")
-                        st.write(f"**Disclosure Excerpt**:")
-                        st.caption(cit.get("supported_claim", ""))
-            else:
-                st.caption("No citations recorded.")
-
-        with res_tab2:
-            st.subheader("Factuality & Numerical Grounding Audit")
-            guard_report = result.get("guardrail_report", {})
-            passed = result.get("guardrail_passed", True)
-            if passed:
-                st.success("Guardrail Passed: All extracted financial figures match SEC ground-truth filings.")
-            else:
-                st.warning("Guardrail Warning: Ungrounded numbers detected during audit.")
-
-            col_g1, col_g2, col_g3 = st.columns(3)
-            col_g1.metric("Numerical Error Rate", f"{guard_report.get('numerical_grounding_error_rate', 0.0) * 100:.1f}%")
-            col_g2.metric("Faithfulness Score", f"{guard_report.get('faithfulness_score', 1.0):.2f}")
-            col_g3.metric("Repairs Executed", f"{result.get('repair_count', 0)}")
-
-            st.write("")
-            col_v1, col_v2 = st.columns(2)
-            with col_v1:
-                st.markdown("##### Verified Numbers")
-                st.write(guard_report.get("verified_numbers", []))
-            with col_v2:
-                st.markdown("##### Flagged / Ungrounded Numbers")
-                st.write(guard_report.get("ungrounded_numbers", []))
-
-        with res_tab3:
-            st.subheader("Autonomous Multi-Hop Reasoning Trace")
-            intermediate = result.get("intermediate_answers", [])
-            if intermediate:
-                for item in intermediate:
-                    hop_num = item.get("hop", 1)
-                    st.markdown(f"#### Hop {hop_num}")
-                    st.write(f"**Sub-Query Executed**: `{item.get('sub_query_executed')}`")
-                    st.write(f"**Sufficiency Score**: `{item.get('sufficiency_score', 0.0):.2f}` (Sufficient: `{item.get('is_sufficient')}`)")
-                    st.write(f"**Critic Reasoning**: {item.get('critic_reasoning')}")
-                    if item.get("missing_premises"):
-                        st.write(f"**Missing Premises Identified**: {item.get('missing_premises')}")
-                    st.divider()
-            else:
-                st.caption("No intermediate hop records logged.")
-
-        with res_tab4:
-            st.subheader("Inference Economics (RQ3 Telemetry)")
-            telemetry = result.get("telemetry", {})
-            calls = telemetry.get("calls", [])
-            if calls:
-                df_calls = pd.DataFrame(calls)
-                st.dataframe(df_calls, use_container_width=True)
-                summary = telemetry.get("rq3_summary", {})
-                st.json(summary)
-            else:
-                st.caption("No LLM calls recorded in telemetry.")
+        st.session_state["last_system_c_result"] = live_state
+        st.session_state["last_system_c_visited"] = visited_nodes
+        st.session_state["last_system_c_wall_time"] = total_wall_time
 
     except Exception as exc:
         import traceback
+
         st.error(f"Execution Error: {str(exc)}")
         st.markdown("**Error Details & Stack Trace** *(use copy button)*:")
         st.code(traceback.format_exc(), language="python")
 
-# ---------------- SEC COMPANY DATA EXPLORER TAB ----------------
+# ---------------------------------------------------------------------------
+# EXECUTIVE DOSSIER RESULTS PRESENTATION (IMMEDIATELY ABOVE THE FOLD)
+# ---------------------------------------------------------------------------
+if "last_system_c_result" in st.session_state:
+    result: Dict[str, Any] = st.session_state["last_system_c_result"]
+    visited_nodes_saved: List[str] = st.session_state.get("last_system_c_visited", [])
+    total_wall_time: float = st.session_state.get("last_system_c_wall_time", 0.0)
+
+    if not run_btn:
+        pipeline_viz_slot.markdown(
+            render_visual_state_graph(
+                state=result,
+                active_node=None,
+                visited_nodes=visited_nodes_saved,
+                elapsed_sec=total_wall_time,
+                is_finished=True,
+                loop_triggered=False,
+            ),
+            unsafe_allow_html=True,
+        )
+
+    guard_report = result.get("guardrail_report", {}) or {}
+    verified_nums = guard_report.get("verified_numbers", []) or []
+    ungrounded_nums = guard_report.get("ungrounded_numbers", []) or []
+    citations = result.get("citations", []) or []
+    evidence_chunks = result.get("accumulated_evidence", []) or []
+    primary_tkr = result.get("target_ticker")
+    all_tkrs = result.get("target_tickers") or ([primary_tkr] if primary_tkr else ["SEC"])
+    f_years = result.get("fiscal_years") or []
+
+    verified_pills_html, ungrounded_pills_html = render_grounding_pills_html(
+        verified_numbers=verified_nums,
+        ungrounded_numbers=ungrounded_nums,
+        citations=citations,
+        evidence_chunks=evidence_chunks,
+        default_ticker=primary_tkr,
+    )
+
+    res_tab1, res_tab2, res_tab3, res_tab4 = st.tabs(
+        [
+            "📑 [01] Executive Dossier & Citations",
+            "🛡️ [02] Numerical Grounding Audit (RQ2)",
+            "🧭 [03] Multi-Hop Audit Timeline (RQ1)",
+            "⚡ [04] Inference Economics (RQ3)",
+        ]
+    )
+
+    with res_tab1:
+        final_answer = result.get("final_answer") or ""
+        tkr_display = ", ".join(str(t) for t in all_tkrs) if all_tkrs else "AUTO"
+        yr_display = ", ".join(f"FY{y}" for y in f_years) if f_years else "MULTI-PERIOD"
+        audit_status = "PASSED ✓" if result.get("guardrail_passed", True) else "FLAGGED ⚠"
+        audit_col = "#10B981" if result.get("guardrail_passed", True) else "#F59E0B"
+
+        if final_answer:
+            formatted_answer = format_executive_synthesis_md(final_answer)
+            st.markdown(
+                f'<div class="dossier-shell">'
+                f'<div class="dossier-tape">'
+                f"<span><strong>TICKER(S):</strong> {html.escape(tkr_display)} &nbsp;&bull;&nbsp; "
+                f"<strong>FILING:</strong> SEC FORM 10-K ({html.escape(yr_display)}) &nbsp;&bull;&nbsp; "
+                f"<strong>CITATIONS:</strong> {len(citations)} MAPPED</span>"
+                f'<span style="color:{audit_col}; font-weight:800;">GUARDRAIL AUDIT: {audit_status} ({len(verified_nums)} VERIFIED)</span>'
+                f"</div>"
+                f'<div class="dossier-body">\n\n{formatted_answer}\n\n</div>'
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.info("No synthesis generated.")
+
+        st.markdown("##### ✓ Scale-Verified Numerical Claims *(hover pill for SEC chunk provenance)*")
+        st.markdown(verified_pills_html, unsafe_allow_html=True)
+
+        st.markdown("##### 📌 Ground-Truth SEC 10-K Citations Mapped (RQ2)")
+        if citations:
+            cit_cols = st.columns(2)
+            for idx, cit in enumerate(citations):
+                with cit_cols[idx % 2]:
+                    with st.expander(
+                        f"[{cit.get('tag', 'Citation')}] — {cit.get('ticker', 'SEC')} FY{cit.get('fiscal_year', '')} ({cit.get('section', '10-K')})",
+                        expanded=(idx < 2),
+                    ):
+                        st.markdown(f"**Chunk ID**: `{cit.get('chunk_id')}`")
+                        st.markdown(f"**Ticker / Fiscal Year**: `{cit.get('ticker')}` | `FY{cit.get('fiscal_year')}`")
+                        st.markdown("**Supported Claim / Excerpt**:")
+                        st.caption(cit.get("supported_claim", ""))
+        else:
+            st.caption("No structured citation records logged for this run.")
+
+    with res_tab2:
+        st.markdown("#### Scale-Normalized Numerical Grounding & Hallucination Audit")
+        passed = bool(result.get("guardrail_passed", True))
+        if passed:
+            st.success(
+                "✓ Active Guardrail Passed: Every quantitative figure extracted from the synthesis matches SEC 10-K ground-truth tables or text chunks."
+            )
+        else:
+            st.warning(
+                "⚠ Active Guardrail Alert: One or more numerical figures could not be verified against retrieved SEC filings (hover over badges below for diagnostic details)."
+            )
+
+        col_g1, col_g2, col_g3, col_g4 = st.columns(4)
+        col_g1.metric(
+            "Faithfulness Score",
+            f"{float(guard_report.get('faithfulness_score', 1.0)) * 100:.1f}%",
+        )
+        col_g2.metric(
+            "Numerical Error Rate",
+            f"{float(guard_report.get('numerical_grounding_error_rate', 0.0)) * 100:.1f}%",
+        )
+        col_g3.metric("Verified Claims", f"{len(verified_nums)}")
+        col_g4.metric("Self-Healing Repairs", f"{result.get('repair_count', 0)}")
+
+        st.divider()
+        col_v1, col_v2 = st.columns(2)
+        with col_v1:
+            st.markdown("##### ✓ Verified Financial Figures *(hover for SEC chunk provenance)*")
+            st.markdown(verified_pills_html, unsafe_allow_html=True)
+        with col_v2:
+            st.markdown("##### ⚠ Flagged / Ungrounded Figures *(hover for audit reason)*")
+            st.markdown(ungrounded_pills_html, unsafe_allow_html=True)
+
+        if result.get("tabular_evidence"):
+            st.divider()
+            st.markdown("##### Deterministic XBRL Tabular Ground-Truth Injected (`tabular_tool`)")
+            for blk in result.get("tabular_evidence", []):
+                st.code(blk, language="markdown")
+
+    with res_tab3:
+        st.markdown("#### Autonomous Multi-Hop Reflection & Retrieval Audit Timeline")
+        st.caption(
+            "Visualizing each hop's atomic sub-query, retrieved SEC 10-K evidence chunks, Critic sufficiency score, and conditional reflection loop edges."
+        )
+        st.markdown(render_multihop_timeline_html(result), unsafe_allow_html=True)
+
+    with res_tab4:
+        st.markdown("#### Inference Economics & Pareto Telemetry (RQ3)")
+        telemetry = result.get("telemetry", {}) or {}
+        rq3_summary = telemetry.get("rq3_summary", {}) or {}
+
+        e1, e2, e3, e4 = st.columns(4)
+        e1.metric("Total Tokens", f"{int(telemetry.get('total_tokens', 0)):,}")
+        e2.metric(
+            "Prompt / Completion",
+            f"{int(telemetry.get('total_prompt_tokens', 0)):,} / {int(telemetry.get('total_completion_tokens', 0)):,}",
+        )
+        e3.metric("Estimated Query Cost", f"${float(telemetry.get('estimated_cost_usd', 0.0)):.6f}")
+        e4.metric("Cost per 1,000 Queries", f"${float(rq3_summary.get('cost_per_1k_queries_usd', 0.0)):.4f}")
+
+        node_lats = telemetry.get("node_latencies_ms", {}) or {}
+        if node_lats:
+            st.markdown("##### Node-Level Execution Latency Breakdown (ms)")
+            df_lat = pd.DataFrame(
+                [{"Graph Node": k, "Latency (ms)": v} for k, v in node_lats.items()]
+            )
+            st.dataframe(df_lat, use_container_width=True, hide_index=True)
+
+        calls = telemetry.get("calls", []) or []
+        if calls:
+            st.markdown("##### LLM Invocation Ledger")
+            df_calls = pd.DataFrame(calls)
+            st.dataframe(df_calls, use_container_width=True, hide_index=True)
+        else:
+            st.caption("No LLM calls recorded in telemetry.")
+
+# ---------------------------------------------------------------------------
+# SEC 10-K XBRL DATA EXPLORER
+# ---------------------------------------------------------------------------
 st.divider()
-st.subheader("SEC 10-K XBRL Data Explorer")
-with st.expander("Explore Ground-Truth XBRL Financial Filings (from Supabase Cloud DB)", expanded=False):
+st.subheader("📊 SEC 10-K XBRL Ground-Truth Explorer")
+with st.expander("Explore Canonical SEC XBRL Financial Filings (`sec_financials` / `data/financials.csv`)", expanded=False):
     df_fin = load_financials_data()
     if not df_fin.empty:
         col_c1, col_c2 = st.columns([1, 3])
         with col_c1:
             explore_ticker = st.selectbox(
-                "Filter Ticker",
+                "Select SEC Filer Ticker",
                 options=sorted(df_fin["ticker"].unique()),
                 index=0,
             )
+            if explore_ticker in COMPANIES:
+                st.caption(
+                    f"**{COMPANIES[explore_ticker]['name']}**  \n"
+                    f"Sector: {COMPANIES[explore_ticker]['sector']}  \n"
+                    f"Coverage: {COMPANIES[explore_ticker]['filings']}"
+                )
         df_filtered = df_fin[df_fin["ticker"] == explore_ticker].sort_values(
             "fiscal_year_end", ascending=False
         )
-        st.dataframe(
-            df_filtered[
-                [
-                    "ticker",
-                    "fiscal_year_end",
-                    "Revenue",
-                    "OperatingIncome",
-                    "NetIncome",
-                    "TotalAssets",
-                    "TotalLiabilities",
-                    "OperatingCashFlow",
-                    "EPSDiluted",
-                ]
-            ],
-            use_container_width=True,
-        )
+        display_cols = [
+            c
+            for c in [
+                "ticker",
+                "fiscal_year_end",
+                "Revenue",
+                "OperatingIncome",
+                "NetIncome",
+                "TotalAssets",
+                "TotalLiabilities",
+                "OperatingCashFlow",
+                "EPSDiluted",
+            ]
+            if c in df_filtered.columns
+        ]
+        st.dataframe(df_filtered[display_cols], use_container_width=True, hide_index=True)
     else:
         st.info("No local `data/financials.csv` found to display.")
