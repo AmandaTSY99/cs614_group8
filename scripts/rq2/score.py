@@ -33,6 +33,7 @@ CUSTOM_METRICS = ["citation_precision", "citation_recall", "citation_f1", "citat
                   "numeric_accuracy", "grounding_error_rate"]
 ALL_METRICS = LLM_METRICS + CUSTOM_METRICS
 NO_JUDGE = "none"
+CIRCUIT_BREAKER_FAILURES = 5
 
 
 def make_metric(name: str, llm: Any, embeddings: Any = None) -> Any:
@@ -176,17 +177,34 @@ async def score_run(
         embeddings = J.build_embeddings()
     metric_objs = {m: metric_factory(m, llm, embeddings) for m in {m for _, m in llm_todo}}
     semaphore = asyncio.Semaphore(max(1, min(concurrency, 2)))
+    breaker = {"consecutive": 0, "stopped": None}
 
     async def one(rec: Dict[str, Any], metric: str) -> None:
         async with semaphore:
+            if breaker["stopped"]:
+                return  # not written, so a later run picks it up
             row = await score_llm_metric(rec, metric, metric_objs[metric], judge, meter, sleep)
             append_jsonl(scores_path, row)
             counts["scored"] += 1
             print(f"  {rec['system']} {rec['question_id']} {metric}: {row['status']} {row['value']} "
                   f"(calls={row['judge_calls']}, tokens={row['judge_prompt_tokens'] + row['judge_completion_tokens']})",
                   flush=True)
+            # Circuit breaker: consecutive calls that still failed after all retries (too_large is neutral).
+            if row["status"] == J.STATUS_ERROR:
+                breaker["consecutive"] += 1
+                if breaker["consecutive"] >= CIRCUIT_BREAKER_FAILURES and not breaker["stopped"]:
+                    breaker["stopped"] = (
+                        f"{CIRCUIT_BREAKER_FAILURES} consecutive judge calls failed after all retries; "
+                        f"last: {row['detail'][:300]}"
+                    )
+                    print(f"STOPPING: {breaker['stopped']}. Progress is saved in {scores_path}; "
+                          "rerun to resume.", flush=True)
+            elif row["status"] in (J.STATUS_OK, J.STATUS_NA):
+                breaker["consecutive"] = 0
 
     await asyncio.gather(*(asyncio.create_task(one(rec, m)) for rec, m in llm_todo))
+    if breaker["stopped"]:
+        counts["stopped"] = breaker["stopped"]
     return counts
 
 
@@ -209,6 +227,8 @@ def main() -> None:
         raise SystemExit(f"Unknown metrics {unknown}; known: {ALL_METRICS}")
     counts = asyncio.run(score_run(Path(args.run), metrics, provider, model, args.concurrency, args.scores_file))
     print(f"Done: {counts} (judge {J.judge_label(provider, model)})")
+    if counts.get("stopped"):
+        sys.exit(2)
 
 
 if __name__ == "__main__":

@@ -15,6 +15,20 @@ XBRL_ID_RE = re.compile(r"^F-([A-Z]{1,6})")
 XBRL_SECTION = "XBRL"
 CURRENCY_RE = re.compile(r"US\$|[€£¥]")
 
+# Section aliases (a limitation of section-level matching, documented in report.md):
+# - Item 15 (Exhibits and Financial Statement Schedules) holds the financial statements and notes in many
+#   filings, while the gold labels them Item 8: an Item 15 chunk that is financial statements / notes counts as Item 8.
+# - Cover-page chunks have no "Item N" heading; the gold labels cover-page facts Item 1.
+FIN_STATEMENT_MARKERS = (
+    "financial statements", "notes to consolidated", "notes to the consolidated", "consolidated balance sheet",
+    "consolidated statements of", "statements of operations", "statements of cash flows", "balance sheets",
+)
+COVER_PAGE_MARKERS = (
+    "exact name of registrant", "commission file number", "securities registered pursuant to section 12",
+    "address of principal executive offices", "i.r.s. employer identification", "indicate by check mark",
+)
+ALIAS_TEXT_CHARS = 400
+
 Section = Tuple[Optional[str], str]
 
 
@@ -45,8 +59,27 @@ def gold_sections(target_sections: List[Any]) -> List[Section]:
     return out
 
 
-def cited_sections(citations: List[Dict[str, Any]]) -> List[Section]:
-    """Unique (ticker, item) per answer from each citation's chunk metadata; any `F-…` chunk is XBRL."""
+def _aliased_section(section: Any, text: str, ticker: Optional[str]) -> Optional[Section]:
+    """Apply the Item 15 -> Item 8 and cover page -> Item 1 aliases (see FIN_STATEMENT_MARKERS)."""
+    sec = normalise_section(section, ticker)
+    section_text = str(section or "").lower()
+    head = text[:ALIAS_TEXT_CHARS].lower()
+    if sec and sec[1] == "Item 15":
+        # The Item 15 heading itself names "Financial Statement Schedules", so look past it.
+        sub = section_text.split(">", 1)[1] if ">" in section_text else ""
+        if any(m in sub or m in head for m in FIN_STATEMENT_MARKERS):
+            return (sec[0], "Item 8")
+    if sec is None and any(m in section_text or m in head for m in COVER_PAGE_MARKERS):
+        return (ticker, "Item 1")
+    return sec
+
+
+def cited_sections(citations: List[Dict[str, Any]], chunk_text: Optional[Dict[str, str]] = None) -> List[Section]:
+    """
+    Unique (ticker, item) per answer from each citation's chunk metadata; any `F-…` chunk is XBRL.
+    `chunk_text` (chunk_id -> context text) lets the section aliases look at the chunk itself.
+    """
+    chunk_text = chunk_text or {}
     out: List[Section] = []
     for c in citations:
         cid = str(c.get("chunk_id") or "")
@@ -55,7 +88,7 @@ def cited_sections(citations: List[Dict[str, Any]]) -> List[Section]:
         if xbrl:
             sec: Optional[Section] = (ticker or xbrl.group(1), XBRL_SECTION)
         else:
-            sec = normalise_section(c.get("section"), ticker)
+            sec = _aliased_section(c.get("section"), chunk_text.get(cid, ""), ticker)
         if sec and sec not in out:
             out.append(sec)
     return out
@@ -65,13 +98,17 @@ def _matches(cited: Section, gold: Section) -> bool:
     return cited[1] == gold[1] and (gold[0] is None or gold[0] == cited[0])
 
 
-def citation_prf(citations: List[Dict[str, Any]], target_sections: List[Any]) -> Dict[str, Any]:
+def citation_prf(
+    citations: List[Dict[str, Any]],
+    target_sections: List[Any],
+    chunk_text: Optional[Dict[str, str]] = None,
+) -> Dict[str, Any]:
     """
     Section-level citation precision / recall / F1. An answer with no citations (or a question with no
     usable gold section) gets status "na" — never 0.
     """
     gold = gold_sections(target_sections)
-    cited = cited_sections(citations)
+    cited = cited_sections(citations, chunk_text)
     if not citations or not cited:
         return {"status": "na", "precision": None, "recall": None, "f1": None, "detail": "no citations"}
     if not gold:
@@ -114,7 +151,11 @@ def has_citation(record: Dict[str, Any]) -> bool:
 
 def custom_scores(record: Dict[str, Any]) -> Dict[str, Tuple[Optional[float], str, str]]:
     """metric -> (value, status, detail) for one record."""
-    prf = citation_prf(record.get("citations") or [], record.get("target_sections") or [])
+    chunk_text = {
+        str(meta.get("chunk_id")): text
+        for meta, text in zip(record.get("contexts_meta") or [], record.get("retrieved_contexts") or [])
+    }
+    prf = citation_prf(record.get("citations") or [], record.get("target_sections") or [], chunk_text)
     num = numeric_accuracy(record.get("answer", ""), record.get("ground_truth_numbers") or [])
     ground = grounding_error(record.get("guardrail_report"))
     return {

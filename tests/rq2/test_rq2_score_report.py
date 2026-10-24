@@ -153,6 +153,39 @@ def test_retries_exhausted_is_error(tmp_path):
     assert "retries_exhausted" in row["detail"]
 
 
+def test_circuit_breaker_stops_after_5_consecutive_failures(tmp_path, capsys):
+    _write_records(tmp_path, [_record(f"Q{i}") for i in range(1, 9)])
+    fake = _FakeMetric(0.5, errors=[_rate_limit_error() for _ in range(J.MAX_ATTEMPTS * 10)])
+    counts = _run(tmp_path, ["faithfulness"], {"faithfulness": fake})
+    assert "5 consecutive judge calls failed" in counts["stopped"]
+    rows = read_jsonl(tmp_path / SCORES_FILE)
+    assert len(rows) == 5 and all(r["status"] == J.STATUS_ERROR for r in rows)  # Q6..Q8 never attempted
+    assert fake.calls == 5 * J.MAX_ATTEMPTS
+    assert "STOPPING" in capsys.readouterr().out
+    # Resume: failed rows are retried and the untouched ones scored
+    fake.errors.clear()
+    counts = _run(tmp_path, ["faithfulness"], {"faithfulness": fake})
+    assert "stopped" not in counts
+    latest = R.latest_scores(read_jsonl(tmp_path / SCORES_FILE))
+    assert len(latest) == 8 and all(r["status"] == "ok" for r in latest)
+
+
+def test_circuit_breaker_resets_on_success(tmp_path):
+    _write_records(tmp_path, [_record(f"Q{i}") for i in range(1, 9)])
+    # 4 failures, 1 success, 3 failures: never 5 in a row
+    fake = _FakeMetric(0.5)
+
+    async def ascore(**kwargs):
+        fake.calls += 1
+        if fake.calls in (1, 2, 3, 4, 6, 7, 8):
+            raise ValueError("fatal")
+        return _Result(0.5)
+
+    fake.ascore = ascore
+    counts = _run(tmp_path, ["faithfulness"], {"faithfulness": fake})
+    assert "stopped" not in counts and fake.calls == 8
+
+
 def test_classify_error():
     assert J.classify_error(_too_large_error()) == J.ERROR_TOO_LARGE
     assert J.classify_error(_context_length_error()) == J.ERROR_TOO_LARGE
@@ -214,11 +247,13 @@ def test_meter_records_calls_tokens_and_ratelimit_headers():
             )
             await meter.on_response(resp)
 
+        # A rate-limited response is not a judge call, but its headers are kept
+        await meter.on_response(httpx.Response(429, request=_REQ, headers={"retry-after": "7"}, json={}))
+
     asyncio.run(go())
     snap = meter.snapshot(key)
     assert snap["calls"] == 2 and snap["prompt_tokens"] == 150 and snap["completion_tokens"] == 30
-    assert snap["ratelimit"]["x-ratelimit-remaining-requests"] == "990"
-    assert meter.last_ratelimit["x-ratelimit-limit-tokens"] == "8000"
+    assert meter.last_ratelimit == {"retry-after": "7"}
 
 
 def test_usage_written_to_score_rows(tmp_path):

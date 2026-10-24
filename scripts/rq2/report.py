@@ -19,6 +19,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.rq2.common import CATEGORIES, GEN_ERRORS_FILE, RECORDS_FILE, SCORES_FILE, read_jsonl  # noqa: E402
+from scripts.rq2.judge import EMBEDDING_MODEL  # noqa: E402
 
 METRIC_ORDER = [
     "faithfulness", "answer_relevancy", "context_recall", "context_precision", "factual_correctness",
@@ -28,6 +29,9 @@ METRIC_ORDER = [
 LLM_METRICS = METRIC_ORDER[:5]
 N_BOOT = 1000
 SEED = 0
+# gpt-4o-mini list prices (USD per 1M tokens); override with --price-in / --price-out.
+PRICE_IN_PER_M = 0.15
+PRICE_OUT_PER_M = 0.60
 
 
 def bootstrap_ci(values: List[float], n_boot: int = N_BOOT, seed: int = SEED) -> Tuple[float, float]:
@@ -112,6 +116,30 @@ def _num(v: Any) -> Optional[float]:
         return None
 
 
+def per_metric_usage(usage: List[Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
+    """Mean judge calls / prompt / completion tokens per sample for each metric, over completed rows."""
+    out: Dict[str, Dict[str, float]] = {}
+    for metric in LLM_METRICS:
+        rows = [u for u in usage if u["metric"] == metric and u["status"] == "ok"]
+        if rows:
+            out[metric] = {k: sum(u[k] for u in rows) / len(rows) for k in ("calls", "prompt_tokens", "completion_tokens")}
+            out[metric]["n"] = len(rows)
+    return out
+
+
+def estimate_cost(usage: List[Dict[str, Any]], n_samples: int, price_in_per_m: float,
+                  price_out_per_m: float) -> Dict[str, Any]:
+    """Projected judge cost for `n_samples` from per-metric mean tokens of completed rows."""
+    per_metric = per_metric_usage(usage)
+    p = sum(m["prompt_tokens"] for m in per_metric.values())
+    c = sum(m["completion_tokens"] for m in per_metric.values())
+    per_sample = (p * price_in_per_m + c * price_out_per_m) / 1e6
+    return {"prompt_tokens_per_sample": p, "completion_tokens_per_sample": c, "cost_per_sample_usd": per_sample,
+            "n_samples": n_samples, "total_cost_usd": per_sample * n_samples,
+            "price_in_per_m": price_in_per_m, "price_out_per_m": price_out_per_m,
+            "metrics_measured": sorted(per_metric)}
+
+
 def estimate_free_tier(
     usage: List[Dict[str, Any]],
     ratelimit: Dict[str, str],
@@ -124,13 +152,15 @@ def estimate_free_tier(
     Groq headers give `x-ratelimit-limit-requests` (requests per day) and `x-ratelimit-limit-tokens`
     (tokens per minute); a daily token cap is not in the headers, so it can be passed as `tokens_per_day`.
     """
-    samples = {(u["system"], u["question_id"]) for u in usage}
+    # Per-metric averages over rows that completed, summed over metrics: rate-limited or failed rows
+    # would otherwise drag the per-sample cost down.
+    ok = [u for u in usage if u["status"] == "ok"]
+    samples = {(u["system"], u["question_id"]) for u in ok}
     if not samples:
         return {"samples_measured": 0}
-    calls = sum(u["calls"] for u in usage)
-    tokens = sum(u["prompt_tokens"] + u["completion_tokens"] for u in usage)
-    per_sample_calls = calls / len(samples)
-    per_sample_tokens = tokens / len(samples)
+    per_metric = per_metric_usage(usage)
+    per_sample_calls = sum(m["calls"] for m in per_metric.values())
+    per_sample_tokens = sum(m["prompt_tokens"] + m["completion_tokens"] for m in per_metric.values())
     total_calls = per_sample_calls * n_samples
     total_tokens = per_sample_tokens * n_samples
     rpd = requests_per_day or _num(ratelimit.get("x-ratelimit-limit-requests"))
@@ -173,9 +203,20 @@ def render_report(
     failures = generation_failures(records, gen_errors)
     index = {(a["system"], a["category"], a["metric"]): a for a in agg}
 
+    answer_models = sorted({f"{r.get('provider')}/{r.get('model')}" for r in records})
     lines = ["# RQ2 results", ""]
     lines.append(f"Judge: {', '.join(judges) if judges else 'none (custom metrics only)'}. "
                  "Cells: mean [bootstrap 95% CI] (n scored; na and failed rows excluded).")
+    lines += [
+        "", "## Configuration", "",
+        f"- RAGAS judge: {', '.join(judges) if judges else 'none'} "
+        "(`EVAL_JUDGE_PROVIDER` / `EVAL_JUDGE_MODEL`; one judge per scores file).",
+        f"- Answer relevancy embeddings: local `{EMBEDDING_MODEL}` (sentence-transformers, CPU).",
+        f"- Answer model(s): {', '.join(answer_models) if answer_models else 'n/a'}.",
+        "- System C's own guardrail judge: for the full run it is set to OpenAI `gpt-4o-mini` via env vars "
+        "during generation (`GUARDRAIL_JUDGE_PROVIDER=openai`, `GUARDRAIL_JUDGE_MODEL=gpt-4o-mini`); the smoke "
+        "run used the `.env` setting (Groq `openai/gpt-oss-120b`).",
+    ]
     lines.append("")
     lines.append("## Generation")
     lines.append("")
@@ -199,6 +240,9 @@ def render_report(
         "- Citation precision/recall/F1 are section-level (top-level 10-K item, `financials.csv` = any "
         "`[F-…]` citation), because the golden set has no gold chunk IDs. Answers with no citations are N/A, "
         "not 0; `citation_coverage` is the share of answers with at least one citation.",
+        "- Section aliases (a limitation of section-level matching): a cited `Item 15` chunk that is financial "
+        "statements or notes counts as `Item 8`, and a cover-page chunk (no Item heading; registrant name, "
+        "address, file number) counts as `Item 1`, matching how the golden set labels those facts.",
         "- RAGAS metrics see the answer with citation tags stripped.",
     ]
     if smoke:
@@ -222,6 +266,13 @@ def render_report(
                     lines.append(f"- {label}: {e[key]:.2f}")
             lines.append(f"- Estimated days: {e['estimated_days']:.2f}" if e.get("estimated_days") is not None
                          else "- Estimated days: unknown (no daily limit in headers; pass --tpd / --rpd)")
+        c = smoke.get("cost")
+        if c and c["metrics_measured"]:
+            lines += ["", f"Projected judge cost for {c['n_samples']} samples at ${c['price_in_per_m']}/M input and "
+                          f"${c['price_out_per_m']}/M output tokens: {c['prompt_tokens_per_sample']:,.0f} + "
+                          f"{c['completion_tokens_per_sample']:,.0f} tokens per sample, "
+                          f"${c['cost_per_sample_usd']:.4f} per sample, ${c['total_cost_usd']:.2f} total "
+                          f"(metrics measured: {', '.join(c['metrics_measured'])})."]
     return "\n".join(lines) + "\n"
 
 
@@ -234,7 +285,8 @@ def write_aggregate_csv(path: Path, agg: List[Dict[str, Any]]) -> None:
 
 
 def build_report(run_path: Path, scores_file: str = SCORES_FILE, smoke: bool = False, n_samples: int = 120,
-                 tokens_per_day: Optional[float] = None, requests_per_day: Optional[float] = None) -> str:
+                 tokens_per_day: Optional[float] = None, requests_per_day: Optional[float] = None,
+                 price_in_per_m: float = PRICE_IN_PER_M, price_out_per_m: float = PRICE_OUT_PER_M) -> str:
     records = read_jsonl(run_path / RECORDS_FILE)
     scores = read_jsonl(run_path / scores_file)
     gen_errors = read_jsonl(run_path / GEN_ERRORS_FILE)
@@ -244,10 +296,13 @@ def build_report(run_path: Path, scores_file: str = SCORES_FILE, smoke: bool = F
         usage = judge_usage(scores)
         ratelimit = latest_ratelimit(scores)
         smoke_info = {"usage": usage, "ratelimit": ratelimit,
-                      "estimate": estimate_free_tier(usage, ratelimit, n_samples, tokens_per_day, requests_per_day)}
+                      "estimate": estimate_free_tier(usage, ratelimit, n_samples, tokens_per_day, requests_per_day),
+                      "cost": estimate_cost(usage, n_samples, price_in_per_m, price_out_per_m)}
     text = render_report(records, scores, gen_errors, agg, smoke_info)
-    (run_path / "report.md").write_text(text, encoding="utf-8")
-    write_aggregate_csv(run_path / "aggregate.csv", agg)
+    # One report per scores file, so a Groq and a gpt-4o-mini scoring of the same run don't overwrite each other.
+    suffix = "" if scores_file == SCORES_FILE else "_" + Path(scores_file).stem
+    (run_path / f"report{suffix}.md").write_text(text, encoding="utf-8")
+    write_aggregate_csv(run_path / f"aggregate{suffix}.csv", agg)
     return text
 
 
@@ -259,8 +314,11 @@ def main() -> None:
     p.add_argument("--n-samples", type=int, default=120, help="Samples in the full run (System C v1 + v2 = 120).")
     p.add_argument("--tpd", type=float, default=None, help="Judge tokens-per-day limit, if known.")
     p.add_argument("--rpd", type=float, default=None, help="Override requests-per-day limit.")
+    p.add_argument("--price-in", type=float, default=PRICE_IN_PER_M, help="Judge USD per 1M input tokens.")
+    p.add_argument("--price-out", type=float, default=PRICE_OUT_PER_M, help="Judge USD per 1M output tokens.")
     args = p.parse_args()
-    print(build_report(Path(args.run), args.scores_file, args.smoke, args.n_samples, args.tpd, args.rpd))
+    print(build_report(Path(args.run), args.scores_file, args.smoke, args.n_samples, args.tpd, args.rpd,
+                       args.price_in, args.price_out))
 
 
 if __name__ == "__main__":

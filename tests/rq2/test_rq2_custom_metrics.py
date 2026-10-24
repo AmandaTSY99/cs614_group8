@@ -79,6 +79,44 @@ def test_numeric_accuracy_scale_matching():
     assert numeric_accuracy("anything", []) is None
 
 
+def test_item15_financial_statements_alias_to_item8():
+    fs = _cite("NVDA_FY2026_x:274", "NVDA", "Item 15. Exhibits and Financial Statement Schedules > "
+                                              "Opinions on the Financial Statements and Internal Control")
+    assert cited_sections([fs]) == [("NVDA", "Item 8")]
+    # The Item 15 heading alone ("Financial Statement Schedules") is not enough
+    exhibits = _cite("NVDA_FY2026_x:300", "NVDA", "Item 15. Exhibits and Financial Statement Schedules > Exhibit Index")
+    assert cited_sections([exhibits]) == [("NVDA", "Item 15")]
+    # ...but the chunk text can show it is a statement or note
+    text = {"NVDA_FY2026_x:300": "NVIDIA Corporation | Notes to the Consolidated Financial Statements | Note 1"}
+    assert cited_sections([exhibits], text) == [("NVDA", "Item 8")]
+
+
+def test_cover_page_alias_to_item1():
+    cover = _cite("NVDA_FY2026_x:3", "NVDA", "(Exact name of registrant as specified in its charter)")
+    assert cited_sections([cover]) == [("NVDA", "Item 1")]
+    untitled = _cite("NVDA_FY2026_x:4", "NVDA", "Untitled")
+    assert cited_sections([untitled]) == []
+    assert cited_sections([untitled], {"NVDA_FY2026_x:4": "2788 San Tomas Expressway (Address of principal "
+                                                          "executive offices)"}) == [("NVDA", "Item 1")]
+
+
+def test_gold01_style_answer_scores_full_citation_marks():
+    """Cover-page address + Item 15 auditor's opinion vs gold Item 1 + Item 8."""
+    record = {
+        "answer": "x", "guardrail_report": None, "ground_truth_numbers": [],
+        "target_sections": ["Item 1", "Item 8"],
+        "citations": [
+            _cite("NVDA_FY2026_x:274", "NVDA", "Item 15. Exhibits and Financial Statement Schedules > "
+                                               "Opinions on the Financial Statements and Internal Control"),
+            _cite("NVDA_FY2026_x:3", "NVDA", "(Exact name of registrant as specified in its charter)"),
+        ],
+        "contexts_meta": [{"chunk_id": "NVDA_FY2026_x:274"}, {"chunk_id": "NVDA_FY2026_x:3"}],
+        "retrieved_contexts": ["We have audited the accompanying consolidated balance sheets", "Delaware | 95051"],
+    }
+    scores = custom_scores(record)
+    assert scores["citation_precision"][0] == scores["citation_recall"][0] == scores["citation_f1"][0] == 1.0
+
+
 def test_grounding_error_and_tag_stripping():
     assert grounding_error({"numerical_grounding_error_rate": 0.25}) == 0.25
     assert grounding_error(None) is None

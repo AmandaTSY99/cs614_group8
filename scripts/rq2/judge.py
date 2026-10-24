@@ -124,15 +124,15 @@ class JudgeMeter:
     async def on_response(self, response: Any) -> None:
         headers = {k.lower(): v for k, v in response.headers.items()
                    if k.lower().startswith(RATELIMIT_HEADER_PREFIXES)}
+        key = self.current.get()
         if headers:
             self.last_ratelimit = headers
-        key = self.current.get()
-        if key is None or key not in self.usage:
-            return
+            if key in self.usage:
+                self.usage[key]["ratelimit"] = headers
+        if key is None or key not in self.usage or response.status_code >= 400:
+            return  # rate-limited / failed responses are not counted as judge calls
         entry = self.usage[key]
         entry["calls"] += 1
-        if headers:
-            entry["ratelimit"] = headers
         try:
             await response.aread()
             usage = (json.loads(response.content) or {}).get("usage") or {}
