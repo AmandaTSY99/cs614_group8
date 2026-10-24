@@ -120,3 +120,24 @@ class AdaptiveRAGState(TypedDict):
    - Maps every factual assertion to an exact chunk ID, section, and table row.
 4. **`guardrail_node` (Faithfulness & Hallucination Defense)**:
    - Re-checks every generated dollar value and metric against the cited text. Drops or flags ungrounded claims.
+
+---
+
+## 4. Empirical Evaluation & RQ3 Ablation Benchmark Findings
+
+*Evaluated on the 60-Question SEC 10-K Golden Benchmark Set (`data/golden_eval_set.json`). Full report and raw logs at [`docs/system-c/EVAL_FINDINGS.md`](../system-c/EVAL_FINDINGS.md) and [`reports/eval_runs/20261024_1720/`](../../reports/eval_runs/20261024_1720/).*
+
+### Performance Summary Table
+
+| Architectural Condition | Mean Hops | Early-Stop % | Latency (p50) | Latency (p90) | Mean Total Tokens | Cost / 1k Queries | Grounding Error Rate |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Fixed 1-Hop Baseline** | 1.00 | 0.0% | 31.9 ms | 259.4 ms | 3,010 | **\$0.3375** | 0.000 |
+| **Fixed 3-Hop Exhaustive** | 3.00 | 0.0% | 58.4 ms | 127.0 ms | 8,219 | **\$0.8880** | 0.000 |
+| **Adaptive Multi-Hop (AMR v1)** | **1.47** | **100.0%** | **22.0 ms** | **51.1 ms** | **4,604** | **\$0.5028** | 0.000 |
+| **Agentic Adaptive (AAMR v2)** | **1.10** | **100.0%** | **88.97 ms** | **196.1 ms** | **3,426** | **\$0.3767** | 0.000 |
+
+### Key Takeaways
+1. **Adaptive AMR (v1)** reduces token costs by **~43.4%** compared to Fixed 3-Hop (\$0.5028 vs. \$0.8880 / 1k queries) by halting 53.3% of queries at Hop 1 as soon as factual sufficiency is verified.
+2. **Agentic AAMR (v2)** converges in **1.10 mean hops** with near 1-hop pricing (\$0.3767 / 1k queries) by deterministically retrieving XBRL financial table metrics (`financials.csv` / Supabase SQL) in 1 hop.
+3. **Pipeline Bugfixes**: Resolved retriever substring false-positives (`state in statements`) and LLM critic sentinel strings (`"missing_entities": ["None"]`) that previously caused simple factual queries to exhaust all hops.
+
