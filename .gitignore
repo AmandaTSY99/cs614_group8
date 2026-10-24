@@ -35,6 +35,7 @@ data_test/
 
 # --- RAG artifacts (local vector stores, model caches) ---
 chroma_db/
+chroma_db_nvda/
 .chroma/
 *.faiss
 .cache/
