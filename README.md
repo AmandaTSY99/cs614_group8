@@ -1,3 +1,14 @@
+---
+title: System C Financial RAG
+emoji: 🏛️
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: 1.45.1
+app_file: app.py
+pinned: false
+---
+
 # CS614 GenAI Project: Adaptive Multi-Hop RAG for SEC 10-K Financial Disclosures
 
 **Course:** CS614 Gen AI with LLMs (SMU)  
