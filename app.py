@@ -40,36 +40,42 @@ st.markdown(
     """
     <style>
     .main-header {
-        font-size: 2.1rem;
-        font-weight: 700;
-        color: var(--text-color, #0F172A);
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #3B82F6 0%, #6366F1 50%, #8B5CF6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         margin-bottom: 0.2rem;
     }
     .sub-header {
-        font-size: 1.0rem;
-        color: var(--secondary-text-color, #64748B);
+        font-size: 1.05rem;
+        color: #475569;
         margin-bottom: 1.2rem;
     }
-    .metric-badge {
-        display: inline-block;
-        padding: 0.25rem 0.6rem;
-        border-radius: 6px;
-        font-size: 0.80rem;
-        font-weight: 600;
-        margin-right: 0.4rem;
-        background-color: rgba(128, 128, 128, 0.12);
-        color: var(--text-color, #334155);
-        border: 1px solid rgba(128, 128, 128, 0.2);
-    }
-    .badge-success { background-color: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-info { background-color: rgba(59, 130, 246, 0.15); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3); }
-    .badge-warning { background-color: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); }
     .arch-banner {
-        background-color: rgba(128, 128, 128, 0.06);
-        border: 1px solid rgba(128, 128, 128, 0.18);
+        background-color: rgba(59, 130, 246, 0.08);
+        border: 1px solid rgba(59, 130, 246, 0.25);
         border-radius: 8px;
-        padding: 10px 16px;
+        padding: 12px 18px;
         margin-bottom: 16px;
+    }
+    .arch-title {
+        font-size: 0.80rem;
+        font-weight: 700;
+        color: #2563EB;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .arch-text {
+        font-size: 0.90rem;
+        color: #1E293B;
+        font-weight: 500;
+    }
+    @media (prefers-color-scheme: dark) {
+        .sub-header { color: #94A3B8 !important; }
+        .arch-title { color: #60A5FA !important; }
+        .arch-text { color: #F1F5F9 !important; }
+        .arch-banner { background-color: rgba(59, 130, 246, 0.12) !important; border-color: rgba(96, 165, 250, 0.3) !important; }
     }
     .citation-tag {
         background-color: rgba(99, 102, 241, 0.15);
@@ -368,8 +374,8 @@ st.markdown(
 st.markdown(
     """
     <div class="arch-banner">
-      <span style="font-size: 0.78rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em;">Autonomous Pipeline Architecture:</span><br/>
-      <span style="font-size: 0.88rem; color: var(--text-color, #1E293B); font-weight: 500;">
+      <span class="arch-title">Autonomous Pipeline Architecture:</span><br/>
+      <span class="arch-text">
         1. Decompose Query &bull; 2. Heterogeneous Router (XBRL SQL vs. 10-K Text) &bull; 3. Critic Sufficiency Audit (&ge;0.85 Early Stop) &bull; 4. Inline Citation Synthesis &bull; 5. Closed-Loop Numerical Repair
       </span>
     </div>
