@@ -15,12 +15,28 @@ def tokenize(text):
 class Scope:
     tickers: tuple = ()
     years: tuple = ()
+    filing_pairs: tuple = ()
+
+    def __post_init__(self):
+        if self.filing_pairs and (self.tickers or self.years):
+            raise ValueError('Use filing_pairs or ticker/year lists, not both')
+
+    def payload(self):
+        result = {'tickers': list(self.tickers), 'years': list(self.years)}
+        if self.filing_pairs:
+            result['filing_pairs'] = [list(p) for p in self.filing_pairs]
+        return result
 
     def matches(self, meta):
+        if self.filing_pairs:
+            return (meta.get('ticker'), meta.get('fiscal_year')) in self.filing_pairs
         return (not self.tickers or meta.get('ticker') in self.tickers) and (
             not self.years or meta.get('fiscal_year') in self.years)
 
     def where(self):
+        if self.filing_pairs:
+            filters = [{'$and': [{'ticker': t}, {'fiscal_year': y}]} for t, y in self.filing_pairs]
+            return filters[0] if len(filters) == 1 else {'$or': filters}
         clauses = []
         if self.tickers:
             clauses.append({'ticker': {'$in': list(self.tickers)}})

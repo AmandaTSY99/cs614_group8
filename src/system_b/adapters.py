@@ -1,5 +1,6 @@
 """Live adapters. Never create/rebuild a missing RAG3 collection."""
 from pathlib import Path
+import time
 
 BGE_MODEL = 'BAAI/bge-small-en-v1.5'
 BGE_PREFIX = 'Represent this sentence for searching relevant passages: '
@@ -57,14 +58,28 @@ class Generator:
         key = os.environ.get('SYSTEM_B_API_KEY') or os.environ.get('OPENAI_API_KEY')
         if not key:
             raise ValueError('Set SYSTEM_B_API_KEY or OPENAI_API_KEY for generation')
-        self.client = OpenAI(api_key=key, base_url=base_url, timeout=90, max_retries=1)
+        self.client = OpenAI(api_key=key, base_url=base_url, timeout=90, max_retries=0)
         self.model = model
 
     def __call__(self, messages):
-        response = self.client.chat.completions.create(model=self.model, messages=messages,
-            temperature=0, max_tokens=1500)
+        from openai import RateLimitError
+        for attempt in range(9):
+            try:
+                response = self.client.chat.completions.create(model=self.model, messages=messages,
+                    temperature=0, max_tokens=1500)
+                break
+            except RateLimitError as exc:
+                if attempt == 8 or 'tokens per day' in str(exc).lower():
+                    raise
+                retry_after = exc.response.headers.get('retry-after', '')
+                try:
+                    delay = float(retry_after)
+                except ValueError:
+                    delay = min(30, 2 ** attempt)
+                time.sleep(max(1, delay) + 1)
         if not response.choices[0].message.content:
             raise RuntimeError('Generator returned no answer')
         return {'answer': response.choices[0].message.content,
                 'usage': response.usage.model_dump() if response.usage else None,
-                'model': response.model}
+                'model': response.model, 'rate_limit_retries': attempt,
+                'finish_reason': response.choices[0].finish_reason}

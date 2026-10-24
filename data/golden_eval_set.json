@@ -1148,6 +1148,20 @@
   },
   {
     "id": "GOLD-52",
+    "filing_pairs": [
+      [
+        "NVDA",
+        2026
+      ],
+      [
+        "META",
+        2024
+      ],
+      [
+        "MSFT",
+        2024
+      ]
+    ],
     "ticker": "NVDA",
     "target_tickers": [
       "NVDA",
@@ -1233,6 +1247,16 @@
   },
   {
     "id": "GOLD-55",
+    "filing_pairs": [
+      [
+        "TSLA",
+        2024
+      ],
+      [
+        "NVDA",
+        2026
+      ]
+    ],
     "ticker": "TSLA",
     "target_tickers": [
       "TSLA",

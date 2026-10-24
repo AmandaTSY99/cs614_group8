@@ -624,6 +624,7 @@ GOLDEN_QUESTIONS: List[Dict[str, Any]] = [
     },
     {
         "id": "GOLD-52",
+        "filing_pairs": [["NVDA", 2026], ["META", 2024], ["MSFT", 2024]],
         "ticker": "NVDA",
         "target_tickers": ["NVDA", "META", "MSFT"],
         "fiscal_years": [2024, 2026],
@@ -660,6 +661,7 @@ GOLDEN_QUESTIONS: List[Dict[str, Any]] = [
     },
     {
         "id": "GOLD-55",
+        "filing_pairs": [["TSLA", 2024], ["NVDA", 2026]],
         "ticker": "TSLA",
         "target_tickers": ["TSLA", "NVDA"],
         "fiscal_years": [2024, 2026],

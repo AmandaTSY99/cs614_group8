@@ -36,6 +36,8 @@ data_test/
 # --- RAG artifacts (local vector stores, model caches) ---
 chroma_db/
 chroma_db_nvda/
+chroma_db_rag5/
+chroma_db*.zip
 .chroma/
 *.faiss
 .cache/
@@ -52,3 +54,12 @@ chroma_db_nvda/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Keep published evaluation results compact; retain raw runs locally.
+reports/system_b/*
+!reports/system_b/EVALUATION_REPORT.md
+!reports/system_b/full_eval_manifest.json
+!reports/system_b/full_eval_summary/
+reports/system_b/full_eval_summary/*
+!reports/system_b/full_eval_summary/summary.json
+!reports/system_b/full_eval_summary/per_query.csv

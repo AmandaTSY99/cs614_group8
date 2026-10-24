@@ -32,6 +32,16 @@ class SystemBTests(unittest.TestCase):
         self.assertEqual(index.search('absent', Scope(), 5), [])
         self.assertIn('$and', Scope(('NVDA', 'AAPL'), (2024,)).where())
 
+    def test_exact_company_year_pairs(self):
+        scope = Scope(filing_pairs=(('NVDA', 2026), ('AAPL', 2024)))
+        self.assertTrue(scope.matches({'ticker': 'NVDA', 'fiscal_year': 2026}))
+        self.assertTrue(scope.matches({'ticker': 'AAPL', 'fiscal_year': 2024}))
+        self.assertFalse(scope.matches({'ticker': 'AAPL', 'fiscal_year': 2026}))
+        self.assertFalse(scope.matches({'ticker': 'NVDA', 'fiscal_year': 2024}))
+        self.assertEqual(scope.where(), {'$or': [
+            {'$and': [{'ticker': 'NVDA'}, {'fiscal_year': 2026}]},
+            {'$and': [{'ticker': 'AAPL'}, {'fiscal_year': 2024}]}]})
+
     def test_reranking_dedup_and_citations(self):
         def dense(q, scope, k):
             return [('a', .9), ('b', .5)]
@@ -70,6 +80,12 @@ class SystemBTests(unittest.TestCase):
     def test_invalid_citation_exposed(self):
         r = Retriever(self.records, config=Config(mode='bm25'))
         out = run(r, 'revenue', generator=lambda m: {'answer': 'Claim [99]'})
+        self.assertEqual(out['invalid_citation_labels'], ['99'])
+
+    def test_unicode_citation_labels(self):
+        r = Retriever(self.records, config=Config(mode='bm25'))
+        out = run(r, 'revenue', generator=lambda m: {'answer': 'Claim 【1】 and 【99】'})
+        self.assertTrue(out['has_citations'])
         self.assertEqual(out['invalid_citation_labels'], ['99'])
 
     def test_validation(self):
@@ -115,6 +131,17 @@ class SystemBTests(unittest.TestCase):
                 with self.assertRaises(SystemExit) as exc:
                     main()
                 self.assertEqual(exc.exception.code, 2)
+            resumed = Path(tmp) / 'resumed.jsonl'
+            resume_args = argv[:-1] + [str(resumed), '--resume-from', str(output)]
+            class NoRepeatSource(Source):
+                def __call__(self, *args):
+                    raise AssertionError('Successful retrieval was repeated')
+            with patch('sys.argv', resume_args), patch('src.system_b.__main__.ChromaSource', NoRepeatSource), \
+                 contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(main(), 1)
+            resumed_rows = [json.loads(s) for s in resumed.read_text().splitlines()]
+            self.assertEqual(resumed_rows[:4], rows[:4])
+            self.assertEqual(len(resumed_rows), 8)
 
     def test_chroma_adapter_pagination_and_query_contract(self):
         from src.system_b.adapters import ChromaSource, BGE_PREFIX
@@ -133,6 +160,24 @@ class SystemBTests(unittest.TestCase):
         source.embedder.encode.assert_called_once_with([BGE_PREFIX + 'revenue'], normalize_embeddings=True)
         self.assertEqual(source.collection.query.call_args.kwargs['n_results'], 1)
         self.assertEqual(source.collection.query.call_args.kwargs['where'], scope.where())
+
+    def test_batch_stops_on_daily_quota(self):
+        from src.system_b.__main__ import main
+        from unittest.mock import Mock
+        source = Mock()
+        source.records.return_value = self.records
+        generator = Mock(side_effect=RuntimeError('tokens per day exhausted'))
+        with tempfile.TemporaryDirectory() as tmp:
+            questions, output = Path(tmp) / 'q.json', Path(tmp) / 'out.jsonl'
+            questions.write_text(json.dumps([{'id': str(i), 'query': 'revenue'} for i in range(2)]))
+            argv = ['system_b', '--benchmark', str(questions), '--mode', 'bm25', '--generate',
+                    '--model', 'test', '--output', str(output)]
+            with patch('sys.argv', argv), patch('src.system_b.__main__.ChromaSource', return_value=source), \
+                 patch('src.system_b.__main__.Generator', return_value=generator), \
+                 contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main(), 3)
+            self.assertEqual(generator.call_count, 1)
+            self.assertEqual(len(output.read_text().splitlines()), 1)
 
 
 if __name__ == '__main__':
