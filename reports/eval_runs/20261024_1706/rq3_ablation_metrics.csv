@@ -1,0 +1,5 @@
+condition_key,condition_label,query_count,mean_latency_ms,latency_p50_ms,latency_p90_ms,latency_p99_ms,mean_prompt_tokens,mean_completion_tokens,mean_total_tokens,mean_cost_usd,cost_per_1k_queries_usd,mean_hops,early_stopping_rate_pct,hop_1_count,hop_2_count,hop_3_count,guardrail_pass_rate_pct,mean_numerical_grounding_error_rate,mean_faithfulness_score
+fixed_1hop,Fixed 1-Hop Baseline,3,133.17,139.2,230.5,251.05,2228.7,163.0,2391.7,0.000272,0.2718,1.0,0.0,3,0,0,100.0,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,3,25.53,20.29,33.51,36.49,6938.3,321.0,7259.3,0.00079,0.7901,3.0,0.0,0,0,3,100.0,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),3,7.48,7.28,8.89,9.25,2228.7,163.0,2391.7,0.000272,0.2718,1.0,100.0,3,0,0,100.0,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),3,34.97,9.15,74.17,88.8,2253.0,158.3,2411.3,0.000273,0.2728,1.0,100.0,3,0,0,100.0,0.0,1.0

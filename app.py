@@ -436,7 +436,8 @@ if run_btn and query_text.strip():
         # Executive Summary Metrics
         m1, m2, m3, m4, m5 = st.columns(5)
         m1.metric("Hops Executed", f"{result['current_hop']} / {result['max_hops']}")
-        m2.metric("Early Stopped", f"Yes (Hop {result['current_hop']})" if is_early_stopped else "No (Max Hops)")
+        stop_reason_label = f"Early Stopped (Hop {result['current_hop']})" if is_early_stopped else f"Max Hops Reached ({result['current_hop']}/{result['max_hops']})"
+        m2.metric("Stop Reason", stop_reason_label)
         m3.metric("Sufficiency Score", f"{result.get('sufficiency_score', 0.0):.2f}")
         m4.metric("Evidence Chunks", f"{len(result.get('accumulated_evidence', []))}")
         m5.metric("Latency", f"{total_wall_time:.2f}s")

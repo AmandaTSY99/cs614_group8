@@ -520,11 +520,13 @@ def export_ablation_results(
 def main() -> None:
     parser = argparse.ArgumentParser(description="RQ3 Inference Economics Ablation Benchmark.")
     parser.add_argument("--eval-set", type=str, default="data/golden_eval_set.json", help="Path to golden eval set JSON.")
-    parser.add_argument("--provider", type=str, default=None, choices=["ollama", "groq", "openai", "mock"], help="LLM Provider override.")
+    parser.add_argument("--provider", type=str, default=None, choices=["ollama", "groq", "gemini", "cohere", "openai", "mock"], help="LLM Provider override.")
     parser.add_argument("--model", type=str, default=None, help="LLM Model name override.")
     parser.add_argument("--mock", action="store_true", help="Shortcut to run with --provider mock.")
     parser.add_argument("--limit-queries", type=int, default=None, help="Run only the first N queries for rapid testing.")
     parser.add_argument("--verbose", action="store_true", help="Print per-query log during execution.")
+    parser.add_argument("--timestamp-dir", action="store_true", default=True, help="Save figures and data into a versioned reports/eval_runs/YYYYMMDD_HHMM/ folder.")
+    parser.add_argument("--out-dir", type=str, default=None, help="Custom output directory.")
     parser.add_argument("--out-json", type=str, default="reports/rq3_ablation_summary.json", help="Path for JSON export.")
     parser.add_argument("--out-summary-csv", type=str, default="reports/rq3_ablation_metrics.csv", help="Path for aggregate CSV.")
     parser.add_argument("--out-query-csv", type=str, default="reports/rq3_ablation_per_query.csv", help="Path for per-query CSV.")
@@ -548,12 +550,40 @@ def main() -> None:
 
     print_ablation_summary_table(ablation_data)
 
+    # Determine export paths (versioned directory vs root reports/)
+    if args.out_dir:
+        run_dir = Path(args.out_dir)
+    elif args.timestamp_dir:
+        ts_tag = time.strftime("%Y%m%d_%H%M")
+        run_dir = Path(f"reports/eval_runs/{ts_tag}")
+    else:
+        run_dir = Path("reports")
+
+    run_dir.mkdir(parents=True, exist_ok=True)
+    summary_json_path = run_dir / "rq3_ablation_summary.json"
+    summary_csv_path = run_dir / "rq3_ablation_metrics.csv"
+    per_query_csv_path = run_dir / "rq3_ablation_per_query.csv"
+
     export_ablation_results(
         ablation_data=ablation_data,
-        summary_json_path=Path(args.out_json),
-        summary_csv_path=Path(args.out_summary_csv),
-        per_query_csv_path=Path(args.out_query_csv),
+        summary_json_path=summary_json_path,
+        summary_csv_path=summary_csv_path,
+        per_query_csv_path=per_query_csv_path,
     )
+
+    # Automatically generate versioned Pareto plots
+    fig_dir = run_dir / "figures"
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        from scripts.plot_rq3_pareto import load_metrics, plot_pareto_frontier, plot_latency_breakdown, plot_hop_distribution, plot_executive_dashboard
+        df_metrics = load_metrics(summary_csv_path, summary_json_path)
+        plot_pareto_frontier(df_metrics, fig_dir / "rq3_pareto_frontier.png")
+        plot_latency_breakdown(df_metrics, fig_dir / "rq3_latency_breakdown.png")
+        plot_hop_distribution(df_metrics, fig_dir / "rq3_hop_distribution.png")
+        plot_executive_dashboard(df_metrics, fig_dir / "rq3_executive_dashboard.png")
+        print(f"\n{GREEN}✓ Generated all versioned publication plots in:{RESET} {fig_dir}")
+    except Exception as e:
+        print(f"Plotting warning: {e}")
 
 
 if __name__ == "__main__":
