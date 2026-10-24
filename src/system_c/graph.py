@@ -105,6 +105,7 @@ def run_system_c(
     target_ticker: Optional[str] = None,
     fiscal_years: Optional[list[int]] = None,
     mock_sufficient_at_hop: Optional[int] = None,
+    force_max_hops: bool = False,
 ) -> AdaptiveRAGState:
     """
     Execute a query end-to-end through System C and return the final `AdaptiveRAGState`.
@@ -115,6 +116,7 @@ def run_system_c(
         mode=mode,
         target_ticker=target_ticker,
         fiscal_years=fiscal_years,
+        force_max_hops=force_max_hops,
     )
     if mock_sufficient_at_hop is not None:
         initial_state["telemetry"]["mock_sufficient_at_hop"] = mock_sufficient_at_hop

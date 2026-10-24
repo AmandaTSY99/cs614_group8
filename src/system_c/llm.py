@@ -133,7 +133,7 @@ def _call_mock(
                 ticker = t
                 break
         years = [int(y) for y in ("2024", "2025", "2026") if y in query] or [2026]
-        is_multi = any(w in query.lower() for w in ("and", "impact", "footnote", "covenant", "compare", "how did"))
+        is_multi = any(w in query.lower() for w in ("impact", "footnote", "covenant", "compare", "how did", "supply", "across", "concentration", "risk"))
         resp_obj = {
             "target_ticker": ticker,
             "fiscal_years": years,
@@ -152,9 +152,12 @@ def _call_mock(
 
     elif node_name == "critic":
         # If query is single_hop or we reached hop >= 2 (or force_sufficient_at_hop in state), mark sufficient
-        target_hop = state.get("telemetry", {}).get("mock_sufficient_at_hop", 2)
-        if state.get("query_complexity") == "single_hop":
-            target_hop = 1
+        if state.get("force_max_hops"):
+            target_hop = state.get("max_hops", 3)
+        else:
+            target_hop = state.get("telemetry", {}).get("mock_sufficient_at_hop", 2)
+            if state.get("query_complexity") == "single_hop":
+                target_hop = 1
         is_suff = hop >= target_hop
         resp_obj = {
             "is_sufficient": is_suff,

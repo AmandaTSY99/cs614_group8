@@ -72,9 +72,15 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     )
     parsed = _parse_critic_json(raw_resp)
 
-    is_sufficient = bool(parsed.get("is_sufficient", False))
-    missing_premises = [str(m) for m in (parsed.get("missing_premises") or []) if str(m).strip()]
-    reasoning = str(parsed.get("critic_reasoning") or f"Evaluated {len(evidence)} chunks at Hop {hop}.")
+    # In RQ3 Fixed Max-Hops ablation benchmark, force the critic not to early-stop before max_hops
+    if state.get("force_max_hops"):
+        is_sufficient = hop >= max_hops
+        missing_premises = [] if is_sufficient else ["RQ3 ablation forced hop continuation"]
+        reasoning = f"RQ3 Fixed {max_hops}-Hop benchmark: hop {hop}/{max_hops}."
+    else:
+        is_sufficient = bool(parsed.get("is_sufficient", False))
+        missing_premises = [str(m) for m in (parsed.get("missing_premises") or []) if str(m).strip()]
+        reasoning = str(parsed.get("critic_reasoning") or f"Evaluated {len(evidence)} chunks at Hop {hop}.")
 
     # Record intermediate hop trace for RQ1 / RQ3 interpretability
     intermediate = list(state.get("intermediate_answers", []))

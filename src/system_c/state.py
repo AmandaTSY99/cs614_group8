@@ -54,6 +54,7 @@ class AdaptiveRAGState(TypedDict):
     # --- 4. Loop Control & Sufficiency Reflection (Anish: critic.py) ---
     current_hop: int                           # 1-indexed hop counter
     max_hops: int                              # Hard ceiling (default = 3)
+    force_max_hops: bool                       # If True, disable early-stopping to benchmark Fixed Max-Hops in RQ3 ablation
     is_sufficient: bool                        # True if evidence covers all premises of original_query
     missing_premises: List[str]                # Explicit gaps identified by Critic (passed to Aryan's generator.py)
     critic_reasoning: str                      # Detailed explanation from Evidence Sufficiency Critic
@@ -75,6 +76,7 @@ def create_initial_state(
     mode: str = "v1_amr",
     target_ticker: Optional[str] = None,
     fiscal_years: Optional[List[int]] = None,
+    force_max_hops: bool = False,
 ) -> AdaptiveRAGState:
     """Factory helper to initialize a clean AdaptiveRAGState for a new query execution."""
     f_years = fiscal_years or []
@@ -96,6 +98,7 @@ def create_initial_state(
         intermediate_answers=[],
         current_hop=0,
         max_hops=max_hops,
+        force_max_hops=force_max_hops,
         is_sufficient=False,
         missing_premises=[],
         critic_reasoning="",

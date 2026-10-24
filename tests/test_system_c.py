@@ -128,3 +128,15 @@ def test_guardrail_numerical_grounding_verifier():
     assert "999,999" in rep_bad["ungrounded_numbers"]
     assert "88.5%" in rep_bad["ungrounded_numbers"]
     assert rep_bad["numerical_grounding_error_rate"] > 0.5
+
+
+def test_rq3_ablation_force_max_hops():
+    """Verify that force_max_hops=True prevents early-stopping and executes all 3 hops for RQ3 ablation."""
+    res = run_system_c(
+        query="What was NVDA period end date?",
+        max_hops=3,
+        mode="v1_amr",
+        force_max_hops=True,
+    )
+    assert res["current_hop"] == 3
+    assert res["telemetry"]["rq3_summary"]["early_stopped"] is False

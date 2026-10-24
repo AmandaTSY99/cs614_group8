@@ -1,0 +1,49 @@
+condition_key,condition_label,query_id,query_category,ticker,fiscal_years,hops_executed,max_hops,early_stopped,chunks_retrieved,latency_ms,prompt_tokens,completion_tokens,total_tokens,estimated_cost_usd,cost_per_1k_usd,guardrail_passed,numerical_grounding_error_rate,faithfulness_score
+fixed_1hop,Fixed 1-Hop Baseline,SEC-SH-01,single_hop_factual,NVDA,[2026],1,1,False,4,18.38,2040,124,2164,0.0002412,0.2412,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-SH-02,single_hop_factual,AAPL,[2024],1,1,False,4,12.88,1985,108,2093,0.0002309,0.2309,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-SH-03,single_hop_factual,MSFT,[2024],1,1,False,4,18.1,1984,99,2083,0.0002281,0.2281,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-MH-01,multi_hop_cross_section,NVDA,[2026],1,1,False,4,4.42,1731,118,1849,0.0002085,0.2085,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-MH-02,multi_hop_cross_section,AMZN,[2024],1,1,False,4,12.37,2004,124,2128,0.0002376,0.2376,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-MH-03,multi_hop_cross_section,GOOGL,[2024],1,1,False,4,18.37,2189,121,2310,0.0002552,0.2552,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-MH-04,multi_hop_cross_section,META,[2024],1,1,False,4,18.42,2212,176,2388,0.000274,0.274,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-QT-01,quantitative_comparison,NVDA,"[2025, 2026]",1,1,False,4,46.26,1587,119,1706,0.0001944,0.1944,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-QT-02,quantitative_comparison,AAPL,"[2023, 2024]",1,1,False,4,23.41,2213,126,2339,0.0002591,0.2591,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-QT-03,quantitative_comparison,MSFT,"[2023, 2024]",1,1,False,4,26.51,1609,116,1725,0.0001957,0.1957,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-CX-01,complex_constraint,TSLA,"[2023, 2024]",1,1,False,4,29.5,1861,134,1995,0.0002263,0.2263,True,0.0,1.0
+fixed_1hop,Fixed 1-Hop Baseline,SEC-CX-02,complex_constraint,JPM,[2024],1,1,False,4,48.64,2052,129,2181,0.0002439,0.2439,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-SH-01,single_hop_factual,NVDA,[2026],3,3,False,9,29.05,6357,258,6615,0.0007131,0.7131,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-SH-02,single_hop_factual,AAPL,[2024],3,3,False,9,17.78,6361,242,6603,0.0007087,0.7087,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-SH-03,single_hop_factual,MSFT,[2024],3,3,False,9,29.36,6115,233,6348,0.0006814,0.6814,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-MH-01,multi_hop_cross_section,NVDA,[2026],3,3,False,9,25.36,5967,239,6206,0.0006684,0.6684,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-MH-02,multi_hop_cross_section,AMZN,[2024],3,3,False,9,21.67,6358,245,6603,0.0007093,0.7093,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-MH-03,multi_hop_cross_section,GOOGL,[2024],3,3,False,9,30.88,6360,255,6615,0.0007125,0.7125,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-MH-04,multi_hop_cross_section,META,[2024],3,3,False,9,35.36,6795,297,7092,0.0007686,0.7686,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-QT-01,quantitative_comparison,NVDA,"[2025, 2026]",3,3,False,9,51.17,5823,240,6063,0.0006543,0.6543,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-QT-02,quantitative_comparison,AAPL,"[2023, 2024]",3,3,False,9,38.22,6830,260,7090,0.000761,0.761,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-QT-03,quantitative_comparison,MSFT,"[2023, 2024]",3,3,False,9,52.37,6028,237,6265,0.0006739,0.6739,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-CX-01,complex_constraint,TSLA,"[2023, 2024]",3,3,False,9,59.99,6330,255,6585,0.0007095,0.7095,True,0.0,1.0
+fixed_3hop,Fixed 3-Hop Exhaustive,SEC-CX-02,complex_constraint,JPM,[2024],3,3,False,9,100.96,6217,250,6467,0.0006967,0.6967,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-SH-01,single_hop_factual,NVDA,[2026],1,3,True,4,8.81,2040,124,2164,0.0002412,0.2412,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-SH-02,single_hop_factual,AAPL,[2024],1,3,True,4,4.17,1985,108,2093,0.0002309,0.2309,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-SH-03,single_hop_factual,MSFT,[2024],1,3,True,4,7.75,1984,99,2083,0.0002281,0.2281,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-MH-01,multi_hop_cross_section,NVDA,[2026],2,3,True,8,11.98,4204,181,4385,0.0004747,0.4747,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-MH-02,multi_hop_cross_section,AMZN,[2024],2,3,True,8,10.63,4452,187,4639,0.0005013,0.5013,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-MH-03,multi_hop_cross_section,GOOGL,[2024],1,3,True,4,8.34,2189,121,2310,0.0002552,0.2552,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-MH-04,multi_hop_cross_section,META,[2024],2,3,True,8,16.94,4770,239,5009,0.0005487,0.5487,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-QT-01,quantitative_comparison,NVDA,"[2025, 2026]",2,3,True,8,24.11,4109,182,4291,0.0004655,0.4655,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-QT-02,quantitative_comparison,AAPL,"[2023, 2024]",1,3,True,4,11.35,2213,126,2339,0.0002591,0.2591,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-QT-03,quantitative_comparison,MSFT,"[2023, 2024]",2,3,True,8,25.74,4225,179,4404,0.0004762,0.4762,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-CX-01,complex_constraint,TSLA,"[2023, 2024]",2,3,True,8,29.69,4479,197,4676,0.000507,0.507,True,0.0,1.0
+adaptive_v1,Adaptive Multi-Hop (AMR v1),SEC-CX-02,complex_constraint,JPM,[2024],2,3,True,8,45.86,4689,192,4881,0.0005265,0.5265,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-SH-01,single_hop_factual,NVDA,[2026],1,3,True,4,8.63,2040,124,2164,0.0002412,0.2412,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-SH-02,single_hop_factual,AAPL,[2024],1,3,True,4,4.26,1985,108,2093,0.0002309,0.2309,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-SH-03,single_hop_factual,MSFT,[2024],1,3,True,5,12.17,2039,100,2139,0.0002339,0.2339,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-MH-01,multi_hop_cross_section,NVDA,[2026],2,3,True,9,13.08,4259,181,4440,0.0004802,0.4802,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-MH-02,multi_hop_cross_section,AMZN,[2024],2,3,True,9,11.73,4508,180,4688,0.0005048,0.5048,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-MH-03,multi_hop_cross_section,GOOGL,[2024],1,3,True,4,8.32,2189,121,2310,0.0002552,0.2552,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-MH-04,multi_hop_cross_section,META,[2024],2,3,True,9,17.74,4825,210,5035,0.0005455,0.5455,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-QT-01,quantitative_comparison,NVDA,"[2025, 2026]",2,3,True,10,25.52,4219,181,4400,0.0004762,0.4762,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-QT-02,quantitative_comparison,AAPL,"[2023, 2024]",1,3,True,6,12.88,2322,103,2425,0.0002631,0.2631,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-QT-03,quantitative_comparison,MSFT,"[2023, 2024]",2,3,True,10,27.29,4335,180,4515,0.0004875,0.4875,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-CX-01,complex_constraint,TSLA,"[2023, 2024]",2,3,True,10,31.7,4589,180,4769,0.0005129,0.5129,True,0.0,1.0
+agentic_v2,Agentic Adaptive (AAMR v2),SEC-CX-02,complex_constraint,JPM,[2024],2,3,True,9,48.48,4744,187,4931,0.0005305,0.5305,True,0.0,1.0

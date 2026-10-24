@@ -30,5 +30,11 @@
   - [x] Created [`tests/test_system_c.py`](file:///Users/anishdobz/projects/cs614_group8/tests/test_system_c.py) — 6/6 tests passing (`single_hop`, `multi_hop`, `max_hops=3` ceiling, `v2_aamr` tabular tool, and numerical guardrail verification).
   - [x] Verified live execution with local Ollama `qwen2.5:7b` on `NVDA` FY2026 10-K disclosures (`0.0` numerical grounding error, exact inline table citations).
 
-- [x] **Phase 3: Aryan Handoff Preparation**
+- [x] **Phase 3: Aryan Handoff & Git Sync**
+  - [x] Pushed integration branch `feature/system-c-adaptive-rag` to `origin` tracking remote.
   - [x] Updated [`ARYAN_HANDOFF.md`](file:///Users/anishdobz/projects/cs614_group8/ARYAN_HANDOFF.md) with plug-and-play contracts, `call_llm` telemetry wrapper usage, and Git branch workflow.
+
+- [x] **Phase 4: Milestone 1 Showcase & RQ3 Inference Economics Ablation**
+  - [x] Created [`scripts/demo_milestone1_system_c.py`](file:///Users/anishdobz/projects/cs614_group8/scripts/demo_milestone1_system_c.py) — Runs 3 curated SEC 10-K benchmark queries (Single-Hop early stopping, Multi-Hop MD&A + Footnotes, and Quantitative Tabular `v1_amr` vs `v2_aamr`) with formatted ANSI terminal table and markdown/JSON export.
+  - [x] Created [`scripts/run_rq3_ablation.py`](file:///Users/anishdobz/projects/cs614_group8/scripts/run_rq3_ablation.py) — Benchmarks Fixed 1-Hop vs. Fixed 3-Hop vs. Adaptive AMR (v1) vs. Agentic AAMR (v2) across 12 SEC 10-K queries, exporting Pareto coordinates to `reports/rq3_ablation_summary.json`, `reports/rq3_ablation_metrics.csv`, and `reports/rq3_ablation_per_query.csv`.
+  - [x] Updated [`tests/test_system_c.py`](file:///Users/anishdobz/projects/cs614_group8/tests/test_system_c.py) with `test_rq3_ablation_force_max_hops` — 7/7 tests passing in 0.56s.
