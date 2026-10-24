@@ -25,16 +25,26 @@ from src.system_c.llm import call_llm, clean_and_parse_json
 from src.system_c.state import AdaptiveRAGState
 
 CRITIC_SYSTEM_PROMPT = """You are an Evidence Sufficiency Critic for an SEC 10-K Financial RAG system.
-Evaluate whether the Accumulated Evidence (including any tabular XBRL blocks) contains ALL required facts, numbers, and footnote context to thoroughly answer the Original Query.
+Evaluate whether the Accumulated Evidence (including any tabular XBRL blocks) contains ALL required facts, numbers, segment breakdowns, and footnote disclosures to thoroughly answer the Original Query.
+
+STRICT RULE 1 (ZERO-TOLERANCE MULTI-COMPANY & SEGMENT COVERAGE):
+If the Original Query asks to compare multiple companies (e.g. Microsoft, Amazon, Alphabet) or specific business segments (e.g. AWS, Intelligent Cloud, Google Cloud, Compute & Networking) or footnote percentages (e.g. customer concentration, senior notes), ALL of them must be present in the evidence.
+If even ONE company, segment, or footnote is missing:
+- "is_sufficient" MUST be false.
+- "sufficiency_score" MUST be strictly < 0.70 (e.g. 0.40 - 0.60).
+- "missing_premises" MUST list the exact missing company, segment, or footnote disclosures.
+
+STRICT RULE 2 (CONSISTENCY REQUIREMENT):
+If your "critic_reasoning" states that any data point, segment, or footnote is missing, lacking, or not provided, you CANNOT set "is_sufficient": true. You MUST set "is_sufficient": false and "sufficiency_score" < 0.70.
 
 Return ONLY a valid JSON object with keys:
 - "sufficiency_score": float between 0.0 and 1.0 representing quantitative evidence completeness:
-    * 1.0: Complete, comprehensive coverage of all requested entities, line items, and fiscal years.
-    * 0.85 - 0.99: High sufficiency; all primary premises and core figures are present. Meets early-stopping criteria.
-    * 0.50 - 0.84: Partial sufficiency; some key data points, footnotes, or comparative entities are missing.
-    * 0.0 - 0.49: Low sufficiency; major gaps in required facts or numbers.
-- "is_sufficient": boolean (true if sufficiency_score >= 0.85 or all essential premises are satisfied; false otherwise)
-- "missing_entities": list of strings identifying specific missing financial entities, line items, or metrics (e.g. ["2022 R&D spending", "AWS operating income"]). Empty list [] if sufficient.
+    * 1.0: Complete, comprehensive coverage of all requested entities, line items, segments, footnotes, and fiscal years.
+    * 0.85 - 0.99: High sufficiency; all essential premises, segments, and figures are present. Meets early-stopping criteria.
+    * 0.40 - 0.84: Partial sufficiency; some required segments, footnotes, or comparative figures are missing. Requires another retrieval hop.
+    * 0.0 - 0.39: Low sufficiency; major gaps in required facts or filers.
+- "is_sufficient": boolean (true ONLY if sufficiency_score >= 0.85 AND all requested companies, segments, and footnotes are present; false otherwise)
+- "missing_entities": list of strings identifying specific missing financial entities, segments, line items, or metrics (e.g. ["Amazon AWS operating income", "Customer concentration percentages"]). Empty list [] if completely sufficient.
 - "missing_years": list of integer fiscal years missing data (e.g. [2022]). Empty list [] if all requested years are represented.
 - "missing_premises": list of specific missing facts or targeted questions for the next retrieval hop (empty list [] if is_sufficient is true)
 - "critic_reasoning": concise 1-2 sentence justification explaining what is covered and what remains missing."""
@@ -136,6 +146,20 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
 
         reasoning = str(parsed.get("critic_reasoning") or f"Evaluated {len(evidence)} chunks at Hop {hop}.")
 
+        # Enforce reasoning consistency: if the LLM states that evidence is lacking or missing,
+        # ensure missing_premises is populated and score does not prematurely trigger early stopping.
+        reasoning_lower = reasoning.lower()
+        mentions_missing = any(
+            phrase in reasoning_lower
+            for phrase in (
+                "lack", "lacks", "lacking", "missing", "not provided", "not disclosed",
+                "not included", "does not provide", "do not provide", "fails to provide",
+                "incomplete", "need further", "further disclosures needed", "absent"
+            )
+        )
+        if mentions_missing and not missing_premises:
+            missing_premises.append(reasoning[:120].strip())
+
         # 3. Prevent redundant search loops & check complete factual coverage
         redundant_prevented = False
 
@@ -161,12 +185,18 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
         if state.get("needs_tabular_tool") and tabular:
             covered_tickers = {t for t in target_tickers if any(f"F-{t}" in blk for blk in tabular)}
             if target_tickers and covered_tickers == set(target_tickers):
-                # Check if query actually requires qualitative text (footnotes, risks, drivers)
+                # Check if query actually requires narrative text (footnotes, segments, risks, drivers)
                 q_lower = state.get("original_query", "").lower()
-                has_qualitative_need = any(
-                    w in q_lower for w in ("risk", "footnote", "impact", "legal", "covenant", "contingenc", "why", "driver", "strategy", "cause")
+                has_narrative_need = any(
+                    w in q_lower for w in (
+                        "risk", "footnote", "note", "notes", "segment", "segments",
+                        "cloud", "aws", "compute", "intelligent cloud", "concentration",
+                        "customer", "impact", "legal", "covenant", "contingenc",
+                        "why", "driver", "strategy", "cause", "item 7", "item 8", "item 1"
+                    )
                 )
-                if not has_qualitative_need or (not missing_entities and not missing_years):
+                # Tabular tool only satisfies simple single-hop headline financial lookup when NO narrative/footnote/segment is requested
+                if not has_narrative_need and not missing_entities and not missing_years and not missing_premises:
                     score = max(score, 0.95)
                     missing_entities = []
                     missing_years = []
@@ -186,8 +216,7 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
                     or f"-{t}-" in c.get("chunk_id", "")
                     for c in evidence
                 )
-                has_tab = any(f"F-{t}" in blk for blk in tabular)
-                if has_text or has_tab:
+                if has_text:
                     covered_companies.add(t)
 
             missing_tickers = [t for t in target_tickers if t not in covered_companies]
@@ -202,19 +231,23 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
                 reasoning += f" [Multi-company coverage incomplete: missing evidence for {', '.join(missing_tickers)}]."
 
         # 4. Apply quantitative early-stopping threshold (>= threshold triggers early stop)
-        if score >= threshold and not missing_years and not missing_entities:
+        has_gaps = bool(missing_entities or missing_years or missing_premises)
+        if score >= threshold and not has_gaps:
             is_sufficient = True
             missing_premises = []
             missing_entities = []
             missing_years = []
-        elif score >= threshold and bool(parsed.get("is_sufficient", False)) and not missing_years:
-            # LLM explicitly certified completeness with score >= threshold
+        elif score >= threshold and bool(parsed.get("is_sufficient", False)) and not has_gaps:
+            # LLM explicitly certified completeness with score >= threshold and no gaps
             is_sufficient = True
             missing_premises = []
             missing_entities = []
             missing_years = []
         else:
             is_sufficient = False
+            # When gaps exist, sufficiency score MUST accurately reflect incomplete coverage
+            if has_gaps and score >= threshold:
+                score = min(score, 0.70)
 
     # Record intermediate hop trace for RQ1 / RQ3 interpretability
     intermediate = list(state.get("intermediate_answers", []))

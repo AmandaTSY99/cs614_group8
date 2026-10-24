@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 
 from src.system_c.telemetry import record_llm_call
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 
 def clean_and_parse_json(raw_text: str) -> Dict[str, Any]:
@@ -334,7 +334,7 @@ def _call_mock(
         explicit_score = state.get("telemetry", {}).get("mock_sufficiency_score")
         tabular = state.get("tabular_evidence", [])
         q_lower = query.lower()
-        has_qual = any(w in q_lower for w in ("risk", "footnote", "impact", "legal", "covenant", "contingenc", "why", "driver", "strategy", "cause"))
+        has_qual = any(w in q_lower for w in ("risk", "footnote", "note", "segment", "cloud", "aws", "concentration", "impact", "legal", "covenant", "contingenc", "why", "driver", "strategy", "cause", "compare", "versus", "vs"))
 
         if state.get("force_max_hops"):
             target_hop = state.get("max_hops", 3)
@@ -342,12 +342,18 @@ def _call_mock(
         elif explicit_score is not None:
             threshold = float(state.get("sufficiency_threshold", 0.85))
             is_suff = float(explicit_score) >= threshold
-        elif tabular and not has_qual:
+        elif tabular and not has_qual and state.get("query_complexity") == "single_hop":
             is_suff = True
         else:
-            target_hop = state.get("telemetry", {}).get("mock_sufficient_at_hop", 2)
-            if state.get("query_complexity") == "single_hop":
+            tickers = state.get("target_tickers") or []
+            if len(tickers) >= 3 or ("across" in q_lower and ("cloud" in q_lower or "provider" in q_lower)):
+                target_hop = 3
+            elif len(tickers) == 2 or has_qual or "between" in q_lower or len(state.get("fiscal_years") or []) > 1:
+                target_hop = 2
+            elif state.get("query_complexity") == "single_hop":
                 target_hop = 1
+            else:
+                target_hop = state.get("telemetry", {}).get("mock_sufficient_at_hop", 2)
             is_suff = hop >= target_hop
 
         if explicit_score is not None:

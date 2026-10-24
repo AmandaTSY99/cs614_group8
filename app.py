@@ -585,7 +585,7 @@ COMPANIES = {
 }
 
 TIERED_GOLDEN_QUERIES = {
-    "Tier 1: Simple (Single-Hop Factual)": [
+    "Tier 1: Single-Hop Factual (1 Hop — Early-Stopping Baseline)": [
         (
             "GOLD-01",
             "NVIDIA FY2026 period end date & headquarters",
@@ -602,7 +602,7 @@ TIERED_GOLDEN_QUERIES = {
             "What is Apple Inc.'s state of incorporation, corporate headquarters address, and IRS employer identification number in its 2024 Form 10-K?",
         ),
     ],
-    "Tier 2: Moderate (Quantitative Tabular YoY)": [
+    "Tier 2: Quantitative Tabular YoY (2 Hops — Multi-Period Reconciliation)": [
         (
             "GOLD-16",
             "NVIDIA FY25 vs FY26 revenue & YoY growth",
@@ -619,7 +619,7 @@ TIERED_GOLDEN_QUERIES = {
             "What was Apple's total net sales, gross margin, and operating cash flow in fiscal 2023 versus fiscal 2024?",
         ),
     ],
-    "Tier 3: Complex (Cross-Section MD&A + Notes)": [
+    "Tier 3: Cross-Section MD&A + Notes (2 Hops — Narrative to Footnotes)": [
         (
             "GOLD-36",
             "NVIDIA Compute segment vs customer concentration",
@@ -636,7 +636,7 @@ TIERED_GOLDEN_QUERIES = {
             "How did Apple's iPhone and Services product revenues perform in fiscal 2024 according to Item 7, and how did this compare to regional net sales in Americas and Greater China disclosed in Note 13?",
         ),
     ],
-    "Tier 4: Expert (Multi-Company Comparative RAG)": [
+    "Tier 4: Multi-Company Comparative RAG (3 Hops — Multi-Entity Deep Dive)": [
         (
             "GOLD-51",
             "Cloud Battle: Microsoft vs AWS vs Google Cloud (2024)",
@@ -1477,29 +1477,29 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Main-Stage Quick-Start Preset Chips (FTUX 1-Click Action)
+# Main-Stage Quick-Start Preset Chips (FTUX 1-Click Action across 1, 2, and 3 Hops)
 st.markdown(
     '<div style="font-family:var(--quant-mono); font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--text-color); margin-bottom:6px;">'
-    '⚡ Quick-Start Evaluation Presets (Click any chip to test multi-hop reasoning):'
+    '⚡ Quick-Start Evaluation Presets (Click any chip to test 1-hop, 2-hop, or 3-hop multi-hop reasoning):'
     '</div>',
     unsafe_allow_html=True,
 )
 col_q1, col_q2, col_q3, col_q4 = st.columns(4)
 with col_q1:
-    if st.button("🟢 Tabular YoY (GOLD-16)\nNVDA FY25 vs FY26 Revenue", use_container_width=True, key="quick_g16"):
-        st.session_state["user_query_input"] = "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate."
+    if st.button("🟢 1-Hop Fact (GOLD-01)\nNVDA FY26 Period & HQ (1 Hop)", use_container_width=True, key="quick_g01"):
+        st.session_state["user_query_input"] = "What was NVIDIA's fiscal year 2026 period end date, and where is its principal executive office located?"
         st.rerun()
 with col_q2:
-    if st.button("🔵 Footnote Audit (GOLD-36)\nNVDA Compute vs Customer Concentration", use_container_width=True, key="quick_g36"):
-        st.session_state["user_query_input"] = "How did NVIDIA's Compute & Networking segment perform in FY2026, and what specific direct customer concentration percentages were disclosed in the Notes to Consolidated Financial Statements?"
+    if st.button("🔵 2-Hop Tabular (GOLD-16)\nNVDA FY25-26 YoY Growth (2 Hops)", use_container_width=True, key="quick_g16"):
+        st.session_state["user_query_input"] = "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate."
         st.rerun()
 with col_q3:
-    if st.button("🟣 Multi-Company Battle (GOLD-51)\nMicrosoft vs AWS vs Google Cloud Margins", use_container_width=True, key="quick_g51"):
-        st.session_state["user_query_input"] = "Compare the 2024 enterprise cloud segment revenue, operating income, and operating margin across Microsoft (Intelligent Cloud), Amazon (AWS), and Alphabet (Google Cloud). Which cloud provider generated the highest operating margin in 2024, and which achieved the highest year-over-year revenue growth rate?"
+    if st.button("🟣 2-Hop Notes (GOLD-36)\nNVDA Compute vs Notes (2 Hops)", use_container_width=True, key="quick_g36"):
+        st.session_state["user_query_input"] = "How did NVIDIA's Compute & Networking segment perform in FY2026, and what specific direct customer concentration percentages were disclosed in the Notes to Consolidated Financial Statements?"
         st.rerun()
 with col_q4:
-    if st.button("🟡 Qualitative MD&A (GOLD-38)\nApple Item 7 Sales vs Note 13 Net Sales", use_container_width=True, key="quick_g38"):
-        st.session_state["user_query_input"] = "How did Apple's iPhone and Services product revenues perform in fiscal 2024 according to Item 7, and how did this compare to regional net sales in Americas and Greater China disclosed in Note 13?"
+    if st.button("🟡 3-Hop Cloud (GOLD-51)\nMSFT vs AWS vs Google Cloud (3 Hops)", use_container_width=True, key="quick_g51"):
+        st.session_state["user_query_input"] = "Compare the 2024 enterprise cloud segment revenue, operating income, and operating margin across Microsoft (Intelligent Cloud), Amazon (AWS), and Alphabet (Google Cloud). Which cloud provider generated the highest operating margin in 2024, and which achieved the highest year-over-year revenue growth rate?"
         st.rerun()
 
 # Query Input Console
