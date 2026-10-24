@@ -125,7 +125,7 @@ with st.sidebar:
     )
     st.title("System C Settings")
 
-    st.subheader("1. Pipeline Mode")
+    st.subheader("1. Pipeline & Model")
     mode_selection = st.selectbox(
         "Architecture Mode",
         options=["v2_aamr", "adaptive_v1", "fixed_1hop", "fixed_3hop"],
@@ -138,6 +138,23 @@ with st.sidebar:
         }[x],
         help="System C v2 routes quantitative requests to Supabase XBRL tables and qualitative context to SEC text chunks.",
     )
+
+    # Cloud LLM Model Selector (Cloud-first, zero local dependency)
+    available_models = [
+        ("llama-3.3-70b-versatile", "Groq Llama 3.3 (70B) — Flagship"),
+        ("llama-3.1-8b-instant", "Groq Llama 3.1 (8B) — Ultra-Fast"),
+        ("openai/gpt-oss-120b", "Groq GPT-OSS (120B) — Reasoning"),
+    ]
+    model_choice = st.selectbox(
+        "Cloud LLM Engine",
+        options=[m[0] for m in available_models],
+        index=0,
+        format_func=lambda k: dict(available_models).get(k, k),
+        help="Runs directly on Groq's high-speed cloud LPUs (~500 tokens/sec) with zero local machine dependency.",
+    )
+    # Inject model selection into environment
+    os.environ["LLM_PROVIDER"] = "groq"
+    os.environ["LLM_MODEL"] = model_choice
 
     max_hops = st.slider("Max Retrieval Hops", min_value=1, max_value=4, value=3)
     sufficiency_threshold = st.slider(
