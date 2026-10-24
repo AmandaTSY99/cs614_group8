@@ -37,5 +37,10 @@ jobs:
           git add .
           git commit -m "Deploy System C Streamlit to Hugging Face Spaces"
 
+          if [ -z "$HF_TOKEN" ]; then
+            echo "ERROR: HF_TOKEN secret is empty or not found in repository secrets!"
+            exit 1
+          fi
+
           # Push to Hugging Face Space
           git push --force https://siranishkd9x:$HF_TOKEN@huggingface.co/spaces/siranishkd9x/rag_experimentation main
