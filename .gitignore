@@ -47,6 +47,7 @@ chroma_db_nvda/
 .vscode/
 .idea/
 *.swp
+ANISH_PRIVATE_*.docx
 
 # --- OS ---
 .DS_Store
