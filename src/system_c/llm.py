@@ -138,16 +138,25 @@ def _call_gemini_native(
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=45) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-        candidates = data.get("candidates", [])
-        if not candidates:
-            raise ValueError(f"Gemini returned no candidates: {data}")
-        content = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-        usage = data.get("usageMetadata", {})
-        p_tok = usage.get("promptTokenCount") or _estimate_tokens(" ".join(m.get("content", "") for m in messages))
-        c_tok = usage.get("candidatesTokenCount") or _estimate_tokens(content)
-        return content, int(p_tok), int(c_tok)
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            candidates = data.get("candidates", [])
+            if not candidates:
+                raise ValueError(f"Gemini returned no candidates: {data}")
+            content = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+            usage = data.get("usageMetadata", {})
+            p_tok = usage.get("promptTokenCount") or _estimate_tokens(" ".join(m.get("content", "") for m in messages))
+            c_tok = usage.get("candidatesTokenCount") or _estimate_tokens(content)
+            return content, int(p_tok), int(c_tok)
+    except Exception as exc:
+        groq_key = os.getenv("GROQ_API_KEY")
+        if groq_key:
+            return _call_groq_or_openai("groq", "llama-3.1-8b-instant", messages, temperature=temperature)
+        raise ValueError(
+            f"Google Gemini API timed out or throttled ({str(exc)}). "
+            "Tip: Switch LLM Provider in the sidebar to 'Groq LPU (500+ tok/s)' or 'Mock Engine' for instant responses."
+        ) from exc
 
 
 def _call_groq_or_openai(

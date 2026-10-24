@@ -189,46 +189,64 @@ with st.sidebar:
     )
     st.title("System C Settings")
 
-    st.subheader("1. Pipeline & Provider Setup")
+    st.subheader("1. Pipeline Configuration")
     mode_selection = st.selectbox(
         "Architecture Mode",
         options=["v2_aamr", "adaptive_v1", "fixed_1hop", "fixed_3hop"],
         index=0,
         format_func=lambda x: {
-            "v2_aamr": "⭐ v2: Agentic AMR (XBRL + 10-K Router)",
+            "v2_aamr": "⭐ v2: Agentic AMR (XBRL + 10-K Text Router)",
             "adaptive_v1": "🔄 v1: Adaptive Multi-Hop (Text Only)",
             "fixed_1hop": "⏹️ Baseline: Fixed 1-Hop",
             "fixed_3hop": "⏹️ Baseline: Fixed 3-Hop",
         }[x],
-        help="System C v2 routes quantitative requests to Supabase XBRL tables and qualitative context to SEC text chunks.",
+        help="System C v2 dynamically routes quantitative metric requests to Supabase XBRL tables and qualitative context (risks, MD&A) to SEC text chunks.",
     )
 
-    # Provider Selection (Gemini pre-configured as instant default)
+    max_hops = st.slider(
+        "Max Retrieval Hops",
+        min_value=1,
+        max_value=4,
+        value=3,
+        help="Defines the maximum sequential search-and-reasoning iterations (1 to 4) allowed for the multi-hop agent. Simple factual lookups resolve in 1 hop. Complex cross-company comparisons (e.g. comparing cloud revenues and operating footnotes across Apple, Microsoft, and Amazon) require 2 to 3 hops. A hard ceiling prevents runaway loops and token exhaustion.",
+    )
+    sufficiency_threshold = st.slider(
+        "Critic Sufficiency Threshold",
+        min_value=0.50,
+        max_value=1.00,
+        value=0.85,
+        step=0.05,
+        help="The quantitative sufficiency score threshold ([0.0, 1.0], default: 0.85). After each retrieval hop, the Critic Node audits whether all requested financial metrics, target fiscal years, and qualitative disclosures (risk factors, notes) have been completely satisfied. If the score >= threshold, System C executes Early Stopping—bypassing subsequent hops and saving up to 70% in token cost and latency.",
+    )
+
+    st.divider()
+
+    st.subheader("2. LLM Engine & Credentials")
     provider_options = {
-        "gemini": "✨ Google Gemini (Pre-Configured & Ready)",
-        "groq": "🚀 Groq Cloud (Llama 3.1 8B / GPT-OSS 120B)",
+        "groq": "⚡ Groq Cloud (Recommended — Ultra-Fast 500+ tok/s)",
+        "gemini": "✨ Google Gemini (Gemini Flash)",
         "cohere": "🔮 Cohere (Command R / Command R+)",
         "openai": "🤖 OpenAI (GPT-4o-mini / GPT-4o)",
-        "mock": "🧪 Mock Mode (Zero-API-Key Test)",
+        "mock": "🧪 Mock Engine (Deterministic, Zero-API-Key)",
     }
     selected_provider = st.selectbox(
-        "LLM Provider",
+        "Select Provider",
         options=list(provider_options.keys()),
         index=0,
         format_func=lambda k: provider_options[k],
     )
 
     # Dynamic Model Selection based on Provider
-    if selected_provider == "gemini":
+    if selected_provider == "groq":
         model_options = {
-            "gemini-flash-latest": "Gemini Flash (Latest — Fast & Free)",
-        }
-    elif selected_provider == "groq":
-        model_options = {
-            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Fast",
+            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Universal Free (Instant)",
             "openai/gpt-oss-120b": "OpenAI GPT-OSS (120B) — Team Notebook Default",
             "llama-3.3-70b-versatile": "Llama 3.3 (70B) — Flagship",
             "gemma2-9b-it": "Google Gemma 2 (9B)",
+        }
+    elif selected_provider == "gemini":
+        model_options = {
+            "gemini-flash-latest": "Gemini Flash (Latest — Fast & Free)",
         }
     elif selected_provider == "cohere":
         model_options = {
@@ -250,27 +268,27 @@ with st.sidebar:
         format_func=lambda k: model_options[k],
     )
 
-    # Universal Custom API Key with fallback to pre-configured keys
+    # Universal API Key Input with clean fallback
     user_api_key = st.text_input(
-        f"Enter Any Custom {selected_provider.upper()} API Key (Optional):",
+        "API Key (Optional)",
         type="password",
         placeholder="Leave blank to use pre-configured system key",
-        help=f"You can paste your own {selected_provider.upper()} key here. If left blank, it automatically uses the pre-configured key so your classmates don't have to enter anything!",
+        help="Paste your private Gemini, Groq, Cohere, or OpenAI key here. If left blank, the app uses pre-configured keys so you and your team can query immediately without typing.",
     )
-    if selected_provider == "gemini":
-        st.caption("✨ Pre-configured with Google Gemini Flash. Ready to test out of the box!")
-    elif selected_provider == "mock":
-        st.caption("💡 Mock mode tests the full LangGraph pipeline, Supabase DB, and guardrails without needing an API key.")
+    if user_api_key.strip():
+        st.markdown('<span style="color:#2563EB;font-size:0.80rem;font-weight:600;">🔵 Custom User Key Active</span>', unsafe_allow_html=True)
+    else:
+        st.markdown('<span style="color:#059669;font-size:0.80rem;font-weight:600;">🟢 Built-in System Key Active</span>', unsafe_allow_html=True)
 
     # Configure Environment Variables
     os.environ["LLM_PROVIDER"] = selected_provider
     os.environ["LLM_MODEL"] = selected_model
     if user_api_key.strip():
-        if selected_provider == "gemini":
+        if selected_provider == "groq":
+            os.environ["GROQ_API_KEY"] = user_api_key.strip()
+        elif selected_provider == "gemini":
             os.environ["GEMINI_API_KEY"] = user_api_key.strip()
             os.environ["GOOGLE_API_KEY"] = user_api_key.strip()
-        elif selected_provider == "groq":
-            os.environ["GROQ_API_KEY"] = user_api_key.strip()
         elif selected_provider == "cohere":
             os.environ["COHERE_API_KEY"] = user_api_key.strip()
         elif selected_provider == "openai":
@@ -280,21 +298,11 @@ with st.sidebar:
             os.environ["GEMINI_API_KEY"] = "AIzaSyCRjeOAKS9-Lb7zXpwW294GOLD6vM6pUxw"
             os.environ["GOOGLE_API_KEY"] = "AIzaSyCRjeOAKS9-Lb7zXpwW294GOLD6vM6pUxw"
 
-    max_hops = st.slider("Max Retrieval Hops", min_value=1, max_value=4, value=3)
-    sufficiency_threshold = st.slider(
-        "Critic Sufficiency Threshold",
-        min_value=0.50,
-        max_value=1.00,
-        value=0.85,
-        step=0.05,
-        help="When the Critic's quantitative score reaches this threshold, the loop terminates early to save cost and latency.",
-    )
-
     st.divider()
 
-    st.subheader("2. Target Companies")
+    st.subheader("3. SEC Company Filter")
     selected_tickers = st.multiselect(
-        "Select Filter / Target Ticker(s)",
+        "Filter Ticker(s) (Optional)",
         options=list(COMPANIES.keys()),
         default=[],
         format_func=lambda t: f"{t} ({COMPANIES[t]['name']})",
@@ -303,7 +311,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("3. Golden Benchmark Presets")
+    st.subheader("4. Golden Benchmark Presets")
     st.caption("Click any preset below (Simple → Complex):")
     for tier_title, questions in TIERED_GOLDEN_QUERIES.items():
         with st.expander(tier_title, expanded=(tier_title.startswith("🟢"))):
@@ -316,14 +324,15 @@ with st.sidebar:
 
     # System Status Indicator
     llm_info = get_llm_status()
-    st.subheader("System Infrastructure")
+    st.subheader("Cloud Infrastructure")
     st.markdown(
         f"""
-    * **LLM Engine**: `{llm_info['provider']}` (`{llm_info['model']}`)
+    * **LLM Engine**: `{selected_provider.upper()}` (`{selected_model}`)
     * **Cloud DB**: `Supabase PostgreSQL` (`ap-southeast-1`)
-    * **Table**: `sec_financials` (272 XBRL rows)
-    * **Checkpointer**: `LangGraph PostgresSaver`
-    * **Guardrails**: Self-Healing Grounding Active
+    * **Relational Table**: `sec_financials` (272 XBRL rows)
+    * **Vector Table**: `sec_chunks` (`pgvector` HNSW index)
+    * **LangGraph State**: `PostgresSaver Checkpointing`
+    * **Numerical Guardrail**: Active Self-Healing Loop
     """
     )
 
@@ -335,12 +344,25 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Visual Architecture Flow Banner
+st.markdown(
+    """
+    <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 16px; margin-bottom: 16px;">
+      <span style="font-size: 0.80rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Autonomous Pipeline Architecture:</span><br/>
+      <span style="font-size: 0.90rem; color: #1E293B; font-weight: 500;">
+        1. Decompose Query ➔ 2. Heterogeneous Router (XBRL SQL vs. 10-K Text) ➔ 3. Critic Sufficiency Audit (≥0.85 Early Stop) ➔ 4. Inline Citation Synthesis ➔ 5. Closed-Loop Numerical Repair
+      </span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Badges bar
 col_b1, col_b2, col_b3, col_b4 = st.columns(4)
 with col_b1:
-    st.markdown('<span class="metric-badge badge-success">✓ Supabase PG Connected</span>', unsafe_allow_html=True)
+    st.markdown('<span class="metric-badge badge-success">✓ Supabase Cloud PG Connected</span>', unsafe_allow_html=True)
 with col_b2:
-    st.markdown(f'<span class="metric-badge badge-info">Engine: {llm_info["provider"]}</span>', unsafe_allow_html=True)
+    st.markdown(f'<span class="metric-badge badge-info">Engine: {selected_provider.upper()}</span>', unsafe_allow_html=True)
 with col_b3:
     st.markdown('<span class="metric-badge badge-info">10 SEC 10-K Corpora (1993–2026)</span>', unsafe_allow_html=True)
 with col_b4:
@@ -409,16 +431,23 @@ if run_btn and query_text.strip():
         m4.metric("Evidence Chunks", f"{len(result.get('accumulated_evidence', []))}")
         m5.metric("Latency", f"{total_wall_time:.2f}s")
 
-        # 1. Final Synthesized Answer
-        st.subheader("📝 Synthesized Financial Answer")
-        final_answer = result.get("final_answer", "")
-        st.info(final_answer if final_answer else "No synthesis generated.")
+        # Tabbed Results Console
+        res_tab1, res_tab2, res_tab3, res_tab4 = st.tabs(
+            [
+                "📝 Synthesized Answer & Citations",
+                "🛡️ Factuality & Grounding Audit",
+                "🔍 Multi-Hop Reasoning Trace",
+                "📊 Inference Economics (RQ3)",
+            ]
+        )
 
-        # 2. Citations & Numerical Grounding Guardrail
-        col_cit, col_guard = st.columns(2)
+        with res_tab1:
+            st.subheader("Executive Financial Synthesis")
+            final_answer = result.get("final_answer", "")
+            st.info(final_answer if final_answer else "No synthesis generated.")
 
-        with col_cit:
-            st.subheader("📚 Verified SEC Citations")
+            st.write("")
+            st.markdown("##### 📚 Ground-Truth Citations Mapped (RQ2)")
             citations = result.get("citations", [])
             if citations:
                 for cit in citations:
@@ -430,8 +459,8 @@ if run_btn and query_text.strip():
             else:
                 st.caption("No citations recorded.")
 
-        with col_guard:
-            st.subheader("🛡️ Factuality & Numerical Guardrail")
+        with res_tab2:
+            st.subheader("Factuality & Numerical Grounding Audit")
             guard_report = result.get("guardrail_report", {})
             passed = result.get("guardrail_passed", True)
             if passed:
@@ -439,21 +468,22 @@ if run_btn and query_text.strip():
             else:
                 st.warning("⚠️ **Guardrail Warning**: Ungrounded numbers detected during audit.")
 
-            st.markdown(
-                f"""
-            * **Numerical Error Rate**: `{guard_report.get('numerical_grounding_error_rate', 0.0) * 100:.1f}%`
-            * **Faithfulness Score**: `{guard_report.get('faithfulness_score', 1.0):.2f}`
-            * **Repairs Executed**: `{result.get('repair_count', 0)}`
-            """
-            )
-            if guard_report.get("verified_numbers"):
-                st.write("**Verified Numbers**:", guard_report["verified_numbers"])
-            if guard_report.get("ungrounded_numbers"):
-                st.write("**Ungrounded Numbers**:", guard_report["ungrounded_numbers"])
+            col_g1, col_g2, col_g3 = st.columns(3)
+            col_g1.metric("Numerical Error Rate", f"{guard_report.get('numerical_grounding_error_rate', 0.0) * 100:.1f}%")
+            col_g2.metric("Faithfulness Score", f"{guard_report.get('faithfulness_score', 1.0):.2f}")
+            col_g3.metric("Repairs Executed", f"{result.get('repair_count', 0)}")
 
-        # 3. Hop-by-Hop Reasoning Trace (Inspection for Prof / TAs)
-        st.subheader("🔍 Autonomous Multi-Hop Execution Trace")
-        with st.expander("Click to inspect Hop-by-Hop Decomposer Plans & Critic Decisions", expanded=False):
+            st.write("")
+            col_v1, col_v2 = st.columns(2)
+            with col_v1:
+                st.markdown("##### Verified Numbers")
+                st.write(guard_report.get("verified_numbers", []))
+            with col_v2:
+                st.markdown("##### Flagged / Ungrounded Numbers")
+                st.write(guard_report.get("ungrounded_numbers", []))
+
+        with res_tab3:
+            st.subheader("Autonomous Multi-Hop Reasoning Trace")
             intermediate = result.get("intermediate_answers", [])
             if intermediate:
                 for item in intermediate:
@@ -468,9 +498,8 @@ if run_btn and query_text.strip():
             else:
                 st.caption("No intermediate hop records logged.")
 
-        # 4. Telemetry & Cost Analysis (RQ3)
-        st.subheader("📊 Inference Economics (RQ3 Telemetry)")
-        with st.expander("Click to view token counts and cost breakdown", expanded=False):
+        with res_tab4:
+            st.subheader("Inference Economics (RQ3 Telemetry)")
             telemetry = result.get("telemetry", {})
             calls = telemetry.get("calls", [])
             if calls:
