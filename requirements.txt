@@ -10,7 +10,7 @@ chromadb==1.5.9 # embedded vector DB, persists to a local folder
 
 # --- Data loading ---
 pypdf==6.20.1 # read PDF documents
-pandas==3.0.6 # tabular data handling
+pandas>=2.0.0,<3.0.0 # tabular data handling (compatible with streamlit)
 
 # --- Config ---
 python-dotenv==1.2.4 # load API keys from .env
