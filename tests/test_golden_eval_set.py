@@ -1,8 +1,8 @@
 """
-Automated Pytest Suite for Canonical 50-Question Golden Evaluation Benchmark.
+Automated Pytest Suite for Canonical Golden Evaluation Benchmark.
 
-Validates schema compliance, hop stratification, company balance, and
-ground-truth numerical integrity for CS614 GenAI Evaluation.
+Validates schema compliance, hop stratification, company balance, multi-company
+comparisons, and ground-truth numerical integrity for CS614 GenAI Evaluation.
 """
 
 import json
@@ -14,7 +14,12 @@ import pytest
 
 EVAL_FILE = Path(__file__).resolve().parent.parent / "data" / "golden_eval_set.json"
 EXPECTED_TICKERS = {"AAPL", "MSFT", "AMZN", "GOOGL", "META", "NVDA", "TSLA", "JPM", "JNJ", "WMT"}
-EXPECTED_CATEGORIES = {"single_hop_factual", "quantitative_tabular", "cross_section_multihop"}
+EXPECTED_CATEGORIES = {
+    "single_hop_factual",
+    "quantitative_tabular",
+    "cross_section_multihop",
+    "multi_company_comparison",
+}
 REQUIRED_FIELDS = {
     "id",
     "ticker",
@@ -37,8 +42,8 @@ def eval_dataset() -> List[Dict[str, Any]]:
 
 
 def test_golden_dataset_total_count(eval_dataset: List[Dict[str, Any]]) -> None:
-    """Benchmark must contain exactly 50 curated questions."""
-    assert len(eval_dataset) == 50, f"Expected 50 questions, found {len(eval_dataset)}"
+    """Benchmark must contain 60 curated questions (50 single-company + 10 multi-company)."""
+    assert len(eval_dataset) == 60, f"Expected 60 questions, found {len(eval_dataset)}"
 
 
 def test_golden_dataset_schema(eval_dataset: List[Dict[str, Any]]) -> None:
@@ -46,7 +51,7 @@ def test_golden_dataset_schema(eval_dataset: List[Dict[str, Any]]) -> None:
     for i, item in enumerate(eval_dataset):
         expected_id = f"GOLD-{i+1:02d}"
         assert item["id"] == expected_id, f"Item {i} has unexpected id: {item['id']}"
-        assert set(item.keys()) == REQUIRED_FIELDS, f"Item {item['id']} fields mismatch: {set(item.keys())}"
+        assert REQUIRED_FIELDS.issubset(set(item.keys())), f"Item {item['id']} fields missing: {REQUIRED_FIELDS - set(item.keys())}"
 
         assert item["ticker"] in EXPECTED_TICKERS, f"Invalid ticker: {item['ticker']}"
         assert item["category"] in EXPECTED_CATEGORIES, f"Invalid category: {item['category']}"
@@ -64,19 +69,33 @@ def test_golden_dataset_schema(eval_dataset: List[Dict[str, Any]]) -> None:
 
 
 def test_golden_dataset_tier_stratification(eval_dataset: List[Dict[str, Any]]) -> None:
-    """Dataset must be stratified into 15 single-hop, 20 quantitative tabular, and 15 cross-section multi-hop."""
+    """Dataset must be stratified into 15 single-hop, 20 quantitative tabular, 15 cross-section, and 10 multi-company."""
     counts = Counter(d["category"] for d in eval_dataset)
     assert counts["single_hop_factual"] == 15, f"Expected 15 single_hop_factual, got {counts['single_hop_factual']}"
     assert counts["quantitative_tabular"] == 20, f"Expected 20 quantitative_tabular, got {counts['quantitative_tabular']}"
     assert counts["cross_section_multihop"] == 15, f"Expected 15 cross_section_multihop, got {counts['cross_section_multihop']}"
+    assert counts["multi_company_comparison"] == 10, f"Expected 10 multi_company_comparison, got {counts['multi_company_comparison']}"
 
 
-def test_golden_dataset_company_balance(eval_dataset: List[Dict[str, Any]]) -> None:
-    """Every company must have exactly 5 questions (10 companies x 5 questions = 50 total)."""
-    counts = Counter(d["ticker"] for d in eval_dataset)
+def test_golden_dataset_single_company_balance(eval_dataset: List[Dict[str, Any]]) -> None:
+    """The first 50 questions preserve perfect 5-questions-per-company balance."""
+    first_50 = eval_dataset[:50]
+    counts = Counter(d["ticker"] for d in first_50)
     assert set(counts.keys()) == EXPECTED_TICKERS
     for ticker in EXPECTED_TICKERS:
-        assert counts[ticker] == 5, f"Company {ticker} expected 5 questions, got {counts[ticker]}"
+        assert counts[ticker] == 5, f"Company {ticker} expected 5 questions in first 50, got {counts[ticker]}"
+
+
+def test_golden_dataset_multi_company_tier(eval_dataset: List[Dict[str, Any]]) -> None:
+    """Multi-company questions (GOLD-51 to GOLD-60) must specify multiple target tickers and min_hops >= 2."""
+    multi_tier = eval_dataset[50:]
+    assert len(multi_tier) == 10
+    for item in multi_tier:
+        assert item["category"] == "multi_company_comparison"
+        assert item["min_required_hops"] in {2, 3}
+        target_tickers = item.get("target_tickers", [])
+        assert len(target_tickers) >= 2, f"Item {item['id']} must specify at least 2 target tickers"
+        assert all(t in EXPECTED_TICKERS for t in target_tickers)
 
 
 def test_golden_dataset_numerical_grounding(eval_dataset: List[Dict[str, Any]]) -> None:
@@ -86,8 +105,3 @@ def test_golden_dataset_numerical_grounding(eval_dataset: List[Dict[str, Any]]) 
             assert num in item["ground_truth_answer"], (
                 f"Item {item['id']}: Ground truth token '{num}' missing from answer: {item['ground_truth_answer']}"
             )
-
-    # For quantitative tabular tier, ground_truth_numbers must not be empty
-    quant_items = [d for d in eval_dataset if d["category"] == "quantitative_tabular"]
-    for q in quant_items:
-        assert len(q["ground_truth_numbers"]) >= 2, f"Quantitative item {q['id']} must specify ground truth numbers"

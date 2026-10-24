@@ -179,3 +179,267 @@ def test_multi_company_query_decomposition():
     assert 2024 in out["fiscal_years"]
     assert 2025 in out["fiscal_years"]
     assert len(out["target_pairs"]) >= 4
+
+
+def test_critic_sufficiency_score_threshold():
+    """Verify quantitative sufficiency scoring with early-stopping threshold (0.85)."""
+    from src.system_c.nodes.critic import critic_node
+
+    # Case A: Sufficiency score 0.90 >= 0.85 threshold -> Early stopping triggers at Hop 1
+    state_high = create_initial_state(
+        query="What was NVDA revenue in 2026?",
+        max_hops=3,
+        mode="v1_amr",
+        target_ticker="NVDA",
+        fiscal_years=[2026],
+        sufficiency_threshold=0.85,
+    )
+    state_high["current_hop"] = 1
+    state_high["telemetry"]["mock_sufficiency_score"] = 0.90
+    out_high = critic_node(state_high)
+    assert out_high["is_sufficient"] is True
+    assert out_high["sufficiency_score"] == 0.90
+    assert out_high["missing_premises"] == []
+    assert out_high["missing_entities"] == []
+    assert out_high["missing_years"] == []
+    assert out_high["telemetry"]["early_stopped"] is True
+
+    # Case B: Sufficiency score 0.60 < 0.85 threshold -> Loop continues
+    state_low = create_initial_state(
+        query="What was NVDA revenue in 2026 and what are the detailed footnote contingencies?",
+        max_hops=3,
+        mode="v1_amr",
+        target_ticker="NVDA",
+        fiscal_years=[2026],
+        sufficiency_threshold=0.85,
+    )
+    state_low["current_hop"] = 1
+    state_low["telemetry"]["mock_sufficiency_score"] = 0.60
+    out_low = critic_node(state_low)
+    assert out_low["is_sufficient"] is False
+    assert out_low["sufficiency_score"] == 0.60
+    assert len(out_low["missing_premises"]) > 0
+
+
+def test_critic_explicit_entity_and_year_gap_detection(monkeypatch):
+    """Verify Critic detects specific missing entity line items and missing fiscal years."""
+    import json
+    from src.system_c.nodes.critic import critic_node
+    from src.system_c.nodes.generator import generator_node
+
+    state = create_initial_state(
+        query="Compare NVDA R&D spending in 2022 vs 2026 and footnote capitalization policies",
+        max_hops=3,
+        target_ticker="NVDA",
+        fiscal_years=[2022, 2026],
+    )
+    state["current_hop"] = 1
+
+    # Simulate LLM returning explicit missing entities & years
+    def mock_critic_call_llm(*args, **kwargs):
+        content = json.dumps({
+            "sufficiency_score": 0.45,
+            "is_sufficient": False,
+            "missing_entities": ["2022 R&D spending", "capitalization accounting footnote"],
+            "missing_years": [2022],
+            "missing_premises": ["Disclosures and line items for 2022 R&D spending"],
+            "critic_reasoning": "Retrieved 2026 data, but completely missing 2022 comparative baseline."
+        })
+        return content, state["telemetry"]
+
+    monkeypatch.setattr("src.system_c.nodes.critic.call_llm", mock_critic_call_llm)
+    out = critic_node(state)
+
+    assert out["is_sufficient"] is False
+    assert out["sufficiency_score"] == 0.45
+    assert "2022 R&D spending" in out["missing_entities"]
+    assert 2022 in out["missing_years"]
+    assert len(out["missing_premises"]) >= 1
+
+    # Verify Aryan's generator receives the missing entity premise
+    state.update(out)
+    gen_out = generator_node(state)
+    assert "2022 R&D spending" in gen_out["current_sub_query"] or "NVDA" in gen_out["current_sub_query"]
+
+
+def test_critic_redundant_search_prevention_on_chunk_saturation():
+    """Verify Critic halts early when subsequent hop returns duplicate/saturated chunks."""
+    from src.system_c.nodes.critic import critic_node
+
+    state = create_initial_state(
+        query="What were the foreign exchange risks in 2026?",
+        max_hops=3,
+        mode="v1_amr",
+        target_ticker="NVDA",
+        fiscal_years=[2026],
+    )
+    # Hop 1 retrieved chunk 10
+    chunk1 = {
+        "chunk_id": "NVDA_FY2026:10",
+        "content": "Foreign currency rate fluctuations did not have a material impact.",
+        "metadata": {"section": "Item 7A", "ticker": "NVDA", "fiscal_year": 2026},
+        "relevance_score": 0.9,
+        "hop_retrieved": 1,
+    }
+    # Hop 2 retrieved the exact same chunk 10 (no new data)
+    chunk2 = {
+        "chunk_id": "NVDA_FY2026:10",
+        "content": "Foreign currency rate fluctuations did not have a material impact.",
+        "metadata": {"section": "Item 7A", "ticker": "NVDA", "fiscal_year": 2026},
+        "relevance_score": 0.9,
+        "hop_retrieved": 2,
+    }
+    state["accumulated_evidence"] = [chunk1, chunk2]
+    state["current_hop"] = 2
+    state["telemetry"]["mock_sufficiency_score"] = 0.50  # Even if LLM thought 0.50
+
+    out = critic_node(state)
+    assert out["redundant_search_prevented"] is True
+    assert out["is_sufficient"] is True
+    assert out["sufficiency_score"] >= 0.85
+    assert "Redundant loop prevented" in out["critic_reasoning"]
+
+
+def test_critic_redundant_search_prevention_on_tabular_coverage():
+    """Verify Critic recognizes complete factual coverage when tabular tool supplies exact numbers."""
+    from src.system_c.nodes.critic import critic_node
+
+    state = create_initial_state(
+        query="What was NVDA revenue and operating income in 2026?",
+        max_hops=3,
+        mode="v2_aamr",
+        target_ticker="NVDA",
+        fiscal_years=[2026],
+    )
+    state["needs_tabular_tool"] = True
+    state["tabular_evidence"] = [
+        "[F-NVDA-2026] (NVDA FY2026 reported financials)\nfiscal_year,Revenue,OperatingIncome\n2026,130497000000,80854000000"
+    ]
+    state["current_hop"] = 1
+
+    out = critic_node(state)
+    assert out["is_sufficient"] is True
+    assert out["sufficiency_score"] >= 0.85
+    assert "Tabular XBRL" in out["critic_reasoning"] or "Complete" in out["critic_reasoning"]
+
+
+def test_decomposer_autonomous_tool_routing_and_multi_ticker():
+    """Verify decomposer splits multi-ticker comparisons into atomic sub-queries and routes tools."""
+    from src.system_c.nodes.decomposer import decomposer_node
+
+    state = create_initial_state(
+        query="Compare Apple and NVIDIA gross margin and AI supply chain risks in 2024",
+        max_hops=2,
+    )
+    out = decomposer_node(state)
+
+    # Multi-ticker extraction
+    assert "AAPL" in out["target_tickers"]
+    assert "NVDA" in out["target_tickers"]
+    assert 2024 in out["fiscal_years"]
+    assert out["needs_tabular_tool"] is True
+
+    # Granular sub_query_plans
+    plans = out["sub_query_plans"]
+    assert len(plans) >= 2
+
+    # Check that tool routing assigned tabular_tool to financial metrics and retriever to risks
+    tabular_plans = [p for p in plans if p["target_tool"] == "tabular_tool"]
+    retriever_plans = [p for p in plans if p["target_tool"] == "retriever"]
+
+    assert len(tabular_plans) >= 1
+    assert len(retriever_plans) >= 1
+    assert any(p["ticker"] == "AAPL" for p in plans)
+    assert any(p["ticker"] == "NVDA" for p in plans)
+
+
+def test_financial_scale_normalizer_unit_matching():
+    """Verify Scale Normalizer matches financial figures across scale units ($M vs $B)."""
+    from src.system_c.guardrails.scale_normalizer import (
+        fuzzy_financial_match,
+        parse_financial_value,
+    )
+    from src.system_c.guardrails.verifier import verify_numerical_grounding
+
+    # Test parse_financial_value
+    assert parse_financial_value("$115.18 billion") == 115180000000.0
+    assert parse_financial_value("115.2B") == 115200000000.0
+    assert parse_financial_value("$115,185 million") == 115185000000.0
+    assert parse_financial_value("75.0%") == 75.0
+
+    # Test fuzzy_financial_match with contextual table header
+    table_context = """
+    CONSOLIDATED STATEMENTS OF INCOME
+    (In millions, except per share data)
+    Revenue: $115,185
+    Gross margin: 75.0%
+    """
+    assert fuzzy_financial_match("115.18 billion", table_context) is True
+    assert fuzzy_financial_match("115.2B", table_context) is True
+    assert fuzzy_financial_match("75.0%", table_context) is True
+    assert fuzzy_financial_match("999.9 billion", table_context) is False
+
+    # Test integration with Aryan's verifier
+    evidence = [{"chunk_id": "NVDA:1", "content": table_context}]
+    answer_with_scaled_units = "NVIDIA generated 115.18 billion in revenue with a 75.0% gross margin [NVDA:1]."
+    report = verify_numerical_grounding(answer_with_scaled_units, evidence)
+    assert report["numerical_grounding_error_rate"] == 0.0
+    assert report["ungrounded_numbers"] == []
+
+
+def test_active_self_healing_repair_loop(monkeypatch):
+    """Verify that when an ungrounded number is flagged, the graph triggers repair_node and re-audits."""
+    from src.system_c.graph import build_system_c_graph
+    from src.system_c.state import create_initial_state
+
+    # Construct initial state where synthesizer will return an ungrounded number on pass 1
+    state = create_initial_state(
+        query="What was NVDA revenue in 2026?",
+        max_hops=1,
+        mode="v1_amr",
+        target_ticker="NVDA",
+        fiscal_years=[2026],
+        max_repairs=1,
+    )
+
+    # Let synthesizer introduce a hallucinated number "$999,999"
+    def mock_hallucinating_synthesizer(st):
+        return {
+            "draft_answer": "NVDA reported revenue of $999,999 million in FY2026 [NVDA_FY2026:1].",
+            "final_answer": "NVDA reported revenue of $999,999 million in FY2026 [NVDA_FY2026:1].",
+            "citations": [],
+            "telemetry": st.get("telemetry", {}),
+        }
+
+    monkeypatch.setattr("src.system_c.graph.synthesizer_node", mock_hallucinating_synthesizer)
+
+    app = build_system_c_graph()
+    final_state = app.invoke(state)
+
+    # Verify self-healing executed
+    assert final_state["repair_count"] == 1
+    assert len(final_state["repair_history"]) == 1
+    assert "999,999" in final_state["repair_history"][0]["flagged_numbers"]
+    # In mock mode, repair_node excises the ungrounded number
+    assert "[figure not disclosed in filing]" in final_state["final_answer"]
+    assert final_state["guardrail_passed"] is True
+
+
+def test_repair_loop_bounded_at_max_repairs():
+    """Verify repair loop hard-halts at max_repairs without infinite loop even if hallucination persists."""
+    from src.system_c.graph import route_after_guardrail
+    from src.system_c.state import create_initial_state
+
+    state = create_initial_state(
+        query="What was NVDA revenue in 2026?",
+        max_repairs=1,
+    )
+    state["guardrail_passed"] = False
+    state["repair_count"] = 0
+
+    # First pass: should route to repair
+    assert route_after_guardrail(state) == "repair"
+
+    # Second pass (repair_count >= max_repairs): should route to __end__
+    state["repair_count"] = 1
+    assert route_after_guardrail(state) == "__end__"

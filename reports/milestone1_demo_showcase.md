@@ -10,10 +10,10 @@
 
 | Run ID | Architecture Mode | Query Intent | Hops Executed | Early Stopped? | Chunks Retrieved | Guardrail Status | Latency (ms) | Total Tokens | Cost/1k Queries |
 | :--- | :--- | :--- | :---: | :---: | :---: | :---: | ---: | ---: | ---: |
-| **Q1** | `v1_amr` | Single-Hop Factual (Early-Stopping Verification) | 1/3 | Yes (Hop 1) | 4 | Passed (0.0 err) | 24.6 | 2,184 | $0.2432 |
-| **Q2** | `v1_amr` | Multi-Hop Cross-Section (MD&A + Financial Statement Footnotes) | 2/3 | Yes | 8 | Passed (0.0 err) | 13.8 | 4,405 | $0.4767 |
-| **Q3_v1** | `v1_amr` | Quantitative Financial Comparison (v1_amr - Text RAG Only) | 2/3 | Yes | 8 | Passed (0.0 err) | 44.1 | 4,310 | $0.4674 |
-| **Q3_v2** | `v2_aamr` | Quantitative Financial Comparison (v2_aamr - Agentic XBRL Tabular Tool) | 2/3 | Yes | 10 | Passed (0.0 err) | 37.4 | 4,419 | $0.4781 |
+| **Q1** | `v1_amr` | Single-Hop Factual (Early-Stopping Verification) | 1/3 | Yes (Hop 1) | 4 | Passed (0.0 err) | 20.4 | 2,464 | $0.2794 |
+| **Q2** | `v1_amr` | Multi-Hop Cross-Section (MD&A + Financial Statement Footnotes) | 2/3 | Yes | 8 | Passed (0.0 err) | 13.9 | 4,869 | $0.5349 |
+| **Q3_v1** | `v1_amr` | Quantitative Financial Comparison (v1_amr - Text RAG Only) | 2/3 | Yes | 8 | Passed (0.0 err) | 43.8 | 4,778 | $0.5262 |
+| **Q3_v2** | `v2_aamr` | Quantitative Financial Comparison (v2_aamr - Agentic XBRL Tabular Tool) | 1/3 | Yes (Hop 1) | 6 | Passed (0.0 err) | 24.1 | 2,149 | $0.2459 |
 
 ---
 
@@ -27,7 +27,7 @@
 #### Iterative Multi-Hop Reflection Trace
 - **Hop 1:** Sub-query `"What was NVIDIA's fiscal year 2026 period end date, and what is the address of its principal executive office?"`
   - Critic Decision: `is_sufficient = True`
-  - Reasoning: Hop 1: All required entities and quantitative figures are present in accumulated evidence.
+  - Reasoning: Hop 1: Quantitative sufficiency score 0.95 satisfies completeness criteria.
 
 #### Synthesized Answer & Inline Citations
 > Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities, NVDA_FY2026_2026-01-25:365] [NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Exhibit Index, NVDA_FY2026_2026-01-25:462].
@@ -38,10 +38,10 @@
 - **Citations Formatted:** 2 inline citations mapped
 
 #### RQ3 Inference Economics Breakdown
-- **Total Latency:** 24.6 ms
-- **Prompt Tokens:** 2,060
-- **Completion Tokens:** 124
-- **Estimated USD Cost:** $0.000243
+- **Total Latency:** 20.4 ms
+- **Prompt Tokens:** 2,299
+- **Completion Tokens:** 165
+- **Estimated USD Cost:** $0.000279
 
 ---
 
@@ -53,11 +53,11 @@
 #### Iterative Multi-Hop Reflection Trace
 - **Hop 1:** Sub-query `"NVDA FY2026 primary business drivers and operational segment performance"`
   - Critic Decision: `is_sufficient = False`
-  - Reasoning: Hop 1: Retrieved initial MD&A context, but missing specific quantitative footnote disclosures.
-  - Missing Premises Identified: `['Specific quantitative footnote breakdown and risk factor disclosures referenced in Item 7']`
-- **Hop 2:** Sub-query `"NVDA FY2026 Item 8 footnote table details for: Specific quantitative footnote breakdown and risk factor disclosures referenced in Item 7"`
+  - Reasoning: Hop 1: Quantitative sufficiency score 0.50 indicates missing footnote or entity details.
+  - Missing Premises Identified: `['Specific quantitative footnote breakdown and risk factor disclosures for NVDA']`
+- **Hop 2:** Sub-query `"NVDA FY2026 Item 8 footnote table details for: Specific quantitative footnote breakdown and risk factor disclosures for NVDA"`
   - Critic Decision: `is_sufficient = True`
-  - Reasoning: Hop 2: All required entities and quantitative figures are present in accumulated evidence.
+  - Reasoning: Hop 2: Quantitative sufficiency score 0.95 satisfies completeness criteria.
 
 #### Synthesized Answer & Inline Citations
 > Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22] [NVDA FY2026, Item 1. Business > Business Strategies, NVDA_FY2026_2026-01-25:32].
@@ -68,10 +68,10 @@
 - **Citations Formatted:** 2 inline citations mapped
 
 #### RQ3 Inference Economics Breakdown
-- **Total Latency:** 13.8 ms
-- **Prompt Tokens:** 4,224
-- **Completion Tokens:** 181
-- **Estimated USD Cost:** $0.000477
+- **Total Latency:** 13.9 ms
+- **Prompt Tokens:** 4,629
+- **Completion Tokens:** 240
+- **Estimated USD Cost:** $0.000535
 
 ---
 
@@ -83,11 +83,11 @@
 #### Iterative Multi-Hop Reflection Trace
 - **Hop 1:** Sub-query `"NVDA FY2025 primary business drivers and operational segment performance"`
   - Critic Decision: `is_sufficient = False`
-  - Reasoning: Hop 1: Retrieved initial MD&A context, but missing specific quantitative footnote disclosures.
-  - Missing Premises Identified: `['Specific quantitative footnote breakdown and risk factor disclosures referenced in Item 7']`
-- **Hop 2:** Sub-query `"NVDA FY2025 Item 8 footnote table details for: Specific quantitative footnote breakdown and risk factor disclosures referenced in Item 7"`
+  - Reasoning: Hop 1: Quantitative sufficiency score 0.50 indicates missing footnote or entity details.
+  - Missing Premises Identified: `['Specific quantitative footnote breakdown and risk factor disclosures for NVDA']`
+- **Hop 2:** Sub-query `"NVDA FY2025 Item 8 footnote table details for: Specific quantitative footnote breakdown and risk factor disclosures for NVDA"`
   - Critic Decision: `is_sufficient = True`
-  - Reasoning: Hop 2: All required entities and quantitative figures are present in accumulated evidence.
+  - Reasoning: Hop 2: Quantitative sufficiency score 0.95 satisfies completeness criteria.
 
 #### Synthesized Answer & Inline Citations
 > Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22] [NVDA FY2025, Item 1. Business > Our Businesses, NVDA_FY2025_2025-01-26:21].
@@ -98,10 +98,10 @@
 - **Citations Formatted:** 2 inline citations mapped
 
 #### RQ3 Inference Economics Breakdown
-- **Total Latency:** 44.1 ms
-- **Prompt Tokens:** 4,128
-- **Completion Tokens:** 182
-- **Estimated USD Cost:** $0.000467
+- **Total Latency:** 43.8 ms
+- **Prompt Tokens:** 4,536
+- **Completion Tokens:** 242
+- **Estimated USD Cost:** $0.000526
 
 ---
 
@@ -112,12 +112,8 @@
 
 #### Iterative Multi-Hop Reflection Trace
 - **Hop 1:** Sub-query `"NVDA FY2025 primary business drivers and operational segment performance"`
-  - Critic Decision: `is_sufficient = False`
-  - Reasoning: Hop 1: Retrieved initial MD&A context, but missing specific quantitative footnote disclosures.
-  - Missing Premises Identified: `['Specific quantitative footnote breakdown and risk factor disclosures referenced in Item 7']`
-- **Hop 2:** Sub-query `"NVDA FY2025 Item 8 footnote table details for: Specific quantitative footnote breakdown and risk factor disclosures referenced in Item 7"`
   - Critic Decision: `is_sufficient = True`
-  - Reasoning: Hop 2: All required entities and quantitative figures are present in accumulated evidence.
+  - Reasoning: Hop 1: Quantitative sufficiency score 0.95 satisfies completeness criteria. [Complete factual coverage: Tabular XBRL tool provided exact reported financials].
 
 #### Synthesized Answer & Inline Citations
 > Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2025, SEC XBRL Reported Financials (financials.csv), F-NVDA-2025] [NVDA FY2026, SEC XBRL Reported Financials (financials.csv), F-NVDA-2026] [F-NVDA-2025].
@@ -128,9 +124,9 @@
 - **Citations Formatted:** 2 inline citations mapped
 
 #### RQ3 Inference Economics Breakdown
-- **Total Latency:** 37.4 ms
-- **Prompt Tokens:** 4,238
-- **Completion Tokens:** 181
-- **Estimated USD Cost:** $0.000478
+- **Total Latency:** 24.1 ms
+- **Prompt Tokens:** 1,994
+- **Completion Tokens:** 155
+- **Estimated USD Cost:** $0.000246
 
 ---

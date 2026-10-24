@@ -21,6 +21,7 @@ from src.system_c.guardrails.verifier import guardrail_node
 from src.system_c.nodes.critic import critic_node
 from src.system_c.nodes.decomposer import decomposer_node
 from src.system_c.nodes.generator import generator_node
+from src.system_c.nodes.repair import repair_node
 from src.system_c.nodes.retriever import retriever_node
 from src.system_c.nodes.synthesizer import synthesizer_node
 from src.system_c.state import AdaptiveRAGState, create_initial_state
@@ -57,11 +58,25 @@ def route_after_critic(
     return "generator"
 
 
+def route_after_guardrail(
+    state: AdaptiveRAGState,
+) -> Literal["repair", "__end__"]:
+    """
+    Active Closed-Loop Self-Healing Edge (Anish):
+    - If guardrail flagged ungrounded numbers AND repair_count < max_repairs,
+      route to repair_node to excise or ground the hallucinated figures.
+    - Otherwise, terminate execution.
+    """
+    if not state.get("guardrail_passed", True) and state.get("repair_count", 0) < state.get("max_repairs", 1):
+        return "repair"
+    return "__end__"
+
+
 def build_system_c_graph():
     """Compile and return the executable LangGraph state machine for System C."""
     workflow = StateGraph(AdaptiveRAGState)
 
-    # Register nodes (Anish's Orchestration + Aryan's Generation/Citations/Guardrails + v2 Tooling)
+    # Register nodes (Anish's Orchestration + Aryan's Generation/Citations/Guardrails + v2 Tooling + Self-Healing)
     workflow.add_node("decomposer", decomposer_node)
     workflow.add_node("tabular_tool", tabular_tool_node)
     workflow.add_node("retriever", retriever_node)
@@ -69,6 +84,7 @@ def build_system_c_graph():
     workflow.add_node("generator", generator_node)
     workflow.add_node("synthesizer", synthesizer_node)
     workflow.add_node("guardrail", guardrail_node)
+    workflow.add_node("repair", repair_node)
 
     # Wire edges
     workflow.add_edge(START, "decomposer")
@@ -93,7 +109,17 @@ def build_system_c_graph():
     )
     workflow.add_edge("generator", "retriever")
     workflow.add_edge("synthesizer", "guardrail")
-    workflow.add_edge("guardrail", END)
+
+    # Closed-loop active self-healing guardrail
+    workflow.add_conditional_edges(
+        "guardrail",
+        route_after_guardrail,
+        {
+            "repair": "repair",
+            "__end__": END,
+        },
+    )
+    workflow.add_edge("repair", "guardrail")
 
     return workflow.compile()
 
@@ -106,6 +132,8 @@ def run_system_c(
     fiscal_years: Optional[list[int]] = None,
     mock_sufficient_at_hop: Optional[int] = None,
     force_max_hops: bool = False,
+    sufficiency_threshold: float = 0.85,
+    max_repairs: int = 1,
 ) -> AdaptiveRAGState:
     """
     Execute a query end-to-end through System C and return the final `AdaptiveRAGState`.
@@ -117,6 +145,8 @@ def run_system_c(
         target_ticker=target_ticker,
         fiscal_years=fiscal_years,
         force_max_hops=force_max_hops,
+        sufficiency_threshold=sufficiency_threshold,
+        max_repairs=max_repairs,
     )
     if mock_sufficient_at_hop is not None:
         initial_state["telemetry"]["mock_sufficient_at_hop"] = mock_sufficient_at_hop

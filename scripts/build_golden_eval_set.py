@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Canonical 50-Question Golden Evaluation Benchmark Builder for SEC 10-K Financial RAG.
+Canonical Evaluation Benchmark Builder for SEC 10-K Financial RAG.
 
 Course: CS614 GenAI
 Team Members:
@@ -9,10 +9,11 @@ Team Members:
 - System C (Proposed): Adaptive Multi-Hop LangGraph State Machine (Anish & Aryan)
 
 Stratification:
-- Tier 1: Single-Hop Factual (15 Questions — 1-2 per company)
-- Tier 2: Quantitative Tabular + Narrative (20 Questions — 2 per company)
-- Tier 3: Cross-Sectional Causal Chaining (15 Questions — 1-2 per company)
-Total: 50 Questions (Exactly 5 per company across 10 companies)
+- Tier 1: Single-Hop Factual (15 Questions — GOLD-01 to GOLD-15)
+- Tier 2: Quantitative Tabular + Narrative (20 Questions — GOLD-16 to GOLD-35)
+- Tier 3: Cross-Sectional Causal Chaining (15 Questions — GOLD-36 to GOLD-50)
+- Tier 4: Multi-Company Cross-Entity Comparative (10 Questions — GOLD-51 to GOLD-60)
+Total: 60 Questions
 """
 
 import json
@@ -597,16 +598,147 @@ GOLDEN_QUESTIONS: List[Dict[str, Any]] = [
         "ground_truth_answer": "In Item 3 and Note 10 (Contingencies), Walmart disclosed that it remains a defendant in approximately 250 cases in the multi-district litigation entitled In re National Prescription Opiate Litigation (MDL No. 2804) pending in the U.S. District Court for the Northern District of Ohio, alongside more than 25 other opioid cases and a DOJ lawsuit in Delaware, following its entry into a $3.1 billion nationwide opioid settlement framework. Walmart accrues liabilities when losses are probable and reasonably estimable but cannot estimate additional ranges of loss for unresolved claims.",
         "ground_truth_numbers": ["250", "2804", "$3.1 billion"],
     },
+
+    # =========================================================================
+    # TIER 4: Multi-Company Cross-Entity Comparative (10 Questions — GOLD-51 to GOLD-60)
+    # Target: Multi-entity joint reasoning across 2 to 3 distinct 10-K filings.
+    # Purpose: Forces multi-hop state iteration (Hops 2 & 3), testing dynamic entity
+    # routing and preventing context-crowding failure modes in Systems A & B.
+    # Category label: "multi_company_comparison"
+    # =========================================================================
+    {
+        "id": "GOLD-51",
+        "ticker": "MSFT",
+        "target_tickers": ["MSFT", "AMZN", "GOOGL"],
+        "fiscal_years": [2024],
+        "category": "multi_company_comparison",
+        "min_required_hops": 3,
+        "query": "Compare the 2024 enterprise cloud segment revenue, operating income, and operating margin across Microsoft (Intelligent Cloud), Amazon (AWS), and Alphabet (Google Cloud). Which cloud provider generated the highest operating margin in 2024, and which achieved the highest year-over-year revenue growth rate?",
+        "target_sections": ["MSFT Item 8 Note 19", "AMZN Item 8 Note 10", "GOOGL Item 8 Note 15"],
+        "ground_truth_answer": "In 2024, Microsoft Intelligent Cloud reported revenue of $105,362 million (up 20% YoY) with operating income of $49,584 million, delivering an operating margin of 47.1%. Amazon AWS reported net sales of $107,556 million (up 19% YoY) with operating income of $39,834 million, delivering an operating margin of 37.0%. Alphabet Google Cloud reported revenues of $43,229 million (up 30.6% YoY) with operating income of $6,112 million, delivering an operating margin of 14.1%. Therefore, Microsoft Intelligent Cloud generated the highest operating margin (47.1%), while Alphabet Google Cloud achieved the highest year-over-year revenue growth rate (30.6%).",
+        "ground_truth_numbers": [
+            "$105,362 million", "20%", "$49,584 million", "47.1%",
+            "$107,556 million", "19%", "$39,834 million", "37.0%",
+            "$43,229 million", "30.6%", "$6,112 million", "14.1%"
+        ],
+    },
+    {
+        "id": "GOLD-52",
+        "ticker": "NVDA",
+        "target_tickers": ["NVDA", "META", "MSFT"],
+        "fiscal_years": [2024, 2026],
+        "category": "multi_company_comparison",
+        "min_required_hops": 3,
+        "query": "Compare the AI infrastructure capital expenditure and lease commitments across NVIDIA, Meta Platforms, and Microsoft in their most recent annual filings. What future data center lease obligations did NVIDIA disclose commencing between fiscal 2027 and 2030, and what were the total additions to property and equipment or capital expenditures for Microsoft and Meta in 2024?",
+        "target_sections": ["NVDA Item 8 Note 17", "META Item 7", "MSFT Item 8 Cash Flows"],
+        "ground_truth_answer": "In Note 17 of its FY2026 Form 10-K, NVIDIA disclosed expected future obligations of $22.7 billion for leases commencing between fiscal years 2027 and 2030, primarily representing data center leases to support AI and accelerated computing R&D. In Item 7 of its 2024 Form 10-K, Meta Platforms reported capital expenditures (including principal payments on finance leases) of $39.23 billion for 2024. In its fiscal 2024 Consolidated Statements of Cash Flows, Microsoft reported additions to property and equipment of $44,477 million to expand datacenter capacity and computing systems.",
+        "ground_truth_numbers": ["$22.7 billion", "2027 and 2030", "$39.23 billion", "$44,477 million"],
+    },
+    {
+        "id": "GOLD-53",
+        "ticker": "META",
+        "target_tickers": ["META", "GOOGL"],
+        "fiscal_years": [2024],
+        "category": "multi_company_comparison",
+        "min_required_hops": 2,
+        "query": "Compare the digital advertising revenue performance and year-over-year growth rate of Meta Platforms versus Alphabet in 2024. Which company achieved a higher percentage growth rate in advertising?",
+        "target_sections": ["META Item 7", "GOOGL Item 7"],
+        "ground_truth_answer": "In 2024, Meta Platforms generated $160,633 million in advertising revenue, representing a 21.7% increase from $131,948 million in 2023, driven by an 11% increase in ad impressions. Alphabet reported total Google advertising revenues of $264,590 million in 2024, an 11.2% increase from $237,855 million in 2023. Therefore, Meta Platforms achieved the higher percentage growth rate in digital advertising revenue (21.7% vs. 11.2%).",
+        "ground_truth_numbers": ["$160,633 million", "$131,948 million", "21.7%", "11%", "$264,590 million", "$237,855 million", "11.2%"],
+    },
+    {
+        "id": "GOLD-54",
+        "ticker": "AAPL",
+        "target_tickers": ["AAPL", "GOOGL"],
+        "fiscal_years": [2024],
+        "category": "multi_company_comparison",
+        "min_required_hops": 2,
+        "query": "Compare Apple's Services segment net sales and gross margin in fiscal 2024 with Alphabet's Google Services revenue and operating income in 2024. What gross margin percentage did Apple achieve on Services?",
+        "target_sections": ["AAPL Item 7", "GOOGL Item 8 Note 15"],
+        "ground_truth_answer": "In fiscal 2024, Apple reported Services net sales of $96,169 million (up from $85,200 million in 2023) and Services gross margin of $71,050 million, translating to a Services gross margin percentage of 73.9%. In 2024, Alphabet reported Google Services revenues of $304,930 million (up from $272,543 million in 2023) and operating income of $121,263 million, delivering an operating margin of 39.8%.",
+        "ground_truth_numbers": ["$96,169 million", "$85,200 million", "$71,050 million", "73.9%", "$304,930 million", "$272,543 million", "$121,263 million", "39.8%"],
+    },
+    {
+        "id": "GOLD-55",
+        "ticker": "TSLA",
+        "target_tickers": ["TSLA", "NVDA"],
+        "fiscal_years": [2024, 2026],
+        "category": "multi_company_comparison",
+        "min_required_hops": 2,
+        "query": "Compare Tesla's total automotive revenues in 2024 with NVIDIA's Automotive platform revenue in fiscal year 2026. What were Tesla's automotive regulatory credits and NVIDIA's automotive growth rate?",
+        "target_sections": ["TSLA Item 8 Note 1", "NVDA Item 8 Note 16"],
+        "ground_truth_answer": "In 2024, Tesla reported total automotive revenues of $77,070 million (including $2,763 million in automotive regulatory credits and $1,827 million in automotive leasing). In fiscal year 2026, NVIDIA reported Automotive platform revenue of $2,349 million (up 39% from $1,694 million in fiscal 2025), driven by adoption of its autonomous vehicle computing platforms.",
+        "ground_truth_numbers": ["$77,070 million", "$2,763 million", "$1,827 million", "$2,349 million", "39%", "$1,694 million"],
+    },
+    {
+        "id": "GOLD-56",
+        "ticker": "AMZN",
+        "target_tickers": ["AMZN", "WMT"],
+        "fiscal_years": [2024, 2025],
+        "category": "multi_company_comparison",
+        "min_required_hops": 2,
+        "query": "Compare Amazon's North America retail segment performance in 2024 with Walmart U.S. segment performance in FY2025. Which segment generated higher net sales and operating income?",
+        "target_sections": ["AMZN Item 8 Note 10", "WMT Item 8 Note 12"],
+        "ground_truth_answer": "In 2024, Amazon reported North America segment net sales of $387,489 million and operating income of $24,967 million. In FY2025, Walmart reported Walmart U.S. segment net sales of $462,415 million and operating income of $23,882 million. Therefore, Walmart U.S. generated higher net sales ($462,415 million vs $387,489 million), while Amazon North America generated higher segment operating income ($24,967 million vs $23,882 million).",
+        "ground_truth_numbers": ["$387,489 million", "$24,967 million", "$462,415 million", "$23,882 million"],
+    },
+    {
+        "id": "GOLD-57",
+        "ticker": "JPM",
+        "target_tickers": ["JPM", "JNJ"],
+        "fiscal_years": [2024],
+        "category": "multi_company_comparison",
+        "min_required_hops": 2,
+        "query": "Compare the legal and litigation loss contingency disclosures of JPMorgan Chase and Johnson & Johnson in their 2024 Form 10-Ks. What was JPMorgan Chase's estimated range of reasonably possible legal losses in excess of reserves, and what reserve did Johnson & Johnson report for talc matters?",
+        "target_sections": ["JPM Item 8 Note 30", "JNJ Item 8 Note 19"],
+        "ground_truth_answer": "In Note 30 of its 2024 Form 10-K, JPMorgan Chase estimated that the aggregate range of reasonably possible legal losses, in excess of established reserves, was from $0 to approximately $1.4 billion as of December 31, 2024. In Note 19, Johnson & Johnson disclosed that operating cash flows will fund an approximately $11.6 billion ($13.5 billion nominal) reserve established for talc-related product liability matters, alongside an estimated remaining balance of approximately $1.5 billion under its nationwide opioid settlement agreement.",
+        "ground_truth_numbers": ["$0", "$1.4 billion", "December 31, 2024", "$11.6 billion", "$13.5 billion", "$1.5 billion"],
+    },
+    {
+        "id": "GOLD-58",
+        "ticker": "AAPL",
+        "target_tickers": ["AAPL", "MSFT"],
+        "fiscal_years": [2024],
+        "category": "multi_company_comparison",
+        "min_required_hops": 2,
+        "query": "Compare Apple's and Microsoft's operating cash flows and diluted earnings per share in their respective fiscal 2024 filings. Which company generated higher operating cash flow in fiscal 2024?",
+        "target_sections": ["AAPL Item 8 Cash Flows", "MSFT Item 8 Cash Flows"],
+        "ground_truth_answer": "In fiscal 2024, Apple reported operating cash flow of $118,254 million and diluted EPS of $6.08. Microsoft reported operating cash flow of $118,548 million and diluted EPS of $11.80 for the fiscal year ended June 30, 2024. Therefore, Microsoft generated slightly higher operating cash flow in fiscal 2024 ($118,548 million vs. Apple's $118,254 million).",
+        "ground_truth_numbers": ["$118,254 million", "$6.08", "$118,548 million", "$11.80"],
+    },
+    {
+        "id": "GOLD-59",
+        "ticker": "TSLA",
+        "target_tickers": ["TSLA", "WMT"],
+        "fiscal_years": [2024, 2025],
+        "category": "multi_company_comparison",
+        "min_required_hops": 2,
+        "query": "Compare how physical supply chain disruptions and logistics were described in Item 7 of Tesla's 2024 Form 10-K versus Walmart's FY2025 Form 10-K. What specific maritime and manufacturing shutdown events affected Tesla, and how many global pickup and delivery locations did Walmart operate?",
+        "target_sections": ["TSLA Item 7", "WMT Item 7"],
+        "ground_truth_answer": "In Item 7 MD&A, Tesla disclosed that its production and deliveries were impacted by factory shutdowns at Gigafactory Berlin-Brandenburg resulting from maritime shipping diversions caused by the Red Sea conflict and an arson attack. In Item 7 MD&A, Walmart disclosed that it maintains an omnichannel global retail network with over 8,000 pickup and delivery locations globally and approximately 2.1 million associates as of January 31, 2025.",
+        "ground_truth_numbers": ["Red Sea", "arson", "8,000", "2.1 million"],
+    },
+    {
+        "id": "GOLD-60",
+        "ticker": "AMZN",
+        "target_tickers": ["AMZN", "META"],
+        "fiscal_years": [2024],
+        "category": "multi_company_comparison",
+        "min_required_hops": 2,
+        "query": "Compare the total workforce and headcount numbers reported by Amazon and Meta Platforms at the end of 2024. What were their respective full-time and part-time employee counts as of December 31, 2024?",
+        "target_sections": ["AMZN Item 1", "META Item 1"],
+        "ground_truth_answer": "As of December 31, 2024, Amazon reported employing approximately 1,556,000 full-time and part-time employees. In its 2024 Form 10-K, Meta Platforms reported that its headcount was 74,067 as of December 31, 2024, representing an increase of 10% year-over-year.",
+        "ground_truth_numbers": ["1,556,000", "74,067", "December 31, 2024", "10%"],
+    },
 ]
 
 
 def validate_dataset(data: List[Dict[str, Any]]) -> None:
     """Validate completeness, uniqueness, schemas, and counts across tiers and tickers."""
-    assert len(data) == 50, f"Expected 50 questions, got {len(data)}"
+    assert len(data) == 60, f"Expected 60 questions, got {len(data)}"
 
-    expected_tickers = {"AAPL", "MSFT", "AMZN", "GOOGL", "META", "NVDA", "TSLA", "JPM", "JNJ", "WMT"}
-    expected_categories = {"single_hop_factual", "quantitative_tabular", "cross_section_multihop"}
-    required_keys = {
+    expected_categories = {"single_hop_factual", "quantitative_tabular", "cross_section_multihop", "multi_company_comparison"}
+    base_required_keys = {
         "id",
         "ticker",
         "fiscal_years",
@@ -623,16 +755,18 @@ def validate_dataset(data: List[Dict[str, Any]]) -> None:
     assert cat_counts["single_hop_factual"] == 15, f"Expected 15 single_hop_factual, got {cat_counts['single_hop_factual']}"
     assert cat_counts["quantitative_tabular"] == 20, f"Expected 20 quantitative_tabular, got {cat_counts['quantitative_tabular']}"
     assert cat_counts["cross_section_multihop"] == 15, f"Expected 15 cross_section_multihop, got {cat_counts['cross_section_multihop']}"
+    assert cat_counts["multi_company_comparison"] == 10, f"Expected 10 multi_company_comparison, got {cat_counts['multi_company_comparison']}"
 
-    ticker_counts = Counter(d["ticker"] for d in data)
-    for t in expected_tickers:
-        assert ticker_counts[t] == 5, f"Ticker {t} should have exactly 5 questions, got {ticker_counts[t]}"
+    # Verify first 50 single-company distribution
+    first_50 = data[:50]
+    first_50_tickers = Counter(d["ticker"] for d in first_50)
+    for t in {"AAPL", "MSFT", "AMZN", "GOOGL", "META", "NVDA", "TSLA", "JPM", "JNJ", "WMT"}:
+        assert first_50_tickers[t] == 5, f"First 50: Company {t} expected 5 questions, got {first_50_tickers[t]}"
 
     for i, item in enumerate(data):
         expected_id = f"GOLD-{i+1:02d}"
         assert item["id"] == expected_id, f"Item {i} id expected {expected_id}, got {item['id']}"
-        assert set(item.keys()) == required_keys, f"Item {item['id']} keys mismatch: {set(item.keys())}"
-        assert item["ticker"] in expected_tickers, f"Unknown ticker {item['ticker']}"
+        assert base_required_keys.issubset(set(item.keys())), f"Item {item['id']} keys missing: {base_required_keys - set(item.keys())}"
         assert item["category"] in expected_categories, f"Unknown category {item['category']}"
         assert isinstance(item["fiscal_years"], list) and len(item["fiscal_years"]) >= 1
         assert isinstance(item["target_sections"], list) and len(item["target_sections"]) >= 1
@@ -647,7 +781,7 @@ def main() -> None:
     validate_dataset(GOLDEN_QUESTIONS)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(GOLDEN_QUESTIONS, f, indent=2, ensure_ascii=False)
-    print(f"Successfully generated and validated canonical 50-question golden eval benchmark at: {OUTPUT_FILE}")
+    print(f"Successfully generated and validated canonical 60-question golden eval benchmark at: {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

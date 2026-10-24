@@ -14,6 +14,7 @@ Integration Contract:
 import re
 from typing import Any, Dict, List
 
+from src.system_c.guardrails.scale_normalizer import fuzzy_financial_match
 from src.system_c.state import AdaptiveRAGState
 from src.system_c.telemetry import track_node_latency
 
@@ -49,7 +50,23 @@ def verify_numerical_grounding(answer: str, evidence_chunks: List[Dict[str, Any]
 
     for token in numbers:
         norm_tok = token.rstrip("%").replace(",", "")
-        if token in combined_corpus or norm_tok in combined_normalized:
+        matched = (token in combined_corpus) or (norm_tok in combined_normalized)
+
+        if not matched:
+            matched = fuzzy_financial_match(token, combined_corpus)
+
+        if not matched:
+            # Check if answer contains an immediate scale magnitude word after token (e.g. "115.18 billion")
+            m = re.search(
+                rf"\b{re.escape(token)}\s*(trillion|billion|million|thousand|bps|[ktmb])\b",
+                answer,
+                re.IGNORECASE,
+            )
+            if m:
+                scaled_claim = f"{token} {m.group(1)}"
+                matched = fuzzy_financial_match(scaled_claim, combined_corpus)
+
+        if matched:
             verified.append(token)
         else:
             ungrounded.append(token)

@@ -149,48 +149,135 @@ def _call_mock(
     query = state.get("original_query", "")
 
     if node_name == "decomposer":
-        # Detect ticker and fiscal years from query
-        ticker = "NVDA"
+        # Detect all tickers and fiscal years from query
+        found_tickers = []
         for t in ("AAPL", "AMZN", "GOOGL", "JNJ", "JPM", "META", "MSFT", "NVDA", "TSLA", "WMT"):
-            if t.lower() in query.lower():
-                ticker = t
-                break
-        years = [int(y) for y in ("2024", "2025", "2026") if y in query] or [2026]
-        is_multi = any(w in query.lower() for w in ("impact", "footnote", "covenant", "compare", "how did", "supply", "across", "concentration", "risk"))
+            pattern = rf"\b{t.lower()}\b"
+            if re.search(pattern, query.lower()):
+                found_tickers.append(t)
+        for name, t in (
+            ("apple", "AAPL"),
+            ("microsoft", "MSFT"),
+            ("amazon", "AMZN"),
+            ("alphabet", "GOOGL"),
+            ("google", "GOOGL"),
+            ("meta", "META"),
+            ("nvidia", "NVDA"),
+            ("tesla", "TSLA"),
+            ("jpmorgan", "JPM"),
+            ("walmart", "WMT"),
+        ):
+            if name in query.lower() and t not in found_tickers:
+                found_tickers.append(t)
+
+        ticker = found_tickers[0] if found_tickers else "NVDA"
+        years = [int(y) for y in ("2023", "2024", "2025", "2026") if y in query] or [2026]
+        is_multi = len(found_tickers) > 1 or any(
+            w in query.lower()
+            for w in ("impact", "footnote", "covenant", "compare", "how did", "supply", "across", "concentration", "risk")
+        )
+
+        plans: List[Dict[str, Any]] = []
+        if len(found_tickers) > 1:
+            for tkr in found_tickers:
+                y = years[0] if years else 2024
+                is_quant = any(w in query.lower() for w in ("margin", "revenue", "income", "eps", "debt", "ratio", "table", "asset", "liability"))
+                plans.append({
+                    "query": f"{tkr} FY{y} revenue, operating margin, and reported financials",
+                    "target_tool": "tabular_tool" if is_quant else "retriever",
+                    "ticker": tkr,
+                    "fiscal_year": y,
+                })
+                if any(w in query.lower() for w in ("risk", "supply", "chain", "footnote", "contingenc")):
+                    plans.append({
+                        "query": f"{tkr} FY{y} supply chain, risk factors, and footnote disclosures",
+                        "target_tool": "retriever",
+                        "ticker": tkr,
+                        "fiscal_year": y,
+                    })
+        elif is_multi:
+            plans = [
+                {
+                    "query": f"{ticker} FY{years[0]} primary business drivers and operational segment performance",
+                    "target_tool": "retriever",
+                    "ticker": ticker,
+                    "fiscal_year": years[0],
+                },
+                {
+                    "query": f"{ticker} FY{years[0]} financial statement footnotes, debt covenants, and quantitative breakdown",
+                    "target_tool": "tabular_tool" if any(w in query.lower() for w in ("margin", "revenue", "income", "eps", "debt", "ratio", "table")) else "retriever",
+                    "ticker": ticker,
+                    "fiscal_year": years[0],
+                },
+            ]
+        else:
+            plans = [
+                {
+                    "query": query,
+                    "target_tool": "tabular_tool" if any(w in query.lower() for w in ("margin", "revenue", "income", "eps", "debt", "ratio", "table")) else "retriever",
+                    "ticker": ticker,
+                    "fiscal_year": years[0],
+                }
+            ]
+
         resp_obj = {
             "target_ticker": ticker,
+            "target_tickers": found_tickers or [ticker],
             "fiscal_years": years,
             "query_complexity": "multi_hop" if is_multi else "single_hop",
-            "needs_tabular_tool": any(w in query.lower() for w in ("margin", "revenue", "income", "eps", "debt", "ratio", "table")),
-            "sub_queries": (
-                [
-                    f"{ticker} FY{years[0]} primary business drivers and operational segment performance",
-                    f"{ticker} FY{years[0]} financial statement footnotes, debt covenants, and quantitative breakdown",
-                ]
-                if is_multi
-                else [query]
-            ),
+            "needs_tabular_tool": any(p.get("target_tool") == "tabular_tool" for p in plans),
+            "sub_query_plans": plans,
+            "sub_queries": [p["query"] for p in plans],
         }
         content = json.dumps(resp_obj)
 
     elif node_name == "critic":
-        # If query is single_hop or we reached hop >= 2 (or force_sufficient_at_hop in state), mark sufficient
+        # Check for explicit mock score override in state telemetry
+        explicit_score = state.get("telemetry", {}).get("mock_sufficiency_score")
+        tabular = state.get("tabular_evidence", [])
+        q_lower = query.lower()
+        has_qual = any(w in q_lower for w in ("risk", "footnote", "impact", "legal", "covenant", "contingenc", "why", "driver", "strategy", "cause"))
+
         if state.get("force_max_hops"):
             target_hop = state.get("max_hops", 3)
+            is_suff = hop >= target_hop
+        elif explicit_score is not None:
+            threshold = float(state.get("sufficiency_threshold", 0.85))
+            is_suff = float(explicit_score) >= threshold
+        elif tabular and not has_qual:
+            is_suff = True
         else:
             target_hop = state.get("telemetry", {}).get("mock_sufficient_at_hop", 2)
             if state.get("query_complexity") == "single_hop":
                 target_hop = 1
-        is_suff = hop >= target_hop
+            is_suff = hop >= target_hop
+
+        if explicit_score is not None:
+            sufficiency_score = float(explicit_score)
+        else:
+            sufficiency_score = 0.95 if is_suff else 0.50
+
+        missing_ent = [] if is_suff else [
+            f"FY{(state.get('fiscal_years') or [2026])[0]} specific quantitative footnote line items"
+        ]
+        missing_yrs = [] if is_suff else [
+            y for y in state.get("fiscal_years", [])
+            if not any(str(y) in c["content"] for c in state.get("accumulated_evidence", []))
+        ]
+        missing_prem = [] if is_suff else [
+            f"Specific quantitative footnote breakdown and risk factor disclosures for {state.get('target_ticker', 'NVDA')}"
+        ]
+
         resp_obj = {
+            "sufficiency_score": sufficiency_score,
             "is_sufficient": is_suff,
-            "missing_premises": [] if is_suff else [
-                "Specific quantitative footnote breakdown and risk factor disclosures referenced in Item 7"
-            ],
+            "missing_entities": missing_ent,
+            "missing_years": missing_yrs,
+            "missing_premises": missing_prem,
             "critic_reasoning": (
-                f"Hop {hop}: All required entities and quantitative figures are present in accumulated evidence."
+                f"Hop {hop}: Quantitative sufficiency score {sufficiency_score:.2f} satisfies completeness criteria."
                 if is_suff
-                else f"Hop {hop}: Retrieved initial MD&A context, but missing specific quantitative footnote disclosures."
+                else f"Hop {hop}: Quantitative sufficiency score {sufficiency_score:.2f} indicates missing footnote or entity details."
             ),
         }
         content = json.dumps(resp_obj)
@@ -236,6 +323,16 @@ def _call_mock(
             f"Based on the retrieved SEC 10-K disclosures, {state.get('target_ticker', 'NVDA')} reported strong "
             f"operational results alongside disclosed risk and footnote factors {tags_str}."
         )
+
+    elif node_name == "repair":
+        # In mock mode, repair excises ungrounded numbers to produce a 100% grounded answer
+        draft = state.get("draft_answer") or ""
+        ungrounded = state.get("guardrail_report", {}).get("ungrounded_numbers", [])
+        repaired = draft
+        for bad_num in ungrounded:
+            repaired = repaired.replace(bad_num, "[figure not disclosed in filing]")
+        content = repaired
+
     else:
         content = f"Mock response for {node_name}: {user_prompt[:80]}"
 
