@@ -41,13 +41,9 @@ st.set_page_config(
 # ---------------------------------------------------------------------------
 # OPTION A: INSTITUTIONAL QUANTITATIVE (BLOOMBERG / KOYFIN PRECISION) CSS
 # ---------------------------------------------------------------------------
-st.markdown(
-    """
-<meta name="color-scheme" content="light dark">
-<style>
+CUSTOM_CSS = """
 :root {
     color-scheme: light dark;
-    /* Light Mode (Warm Institutional Paper & Crisp White) */
     --bg-canvas-light: #F4F5F7;
     --bg-surface-light: #FFFFFF;
     --bg-elevated-light: #ECEEF2;
@@ -55,8 +51,6 @@ st.markdown(
     --text-secondary-light: #334155;
     --text-muted-light: #64748B;
     --border-grid-light: #CBD5E1;
-
-    /* Dark Mode (Deep Carbon Obsidian & Terminal Slate) */
     --bg-canvas-dark: #0A0D12;
     --bg-surface-dark: #11161F;
     --bg-elevated-dark: #161D28;
@@ -64,8 +58,6 @@ st.markdown(
     --text-secondary-dark: #CBD5E1;
     --text-muted-dark: #94A3B8;
     --border-grid-dark: #263040;
-
-    /* Default Fallback (Light) */
     --term-bg-canvas: var(--bg-canvas-light);
     --term-bg-surface: var(--bg-surface-light);
     --term-bg-elevated: var(--bg-elevated-light);
@@ -73,8 +65,6 @@ st.markdown(
     --term-text-secondary: var(--text-secondary-light);
     --term-text-muted: var(--text-muted-light);
     --term-border: var(--border-grid-light);
-
-    /* Semantic Institutional Signal Palette */
     --quant-amber: #F59E0B;
     --quant-emerald: #10B981;
     --quant-cyan: #06B6D4;
@@ -84,12 +74,10 @@ st.markdown(
     --quant-rose: #F43F5E;
     --quant-radius: 4px;
     --quant-mono: ui-monospace, "JetBrains Mono", "IBM Plex Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
     --brand-accent-light: #2563EB;
     --brand-accent-dark: #F59E0B;
     --accent-color: var(--brand-accent-light);
 }
-
 @media (prefers-color-scheme: dark) {
     :root {
         --term-bg-canvas: var(--bg-canvas-dark);
@@ -102,7 +90,6 @@ st.markdown(
         --accent-color: var(--brand-accent-dark);
     }
 }
-
 @supports (color: light-dark(white, black)) {
     :root {
         --term-bg-canvas: light-dark(var(--bg-canvas-light), var(--bg-canvas-dark));
@@ -115,20 +102,15 @@ st.markdown(
         --accent-color: light-dark(var(--brand-accent-light), var(--brand-accent-dark));
     }
 }
-
 html {
     accent-color: var(--accent-color);
     font-variant-numeric: tabular-nums;
 }
-
-/* High-Contrast / Forced Colors Mode Accessibility Fallback */
 @media (forced-colors: active) {
     .pipeline-shell, .node-box, .gauge-card, .grounding-pill, .timeline-card, .dossier-shell {
         border: 2px solid CanvasText !important;
     }
 }
-
-/* Sidebar Institutional Terminal Brand Header */
 .sidebar-brand-wrap {
     display: flex;
     align-items: center;
@@ -157,8 +139,6 @@ html {
     font-weight: 700;
     margin-top: 2px;
 }
-
-/* Top Institutional Header Bar */
 .terminal-top-bar {
     display: flex;
     flex-wrap: wrap;
@@ -233,8 +213,6 @@ html {
     color: #3B82F6;
     border-color: rgba(59, 130, 246, 0.45);
 }
-
-/* Authoritative Enterprise Primary CTA Button */
 div.stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #4F46E5 100%) !important;
     color: #FFFFFF !important;
@@ -255,8 +233,6 @@ div.stButton > button[kind="primary"]:hover {
     border-color: #60A5FA !important;
     transform: translateY(-1px) !important;
 }
-
-/* Animations for Active Node & Schematic Reflection Loop */
 @keyframes quantActivePulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.55; }
@@ -264,8 +240,6 @@ div.stButton > button[kind="primary"]:hover {
 @keyframes dashFlow {
     to { stroke-dashoffset: -20; }
 }
-
-/* Interactive State Graph Shell */
 .pipeline-shell {
     background: var(--term-bg-surface);
     border: 1px solid var(--term-border);
@@ -318,7 +292,6 @@ div.stButton > button[kind="primary"]:hover {
     color: #10B981;
     border: 1px solid rgba(16, 185, 129, 0.45);
 }
-
 .nodes-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(130px, 1fr));
@@ -335,7 +308,6 @@ div.stButton > button[kind="primary"]:hover {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-
 .node-box {
     position: relative;
     border-radius: var(--quant-radius);
@@ -392,8 +364,6 @@ div.stButton > button[kind="primary"]:hover {
     line-height: 1.25;
     font-variant-numeric: tabular-nums;
 }
-
-/* Schematic Multi-Hop Loop Bar */
 .loop-trace-bar {
     margin-top: 8px;
     padding: 6px 12px;
@@ -406,8 +376,6 @@ div.stButton > button[kind="primary"]:hover {
     gap: 12px;
     flex-wrap: wrap;
 }
-
-/* Consolidated 5-Column Institutional Telemetry Ribbon */
 .telemetry-strip {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -461,8 +429,6 @@ div.stButton > button[kind="primary"]:hover {
     height: 100%;
     transition: width 0.3s ease;
 }
-
-/* Numerical Grounding Pills (Institutional Quant Style) */
 .pills-wrap {
     display: flex;
     flex-wrap: wrap;
@@ -517,8 +483,6 @@ div.stButton > button[kind="primary"]:hover {
     font-weight: 800;
     text-decoration: none;
 }
-
-/* Executive Equity Research Dossier Box */
 .dossier-shell {
     background: var(--term-bg-surface);
     border: 1px solid var(--term-border);
@@ -541,11 +505,6 @@ div.stButton > button[kind="primary"]:hover {
     font-size: 0.72rem;
     color: var(--text-color, var(--term-text-secondary));
 }
-.dossier-body {
-    padding: 16px 20px;
-    line-height: 1.65;
-    font-size: 0.95rem;
-}
 .citation-chip {
     display: inline-block;
     background: var(--term-bg-elevated);
@@ -559,8 +518,6 @@ div.stButton > button[kind="primary"]:hover {
     vertical-align: baseline;
     margin: 0 1px;
 }
-
-/* Interactive Multi-Hop Audit Timeline */
 .timeline-container {
     position: relative;
     padding-left: 22px;
@@ -605,10 +562,11 @@ div.stButton > button[kind="primary"]:hover {
     font-size: 0.76rem;
     font-weight: 700;
 }
-</style>
-""",
-    unsafe_allow_html=True,
-)
+"""
+
+# Strip any empty lines so CommonMark never breaks out of the <style> HTML block
+clean_css = "\n".join(line.strip() for line in CUSTOM_CSS.splitlines() if line.strip())
+st.markdown(f"<style>{clean_css}</style>", unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------------
 # STATIC DATA & BENCHMARK PRESETS
@@ -1741,11 +1699,10 @@ if "last_system_c_result" in st.session_state:
                 f"<strong>FILING:</strong> SEC FORM 10-K ({html.escape(yr_display)}) &nbsp;&bull;&nbsp; "
                 f"<strong>CITATIONS:</strong> {len(citations)} MAPPED</span>"
                 f'<span style="color:{audit_col}; font-weight:800;">GUARDRAIL AUDIT: {audit_status} ({len(verified_nums)} VERIFIED)</span>'
-                f"</div>"
-                f'<div class="dossier-body">\n\n{formatted_answer}\n\n</div>'
-                f"</div>",
+                f"</div></div>",
                 unsafe_allow_html=True,
             )
+            st.markdown(formatted_answer, unsafe_allow_html=True)
         else:
             st.info("No synthesis generated.")
 
