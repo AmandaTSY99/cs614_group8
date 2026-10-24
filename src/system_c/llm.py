@@ -148,13 +148,27 @@ def _call_groq_or_openai(
         resp = client.chat.completions.create(**kwargs)
     except Exception as err:
         err_msg = str(err).lower()
-        if provider == "groq" and ("does not exist" in err_msg or "model_not_found" in err_msg or "404" in err_msg):
-            fallback_model = "llama-3.1-8b-instant"
-            if kwargs["model"] != fallback_model:
-                kwargs["model"] = fallback_model
-                resp = client.chat.completions.create(**kwargs)
-            else:
-                raise err
+        if provider == "groq" and any(k in err_msg for k in ["does not exist", "model_not_found", "not have access", "404"]):
+            fallback_models = [
+                "openai/gpt-oss-120b",
+                "llama-3.3-70b-versatile",
+                "llama-3.1-8b-instant",
+                "gemma2-9b-it",
+            ]
+            resp = None
+            for fb in fallback_models:
+                if fb != kwargs["model"]:
+                    try:
+                        kwargs["model"] = fb
+                        resp = client.chat.completions.create(**kwargs)
+                        break
+                    except Exception:
+                        continue
+            if resp is None:
+                raise ValueError(
+                    f"Groq API Error: None of the standard models were accessible with your current GROQ_API_KEY ({err}). "
+                    "Please verify your key permissions at console.groq.com or switch the LLM Provider to '🧪 Mock Mode' in the sidebar to test immediately."
+                ) from err
         else:
             raise err
 

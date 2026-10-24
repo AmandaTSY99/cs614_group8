@@ -220,8 +220,10 @@ with st.sidebar:
     # Dynamic Model Selection based on Provider
     if selected_provider == "groq":
         model_options = {
-            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Universal Free (Recommended)",
+            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Fast",
             "llama-3.3-70b-versatile": "Llama 3.3 (70B) — Flagship",
+            "openai/gpt-oss-120b": "OpenAI GPT-OSS (120B) — Team Notebook Default",
+            "gemma2-9b-it": "Google Gemma 2 (9B)",
         }
     elif selected_provider == "openai":
         model_options = {
@@ -234,7 +236,7 @@ with st.sidebar:
             "gemini-2.0-flash": "Gemini 2.0 Flash (Next-Gen)",
         }
     else:
-        model_options = {"mock": "Mock Engine"}
+        model_options = {"mock": "Mock Engine (Deterministic, Zero-API-Key)"}
 
     selected_model = st.selectbox(
         "Model Selection",
@@ -249,6 +251,8 @@ with st.sidebar:
         type="password",
         help=f"If left blank, automatically uses your default pre-configured Streamlit secrets for {selected_provider.upper()}.",
     )
+    if selected_provider == "mock":
+        st.caption("💡 Mock mode tests the full LangGraph pipeline, Supabase DB, and guardrails without needing an API key.")
 
     # Configure Environment Variables
     os.environ["LLM_PROVIDER"] = selected_provider
