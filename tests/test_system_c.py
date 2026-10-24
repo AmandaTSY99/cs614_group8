@@ -443,3 +443,27 @@ def test_repair_loop_bounded_at_max_repairs():
     # Second pass (repair_count >= max_repairs): should route to __end__
     state["repair_count"] = 1
     assert route_after_guardrail(state) == "__end__"
+
+
+def test_fastapi_gateway_endpoints():
+    """Verify FastAPI enterprise endpoints (health check, query execution, Supabase financials)."""
+    from starlette.testclient import TestClient
+    from src.system_c.api import app
+
+    client = TestClient(app)
+
+    # 1. Health check
+    res_health = client.get("/")
+    assert res_health.status_code == 200
+    assert res_health.json()["status"] == "online"
+
+    # 2. Query execution
+    res_query = client.post(
+        "/api/v1/query",
+        json={"query": "What is NVDA business model in 2026?", "max_hops": 1, "mode": "v1_amr"},
+    )
+    assert res_query.status_code == 200
+    data = res_query.json()
+    assert "NVDA" in data["final_answer"]
+    assert data["guardrail_passed"] is True
+    assert "telemetry" in data

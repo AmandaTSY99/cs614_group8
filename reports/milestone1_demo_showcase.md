@@ -10,10 +10,10 @@
 
 | Run ID | Architecture Mode | Query Intent | Hops Executed | Early Stopped? | Chunks Retrieved | Guardrail Status | Latency (ms) | Total Tokens | Cost/1k Queries |
 | :--- | :--- | :--- | :---: | :---: | :---: | :---: | ---: | ---: | ---: |
-| **Q1** | `v1_amr` | Single-Hop Factual (Early-Stopping Verification) | 1/3 | Yes (Hop 1) | 4 | Passed (0.0 err) | 20.4 | 2,464 | $0.2794 |
-| **Q2** | `v1_amr` | Multi-Hop Cross-Section (MD&A + Financial Statement Footnotes) | 2/3 | Yes | 8 | Passed (0.0 err) | 13.9 | 4,869 | $0.5349 |
-| **Q3_v1** | `v1_amr` | Quantitative Financial Comparison (v1_amr - Text RAG Only) | 2/3 | Yes | 8 | Passed (0.0 err) | 43.8 | 4,778 | $0.5262 |
-| **Q3_v2** | `v2_aamr` | Quantitative Financial Comparison (v2_aamr - Agentic XBRL Tabular Tool) | 1/3 | Yes (Hop 1) | 6 | Passed (0.0 err) | 24.1 | 2,149 | $0.2459 |
+| **Q1** | `v1_amr` | Single-Hop Factual (Early-Stopping Verification) | 1/3 | Yes (Hop 1) | 4 | Passed (0.0 err) | 20.3 | 2,464 | $0.2794 |
+| **Q2** | `v1_amr` | Multi-Hop Cross-Section (MD&A + Financial Statement Footnotes) | 2/3 | Yes | 8 | Passed (0.0 err) | 13.4 | 4,869 | $0.5349 |
+| **Q3_v1** | `v1_amr` | Quantitative Financial Comparison (v1_amr - Text RAG Only) | 2/3 | Yes | 8 | Passed (0.0 err) | 44.5 | 4,778 | $0.5262 |
+| **Q3_v2** | `v2_aamr` | Quantitative Financial Comparison (v2_aamr - Agentic XBRL Tabular Tool) | 1/3 | Yes (Hop 1) | 6 | Passed (0.0 err) | 225.4 | 2,149 | $0.2459 |
 
 ---
 
@@ -38,7 +38,7 @@
 - **Citations Formatted:** 2 inline citations mapped
 
 #### RQ3 Inference Economics Breakdown
-- **Total Latency:** 20.4 ms
+- **Total Latency:** 20.3 ms
 - **Prompt Tokens:** 2,299
 - **Completion Tokens:** 165
 - **Estimated USD Cost:** $0.000279
@@ -68,7 +68,7 @@
 - **Citations Formatted:** 2 inline citations mapped
 
 #### RQ3 Inference Economics Breakdown
-- **Total Latency:** 13.9 ms
+- **Total Latency:** 13.4 ms
 - **Prompt Tokens:** 4,629
 - **Completion Tokens:** 240
 - **Estimated USD Cost:** $0.000535
@@ -98,7 +98,7 @@
 - **Citations Formatted:** 2 inline citations mapped
 
 #### RQ3 Inference Economics Breakdown
-- **Total Latency:** 43.8 ms
+- **Total Latency:** 44.5 ms
 - **Prompt Tokens:** 4,536
 - **Completion Tokens:** 242
 - **Estimated USD Cost:** $0.000526
@@ -124,7 +124,7 @@
 - **Citations Formatted:** 2 inline citations mapped
 
 #### RQ3 Inference Economics Breakdown
-- **Total Latency:** 24.1 ms
+- **Total Latency:** 225.4 ms
 - **Prompt Tokens:** 1,994
 - **Completion Tokens:** 155
 - **Estimated USD Cost:** $0.000246

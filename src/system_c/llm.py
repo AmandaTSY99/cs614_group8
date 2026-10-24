@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 
 from src.system_c.telemetry import record_llm_call
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 def clean_and_parse_json(raw_text: str) -> Dict[str, Any]:

@@ -6,6 +6,7 @@ autonomous LangGraph tool node so System C v2 only fetches structured XBRL figur
 when the Query Decomposer / Planner detects quantitative or ratio requirements.
 """
 
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -35,8 +36,61 @@ def _get_financials_df(data_dir: Path = DATA_DIR) -> pd.DataFrame:
     return df
 
 
+def _lookup_financials_supabase(ticker: str, fiscal_year: Optional[int] = None) -> Optional[str]:
+    """Query live Supabase PostgreSQL `sec_financials` table for structured XBRL figures."""
+    db_url = os.getenv("SUPABASE_DB_URL")
+    if not db_url:
+        return None
+    try:
+        import psycopg2
+
+        query = """
+            SELECT fiscal_year, fiscal_year_end, revenue, net_income,
+                   operating_income, total_assets, total_liabilities,
+                   stockholders_equity, cash_and_equivalents,
+                   operating_cash_flow, eps_diluted
+            FROM sec_financials
+            WHERE ticker = %s
+        """
+        params = [ticker]
+        if fiscal_year:
+            query += " AND fiscal_year = %s"
+            params.append(int(fiscal_year))
+        query += " ORDER BY fiscal_year ASC;"
+
+        with psycopg2.connect(db_url, sslmode="require", connect_timeout=3) as conn:
+            with conn.cursor() as cur:
+                cur.execute(query, params)
+                rows = cur.fetchall()
+
+        if not rows:
+            return None
+
+        header = "fiscal_year,fiscal_year_end,Revenue,NetIncome,OperatingIncome,TotalAssets,TotalLiabilities,StockholdersEquity,CashAndEquivalents,OperatingCashFlow,EPSDiluted\n"
+        lines = [header]
+        for r in rows:
+            line_vals = [str(r[0]), str(r[1] or "")] + [
+                "" if v is None else f"{float(v):.15g}" for v in r[2:]
+            ]
+            lines.append(",".join(line_vals) + "\n")
+
+        table = "".join(lines)
+        label, scope = (
+            (f"F-{ticker}-{fiscal_year}", f"FY{fiscal_year}")
+            if fiscal_year
+            else (f"F-{ticker}", "all years")
+        )
+        return f"[{label}] ({ticker} {scope} reported financials; amounts in USD, EPSDiluted in USD per share)\n{table}"
+    except Exception:
+        return None
+
+
 def financials_block(ticker: str, fiscal_year: Optional[int] = None, data_dir: Path = DATA_DIR) -> str:
-    """Format one company's `financials.csv` XBRL figures with `[F-<ticker>-<year>]` citation label."""
+    """Format one company's XBRL figures with `[F-<ticker>-<year>]` citation label (Supabase first, CSV fallback)."""
+    supabase_block = _lookup_financials_supabase(ticker, fiscal_year)
+    if supabase_block:
+        return supabase_block
+
     df = _get_financials_df(data_dir)
     if df.empty:
         return f"[F-{ticker}] No financials.csv found."

@@ -72,7 +72,7 @@ def route_after_guardrail(
     return "__end__"
 
 
-def build_system_c_graph():
+def build_system_c_graph(checkpointer: Optional[Any] = None):
     """Compile and return the executable LangGraph state machine for System C."""
     workflow = StateGraph(AdaptiveRAGState)
 
@@ -121,6 +121,8 @@ def build_system_c_graph():
     )
     workflow.add_edge("repair", "guardrail")
 
+    if checkpointer is not None:
+        return workflow.compile(checkpointer=checkpointer)
     return workflow.compile()
 
 
@@ -134,9 +136,12 @@ def run_system_c(
     force_max_hops: bool = False,
     sufficiency_threshold: float = 0.85,
     max_repairs: int = 1,
+    checkpointer: Optional[Any] = None,
+    thread_id: Optional[str] = None,
 ) -> AdaptiveRAGState:
     """
     Execute a query end-to-end through System C and return the final `AdaptiveRAGState`.
+    Supports optional persistent checkpointer (e.g. Supabase PostgresSaver) and thread_id.
     """
     initial_state = create_initial_state(
         query=query,
@@ -151,8 +156,13 @@ def run_system_c(
     if mock_sufficient_at_hop is not None:
         initial_state["telemetry"]["mock_sufficient_at_hop"] = mock_sufficient_at_hop
 
-    app = build_system_c_graph()
-    final_state: AdaptiveRAGState = app.invoke(initial_state)
+    app = build_system_c_graph(checkpointer=checkpointer)
+    config = {"configurable": {"thread_id": str(thread_id)}} if thread_id else None
+    if config:
+        final_state: AdaptiveRAGState = app.invoke(initial_state, config=config)
+    else:
+        final_state: AdaptiveRAGState = app.invoke(initial_state)
+
     final_state["telemetry"]["rq3_summary"] = summarize_rq3_metrics(final_state)
     return final_state
 
