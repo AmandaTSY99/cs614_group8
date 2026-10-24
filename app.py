@@ -206,6 +206,7 @@ with st.sidebar:
     # Provider Selection
     provider_options = {
         "groq": "🚀 Groq Cloud (Free & 500 tok/sec)",
+        "cohere": "🔮 Cohere (Command R / Command R+)",
         "openai": "🤖 OpenAI (GPT-4o-mini / GPT-4o)",
         "gemini": "✨ Google Gemini (1.5 Flash)",
         "mock": "🧪 Mock Mode (Zero-API-Key Test)",
@@ -224,6 +225,11 @@ with st.sidebar:
             "llama-3.3-70b-versatile": "Llama 3.3 (70B) — Flagship",
             "openai/gpt-oss-120b": "OpenAI GPT-OSS (120B) — Team Notebook Default",
             "gemma2-9b-it": "Google Gemma 2 (9B)",
+        }
+    elif selected_provider == "cohere":
+        model_options = {
+            "command-r": "Command R (Fast & Efficient)",
+            "command-r-plus": "Command R+ (Flagship Financial Reasoning)",
         }
     elif selected_provider == "openai":
         model_options = {
@@ -260,6 +266,8 @@ with st.sidebar:
     if user_api_key.strip():
         if selected_provider == "groq":
             os.environ["GROQ_API_KEY"] = user_api_key.strip()
+        elif selected_provider == "cohere":
+            os.environ["COHERE_API_KEY"] = user_api_key.strip()
         elif selected_provider == "openai":
             os.environ["OPENAI_API_KEY"] = user_api_key.strip()
         elif selected_provider == "gemini":

@@ -61,6 +61,8 @@ def get_llm_config() -> Tuple[str, str]:
             model = "gpt-4o-mini"
         elif provider == "gemini":
             model = "gemini-1.5-flash"
+        elif provider == "cohere":
+            model = "command-r"
         else:
             model = "mock"
     return provider, model
@@ -127,6 +129,15 @@ def _call_groq_or_openai(
         client = OpenAI(
             api_key=api_key,
             base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        )
+    elif provider == "cohere":
+        from openai import OpenAI
+        api_key = os.getenv("COHERE_API_KEY")
+        if not api_key:
+            raise ValueError("COHERE_API_KEY is not set. Please provide your Cohere API key in the UI or in Streamlit Secrets.")
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.cohere.ai/compatibility/v1",
         )
     else:
         from openai import OpenAI
@@ -405,10 +416,10 @@ def call_llm(
         content, p_tok, c_tok = _call_mock(node_name, messages, state)
     elif provider == "ollama":
         content, p_tok, c_tok = _call_ollama(model, messages, temperature=temperature, json_mode=json_mode)
-    elif provider in ("groq", "openai", "gemini"):
+    elif provider in ("groq", "openai", "gemini", "cohere"):
         content, p_tok, c_tok = _call_groq_or_openai(provider, model, messages, temperature=temperature)
     else:
-        raise ValueError(f"Unsupported LLM_PROVIDER='{provider}'. Use 'groq', 'openai', 'gemini', 'ollama', or 'mock'.")
+        raise ValueError(f"Unsupported LLM_PROVIDER='{provider}'. Use 'groq', 'openai', 'gemini', 'cohere', 'ollama', or 'mock'.")
 
     latency_ms = (time.perf_counter() - start) * 1000.0
     updated_telemetry = record_llm_call(

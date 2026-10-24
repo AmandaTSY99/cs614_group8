@@ -19,6 +19,8 @@ MODEL_PRICING_PER_1M: Dict[str, Dict[str, float]] = {
     "gpt-4o": {"prompt": 2.50, "completion": 10.00},
     "gemini-1.5-flash": {"prompt": 0.075, "completion": 0.30},
     "gemini-2.0-flash": {"prompt": 0.10, "completion": 0.40},
+    "command-r": {"prompt": 0.15, "completion": 0.60},
+    "command-r-plus": {"prompt": 2.50, "completion": 10.00},
     # Local Ollama models (imputed cloud-equivalent 7B/8B cost for RQ3 Pareto comparison)
     "qwen2.5:7b": {"prompt": 0.10, "completion": 0.30},
     "llama3.1:8b": {"prompt": 0.10, "completion": 0.30},
