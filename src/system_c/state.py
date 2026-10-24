@@ -1,0 +1,118 @@
+"""
+State Machine Schema for System C (Adaptive Multi-Hop RAG - AMR v1 & Agentic AAMR v2).
+
+Owned by: Anish (System Architect & Orchestration Lead)
+Shared Contract with: Aryan (Citations, Guardrails & Sub-Query Generator Lead)
+"""
+
+from typing import Any, Dict, List, Optional
+from typing_extensions import TypedDict
+
+
+class EvidenceChunk(TypedDict):
+    """Normalized chunk schema compatible with Amanda/Xavier's 10-K corpus & Aryan's Citation Mapper."""
+    chunk_id: str                # e.g. "NVDA_FY2026_2026-01-25:42" or "F-NVDA-2026"
+    content: str                 # Markdown chunk text (including repeated table headers if table)
+    metadata: Dict[str, Any]     # doc_id, ticker, filer, fiscal_year, section, chunk, source_type
+    relevance_score: float       # Reranker or hybrid similarity score
+    hop_retrieved: int           # Which hop (1, 2, or 3) retrieved this chunk (for RQ1 Hop Attribution)
+
+
+class CitationRecord(TypedDict):
+    """Structured inline citation mapping for RQ2 Faithfulness & Citation F1."""
+    tag: str                     # Inline citation tag, e.g. "[NVDA FY2026, Item 7, Chunk 42]" or "[F-NVDA-2026]"
+    chunk_id: str                # Exact EvidenceChunk.chunk_id
+    ticker: str
+    fiscal_year: Any
+    section: str
+    supported_claim: str         # The sentence or numerical figure supported by this citation
+
+
+class AdaptiveRAGState(TypedDict):
+    """
+    Central LangGraph State Schema for System C.
+    All nodes accept `state: AdaptiveRAGState` and return a partial dictionary updating fields.
+    """
+    # --- 1. Input & Extracted Metadata ---
+    original_query: str
+    mode: str                                  # "v1_amr" (Adaptive Multi-Hop) or "v2_aamr" (Agentic with Tabular Tool + Auditor)
+    target_ticker: Optional[str]               # Primary ticker (e.g. "NVDA")
+    target_pairs: List[ List[Any] ]            # List of [ticker, fiscal_year] pairs (compatible with build_vdb_base_RAG.ipynb)
+    fiscal_years: List[int]
+
+    # --- 2. Planning & Decomposition (Anish: decomposer.py / Aryan: generator.py) ---
+    query_complexity: str                      # "single_hop", "multi_hop", or "tabular_quant" (used in v2 AAMR pre-router)
+    sub_queries: List[str]                     # Planned sub-queries from decomposer + follow-ups
+    current_sub_query: str                     # Active sub-query for the current retrieval hop
+    needs_tabular_tool: bool                   # v2 AAMR flag: whether deterministic financials.csv tool should run
+
+    # --- 3. Retrieval Evidence Accumulator (Anish: retriever.py & tools/tabular_tool.py) ---
+    accumulated_evidence: List[EvidenceChunk]
+    tabular_evidence: List[str]                # Formatted [F-<ticker>-<year>] XBRL blocks from financials.csv (v2 AAMR)
+    intermediate_answers: List[Dict[str, Any]] # Hop-by-hop reasoning trace
+
+    # --- 4. Loop Control & Sufficiency Reflection (Anish: critic.py) ---
+    current_hop: int                           # 1-indexed hop counter
+    max_hops: int                              # Hard ceiling (default = 3)
+    is_sufficient: bool                        # True if evidence covers all premises of original_query
+    missing_premises: List[str]                # Explicit gaps identified by Critic (passed to Aryan's generator.py)
+    critic_reasoning: str                      # Detailed explanation from Evidence Sufficiency Critic
+
+    # --- 5. Synthesis, Citations & Guardrails (Aryan: synthesizer.py & guardrails/verifier.py) ---
+    draft_answer: Optional[str]                # Initial synthesized answer before guardrail audit
+    final_answer: Optional[str]                # Verified, citation-grounded final response
+    citations: List[CitationRecord]            # Structured list of citations extracted/mapped
+    guardrail_passed: bool                     # True if all numerical claims exist in accumulated_evidence
+    guardrail_report: Dict[str, Any]           # RQ2 metrics: verified_numbers, ungrounded_numbers, faithfulness_score
+
+    # --- 6. Telemetry & Inference Economics (Anish: telemetry.py - RQ3 Lead) ---
+    telemetry: Dict[str, Any]                  # Node latencies, prompt/completion tokens, USD cost, hop attribution
+
+
+def create_initial_state(
+    query: str,
+    max_hops: int = 3,
+    mode: str = "v1_amr",
+    target_ticker: Optional[str] = None,
+    fiscal_years: Optional[List[int]] = None,
+) -> AdaptiveRAGState:
+    """Factory helper to initialize a clean AdaptiveRAGState for a new query execution."""
+    f_years = fiscal_years or []
+    pairs = [[target_ticker, y] for y in f_years] if (target_ticker and f_years) else (
+        [[target_ticker, None]] if target_ticker else []
+    )
+    return AdaptiveRAGState(
+        original_query=query,
+        mode=mode,
+        target_ticker=target_ticker,
+        target_pairs=pairs,
+        fiscal_years=f_years,
+        query_complexity="multi_hop",
+        sub_queries=[],
+        current_sub_query=query,
+        needs_tabular_tool=False,
+        accumulated_evidence=[],
+        tabular_evidence=[],
+        intermediate_answers=[],
+        current_hop=0,
+        max_hops=max_hops,
+        is_sufficient=False,
+        missing_premises=[],
+        critic_reasoning="",
+        draft_answer=None,
+        final_answer=None,
+        citations=[],
+        guardrail_passed=True,
+        guardrail_report={},
+        telemetry={
+            "mode": mode,
+            "calls": [],
+            "node_latencies_ms": {},
+            "total_prompt_tokens": 0,
+            "total_completion_tokens": 0,
+            "total_tokens": 0,
+            "estimated_cost_usd": 0.0,
+            "hop_count": 0,
+            "early_stopped": False,
+        },
+    )

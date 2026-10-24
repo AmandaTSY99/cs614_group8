@@ -1,58 +1,79 @@
-# Aryan Handoff: System C Integration & Deliverables
+# Aryan Handoff: System C Integration, Contracts & Git Workflow
 
-**To:** Aryan  
-**From:** Anish  
-**Branch:** `feature/system-c-adaptive-rag`  
-**Target Milestone:** Milestone 1 (Sun, 25 Oct) & Checkpoint 2 (Thu, 29 Oct)
-
----
-
-## 1. What Has Been Built & Orchestrated (Anish's Part)
-
-I have built and tested the core LangGraph state machine skeleton for **System C (Adaptive Multi-Hop RAG)** located under `src/system_c/`:
-1. **`src/system_c/state.py`**: The central `AdaptiveRAGState` TypedDict holding query context, accumulated evidence chunks, intermediate answers, hop counter, sufficiency status, and telemetry.
-2. **`src/system_c/nodes/decomposer.py`**: The Query Decomposer node that splits broad financial queries into atomic sub-goals (e.g. Hop 1: Definition/Context, Hop 2: Quantitative Metrics).
-3. **`src/system_c/nodes/critic.py`**: The Evidence Sufficiency Critic node (Self-RAG style) that inspects accumulated evidence and decides whether the LLM has enough information to synthesize an answer or must loop back for more evidence.
-4. **`src/system_c/graph.py`**: The LangGraph state graph wiring conditional routing edges with a hard limit of `max_hops = 3` to prevent infinite loops.
-5. **`src/system_c/telemetry.py`**: Telemetry hooks capturing latency, hop count, and token usage for our **RQ3 (Inference Economics)** ablation.
+**To:** Aryan (Citations, Guardrails & RQ2 Lead)  
+**From:** Anish (System Architect, Orchestration & RQ3 Lead)  
+**Shared Integration Branch:** `feature/system-c-adaptive-rag` (aliased as `feat/system-c-core`)  
+**Your Working Branch:** `feat/system-c-aryan-citations`  
+**Target Milestones:** Milestone 1 Demo (Sun, 25 Oct) & Checkpoint 2 Empirical Runs (Thu, 29 Oct)
 
 ---
 
-## 2. Your Module Ownership & Next Tasks (Aryan's Part)
+## 1. What Is Already Built & Working Out-of-the-Box
 
-Your primary responsibilities are **Conditioned Sub-Query Generation**, **Synthesizer & Citation Grounding**, and **Hallucination Defense (RQ2 Lead)**:
+I have built and verified the complete LangGraph state machine (`v1_amr` and `v2_aamr`) under [`src/system_c/`](file:///Users/anishdobz/projects/cs614_group8/src/system_c) and synced our branch with Amanda's latest `origin/feature/rag-baseline` (`build_vdb_base_RAG.ipynb` RAG 1–5):
 
-### Deliverable A: Conditioned Sub-Query Generator (`src/system_c/nodes/generator.py`)
-* **Purpose:** When the Critic node flags `is_sufficient = False`, this node generates a new, targeted sub-query conditioned on what was already retrieved in earlier hops (e.g., retrieving details on a specific credit agreement or footnote discovered in Hop 1).
-* **Input:** `AdaptiveRAGState` (specifically `accumulated_evidence` and `critic_reasoning`).
-* **Output:** Updated `current_sub_query`.
-
-### Deliverable B: Answer Synthesizer & Citation Mapping (`src/system_c/nodes/synthesizer.py`)
-* **Purpose:** Once evidence is deemed sufficient, synthesize a clear, financial-grade response.
-* **Requirement:** Every single factual claim or dollar figure must be cited with an inline markdown citation tag referencing the exact section and table row:
-  * Example: `Operating margin contracted by 140 bps [Item 7, Table 4, Row 'Operating Margin'] due to FX headwinds [Item 7A, p. 45].`
-* **Output:** Updates `final_answer` and populates `citations` list in the state.
-
-### Deliverable C: Active Hallucination & Numerical Guardrail (`src/system_c/guardrails/`)
-* **Purpose:** Validate that generated numbers strictly exist in the cited context (supporting **RQ2: Factual Faithfulness**).
-* **Implementation:** A post-synthesis verification check or reflection prompt that compares dollar amounts, percentages, and dates in `final_answer` against `accumulated_evidence`.
-
-### Deliverable D: Slide Deck Lead & RQ2 Benchmark Reporting
-* Lead the visual slides for System C's architecture flow and RQ2 results (Faithfulness & Citation F1) using the test harness provided by Kevin.
+1. **[`src/system_c/state.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/state.py)**: Defines `AdaptiveRAGState`, `EvidenceChunk`, and `CitationRecord`.
+2. **[`src/system_c/llm.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/llm.py)**: Unified LLM wrapper (`call_llm(state, node_name, messages)`).
+   * Supports **local Ollama (`qwen2.5:7b`) with zero API key**, **Groq (`openai/gpt-oss-120b`)**, **OpenAI (`gpt-4o-mini`)**, and **Mock mode (`LLM_PROVIDER=mock`)** for instant unit tests.
+   * **CRITICAL RULE:** Always use `call_llm(state, node_name, messages)` inside your nodes! It automatically records prompt/completion tokens, latency (`ms`), and USD cost into `state["telemetry"]` for our **RQ3 Inference Economics** benchmark.
+3. **[`src/system_c/corpus.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/corpus.py) & [`src/system_c/tools/tabular_tool.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/tools/tabular_tool.py)**:
+   * Uses the exact same structure-preserving chunker (`chunk_by_structure`), contextual headers (`doc_header`), and XBRL `financials.csv` citation tags (`[F-<ticker>-<year>]`) as Amanda's `build_vdb_base_RAG.ipynb`.
+4. **[`src/system_c/nodes/decomposer.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/decomposer.py), [`retriever.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/retriever.py), [`critic.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/critic.py), & [`graph.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/graph.py)**:
+   * Implements Anish's Query Decomposer, Hybrid Retriever + Cross-Encoder Reranker, Evidence Sufficiency Critic, and conditional loop (`max_hops = 3`).
 
 ---
 
-## 3. How to Run & Verify
+## 2. Your 3 Plug-and-Play Files (Aryan's Module Ownership)
 
-1. Activate your Python environment:
+I have put functional baseline implementations in your 3 files so the full pipeline passes all tests today. You own refining, stress-testing, and benchmarking these 3 modules + **RQ2 (Faithfulness & Citation Grounding)**:
+
+### Deliverable A: Conditioned Sub-Query Generator ([`src/system_c/nodes/generator.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/generator.py))
+* **When it runs:** Triggered when `critic_node` sets `is_sufficient = False` and `current_hop < max_hops`.
+* **Inputs from `state`:** `original_query`, `accumulated_evidence`, `missing_premises` (explicit list of missing facts flagged by the Critic), and `critic_reasoning`.
+* **Outputs to return:**
+  ```python
+  {
+      "current_hop": next_hop,
+      "current_sub_query": follow_up_query,
+      "sub_queries": updated_sub_queries,
+      "telemetry": updated_telemetry,
+  }
+  ```
+
+### Deliverable B: Answer Synthesizer & Inline Table Citation Mapper ([`src/system_c/nodes/synthesizer.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/synthesizer.py))
+* **When it runs:** Triggered when `is_sufficient == True` or `current_hop == max_hops`.
+* **Citation Format Requirement:**
+  * For 10-K text & markdown table chunks: `[<TICKER> FY<YEAR>, <SECTION>, <CHUNK_ID>]` (e.g., `[NVDA FY2026, Item 7, NVDA_FY2026_2026-01-25:220]`).
+  * For XBRL `financials.csv` blocks (in `v2_aamr`): `[F-<TICKER>-<YEAR>]` (e.g., `[F-NVDA-2026]`).
+* **Outputs to return:** `draft_answer`, `final_answer`, `citations` (`List[CitationRecord]`), and `telemetry`.
+
+### Deliverable C: Active Hallucination & Numerical Guardrail ([`src/system_c/guardrails/verifier.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/guardrails/verifier.py))
+* **Purpose:** Supports **RQ2 (Factual Faithfulness & Numerical Grounding Error Rate)**.
+* **What it does:** Extracts every dollar figure, decimal, and percentage in `draft_answer` (excluding citation tags and 4-digit years) and verifies exact grounding in `accumulated_evidence`.
+* **Outputs to return:** `final_answer`, `guardrail_passed` (`bool`), `guardrail_report` (`verified_numbers`, `ungrounded_numbers`, `numerical_grounding_error_rate`, `faithfulness_score`), and `telemetry`.
+
+---
+
+## 3. Git Branching Workflow (How We Work Without Stepping on Each Other)
+
+1. **Fetch and checkout your personal feature branch off our System C integration branch:**
    ```bash
-   pip install -r requirements.txt
+   git fetch origin
+   git checkout -b feat/system-c-aryan-citations origin/feature/system-c-adaptive-rag
    ```
-2. Run the test suite:
+2. **Run the fast unit test suite (`< 1 second` in mock mode):**
    ```bash
    pytest tests/test_system_c.py -v
    ```
-3. Run a sample query through System C:
+3. **Run a live end-to-end query using Local Ollama (`qwen2.5:7b`) or Groq (`LLM_PROVIDER=groq`):**
    ```bash
-   python -m src.system_c.graph --query "How did foreign exchange headwinds in 2024 impact gross margin, and what covenants restricted debt financing?"
+   # Using local Ollama (no API key needed):
+   LLM_PROVIDER=ollama LLM_MODEL=qwen2.5:7b python -m src.system_c.graph --mode v2_aamr --max-hops 2 \
+     --query "What was NVIDIA total revenue and operating income in FY2026, and what key Data Center trends drove that performance?"
+
+   # Or using Groq (with GROQ_API_KEY in .env):
+   LLM_PROVIDER=groq python -m src.system_c.graph --mode v1_amr --max-hops 3 \
+     --query "How did foreign exchange headwinds impact gross margin, and what debt covenants applied?"
    ```
+4. **Merge back to `feature/system-c-adaptive-rag` once `pytest` passes:**
+   * Always merge into `feature/system-c-adaptive-rag` first (never directly into `feature/rag-baseline` or `main` until we run our joint integration check).
