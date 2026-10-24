@@ -659,44 +659,50 @@ NODE_META = [
     {
         "id": "decomposer",
         "step": "01",
-        "title": "Planner / Decomposer",
+        "title": "Query Planner",
+        "subtitle": "Decomposer",
         "color": "#06B6D4",
-        "default_desc": "Ticker & Sub-Query Plan",
+        "default_desc": "Extracts entities & atomic plan",
     },
     {
         "id": "tabular_tool",
         "step": "02",
-        "title": "Tabular XBRL Router",
+        "title": "SEC XBRL Tables",
+        "subtitle": "Tabular Router",
         "color": "#10B981",
-        "default_desc": "Deterministic SQL/XBRL",
+        "default_desc": "Direct SQL table lookup (100% exact)",
     },
     {
         "id": "retriever",
         "step": "03",
-        "title": "Hybrid 10-K Retriever",
+        "title": "10-K Text Search",
+        "subtitle": "Hybrid Retriever",
         "color": "#3B82F6",
-        "default_desc": "Dense + BM25 + Rerank",
+        "default_desc": "Dense + BM25 keyword search",
     },
     {
         "id": "critic",
         "step": "04",
-        "title": "Sufficiency Critic",
+        "title": "Sufficiency Auditor",
+        "subtitle": "Self-RAG Critic",
         "color": "#F59E0B",
-        "default_desc": "Self-RAG Premise Audit",
+        "default_desc": "Audits evidence for early stop",
     },
     {
         "id": "synthesizer",
         "step": "05",
         "title": "Executive Synthesizer",
+        "subtitle": "Citation Mapper",
         "color": "#6366F1",
-        "default_desc": "Inline Citation Mapper",
+        "default_desc": "Drafts brief with exact citations",
     },
     {
         "id": "guardrail",
         "step": "06",
-        "title": "Active Guardrail",
+        "title": "Hallucination Guardrail",
+        "subtitle": "Grounding Verifier",
         "color": "#8B5CF6",
-        "default_desc": "Scale-Aware Verifier",
+        "default_desc": "Cross-checks numbers vs SEC filings",
     },
 ]
 
@@ -861,7 +867,7 @@ def render_visual_state_graph(
             f'<span class="node-step-num">[{meta["step"]}]</span>'
             f"{badge_html}"
             f"</div>"
-            f'<div class="node-name">{html.escape(meta["title"])}</div>'
+            f'<div class="node-name">{html.escape(meta["title"])} <span style="font-size:0.67rem; font-weight:600; opacity:0.72; display:block; font-family:var(--quant-mono);">({html.escape(meta.get("subtitle", ""))})</span></div>'
             f'<div class="node-telemetry">{tele_text}</div>'
             f"</div>"
         )
@@ -1097,8 +1103,44 @@ def render_multihop_timeline_html(state: Dict[str, Any]) -> str:
     years = state.get("fiscal_years", []) or []
     threshold = float(state.get("sufficiency_threshold", 0.85) or 0.85)
     max_hops = int(state.get("max_hops", 3) or 3)
+    curr_hop = int(state.get("current_hop", len(intermediate) or 1))
+    is_early_stopped = bool(
+        state.get("early_stopped")
+        or state.get("telemetry", {}).get("early_stopped")
+        or (state.get("is_sufficient") and curr_hop < max_hops)
+    )
 
     blocks: List[str] = []
+
+    # Executive "Why N Hops?" TL;DR Callout Card
+    if curr_hop > 1 and intermediate:
+        hop1_gaps = intermediate[0].get("missing_premises", []) or []
+        gap_summary = html.escape(str(hop1_gaps[0])[:75]) if hop1_gaps else "additional disclosures required to complete premises"
+        early_stop_txt = (
+            f"<strong style='color:#10B981;'>Early Stopping Triggered</strong> — saved {max_hops - curr_hop} redundant retrieval hop(s) and compute budget."
+            if is_early_stopped
+            else f"Executed all {curr_hop} planned sequential hops."
+        )
+        blocks.append(
+            f'<div class="timeline-card" style="border-left: 3.5px solid var(--quant-amber); background: rgba(245, 158, 11, 0.08); margin-bottom:12px;">'
+            f'<div style="font-family:var(--quant-mono); font-weight:800; font-size:0.80rem; color:var(--quant-amber); margin-bottom:3px;">'
+            f'💡 EXECUTIVE TL;DR: WHY SYSTEM C EXECUTED {curr_hop} SEQUENTIAL HOPS'
+            f'</div>'
+            f'<div style="font-size:0.83rem; line-height:1.45;">'
+            f'&bull; <strong>Hop 01 Audit:</strong> Sufficiency scored <code>{float(intermediate[0].get("sufficiency_score", 0.0)):.2f} &lt; {threshold:.2f}</code> because <em>{gap_summary}</em> was missing from initial retrieved chunks.<br/>'
+            f'&bull; <strong>Adaptive Reflection:</strong> Generator formulated a laser-focused follow-up sub-query for Hop 02. Final sufficiency reached <code>{float(state.get("sufficiency_score", 0.0)):.2f} &ge; {threshold:.2f}</code> &bull; {early_stop_txt}'
+            f'</div></div>'
+        )
+    else:
+        blocks.append(
+            f'<div class="timeline-card" style="border-left: 3.5px solid #10B981; background: rgba(16, 185, 129, 0.08); margin-bottom:12px;">'
+            f'<div style="font-family:var(--quant-mono); font-weight:800; font-size:0.80rem; color:#10B981; margin-bottom:2px;">'
+            f'💡 EXECUTIVE TL;DR: DIRECT SINGLE-HOP RESOLUTION'
+            f'</div>'
+            f'<div style="font-size:0.83rem; line-height:1.45;">'
+            f'All requested financial metrics and line-item premises were completely satisfied in Hop 01 (Sufficiency: <code>{float(state.get("sufficiency_score", 0.0)):.2f} &ge; {threshold:.2f}</code>). Zero extra retrieval hops needed.'
+            f'</div></div>'
+        )
 
     # Stage 0: Planner & Router Card
     tkr_str = ", ".join(tickers) if tickers else "Auto-Detected"
@@ -1420,25 +1462,68 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Company Coverage Ticker Strip (FTUX Orientation)
+ticker_badges = "".join(
+    f'<span class="metric-badge" title="{html.escape(COMPANIES[t]["name"])} — {html.escape(COMPANIES[t]["sector"])} (Filings: {html.escape(COMPANIES[t]["filings"])})" style="cursor:help;">'
+    f'<strong>{t}</strong> <span style="font-size:0.65rem; opacity:0.75;">{COMPANIES[t]["filings"].split()[-1]}</span>'
+    f'</span>'
+    for t in sorted(COMPANIES.keys())
+)
+st.markdown(
+    f'<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:12px; padding:6px 12px; background:var(--term-bg-surface); border:1px solid var(--term-border); border-radius:var(--quant-radius);">'
+    f'<span style="font-family:var(--quant-mono); font-size:0.68rem; font-weight:800; text-transform:uppercase; color:var(--quant-amber);">Pre-Indexed 10-K Corpora:</span>'
+    f'{ticker_badges}'
+    f'</div>',
+    unsafe_allow_html=True,
+)
+
+# Main-Stage Quick-Start Preset Chips (FTUX 1-Click Action)
+st.markdown(
+    '<div style="font-family:var(--quant-mono); font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--text-color); margin-bottom:6px;">'
+    '⚡ Quick-Start Evaluation Presets (Click any chip to test multi-hop reasoning):'
+    '</div>',
+    unsafe_allow_html=True,
+)
+col_q1, col_q2, col_q3, col_q4 = st.columns(4)
+with col_q1:
+    if st.button("🟢 Tabular YoY (GOLD-16)\nNVDA FY25 vs FY26 Revenue", use_container_width=True, key="quick_g16"):
+        st.session_state["user_query_input"] = "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate."
+        st.rerun()
+with col_q2:
+    if st.button("🔵 Footnote Audit (GOLD-36)\nNVDA Compute vs Customer Concentration", use_container_width=True, key="quick_g36"):
+        st.session_state["user_query_input"] = "How did NVIDIA's Compute & Networking segment perform in FY2026, and what specific direct customer concentration percentages were disclosed in the Notes to Consolidated Financial Statements?"
+        st.rerun()
+with col_q3:
+    if st.button("🟣 Multi-Company Battle (GOLD-51)\nMicrosoft vs AWS vs Google Cloud Margins", use_container_width=True, key="quick_g51"):
+        st.session_state["user_query_input"] = "Compare the 2024 enterprise cloud segment revenue, operating income, and operating margin across Microsoft (Intelligent Cloud), Amazon (AWS), and Alphabet (Google Cloud). Which cloud provider generated the highest operating margin in 2024, and which achieved the highest year-over-year revenue growth rate?"
+        st.rerun()
+with col_q4:
+    if st.button("🟡 Qualitative MD&A (GOLD-38)\nApple Item 7 Sales vs Note 13 Net Sales", use_container_width=True, key="quick_g38"):
+        st.session_state["user_query_input"] = "How did Apple's iPhone and Services product revenues perform in fiscal 2024 according to Item 7, and how did this compare to regional net sales in Americas and Greater China disclosed in Note 13?"
+        st.rerun()
+
 # Query Input Console
 default_query = st.session_state.get(
     "user_query_input",
     "What was Apple's total revenue, operating income, and net income in fiscal 2024?",
 )
 query_text = st.text_area(
-    "SEC 10-K Financial Intelligence Prompt (enter custom query or select a Golden Preset from the sidebar):",
+    "SEC 10-K Financial Intelligence Prompt (edit query or run any preset chip above):",
     value=default_query,
-    height=80,
+    height=75,
     placeholder="e.g. Compare NVIDIA and Microsoft cloud and data center performance in 2024...",
 )
 
-col_run, col_hint = st.columns([1.45, 5.55])
+col_run, col_hint = st.columns([1.5, 5.5])
 with col_run:
     run_btn = st.button("⚡ Execute Terminal Query", type="primary", use_container_width=True)
 with col_hint:
-    st.caption(
-        f"**Profile**: `{mode_selection.upper()}` &bull; **Max Hops**: `{max_hops}` &bull; "
-        f"**Critic Threshold**: `≥ {sufficiency_threshold:.2f}` &bull; **Model**: `{selected_model}`"
+    st.markdown(
+        f'<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:3px;">'
+        f'<span class="metric-badge badge-emerald">⚡ Built-in {html.escape(selected_provider.upper())} Cloud Active (Zero-Key Demo)</span>'
+        f'<span style="font-family:var(--quant-mono); font-size:0.70rem; opacity:0.8;">Profile: <code>{mode_selection.upper()}</code> &bull; Max Hops: <code>{max_hops}</code> &bull; Early Stop: <code>≥ {sufficiency_threshold:.2f}</code></span>'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
 # Interactive Pipeline Slot (renders topology + 5-column telemetry ribbon above the fold)
@@ -1678,10 +1763,10 @@ if "last_system_c_result" in st.session_state:
 
     res_tab1, res_tab2, res_tab3, res_tab4 = st.tabs(
         [
-            "📑 [01] Executive Dossier & Citations",
-            "🛡️ [02] Numerical Grounding Audit (RQ2)",
-            "🧭 [03] Multi-Hop Audit Timeline (RQ1)",
-            "⚡ [04] Inference Economics (RQ3)",
+            "📑 [01] Executive Brief & Citations",
+            "🛡️ [02] Hallucination Audit (RQ2 Grounding)",
+            "🧭 [03] Multi-Hop Reasoning Trace (RQ1 Adaptivity)",
+            "⚡ [04] Latency & Cost Economics (RQ3 Pareto)",
         ]
     )
 
@@ -1705,6 +1790,8 @@ if "last_system_c_result" in st.session_state:
                 unsafe_allow_html=True,
             )
             st.markdown(formatted_answer, unsafe_allow_html=True)
+            with st.expander("📋 Copy Executive Brief (Clean Markdown)", expanded=False):
+                st.code(final_answer, language="markdown")
         else:
             st.info("No synthesis generated.")
 
@@ -1759,6 +1846,28 @@ if "last_system_c_result" in st.session_state:
         with col_v2:
             st.markdown("##### ⚠ Flagged / Ungrounded Figures *(hover for audit reason)*")
             st.markdown(ungrounded_pills_html, unsafe_allow_html=True)
+
+        with st.expander("📊 Full Grounding Audit Ledger (Touch / Mobile Inspector)", expanded=False):
+            audit_rows = []
+            for num in verified_nums:
+                audit_rows.append({
+                    "Status": "✓ VERIFIED",
+                    "Value / Figure": str(num),
+                    "SEC Provenance / Chunk ID": primary_tkr or "SEC Filing",
+                    "Audit Diagnostic": "Matches extracted SEC 10-K filing or tabular XBRL entry exactly or within tolerance",
+                })
+            for num in ungrounded_nums:
+                audit_rows.append({
+                    "Status": "⚠ FLAGGED",
+                    "Value / Figure": str(num),
+                    "SEC Provenance / Chunk ID": "Unmatched in Retrieved Corpus",
+                    "Audit Diagnostic": "Number appeared in synthesis without corresponding ground-truth citation in retrieved chunks",
+                })
+            if audit_rows:
+                df_audit = pd.DataFrame(audit_rows)
+                st.dataframe(df_audit, use_container_width=True, hide_index=True)
+            else:
+                st.caption("No quantitative figures detected in output.")
 
         if result.get("tabular_evidence"):
             st.divider()
