@@ -464,8 +464,8 @@ def test_arithmetic_derivation_margin_and_growth_grounding():
     assert verify_arithmetic_derivation("999999", raw_evidence) is False
 
     # 4. End-to-end integration with verify_numerical_grounding
-    evidence = [{"chunk_id": "F-NVDA", "content": raw_evidence}]
-    answer = "NVIDIA achieved an operating margin of 62.0% in FY2026, up from 54.1% in FY2025 [F-NVDA]."
+    evidence = [{"chunk_id": "NVDA_FY2026_2026-01-25:1", "content": raw_evidence}]
+    answer = "NVIDIA achieved an operating margin of 62.0% in FY2026, up from 54.1% in FY2025 [NVDA FY2026, Item 8, NVDA_FY2026_2026-01-25:1]."
     report = verify_numerical_grounding(answer, evidence)
     assert report["numerical_grounding_error_rate"] == 0.0
     assert "62.0%" in report["verified_numbers"]
@@ -491,8 +491,8 @@ def test_active_self_healing_repair_loop(monkeypatch):
     # Let synthesizer introduce a hallucinated number "$999,999"
     def mock_hallucinating_synthesizer(st):
         return {
-            "draft_answer": "NVDA reported revenue of $999,999 million in FY2026 [NVDA_FY2026:1].",
-            "final_answer": "NVDA reported revenue of $999,999 million in FY2026 [NVDA_FY2026:1].",
+            "draft_answer": "NVDA reported revenue of $999,999 million in FY2026 [NVDA_FY2026_2026-01-25:217].",
+            "final_answer": "NVDA reported revenue of $999,999 million in FY2026 [NVDA_FY2026_2026-01-25:217].",
             "citations": [],
             "telemetry": st.get("telemetry", {}),
         }
