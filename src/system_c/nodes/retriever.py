@@ -22,12 +22,66 @@ _CORPUS_CACHE: Dict[str, List[Dict[str, Any]]] = {}
 _CROSS_ENCODER: Any = None
 
 
+def _fetch_chunks_from_supabase(
+    tickers: List[str], fiscal_years: Optional[List[int]] = None
+) -> List[Dict[str, Any]]:
+    """Fetch pre-computed 10-K structure chunks directly from Supabase Cloud `sec_chunks`."""
+    supabase_url = os.getenv("SUPABASE_DB_URL")
+    if not supabase_url:
+        return []
+    try:
+        import json
+        import psycopg2
+
+        with psycopg2.connect(supabase_url, sslmode="require", connect_timeout=3) as conn:
+            with conn.cursor() as cur:
+                if fiscal_years:
+                    cur.execute(
+                        """
+                        SELECT chunk_id, section, content, metadata
+                        FROM sec_chunks
+                        WHERE ticker = ANY(%s) AND fiscal_year = ANY(%s)
+                        ORDER BY chunk_id;
+                        """,
+                        (tickers, fiscal_years),
+                    )
+                else:
+                    cur.execute(
+                        """
+                        SELECT chunk_id, section, content, metadata
+                        FROM sec_chunks
+                        WHERE ticker = ANY(%s)
+                        ORDER BY fiscal_year DESC, chunk_id;
+                        """,
+                        (tickers,),
+                    )
+                rows = cur.fetchall()
+                if not rows:
+                    return []
+                records = []
+                for r in rows:
+                    meta = r[3] if isinstance(r[3], dict) else json.loads(r[3] or "{}")
+                    records.append({
+                        "id": r[0],
+                        "text": r[2],
+                        "meta": meta,
+                    })
+                return records
+    except Exception:
+        return []
+
+
 def _get_cached_chunks(
     ticker: Optional[str] = None,
     fiscal_years: Optional[List[int]] = None,
     tickers: Optional[List[str]] = None,
 ) -> List[Dict[str, Any]]:
-    """Load and structure-chunk relevant 10-K filings (supports single or multi-company comparison queries)."""
+    """
+    Retrieve pre-computed structure chunks for target companies and fiscal years.
+    1. Checks in-memory cache for ultra-fast multi-hop reuse.
+    2. Queries live Supabase Cloud `sec_chunks` table (pre-computed chunks).
+    3. Falls back to on-disk chunking only if database is offline/unreachable.
+    """
     target_tickers = tickers or ([ticker] if ticker else ["NVDA"])
     tickers_key = ",".join(sorted(target_tickers))
     years_key = ",".join(str(y) for y in sorted(fiscal_years)) if fiscal_years else "LATEST"
@@ -35,13 +89,19 @@ def _get_cached_chunks(
     if cache_key in _CORPUS_CACHE:
         return _CORPUS_CACHE[cache_key]
 
+    # Primary: Query pre-computed chunks from Supabase Cloud
+    records = _fetch_chunks_from_supabase(target_tickers, fiscal_years)
+    if records:
+        _CORPUS_CACHE[cache_key] = records
+        return records
+
+    # Secondary Fallback: Read from local files if offline/database unavailable
     filings = load_filings(
         tickers=target_tickers,
         fiscal_years=fiscal_years if fiscal_years else None,
         min_year=2023 if not fiscal_years else None,
     )
     if not filings and fiscal_years:
-        # Fallback to latest filing for that ticker if specific year isn't on disk
         filings = load_filings(tickers=target_tickers, min_year=2024)
     if not filings:
         filings = load_filings(tickers=target_tickers)[-4:]

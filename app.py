@@ -350,7 +350,7 @@ with st.sidebar:
     * **LLM Engine**: `{selected_provider.upper()}` (`{selected_model}`)
     * **Cloud DB**: `Supabase PostgreSQL` (`ap-southeast-1`)
     * **Relational Table**: `sec_financials` (272 XBRL rows)
-    * **Vector Table**: `sec_chunks` (`pgvector` HNSW index)
+    * **Pre-Computed Chunks**: `sec_chunks` (20,125 rows in Supabase Cloud)
     * **LangGraph State**: `PostgresSaver Checkpointing`
     * **Numerical Guardrail**: Active Self-Healing Loop
     """

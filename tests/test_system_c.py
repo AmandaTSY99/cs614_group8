@@ -355,6 +355,24 @@ def test_critic_multi_company_completeness_guard():
     assert any("AMZN" in p for p in out["missing_premises"])
 
 
+def test_supabase_precomputed_chunks_retrieval():
+    """Verify retriever fetches pre-computed structure chunks directly from Supabase Cloud `sec_chunks`."""
+    from src.system_c.nodes.retriever import _fetch_chunks_from_supabase, _get_cached_chunks
+
+    # Test direct Supabase cloud query
+    chunks = _fetch_chunks_from_supabase(["NVDA"], [2026])
+    assert len(chunks) > 0
+    sample = chunks[0]
+    assert "NVDA_FY2026" in sample["id"]
+    assert "text" in sample
+    assert sample["meta"]["ticker"] == "NVDA"
+    assert sample["meta"]["fiscal_year"] == 2026
+
+    # Test cached multi-hop retriever resolution
+    cached = _get_cached_chunks(tickers=["NVDA"], fiscal_years=[2026])
+    assert len(cached) == len(chunks)
+
+
 def test_decomposer_autonomous_tool_routing_and_multi_ticker():
     """Verify decomposer splits multi-ticker comparisons into atomic sub-queries and routes tools."""
     from src.system_c.nodes.decomposer import decomposer_node

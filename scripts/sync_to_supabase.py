@@ -100,11 +100,59 @@ def sync_financials():
             print(f"SUCCESS: Supabase `sec_financials` table now contains {count} rows!")
 
 
+def sync_chunks(min_year: int = 2023):
+    """Sync pre-computed structure chunks (matching Amanda & Xavier's chunk_by_structure) into `sec_chunks`."""
+    import json
+    from src.system_c.corpus import load_filings, chunk_corpus
+
+    print(f"Loading 10-K filings from {min_year} onwards...")
+    filings = load_filings(min_year=min_year)
+    if not filings:
+        print("No filings found to sync.")
+        return
+
+    print(f"Loaded {len(filings)} filings. Generating structure chunks (matching RAG 3 & 5)...")
+    chunks = chunk_corpus(filings, header=True)
+    print(f"Generated {len(chunks)} pre-computed chunks.")
+
+    rows = []
+    for c in chunks:
+        rows.append((
+            c["id"],
+            c["meta"]["ticker"],
+            c["meta"]["fiscal_year"],
+            c["meta"]["section"],
+            c["text"],
+            json.dumps(c["meta"]),
+        ))
+
+    insert_sql = """
+    INSERT INTO sec_chunks (chunk_id, ticker, fiscal_year, section, content, metadata)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    ON CONFLICT (chunk_id) DO UPDATE SET
+        section = EXCLUDED.section,
+        content = EXCLUDED.content,
+        metadata = EXCLUDED.metadata;
+    """
+
+    print(f"Connecting to Supabase to batch-sync {len(rows)} chunks into `sec_chunks`...")
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            execute_batch(cur, insert_sql, rows, page_size=500)
+        conn.commit()
+
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM sec_chunks;")
+            count = cur.fetchone()[0]
+            print(f"SUCCESS: Supabase `sec_chunks` table now contains {count} pre-computed chunks!")
+
+
 def main():
     print("=" * 60)
     print("SYSTEM C -> SUPABASE CLUSTER SYNC")
     print("=" * 60)
     sync_financials()
+    sync_chunks(min_year=2023)
 
 
 if __name__ == "__main__":
