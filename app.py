@@ -35,38 +35,45 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS for executive financial dashboard styling
+# Custom CSS for executive financial dashboard styling (Theme-Adaptive for Light & Dark Mode)
 st.markdown(
     """
     <style>
     .main-header {
-        font-size: 2.2rem;
+        font-size: 2.1rem;
         font-weight: 700;
-        color: #1E293B;
+        color: var(--text-color, #0F172A);
         margin-bottom: 0.2rem;
     }
     .sub-header {
-        font-size: 1.05rem;
-        color: #64748B;
-        margin-bottom: 1.5rem;
+        font-size: 1.0rem;
+        color: var(--secondary-text-color, #64748B);
+        margin-bottom: 1.2rem;
     }
     .metric-badge {
         display: inline-block;
         padding: 0.25rem 0.6rem;
         border-radius: 6px;
-        font-size: 0.82rem;
+        font-size: 0.80rem;
         font-weight: 600;
-        margin-right: 0.5rem;
-        background-color: #E2E8F0;
-        color: #334155;
+        margin-right: 0.4rem;
+        background-color: rgba(128, 128, 128, 0.12);
+        color: var(--text-color, #334155);
+        border: 1px solid rgba(128, 128, 128, 0.2);
     }
-    .badge-success { background-color: #DEF7EC; color: #03543F; }
-    .badge-info { background-color: #E1EFFE; color: #1E429F; }
-    .badge-warning { background-color: #FEF08A; color: #713F12; }
-    .stAlert { border-radius: 8px; }
+    .badge-success { background-color: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-info { background-color: rgba(59, 130, 246, 0.15); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-warning { background-color: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .arch-banner {
+        background-color: rgba(128, 128, 128, 0.06);
+        border: 1px solid rgba(128, 128, 128, 0.18);
+        border-radius: 8px;
+        padding: 10px 16px;
+        margin-bottom: 16px;
+    }
     .citation-tag {
-        background-color: #EEF2FF;
-        color: #3730A3;
+        background-color: rgba(99, 102, 241, 0.15);
+        color: #6366F1;
         font-family: monospace;
         padding: 2px 6px;
         border-radius: 4px;
@@ -93,7 +100,7 @@ COMPANIES = {
 
 # Tiered Golden Evaluation Queries (Pulled directly from data/golden_eval_set.json)
 TIERED_GOLDEN_QUERIES = {
-    "🟢 Tier 1: Simple (Single-Hop Factual)": [
+    "Tier 1: Simple (Single-Hop Factual)": [
         (
             "GOLD-01",
             "NVIDIA FY2026 period end date & headquarters",
@@ -110,7 +117,7 @@ TIERED_GOLDEN_QUERIES = {
             "What is Apple Inc.'s state of incorporation, corporate headquarters address, and IRS employer identification number in its 2024 Form 10-K?",
         ),
     ],
-    "🟡 Tier 2: Moderate (Quantitative Tabular YoY)": [
+    "Tier 2: Moderate (Quantitative Tabular YoY)": [
         (
             "GOLD-16",
             "NVIDIA FY25 vs FY26 revenue & YoY growth",
@@ -127,7 +134,7 @@ TIERED_GOLDEN_QUERIES = {
             "What was Apple's total net sales, gross margin, and operating cash flow in fiscal 2023 versus fiscal 2024?",
         ),
     ],
-    "🟠 Tier 3: Complex (Cross-Section MD&A + Notes)": [
+    "Tier 3: Complex (Cross-Section MD&A + Notes)": [
         (
             "GOLD-36",
             "NVIDIA Compute segment vs customer concentration",
@@ -144,7 +151,7 @@ TIERED_GOLDEN_QUERIES = {
             "How did Apple's iPhone and Services product revenues perform in fiscal 2024 according to Item 7, and how did this compare to regional net sales in Americas and Greater China disclosed in Note 13?",
         ),
     ],
-    "🔴 Tier 4: Expert (Multi-Company Comparative RAG)": [
+    "Tier 4: Expert (Multi-Company Comparative RAG)": [
         (
             "GOLD-51",
             "Cloud Battle: Microsoft vs AWS vs Google Cloud (2024)",
@@ -183,11 +190,24 @@ def get_llm_status() -> Dict[str, str]:
 
 # ---------------- SIDEBAR ----------------
 with st.sidebar:
-    st.image(
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/240px-Python-logo-notext.svg.png",
-        width=50,
+    st.markdown(
+        """
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid rgba(128, 128, 128, 0.2);">
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="48" height="48" rx="10" fill="#0F172A"/>
+            <path d="M12 34V22M20 34V14M28 34V24M36 34V18" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="20" cy="14" r="2.5" fill="#38BDF8"/>
+            <circle cx="36" cy="18" r="2.5" fill="#38BDF8"/>
+            <path d="M20 14L28 20L36 18" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 2"/>
+          </svg>
+          <div>
+            <div style="font-weight: 700; font-size: 1.15rem; line-height: 1.2; color: var(--text-color, #0F172A);">System C</div>
+            <div style="font-size: 0.72rem; color: #64748B; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;">Adaptive Multi-Hop RAG</div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.title("System C Settings")
 
     st.subheader("1. Pipeline Configuration")
     mode_selection = st.selectbox(
@@ -195,10 +215,10 @@ with st.sidebar:
         options=["v2_aamr", "adaptive_v1", "fixed_1hop", "fixed_3hop"],
         index=0,
         format_func=lambda x: {
-            "v2_aamr": "⭐ v2: Agentic AMR (XBRL + 10-K Text Router)",
-            "adaptive_v1": "🔄 v1: Adaptive Multi-Hop (Text Only)",
-            "fixed_1hop": "⏹️ Baseline: Fixed 1-Hop",
-            "fixed_3hop": "⏹️ Baseline: Fixed 3-Hop",
+            "v2_aamr": "v2: Agentic AMR (XBRL + 10-K Text Router)",
+            "adaptive_v1": "v1: Adaptive Multi-Hop (Text Only)",
+            "fixed_1hop": "Baseline: Fixed 1-Hop",
+            "fixed_3hop": "Baseline: Fixed 3-Hop",
         }[x],
         help="System C v2 dynamically routes quantitative metric requests to Supabase XBRL tables and qualitative context (risks, MD&A) to SEC text chunks.",
     )
@@ -223,11 +243,11 @@ with st.sidebar:
 
     st.subheader("2. LLM Engine & Credentials")
     provider_options = {
-        "groq": "⚡ Groq Cloud (Recommended — Ultra-Fast 500+ tok/s)",
-        "gemini": "✨ Google Gemini (Gemini Flash)",
-        "cohere": "🔮 Cohere (Command R / Command R+)",
-        "openai": "🤖 OpenAI (GPT-4o-mini / GPT-4o)",
-        "mock": "🧪 Mock Engine (Deterministic, Zero-API-Key)",
+        "groq": "Groq Cloud (LPU Inference — Recommended)",
+        "gemini": "Google Gemini (Gemini Flash)",
+        "cohere": "Cohere (Command R / Command R+)",
+        "openai": "OpenAI (GPT-4o-mini / GPT-4o)",
+        "mock": "Mock Engine (Deterministic, Zero-API-Key)",
     }
     selected_provider = st.selectbox(
         "Select Provider",
@@ -276,9 +296,9 @@ with st.sidebar:
         help="Paste your private Gemini, Groq, Cohere, or OpenAI key here. If left blank, the app uses pre-configured keys so you and your team can query immediately without typing.",
     )
     if user_api_key.strip():
-        st.markdown('<span style="color:#2563EB;font-size:0.80rem;font-weight:600;">🔵 Custom User Key Active</span>', unsafe_allow_html=True)
+        st.markdown('<span style="color:#2563EB;font-size:0.80rem;font-weight:600;">● Custom User Key Active</span>', unsafe_allow_html=True)
     else:
-        st.markdown('<span style="color:#059669;font-size:0.80rem;font-weight:600;">🟢 Built-in System Key Active</span>', unsafe_allow_html=True)
+        st.markdown('<span style="color:#059669;font-size:0.80rem;font-weight:600;">● Built-in System Key Active</span>', unsafe_allow_html=True)
 
     # Configure Environment Variables
     os.environ["LLM_PROVIDER"] = selected_provider
@@ -314,9 +334,9 @@ with st.sidebar:
     st.subheader("4. Golden Benchmark Presets")
     st.caption("Click any preset below (Simple → Complex):")
     for tier_title, questions in TIERED_GOLDEN_QUERIES.items():
-        with st.expander(tier_title, expanded=(tier_title.startswith("🟢"))):
+        with st.expander(tier_title, expanded=(tier_title.startswith("Tier 1"))):
             for q_id, q_label, full_q in questions:
-                if st.button(f"📌 {q_id}: {q_label}", use_container_width=True, key=f"side_{q_id}"):
+                if st.button(f"{q_id}: {q_label}", use_container_width=True, key=f"side_{q_id}"):
                     st.session_state["user_query_input"] = full_q
                     st.rerun()
 
@@ -338,7 +358,7 @@ with st.sidebar:
 
 
 # ---------------- MAIN CONTENT ----------------
-st.markdown('<div class="main-header">🏛️ System C: Adaptive Multi-Hop Financial RAG</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">System C: Adaptive Multi-Hop Financial RAG</div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="sub-header">Autonomous SEC 10-K Intelligence, Continuous Sufficiency Auditing, and Scale-Normalized Numerical Grounding</div>',
     unsafe_allow_html=True,
@@ -347,10 +367,10 @@ st.markdown(
 # Visual Architecture Flow Banner
 st.markdown(
     """
-    <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 16px; margin-bottom: 16px;">
-      <span style="font-size: 0.80rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Autonomous Pipeline Architecture:</span><br/>
-      <span style="font-size: 0.90rem; color: #1E293B; font-weight: 500;">
-        1. Decompose Query ➔ 2. Heterogeneous Router (XBRL SQL vs. 10-K Text) ➔ 3. Critic Sufficiency Audit (≥0.85 Early Stop) ➔ 4. Inline Citation Synthesis ➔ 5. Closed-Loop Numerical Repair
+    <div class="arch-banner">
+      <span style="font-size: 0.78rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em;">Autonomous Pipeline Architecture:</span><br/>
+      <span style="font-size: 0.88rem; color: var(--text-color, #1E293B); font-weight: 500;">
+        1. Decompose Query &bull; 2. Heterogeneous Router (XBRL SQL vs. 10-K Text) &bull; 3. Critic Sufficiency Audit (&ge;0.85 Early Stop) &bull; 4. Inline Citation Synthesis &bull; 5. Closed-Loop Numerical Repair
       </span>
     </div>
     """,
@@ -360,7 +380,7 @@ st.markdown(
 # Badges bar
 col_b1, col_b2, col_b3, col_b4 = st.columns(4)
 with col_b1:
-    st.markdown('<span class="metric-badge badge-success">✓ Supabase Cloud PG Connected</span>', unsafe_allow_html=True)
+    st.markdown('<span class="metric-badge badge-success">Supabase Cloud PG Connected</span>', unsafe_allow_html=True)
 with col_b2:
     st.markdown(f'<span class="metric-badge badge-info">Engine: {selected_provider.upper()}</span>', unsafe_allow_html=True)
 with col_b3:
@@ -370,37 +390,20 @@ with col_b4:
 
 st.write("")
 
-# Main Page Golden Benchmark Tier Selector
-st.markdown("##### 🎯 Golden Benchmark Presets (Select to populate question)")
-tier_tabs = st.tabs(["🟢 Tier 1: Simple", "🟡 Tier 2: Moderate", "🟠 Tier 3: Complex", "🔴 Tier 4: Expert"])
-tier_keys = list(TIERED_GOLDEN_QUERIES.keys())
-
-for t_idx, tab in enumerate(tier_tabs):
-    with tab:
-        q_list = TIERED_GOLDEN_QUERIES[tier_keys[t_idx]]
-        cols = st.columns(len(q_list))
-        for c_idx, (q_id, q_label, full_q) in enumerate(q_list):
-            with cols[c_idx]:
-                if st.button(f"**{q_id}**\n\n{q_label}", key=f"main_{q_id}", use_container_width=True):
-                    st.session_state["user_query_input"] = full_q
-                    st.rerun()
-
-st.write("")
-
 # Query Input
 default_query = st.session_state.get(
     "user_query_input",
     "What was Apple's total revenue, operating income, and net income in fiscal 2024?",
 )
 query_text = st.text_area(
-    "Enter your financial question:",
+    "Enter your financial question (or pick a preset from the sidebar):",
     value=default_query,
     height=80,
     placeholder="e.g. Compare NVIDIA and Microsoft cloud and data center performance in 2024...",
 )
 
 col_run, col_clear = st.columns([1, 6])
-run_btn = col_run.button("🚀 Run Query", type="primary", use_container_width=True)
+run_btn = col_run.button("Run Query", type="primary", use_container_width=True)
 
 if run_btn and query_text.strip():
     try:
@@ -423,10 +426,17 @@ if run_btn and query_text.strip():
         # ---------------- RESULTS PRESENTATION ----------------
         st.divider()
 
+        # Determine early stopping status accurately
+        is_early_stopped = bool(
+            result.get("early_stopped")
+            or result.get("telemetry", {}).get("early_stopped")
+            or (result.get("is_sufficient") and result.get("current_hop", 1) < result.get("max_hops", 3))
+        )
+
         # Executive Summary Metrics
         m1, m2, m3, m4, m5 = st.columns(5)
         m1.metric("Hops Executed", f"{result['current_hop']} / {result['max_hops']}")
-        m2.metric("Early Stopped", "Yes (≥ 0.85)" if result.get("early_stopped") else "No (Max Hops)")
+        m2.metric("Early Stopped", f"Yes (Hop {result['current_hop']})" if is_early_stopped else "No (Max Hops)")
         m3.metric("Sufficiency Score", f"{result.get('sufficiency_score', 0.0):.2f}")
         m4.metric("Evidence Chunks", f"{len(result.get('accumulated_evidence', []))}")
         m5.metric("Latency", f"{total_wall_time:.2f}s")
@@ -434,24 +444,27 @@ if run_btn and query_text.strip():
         # Tabbed Results Console
         res_tab1, res_tab2, res_tab3, res_tab4 = st.tabs(
             [
-                "📝 Synthesized Answer & Citations",
-                "🛡️ Factuality & Grounding Audit",
-                "🔍 Multi-Hop Reasoning Trace",
-                "📊 Inference Economics (RQ3)",
+                "Synthesized Answer & Citations",
+                "Factuality & Grounding Audit",
+                "Multi-Hop Reasoning Trace",
+                "Inference Economics (RQ3)",
             ]
         )
 
         with res_tab1:
             st.subheader("Executive Financial Synthesis")
             final_answer = result.get("final_answer", "")
-            st.info(final_answer if final_answer else "No synthesis generated.")
+            if final_answer:
+                st.markdown(final_answer)
+            else:
+                st.info("No synthesis generated.")
 
             st.write("")
-            st.markdown("##### 📚 Ground-Truth Citations Mapped (RQ2)")
+            st.markdown("##### Ground-Truth Citations Mapped (RQ2)")
             citations = result.get("citations", [])
             if citations:
                 for cit in citations:
-                    with st.expander(f"📍 {cit.get('tag', 'Citation')} — {cit.get('section', 'SEC Disclosure')}"):
+                    with st.expander(f"[{cit.get('tag', 'Citation')}] — {cit.get('section', 'SEC Disclosure')}"):
                         st.write(f"**Chunk ID**: `{cit.get('chunk_id')}`")
                         st.write(f"**Ticker / Year**: {cit.get('ticker')} (FY{cit.get('fiscal_year')})")
                         st.write(f"**Disclosure Excerpt**:")
@@ -464,9 +477,9 @@ if run_btn and query_text.strip():
             guard_report = result.get("guardrail_report", {})
             passed = result.get("guardrail_passed", True)
             if passed:
-                st.success("✅ **Guardrail Passed**: All extracted financial figures match SEC ground-truth filings.")
+                st.success("Guardrail Passed: All extracted financial figures match SEC ground-truth filings.")
             else:
-                st.warning("⚠️ **Guardrail Warning**: Ungrounded numbers detected during audit.")
+                st.warning("Guardrail Warning: Ungrounded numbers detected during audit.")
 
             col_g1, col_g2, col_g3 = st.columns(3)
             col_g1.metric("Numerical Error Rate", f"{guard_report.get('numerical_grounding_error_rate', 0.0) * 100:.1f}%")
@@ -512,13 +525,13 @@ if run_btn and query_text.strip():
 
     except Exception as exc:
         import traceback
-        st.error(f"❌ **Execution Error**: `{str(exc)}`")
-        st.markdown("📋 **Error Details & Stack Trace** *(use the copy button in the top right to copy)*:")
+        st.error(f"Execution Error: {str(exc)}")
+        st.markdown("**Error Details & Stack Trace** *(use copy button)*:")
         st.code(traceback.format_exc(), language="python")
 
 # ---------------- SEC COMPANY DATA EXPLORER TAB ----------------
 st.divider()
-st.subheader("📂 SEC 10-K XBRL Data Explorer")
+st.subheader("SEC 10-K XBRL Data Explorer")
 with st.expander("Explore Ground-Truth XBRL Financial Filings (from Supabase Cloud DB)", expanded=False):
     df_fin = load_financials_data()
     if not df_fin.empty:

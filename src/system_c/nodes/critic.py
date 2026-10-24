@@ -144,6 +144,9 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
             if curr_hop_chunks and curr_chunk_ids.issubset(prev_chunk_ids):
                 redundant_prevented = True
                 score = max(score, threshold)
+                missing_entities = []
+                missing_years = []
+                missing_premises = []
                 reasoning += " [Redundant loop prevented: Hop retrieved duplicate chunks with zero new coverage]."
 
         # Detection B: Tabular XBRL complete coverage for quantitative queries
@@ -164,8 +167,35 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
                     redundant_prevented = True
                     reasoning += " [Complete factual coverage: Tabular XBRL tool provided exact reported financials]."
 
+        # Detection C: Multi-company comparative query coverage check
+        # For queries with multiple target tickers (e.g. GOLD-51: MSFT, AMZN, GOOGL),
+        # verify that all target tickers have at least one retrieved chunk or tabular block.
+        if len(target_tickers) > 1:
+            covered_companies = set()
+            for t in target_tickers:
+                has_text = any(
+                    c.get("metadata", {}).get("ticker") == t
+                    or f"{t}_" in c.get("chunk_id", "")
+                    or f"-{t}-" in c.get("chunk_id", "")
+                    for c in evidence
+                )
+                has_tab = any(f"F-{t}" in blk for blk in tabular)
+                if has_text or has_tab:
+                    covered_companies.add(t)
+
+            missing_tickers = [t for t in target_tickers if t not in covered_companies]
+            if missing_tickers and hop < max_hops:
+                score = min(score, 0.60)
+                is_sufficient = False
+                for mt in missing_tickers:
+                    lbl = f"{mt} financial disclosures"
+                    if lbl not in missing_entities:
+                        missing_entities.append(lbl)
+                missing_premises.append(f"Disclosures, line items, and segment performance for {', '.join(missing_tickers)}")
+                reasoning += f" [Multi-company coverage incomplete: missing evidence for {', '.join(missing_tickers)}]."
+
         # 4. Apply quantitative early-stopping threshold (>= threshold triggers early stop)
-        if score >= threshold or bool(parsed.get("is_sufficient", False)):
+        if score >= threshold and not missing_entities and not missing_years:
             is_sufficient = True
             missing_premises = []
             missing_entities = []

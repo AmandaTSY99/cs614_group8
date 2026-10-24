@@ -323,6 +323,38 @@ def test_critic_redundant_search_prevention_on_tabular_coverage():
     assert "Tabular XBRL" in out["critic_reasoning"] or "Complete" in out["critic_reasoning"]
 
 
+def test_critic_multi_company_completeness_guard():
+    """Verify Critic rejects early stopping at Hop 1 if comparative query is missing one or more target tickers."""
+    from src.system_c.nodes.critic import critic_node
+
+    state = create_initial_state(
+        query="Compare cloud revenue across Microsoft, Amazon, and Alphabet in 2024",
+        max_hops=3,
+        mode="v1_amr",
+    )
+    state["target_tickers"] = ["MSFT", "AMZN", "GOOGL"]
+    state["current_hop"] = 1
+    # Only GOOGL was retrieved in Hop 1
+    state["accumulated_evidence"] = [
+        {
+            "chunk_id": "GOOGL_FY2024:5",
+            "content": "Google Cloud revenue was $43,229 million with operating income of $6,112 million.",
+            "metadata": {"section": "Item 7", "ticker": "GOOGL", "fiscal_year": 2024},
+            "relevance_score": 0.95,
+            "hop_retrieved": 1,
+        }
+    ]
+    # Even if LLM attempted to claim sufficiency
+    state["telemetry"]["mock_sufficiency_score"] = 0.95
+
+    out = critic_node(state)
+    # Must NOT stop early because MSFT and AMZN are missing
+    assert out["is_sufficient"] is False
+    assert out["sufficiency_score"] <= 0.65
+    assert any("MSFT" in p for p in out["missing_premises"])
+    assert any("AMZN" in p for p in out["missing_premises"])
+
+
 def test_decomposer_autonomous_tool_routing_and_multi_ticker():
     """Verify decomposer splits multi-ticker comparisons into atomic sub-queries and routes tools."""
     from src.system_c.nodes.decomposer import decomposer_node
