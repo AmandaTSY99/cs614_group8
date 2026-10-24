@@ -37,4 +37,11 @@
 - [x] **Phase 4: Milestone 1 Showcase & RQ3 Inference Economics Ablation**
   - [x] Created [`scripts/demo_milestone1_system_c.py`](file:///Users/anishdobz/projects/cs614_group8/scripts/demo_milestone1_system_c.py) — Runs 3 curated SEC 10-K benchmark queries (Single-Hop early stopping, Multi-Hop MD&A + Footnotes, and Quantitative Tabular `v1_amr` vs `v2_aamr`) with formatted ANSI terminal table and markdown/JSON export.
   - [x] Created [`scripts/run_rq3_ablation.py`](file:///Users/anishdobz/projects/cs614_group8/scripts/run_rq3_ablation.py) — Benchmarks Fixed 1-Hop vs. Fixed 3-Hop vs. Adaptive AMR (v1) vs. Agentic AAMR (v2) across 12 SEC 10-K queries, exporting Pareto coordinates to `reports/rq3_ablation_summary.json`, `reports/rq3_ablation_metrics.csv`, and `reports/rq3_ablation_per_query.csv`.
-  - [x] Updated [`tests/test_system_c.py`](file:///Users/anishdobz/projects/cs614_group8/tests/test_system_c.py) with `test_rq3_ablation_force_max_hops` — 7/7 tests passing in 0.56s.
+  - [x] Created [`scripts/plot_rq3_pareto.py`](file:///Users/anishdobz/projects/cs614_group8/scripts/plot_rq3_pareto.py) & generated publication-grade figures in [`reports/figures/`](file:///Users/anishdobz/projects/cs614_group8/reports/figures).
+  - [x] Created [`reports/MILESTONE1_DEMO_SCRIPT.md`](file:///Users/anishdobz/projects/cs614_group8/reports/MILESTONE1_DEMO_SCRIPT.md) presentation guide and speaking script.
+
+- [x] **Phase 5: Production Hardening & Docker Readiness**
+  - [x] Hardened LLM JSON parsing (`clean_and_parse_json`) against trailing commas and markdown code fences.
+  - [x] Added multi-company comparison query extraction (`target_tickers`) and cross-filing retrieval in `decomposer.py` and `retriever.py`.
+  - [x] Expanded test suite to **9/9 tests passing** in 0.86s (`tests/test_system_c.py`).
+  - [x] Updated [`docker-compose.yaml`](file:///Users/anishdobz/projects/cs614_group8/docker-compose.yaml) and [`requirements.txt`](file:///Users/anishdobz/projects/cs614_group8/requirements.txt) with `system-c` container service and host Ollama bridge (`host.docker.internal`).
