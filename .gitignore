@@ -33,6 +33,7 @@ ENV/
 htmlcov/
 .mypy_cache/
 .ruff_cache/
+test.ipynb
 
 # --- Data (regenerate with get_nvda_10k.ipynb) ---
 data_test/
@@ -60,3 +61,6 @@ desktop.ini
 # --- QA sets ---
 FinQA/
 TAT-QA/
+
+# -- trash --
+.Trash*/

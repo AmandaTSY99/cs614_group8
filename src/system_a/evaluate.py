@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .pipeline import generate
+from .pipeline import TOP_K, generate
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_BENCHMARK = [ROOT / "benchmark" / "benchmark_qa_0.jsonl"]   # amanda.jsonl with the reviewed corrections applied
@@ -113,9 +113,10 @@ def score_answer(qa, prediction, tol=0.01):
 
 # --- Run ---------------------------------------------------------------------------------------
 
-def run_benchmark(index, qas, variants=("rag3",), k=5, scope="gold", generate_answers=True,
+def run_benchmark(indexes, qas, k=TOP_K, scope="gold", generate_answers=True,
                   model=None, out_path=None, tol=0.01, sleep=0.0, max_errors=3):
-    """Run every QA through each variant, write one JSON line per (QA, variant) and return them as a DataFrame.
+    """Run every QA through each variant in `indexes` ({variant: index}), write one JSON line per (QA, variant)
+    and return them as a DataFrame.
     scope="gold" filters retrieval to the QA's gold companies and years; "none" searches the whole corpus."""
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -123,9 +124,12 @@ def run_benchmark(index, qas, variants=("rag3",), k=5, scope="gold", generate_an
     with out_path.open("w", encoding="utf-8") as f:
         for n, qa in enumerate(qas, 1):
             pairs = gold_pairs(qa) if scope == "gold" else []
-            hits = index.retrieve(qa["question"], k, pairs)          # RAG 3 and 4 retrieve the same way
-            retrieval = score_retrieval(qa, hits)
-            for variant in variants:
+            retrieved = {}                                       # one retrieval per collection (rag3 and rag4 share one)
+            for variant, index in indexes.items():
+                if id(index) not in retrieved:
+                    hits = index.retrieve(qa["question"], k, pairs)
+                    retrieved[id(index)] = (hits, score_retrieval(qa, hits))
+                hits, retrieval = retrieved[id(index)]
                 row = {"id": qa["id"], "variant": variant, "recipe": qa.get("recipe"), "hop": qa.get("hop"),
                        "type": qa["type"], "scope": scope, "question": qa["question"],
                        "gold_answer": qa["answer"], "prediction": None, **retrieval,
@@ -144,7 +148,7 @@ def run_benchmark(index, qas, variants=("rag3",), k=5, scope="gold", generate_an
                 rows.append(row)
                 f.write(json.dumps(row, ensure_ascii=False) + "\n")
                 f.flush()
-            print(f"[{n}/{len(qas)}] {qa['id']}  hit={retrieval['hit']}  evidence_recall={retrieval['evidence_recall']:.2f}")
+            print(f"[{n}/{len(qas)}] {qa['id']}  " + "  ".join(f"{v}: hit={retrieved[id(i)][1]['hit']}" for v, i in indexes.items()))
             if errors >= max_errors:
                 print(f"Stopped after {max_errors} API errors in a row (see above: e.g. daily limit). "
                       f"Results so far are in {out_path}")

@@ -1,10 +1,10 @@
-"""System A command line: vanilla RAG 3 (default) or RAG 4, for one query or the benchmark.
+"""System A command line: RAG 5 (default), RAG 3 or RAG 4, for one query or the benchmark.
 
 Run from the repo root (e.g. in the container, /workspace):
   python -m src.system_a --query "What was NVIDIA's total revenue?" --tickers NVDA --years 2026
   python -m src.system_a --query "..." --tickers NVDA --years 2026 --variant rag4
-  python -m src.system_a --benchmark                          # every QA, RAG 3
-  python -m src.system_a --benchmark --all-variants --limit 10
+  python -m src.system_a --benchmark                          # every QA, RAG 5
+  python -m src.system_a --benchmark --all-variants --limit 10   # RAG 5, 3 and 4
   python -m src.system_a --benchmark --no-generate            # retrieval metrics only, no LLM calls
 """
 import argparse
@@ -16,7 +16,7 @@ import pandas as pd
 
 from .evaluate import DEFAULT_BENCHMARK, ROOT, load_benchmark, run_benchmark, summarize
 from .llm import DEFAULT_MODEL
-from .pipeline import VARIANTS, generate, show_hits
+from .pipeline import DEFAULT_VARIANT, TOP_K, VARIANTS, generate, show_hits
 from .retrieval import EMBED_MODEL, ChromaIndex, QueryEmbedder
 
 # from .retrieval import SupabaseIndex
@@ -25,23 +25,23 @@ from .retrieval import EMBED_MODEL, ChromaIndex, QueryEmbedder
 def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    parser = argparse.ArgumentParser(description="System A: vanilla RAG 3 / RAG 4 (dense retrieval, one LLM call)")
+    parser = argparse.ArgumentParser(description="System A: RAG 5 / RAG 3 / RAG 4 (dense retrieval, one LLM call)")
     inputs = parser.add_mutually_exclusive_group(required=True)
     inputs.add_argument("--query", help="Answer one question")
     inputs.add_argument("--benchmark", type=Path, nargs="*",
                         help="Benchmark .jsonl files; later files override QAs with the same id "
                              f"(default: {' + '.join(str(p.relative_to(ROOT)) for p in DEFAULT_BENCHMARK)})")
     # Variant
-    parser.add_argument("--variant", choices=VARIANTS, default="rag3")
-    parser.add_argument("--all-variants", action="store_true", help="Run both rag3 and rag4")
+    parser.add_argument("--variant", choices=list(VARIANTS), default=DEFAULT_VARIANT)
+    parser.add_argument("--all-variants", action="store_true", help=f"Run every variant ({', '.join(VARIANTS)})")
     # Index
     parser.add_argument("--chroma-dir", default="chroma_db")
-    parser.add_argument("--collection", default="rag3_structure_bge")
+    parser.add_argument("--collection", help="Override the variant's own collection (see VARIANTS in pipeline.py)")
     parser.add_argument("--embed-model", default=EMBED_MODEL, help="Must match the model that built the collection")
     # parser.add_argument("--store", choices=["chroma", "supabase"], default="chroma")
     # parser.add_argument("--supabase-table", default="chunks")
     # Retrieval
-    parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument("--top-k", type=int, default=TOP_K)
     parser.add_argument("--tickers", nargs="+", default=[], help="--query only: limit to these companies")
     parser.add_argument("--years", nargs="+", type=int, default=[], help="--query only: limit to these fiscal years")
     parser.add_argument("--scope", choices=["gold", "none"], default="gold",
@@ -59,22 +59,29 @@ def main():
 
     variants = list(VARIANTS) if args.all_variants else [args.variant]
     embedder = QueryEmbedder(args.embed_model)
-    index = ChromaIndex(args.chroma_dir, args.collection, embedder)
-    # if args.store == "supabase":
-    #     index = SupabaseIndex(args.supabase_table, embedder)
+    opened = {}                                       # variants that share a collection share one index
+    for variant in variants:
+        collection = args.collection or VARIANTS[variant]["collection"]
+        if collection not in opened:
+            opened[collection] = ChromaIndex(args.chroma_dir, collection, embedder)
+            # Supabase holds the rag3 chunks only, so it can stand in for rag3 / rag4 but not rag5:
+            # if args.store == "supabase":
+            #     opened[collection] = SupabaseIndex(args.supabase_table, embedder)
+    indexes = {v: opened[args.collection or VARIANTS[v]["collection"]] for v in variants}
 
     if args.query:
         pairs = [(t, y) for t in args.tickers or [None] for y in args.years or [None]] if args.tickers or args.years else []
         if "rag4" in variants and not args.tickers:
             print("Note: rag4 adds financials.csv rows only for the companies given with --tickers")
-        hits = index.retrieve(args.query, args.top_k, pairs)
-        if not args.no_generate:
-            for variant in variants:
+        for variant, index in indexes.items():
+            hits = index.retrieve(args.query, args.top_k, pairs)
+            print(f"=== {variant} ({index.name}) ===")
+            if not args.no_generate:
                 out = generate(args.query, hits, variant, pairs, args.model)
-                print(f"=== {variant} ===\n{out['answer']}\n")
+                print(out["answer"], "\n")
                 if out["financials"]:
                     print("\n".join(out["financials"]), "\n")
-        show_hits(hits)
+            show_hits(hits)
         return
 
     qas = load_benchmark(args.benchmark)
@@ -85,7 +92,7 @@ def main():
     out = args.out or ROOT / "results" / f"system_a_{'-'.join(variants)}_{datetime.now():%Y%m%d_%H%M%S}.jsonl"
     print(f"{len(qas)} QAs, variants: {', '.join(variants)}, scope: {args.scope}, top-k: {args.top_k}"
           + (", retrieval only" if args.no_generate else f", model: {args.model}"))
-    df = run_benchmark(index, qas, variants, args.top_k, args.scope, not args.no_generate,
+    df = run_benchmark(indexes, qas, args.top_k, args.scope, not args.no_generate,
                        args.model, out, args.num_tol, args.sleep)
     overall, by_recipe = summarize(df)
     with pd.option_context("display.width", 200, "display.max_columns", 20):
