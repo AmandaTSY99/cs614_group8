@@ -930,15 +930,15 @@ def render_visual_state_graph(
         f'<div class="gauge-label">Hop Execution</div>'
         f'<div class="gauge-val" style="color:{hop_col};">{current_hop} / {max_hops} <span style="font-size:0.72rem;">{html.escape(hop_blocks_str)} {hop_status_tag}</span></div>'
         f"</div>"
-        # Col 2: Critic Sufficiency Ratio
+        # Col 2: Critic Sufficiency Ratio (RQ1)
         f'<div class="gauge-card">'
-        f'<div class="gauge-label">Critic Sufficiency Audit</div>'
+        f'<div class="gauge-label">Critic Sufficiency (RQ1)</div>'
         f'<div class="gauge-val" style="color:{suff_bar_color};">{html.escape(score_prog_str)} <span style="font-size:0.70rem; opacity:0.75;">(≥{threshold:.2f})</span></div>'
         f'<div class="gauge-bar-track"><div class="gauge-bar-fill" style="width:{suff_pct}%; background:{suff_bar_color};"></div></div>'
         f"</div>"
-        # Col 3: Retrieved Corpus
+        # Col 3: Retrieved Corpus (RQ1)
         f'<div class="gauge-card">'
-        f'<div class="gauge-label">Retrieved SEC Corpus</div>'
+        f'<div class="gauge-label">Retrieved Corpus (RQ1)</div>'
         f'<div class="gauge-val">{len(evidence)} Chunks <span style="font-size:0.74rem; color:#10B981;">| {len(tabular)} XBRL</span></div>'
         f"</div>"
         # Col 4: Numerical Grounding Ratio
@@ -1771,16 +1771,16 @@ if "last_system_c_result" in st.session_state:
         default_ticker=primary_tkr,
     )
 
-    res_tab1, res_tab2, res_tab3, res_tab4 = st.tabs(
+    res_tab_brief, res_tab_rq1, res_tab_rq2, res_tab_rq3 = st.tabs(
         [
             "📑 [01] Executive Brief & Citations",
-            "🛡️ [02] Hallucination Audit (RQ2 Grounding)",
-            "🧭 [03] Multi-Hop Reasoning Trace (RQ1 Adaptivity)",
-            "⚡ [04] Latency & Cost Economics (RQ3 Pareto)",
+            "🧭 [RQ1] Multi-Hop Reasoning Trace (Adaptivity)",
+            "🛡️ [RQ2] Hallucination Audit (Grounding)",
+            "⚡ [RQ3] Latency & Cost Economics (Pareto)",
         ]
     )
 
-    with res_tab1:
+    with res_tab_brief:
         final_answer = result.get("final_answer") or ""
         tkr_display = ", ".join(str(t) for t in all_tkrs) if all_tkrs else "AUTO"
         yr_display = ", ".join(f"FY{y}" for y in f_years) if f_years else "MULTI-PERIOD"
@@ -1824,8 +1824,15 @@ if "last_system_c_result" in st.session_state:
         else:
             st.caption("No structured citation records logged for this run.")
 
-    with res_tab2:
-        st.markdown("#### Scale-Normalized Numerical Grounding & Hallucination Audit")
+    with res_tab_rq1:
+        st.markdown("#### Autonomous Multi-Hop Reflection & Retrieval Audit Timeline (RQ1)")
+        st.caption(
+            "Visualizing each hop's atomic sub-query, retrieved SEC 10-K evidence chunks, Critic sufficiency score, and conditional reflection loop edges."
+        )
+        st.markdown(render_multihop_timeline_html(result), unsafe_allow_html=True)
+
+    with res_tab_rq2:
+        st.markdown("#### Scale-Normalized Numerical Grounding & Hallucination Audit (RQ2)")
         passed = bool(result.get("guardrail_passed", True))
         if passed:
             st.success(
@@ -1885,14 +1892,7 @@ if "last_system_c_result" in st.session_state:
             for blk in result.get("tabular_evidence", []):
                 st.code(blk, language="markdown")
 
-    with res_tab3:
-        st.markdown("#### Autonomous Multi-Hop Reflection & Retrieval Audit Timeline")
-        st.caption(
-            "Visualizing each hop's atomic sub-query, retrieved SEC 10-K evidence chunks, Critic sufficiency score, and conditional reflection loop edges."
-        )
-        st.markdown(render_multihop_timeline_html(result), unsafe_allow_html=True)
-
-    with res_tab4:
+    with res_tab_rq3:
         st.markdown("#### Inference Economics & Pareto Telemetry (RQ3)")
         telemetry = result.get("telemetry", {}) or {}
         rq3_summary = telemetry.get("rq3_summary", {}) or {}
