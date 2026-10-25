@@ -51,6 +51,8 @@ def clean_and_parse_json(raw_text: str) -> Dict[str, Any]:
 def get_llm_config() -> Tuple[str, str]:
     """Return `(provider, model)` based on environment variables."""
     provider = os.getenv("LLM_PROVIDER", "ollama").strip().lower()
+    if provider == "mock":
+        return "mock", "mock"
     model = os.getenv("LLM_MODEL", "").strip()
     if not model:
         if provider == "ollama":

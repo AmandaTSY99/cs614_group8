@@ -41,6 +41,7 @@ EVIDENCE = [TABLE_CHUNK, TEXT_CHUNK, OTHER_CHUNK]
 @pytest.fixture(autouse=True)
 def force_mock_llm(monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "mock")
+    monkeypatch.setenv("LLM_MODEL", "mock")
     monkeypatch.delenv("GUARDRAIL_SEMANTIC_CHECK", raising=False)
     monkeypatch.delenv("GUARDRAIL_JUDGE_MODEL", raising=False)
     monkeypatch.delenv("GUARDRAIL_JUDGE_PROVIDER", raising=False)
