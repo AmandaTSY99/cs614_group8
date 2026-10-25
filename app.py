@@ -41,8 +41,7 @@ except Exception:
 
 # Page configuration
 st.set_page_config(
-    page_title="System C | Institutional SEC 10-K Financial Terminal",
-    page_icon="🏛️",
+    page_title="Institutional SEC 10-K Quantitative Research Terminal",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -866,6 +865,17 @@ def get_llm_status() -> Dict[str, str]:
     return {"provider": provider, "model": model}
 
 
+def _fmt_lat(ms: float) -> str:
+    """Consistently format millisecond latency across all node badges."""
+    if not ms or ms <= 0.0:
+        return ""
+    if ms < 1.0:
+        return "<1ms"
+    if ms < 1000.0:
+        return f"{ms:.0f}ms"
+    return f"{ms / 1000.0:.2f}s"
+
+
 def _render_node_card(
     meta: Dict[str, str],
     tele_text: str,
@@ -879,7 +889,7 @@ def _render_node_card(
     if not is_system_selected:
         state_cls = "node-box state-idle"
         inline_style = ""
-        badge_html = '<span class="node-status-tag" style="background:rgba(148,163,184,0.1); color:#64748B;">OFF</span>'
+        badge_html = '<span class="node-status-tag" style="background:rgba(148,163,184,0.1); color:#64748B;">STANDBY</span>'
     elif is_active:
         state_cls = "node-box state-active"
         inline_style = (
@@ -888,12 +898,12 @@ def _render_node_card(
         )
         badge_html = (
             f'<span class="node-status-tag" style="background:{color}24; color:{color}; '
-            f'border:1px solid {color}; animation: quantActivePulse 1.2s infinite;">● ACTIVE</span>'
+            f'border:1px solid {color}; animation: quantActivePulse 1.2s infinite;">EXEC</span>'
         )
     elif is_visited:
         state_cls = "node-box state-completed"
         inline_style = f"border-left: 2.5px solid {color}AA;"
-        badge_html = '<span class="node-status-tag" style="background:rgba(16,185,129,0.14); color:#10B981;">✓ OK</span>'
+        badge_html = '<span class="node-status-tag" style="background:rgba(16,185,129,0.14); color:#10B981;">DONE</span>'
     elif is_skipped:
         state_cls = "node-box state-skipped"
         inline_style = ""
@@ -901,7 +911,7 @@ def _render_node_card(
     else:
         state_cls = "node-box state-idle"
         inline_style = ""
-        badge_html = '<span class="node-status-tag" style="background:rgba(148,163,184,0.1); color:#64748B;">READY</span>'
+        badge_html = '<span class="node-status-tag" style="background:rgba(148,163,184,0.1); color:#64748B;">STANDBY</span>'
 
     return (
         f'<div class="{state_cls}" style="{inline_style}">'
@@ -979,34 +989,34 @@ def render_visual_state_graph(
         if loop_triggered or active_node == "generator":
             gap_preview = html.escape(str(missing_premises[0])[:56]) if missing_premises else "Targeted Follow-Up Sub-Query"
             hop_banner_cls = "hop-banner hop-banner-active"
-            hop_banner_txt = f"↻ [SYS C HOP {min(current_hop + (1 if active_node == 'generator' else 0), max_hops)} / {max_hops}: Resolving Missing Premises — {gap_preview}]"
+            hop_banner_txt = f"[SYS C HOP {min(current_hop + (1 if active_node == 'generator' else 0), max_hops)} / {max_hops}: Resolving Missing Premises — {gap_preview}]"
         elif is_finished:
             early_stop = is_sufficient and current_hop < max_hops
             hop_banner_cls = "hop-banner hop-banner-complete"
             if early_stop:
-                hop_banner_txt = f"✓ [SYS C EARLY STOP AT HOP {current_hop} / {max_hops} — Critic Score {suff_score:.2f} ≥ {threshold:.2f}]"
+                hop_banner_txt = f"[SYS C EARLY STOP AT HOP {current_hop} / {max_hops} — Critic Score {suff_score:.2f} >= {threshold:.2f}]"
             else:
-                hop_banner_txt = f"✓ [SYS C COMPLETE — {current_hop} / {max_hops} Hops | Latency {elapsed_sec:.2f}s]"
+                hop_banner_txt = f"[SYS C COMPLETE — {current_hop} / {max_hops} Hops | Latency {elapsed_sec:.2f}s]"
         elif active_node:
             hop_banner_cls = "hop-banner hop-banner-normal"
-            hop_banner_txt = f"● [SYS C HOP {current_hop} / {max_hops}: Executing `{active_node.upper()}`]"
+            hop_banner_txt = f"[SYS C HOP {current_hop} / {max_hops}: Executing `{active_node.upper()}`]"
         else:
             hop_banner_cls = "hop-banner hop-banner-normal"
-            hop_banner_txt = f"[SYS C SELECTED — Max {max_hops} Hops | Critic Threshold ≥ {threshold:.2f}]"
+            hop_banner_txt = f"[SYS C SELECTED — Max {max_hops} Hops | Critic Threshold >= {threshold:.2f}]"
     elif active_sys == "B":
         if is_finished:
             hop_banner_cls = "hop-banner hop-banner-complete"
-            hop_banner_txt = f"✓ [SYS B COMPLETE — Mode: {sys_b_mode.upper()} | Top-{len(evidence) or sys_b_top_k} Chunks | {elapsed_sec:.2f}s]"
+            hop_banner_txt = f"[SYS B COMPLETE — Mode: {sys_b_mode.upper()} | Top-{len(evidence) or sys_b_top_k} Chunks | {elapsed_sec:.2f}s]"
         elif active_node:
             hop_banner_cls = "hop-banner hop-banner-active"
-            hop_banner_txt = f"● [SYS B EXECUTING — Single-Pass `{sys_b_mode.upper()}` (Alpha={sys_b_alpha:.2f})]"
+            hop_banner_txt = f"[SYS B EXECUTING — Single-Pass `{sys_b_mode.upper()}` (Alpha={sys_b_alpha:.2f})]"
         else:
             hop_banner_cls = "hop-banner hop-banner-normal"
             hop_banner_txt = f"[SYS B SELECTED — Mode: {sys_b_mode.upper()} | Alpha={sys_b_alpha:.2f} | Top-{sys_b_top_k} (No Critic Loop)]"
     else:
         if is_finished:
             hop_banner_cls = "hop-banner hop-banner-complete"
-            hop_banner_txt = f"✓ [SYS A PLACEHOLDER COMPLETE — Single-Pass Dense Baseline | {elapsed_sec:.2f}s]"
+            hop_banner_txt = f"[SYS A COMPLETE — Single-Pass Dense Baseline | {elapsed_sec:.2f}s]"
         else:
             hop_banner_cls = "hop-banner hop-banner-normal"
             hop_banner_txt = "[SYS A SELECTED — Vanilla Single-Pass Dense RAG (Baseline Placeholder)]"
@@ -1025,36 +1035,43 @@ def render_visual_state_graph(
     c_visited = visited_nodes if is_c_selected else []
     c_active = active_node if is_c_selected else None
     c_v1_text_only = eff_mode in ("adaptive_v1", "fixed_1hop", "fixed_3hop", "v1_amr")
+    c_latencies = telemetry.get("node_latencies_ms", {}) or {}
+
+    dec_lat = _fmt_lat(float(c_latencies.get("decomposer", 0.0))) if (is_c_selected and "decomposer" in c_visited) else ""
+    tab_lat = _fmt_lat(float(c_latencies.get("tabular_tool", 0.0))) if (is_c_selected and "tabular_tool" in c_visited) else ""
+    ret_lat = _fmt_lat(float(c_latencies.get("retriever", 0.0))) if (is_c_selected and "retriever" in c_visited) else ""
+    cri_lat = _fmt_lat(float(c_latencies.get("critic", 0.0))) if (is_c_selected and "critic" in c_visited) else ""
+    syn_lat = _fmt_lat(float(c_latencies.get("synthesizer", 0.0))) if (is_c_selected and "synthesizer" in c_visited) else ""
+    grd_lat = _fmt_lat(float(c_latencies.get("guardrail", 0.0))) if (is_c_selected and "guardrail" in c_visited) else ""
 
     node_tele_c = {
         "decomposer": (
-            f"Tickers: {', '.join(tickers) if tickers else 'Auto'} | {len(sub_queries)} Sub-Q(s)"
+            f"Tickers: {', '.join(tickers) if tickers else 'Auto'} | {len(sub_queries)} Sub-Q(s)" + (f" ({dec_lat})" if dec_lat else "")
             if "decomposer" in c_visited
             else "Ticker & Sub-Query Plan"
         ),
         "tabular_tool": (
-            f"{len(tabular)} XBRL Table(s) Injected"
+            f"{len(tabular)} XBRL Table(s)" + (f" ({tab_lat})" if tab_lat else "")
             if "tabular_tool" in c_visited
-            else ("Bypassed (SYS C v1 Text Mode)" if c_v1_text_only else ("Bypassed (Text Route)" if ("retriever" in c_visited and "tabular_tool" not in c_visited) else "Deterministic SQL/XBRL"))
+            else ("Bypassed (Text Mode)" if c_v1_text_only else ("Bypassed (Text Route)" if ("retriever" in c_visited and "tabular_tool" not in c_visited) else "Deterministic SQL/XBRL"))
         ),
         "retriever": (
-            f"{len(evidence)} Chunks (Hop {current_hop}/{max_hops})"
+            f"{len(evidence)} Chunks (Hop {current_hop}/{max_hops})" + (f" ({ret_lat})" if ret_lat else "")
             if "retriever" in c_visited
             else f"Multi-Hop Search (Max {max_hops})"
         ),
         "critic": (
-            f"Score: {suff_score:.2f} ({'PASS ✓' if is_sufficient else 'LOOP ↻'})"
+            f"Score: {suff_score:.2f} ({'PASS' if is_sufficient else 'LOOP'})" + (f" ({cri_lat})" if cri_lat else "")
             if "critic" in c_visited
-            else f"Self-RAG Critic ≥ {threshold:.2f}"
+            else f"Self-RAG Critic >= {threshold:.2f}"
         ),
         "synthesizer": (
-            f"{len(citations)} Citations Mapped"
+            f"{len(citations)} Citations Mapped" + (f" ({syn_lat})" if syn_lat else "")
             if "synthesizer" in c_visited
             else "Inline Citation Mapper"
         ),
         "guardrail": (
-            f"{len(verified_nums)} Verified | {len(ungrounded_nums)} Flagged"
-            + (f" ({repair_count} Repaired)" if repair_count > 0 else "")
+            f"{len(verified_nums)} Verified | {len(ungrounded_nums)} Flagged" + (f" ({grd_lat})" if grd_lat else "")
             if "guardrail" in c_visited
             else "Scale Verifier + Self-Heal"
         ),
@@ -1078,11 +1095,11 @@ def render_visual_state_graph(
     is_loop_live = is_c_selected and (loop_triggered or c_active == "generator")
     loop_stroke = "#F59E0B" if is_loop_live else ("#10B981" if (is_c_selected and is_finished and current_hop > 1) else "#64748B")
     if is_loop_live:
-        loop_label = f"↻ SYS C REFLECTION LOOP ACTIVE — Critic Score {suff_score:.2f} < {threshold:.2f} ➔ Formulating Hop {current_hop} Follow-Up Sub-Query"
+        loop_label = f"SYS C REFLECTION LOOP ACTIVE — Critic Score {suff_score:.2f} < {threshold:.2f} ➔ Formulating Hop {current_hop} Follow-Up Sub-Query"
     elif is_c_selected and current_hop > 1 and is_finished:
-        loop_label = f"↻ SYS C Multi-Hop Reflection Trace Executed ({current_hop} Hops Total — Sufficiency {score_prog_str})"
+        loop_label = f"SYS C Multi-Hop Reflection Trace Executed ({current_hop} Hops Total — Sufficiency {score_prog_str})"
     else:
-        loop_label = f"↻ SYS C Exclusive Reflection Loop: [C.04 Sufficiency Critic] (< {threshold:.2f}) ➔ Sub-Query Generator ➔ [C.03 Retriever]"
+        loop_label = f"SYS C Exclusive Reflection Loop: [C.04 Sufficiency Critic] (< {threshold:.2f}) ➔ Sub-Query Generator ➔ [C.03 Retriever]"
 
     c_loop_bar = (
         f'<div class="loop-trace-bar" style="border-color:{loop_stroke}55;">'
@@ -1092,24 +1109,24 @@ def render_visual_state_graph(
         f'<div style="display:flex; align-items:center; gap:6px; font-family:var(--quant-mono); font-size:0.67rem; font-weight:800; flex-shrink:0;">'
         f'<span style="color:#F59E0B; background:rgba(245,158,11,0.15); padding:2px 6px; border-radius:3px; border:1px solid rgba(245,158,11,0.4);">[C.04 CRITIC]</span>'
         f'<span style="color:{loop_stroke};">➔</span>'
-        f'<span style="color:#06B6D4; background:rgba(6,182,212,0.15); padding:2px 6px; border-radius:3px; border:1px solid rgba(6,182,212,0.4);">🧠 [SUB-QUERY GEN]</span>'
+        f'<span style="color:#06B6D4; background:rgba(6,182,212,0.15); padding:2px 6px; border-radius:3px; border:1px solid rgba(6,182,212,0.4);">[SUB-QUERY GEN]</span>'
         f'<span style="color:{loop_stroke};">➔</span>'
-        f'<span style="color:#3B82F6; background:rgba(59,130,246,0.15); padding:2px 6px; border-radius:3px; border:1px solid rgba(59,130,246,0.4);">↩ [C.03 RETRIEVER]</span>'
+        f'<span style="color:#3B82F6; background:rgba(59,130,246,0.15); padding:2px 6px; border-radius:3px; border:1px solid rgba(59,130,246,0.4);">[C.03 RETRIEVER]</span>'
         f"</div>"
         f"</div>"
     )
 
     c_tier_cls = "sys-tier-card sys-tier-active" if is_c_selected else "sys-tier-card sys-tier-inactive"
     c_status_pill = (
-        '<span class="metric-badge badge-amber">● ACTIVE ARCHITECTURE (LIT UP)</span>'
+        '<span class="metric-badge badge-amber">ACTIVE ARCHITECTURE</span>'
         if is_c_selected
-        else '<span class="metric-badge">STANDBY // GREYED OUT</span>'
+        else '<span class="metric-badge">STANDBY</span>'
     )
     sys_c_block = (
         f'<div class="{c_tier_cls}">'
         f'<div class="sys-tier-header">'
         f'<div class="sys-tier-title" style="color:{"#F59E0B" if is_c_selected else "var(--term-text-muted)"};">'
-        f'🏛️ SYS C // ADAPTIVE MULTI-HOP STATE MACHINE (LANGGRAPH + CRITIC LOOP + XBRL + SELF-HEALING GUARDRAIL)'
+        f'SYS C // ADAPTIVE MULTI-HOP STATE MACHINE (LANGGRAPH + CRITIC LOOP + XBRL + GUARDRAIL)'
         f"</div>"
         f"{c_status_pill}"
         f"</div>"
@@ -1132,47 +1149,48 @@ def render_visual_state_graph(
     b_dense_skipped = sys_b_mode == "bm25"
     b_rerank_skipped = sys_b_mode in ("bm25", "dense")
 
+    b_bm25_lat = _fmt_lat(float(b_timings.get("bm25_seconds", 0.0)) * 1000.0) if (is_b_selected and is_finished) else ""
+    b_dense_lat = _fmt_lat(float(b_timings.get("dense_seconds", 0.0)) * 1000.0) if (is_b_selected and is_finished) else ""
+    b_rerank_lat = _fmt_lat(float(b_timings.get("rerank_seconds", 0.0)) * 1000.0) if (is_b_selected and is_finished) else ""
+    b_gen_lat = _fmt_lat(float(b_timings.get("generation_seconds", 0.0)) * 1000.0) if (is_b_selected and is_finished) else ""
+
     node_tele_b = {
         "b_scope": (
             f"Tickers: {', '.join(tickers) if tickers else 'Auto'} | {b_chunks_total:,} Chunks"
-            if (is_b_selected and b_chunks_total > 0)
+            if (is_b_selected and is_finished and b_chunks_total > 0)
             else "Ticker & Year Scope Filter"
         ),
         "b_bm25": (
-            "Bypassed (Dense-Only Mode)"
+            "Bypassed (Dense-Only)"
             if b_bm25_skipped
             else (
-                f"30 Cand | {float(b_timings.get('bm25_seconds', 0.0)) * 1000:.0f}ms"
+                f"30 Candidates" + (f" ({b_bm25_lat})" if b_bm25_lat else "")
                 if (is_b_selected and is_finished)
                 else "Okapi BM25 (30 Candidates)"
             )
         ),
         "b_dense": (
-            "Bypassed (BM25-Only Mode)"
+            "Bypassed (BM25-Only)"
             if b_dense_skipped
             else (
-                f"30 Cand | {float(b_timings.get('dense_seconds', 0.0)) * 1000:.0f}ms"
+                f"30 Candidates" + (f" ({b_dense_lat})" if b_dense_lat else "")
                 if (is_b_selected and is_finished)
-                else "BGE-Small Cosine (30 Cand)"
+                else "BGE Dense Cosine (30 Cand)"
             )
         ),
         "b_rerank": (
-            f"Bypassed ({sys_b_mode.upper()} Mode)"
+            f"Bypassed ({sys_b_mode.upper()})"
             if b_rerank_skipped
             else (
-                f"Alpha={sys_b_alpha:.2f} + Rerank ({float(b_timings.get('rerank_seconds', 0.0)) * 1000:.0f}ms)"
-                if (is_b_selected and is_finished and sys_b_mode == "hybrid_rerank")
-                else (
-                    f"Alpha={sys_b_alpha:.2f} Fusion (No Rerank)"
-                    if sys_b_mode == "hybrid"
-                    else f"Alpha={sys_b_alpha:.2f} + Cross-Encoder Top-{sys_b_top_k}"
-                )
+                f"Alpha={sys_b_alpha:.2f}" + (f" + Rerank ({b_rerank_lat})" if sys_b_mode == "hybrid_rerank" and b_rerank_lat else "")
+                if (is_b_selected and is_finished)
+                else f"Alpha={sys_b_alpha:.2f} + Cross-Encoder Top-{sys_b_top_k}"
             )
         ),
         "b_generator": (
-            f"Top-{len(b_hits_list)} Context | {float(b_timings.get('generation_seconds', 0.0)):.2f}s"
+            f"Top-{len(b_hits_list)} Context" + (f" ({b_gen_lat})" if b_gen_lat else "")
             if (is_b_selected and is_finished)
-            else f"1x LLM Call (Top-{sys_b_top_k} Chunks)"
+            else f"Single LLM Call (Top-{sys_b_top_k} Chunks)"
         ),
     }
 
@@ -1201,7 +1219,7 @@ def render_visual_state_graph(
     b_flow_bar = (
         f'<div class="loop-trace-bar" style="border-color:{b_bar_col}55;">'
         f'<div style="font-family:var(--quant-mono); font-size:0.71rem; color:{b_bar_col}; font-weight:700;">'
-        f"⚡ SYS B SINGLE-PASS LINEAR PIPELINE (Mode: {html.escape(sys_b_mode.upper())} | Alpha={sys_b_alpha:.2f}) — Single-Pass Retrieval &amp; Generation (No Reflection Loop)"
+        f"SYS B SINGLE-PASS PIPELINE (Mode: {html.escape(sys_b_mode.upper())} | Alpha={sys_b_alpha:.2f}) — Single-Pass Retrieval &amp; Generation (No Reflection Loop)"
         f"</div>"
         f'<div style="display:flex; align-items:center; gap:6px; font-family:var(--quant-mono); font-size:0.67rem; font-weight:800; flex-shrink:0;">'
         f'<span style="color:#10B981; background:rgba(16,185,129,0.14); padding:2px 6px; border-radius:3px;">[B.02 BM25]</span>'
@@ -1210,22 +1228,22 @@ def render_visual_state_graph(
         f'<span style="color:{b_bar_col};">➔</span>'
         f'<span style="color:#EC4899; background:rgba(236,72,153,0.14); padding:2px 6px; border-radius:3px;">[B.04 FUSION/RERANK]</span>'
         f'<span style="color:{b_bar_col};">➔</span>'
-        f'<span style="color:#6366F1; background:rgba(99,102,241,0.14); padding:2px 6px; border-radius:3px;">[B.05 1x GENERATE]</span>'
+        f'<span style="color:#6366F1; background:rgba(99,102,241,0.14); padding:2px 6px; border-radius:3px;">[B.05 GENERATE]</span>'
         f"</div>"
         f"</div>"
     )
 
     b_tier_cls = "sys-tier-card sys-tier-active" if is_b_selected else "sys-tier-card sys-tier-inactive"
     b_status_pill = (
-        f'<span class="metric-badge badge-cyan">● ACTIVE ARCHITECTURE ({html.escape(sys_b_mode.upper())})</span>'
+        f'<span class="metric-badge badge-cyan">ACTIVE ARCHITECTURE ({html.escape(sys_b_mode.upper())})</span>'
         if is_b_selected
-        else '<span class="metric-badge">STANDBY // GREYED OUT</span>'
+        else '<span class="metric-badge">STANDBY</span>'
     )
     sys_b_block = (
         f'<div class="{b_tier_cls}" style="{"border-left-color:#06B6D4;" if is_b_selected else ""}">'
         f'<div class="sys-tier-header">'
         f'<div class="sys-tier-title" style="color:{"#06B6D4" if is_b_selected else "var(--term-text-muted)"};">'
-        f'🔎 SYS B // SINGLE-PASS HYBRID + CROSS-ENCODER RERANK RAG (KEVIN — NO CRITIC NODE)'
+        f'SYS B // SINGLE-PASS HYBRID + CROSS-ENCODER RERANK RAG (NO CRITIC NODE)'
         f"</div>"
         f"{b_status_pill}"
         f"</div>"
@@ -1238,24 +1256,30 @@ def render_visual_state_graph(
     # 3. BUILD SYS A TIER (3 NODES — VANILLA DENSE PLACEHOLDER, NO CRITIC)
     # -----------------------------------------------------------------------
     is_a_selected = active_sys == "A"
+    a_lat = _fmt_lat(elapsed_sec * 1000.0) if (is_a_selected and is_finished) else ""
+    node_tele_a = {
+        "a_embed": "Query Vector Embedded" if (is_a_selected and is_finished) else "Query Embedding (bge-small-en-v1.5)",
+        "a_lookup": "Top-4 Chunks Retrieved" if (is_a_selected and is_finished) else "Single-Pass Dense Cosine Search (Top-4)",
+        "a_generate": f"Generated Synthesis" + (f" ({a_lat})" if a_lat else "") if (is_a_selected and is_finished) else "Direct Prompt Generation (Single Call)",
+    }
     a_cards: List[str] = []
     for meta in NODE_META_SYS_A:
         nid = meta["id"]
         is_act = is_a_selected and (active_node == nid)
         is_vis = is_a_selected and (nid in visited_nodes or is_finished)
-        a_cards.append(_render_node_card(meta, meta["default_desc"], is_act, is_vis, False, is_a_selected))
+        a_cards.append(_render_node_card(meta, node_tele_a.get(nid, meta["default_desc"]), is_act, is_vis, False, is_a_selected))
 
     a_tier_cls = "sys-tier-card sys-tier-active" if is_a_selected else "sys-tier-card sys-tier-inactive"
     a_status_pill = (
-        '<span class="metric-badge badge-blue">● ACTIVE ARCHITECTURE (PLACEHOLDER)</span>'
+        '<span class="metric-badge badge-blue">ACTIVE ARCHITECTURE (PLACEHOLDER)</span>'
         if is_a_selected
-        else '<span class="metric-badge">STANDBY // GREYED OUT</span>'
+        else '<span class="metric-badge">STANDBY</span>'
     )
     sys_a_block = (
         f'<div class="{a_tier_cls}" style="{"border-left-color:#3B82F6;" if is_a_selected else ""}">'
         f'<div class="sys-tier-header">'
         f'<div class="sys-tier-title" style="color:{"#3B82F6" if is_a_selected else "var(--term-text-muted)"};">'
-        f'📘 SYS A // VANILLA SINGLE-PASS DENSE RAG (BASELINE PLACEHOLDER — NO BM25 / NO RERANK / NO CRITIC)'
+        f'SYS A // VANILLA SINGLE-PASS DENSE RAG (BASELINE PLACEHOLDER — NO BM25 / NO RERANK / NO CRITIC)'
         f"</div>"
         f"{a_status_pill}"
         f"</div>"
@@ -1334,7 +1358,7 @@ def render_visual_state_graph(
     return (
         f'<div class="pipeline-shell">'
         f'<div class="pipeline-header-bar">'
-        f'<div class="pipeline-title">⚡ 3-SYSTEM COMPARATIVE ARCHITECTURE TOPOLOGY (ACTIVE: SYS {active_sys} LIT UP // OTHERS GREYED OUT)</div>'
+        f'<div class="pipeline-title">3-SYSTEM COMPARATIVE ARCHITECTURE TOPOLOGY (ACTIVE: SYS {active_sys} // STANDBY: OTHERS)</div>'
         f'<div class="{hop_banner_cls}">{hop_banner_txt}</div>'
         f"</div>"
         f"{sys_c_block}"
@@ -1446,7 +1470,7 @@ def render_grounding_pills_html(
         ungrounded_html = (
             '<div class="pills-wrap">'
             '<span class="grounding-pill pill-verified" title="Every extracted numerical claim matched SEC ground-truth context.">'
-            "<span>🛡️ 0 Hallucinated Figures — 100% Grounded</span>"
+            "<span>0 Hallucinated Figures — 100% Grounded</span>"
             "</span></div>"
         )
 
@@ -1501,7 +1525,7 @@ def render_multihop_timeline_html(state: Dict[str, Any]) -> str:
         blocks.append(
             f'<div class="timeline-card" style="border-left: 3.5px solid var(--quant-amber); background: rgba(245, 158, 11, 0.08); margin-bottom:12px;">'
             f'<div style="font-family:var(--quant-mono); font-weight:800; font-size:0.80rem; color:var(--quant-amber); margin-bottom:3px;">'
-            f'💡 EXECUTIVE TL;DR: WHY SYSTEM C EXECUTED {curr_hop} SEQUENTIAL HOPS'
+            f'EXECUTIVE TL;DR: WHY SYSTEM C EXECUTED {curr_hop} SEQUENTIAL HOPS'
             f'</div>'
             f'<div style="font-size:0.83rem; line-height:1.45;">'
             f'&bull; <strong>Hop 01 Audit:</strong> Sufficiency scored <code>{float(intermediate[0].get("sufficiency_score", 0.0)):.2f} &lt; {threshold:.2f}</code> because <em>{gap_summary}</em> was missing from initial retrieved chunks.<br/>'
@@ -1512,7 +1536,7 @@ def render_multihop_timeline_html(state: Dict[str, Any]) -> str:
         blocks.append(
             f'<div class="timeline-card" style="border-left: 3.5px solid #10B981; background: rgba(16, 185, 129, 0.08); margin-bottom:12px;">'
             f'<div style="font-family:var(--quant-mono); font-weight:800; font-size:0.80rem; color:#10B981; margin-bottom:2px;">'
-            f'💡 EXECUTIVE TL;DR: DIRECT SINGLE-HOP RESOLUTION'
+            f'EXECUTIVE TL;DR: DIRECT SINGLE-HOP RESOLUTION'
             f'</div>'
             f'<div style="font-size:0.83rem; line-height:1.45;">'
             f'All requested financial metrics and line-item premises were completely satisfied in Hop 01 (Sufficiency: <code>{float(state.get("sufficiency_score", 0.0)):.2f} &ge; {threshold:.2f}</code>). Zero extra retrieval hops needed.'
@@ -1584,7 +1608,7 @@ def render_multihop_timeline_html(state: Dict[str, Any]) -> str:
             gaps_html = f'<div style="margin-top:8px;">{gap_chips}</div>'
 
         redundant_html = (
-            '<div style="margin-top:6px; font-family:var(--quant-mono); font-size:0.74rem; color:#06B6D4; font-weight:700;">🛡️ Saturation Guard: Prevented duplicate retrieval loop.</div>'
+            '<div style="margin-top:6px; font-family:var(--quant-mono); font-size:0.74rem; color:#06B6D4; font-weight:700;">[Saturation Guard: Prevented duplicate retrieval loop]</div>'
             if redundant_prev
             else ""
         )
@@ -1628,7 +1652,7 @@ def render_multihop_timeline_html(state: Dict[str, Any]) -> str:
             f'<div class="timeline-card" style="border-left: 3px solid #10B981; background:rgba(16,185,129,0.07);">'
             f'<div class="timeline-dot" style="background:#10B981;"></div>'
             f'<div style="font-family:var(--quant-mono); font-weight:800; color:#10B981; font-size:0.84rem;">'
-            f"⚡ EARLY STOPPING TRIGGERED AT HOP {curr_hop} / {max_hops} — Bypassed {max_hops - curr_hop} redundant hop(s), routing directly to Synthesizer &amp; Active Guardrail."
+            f"[EARLY STOPPING TRIGGERED AT HOP {curr_hop} / {max_hops}] — Bypassed {max_hops - curr_hop} redundant hop(s), routing directly to Synthesizer &amp; Active Guardrail."
             f"</div></div>"
         )
     else:
@@ -1643,42 +1667,64 @@ def render_multihop_timeline_html(state: Dict[str, Any]) -> str:
     return f'<div class="timeline-container">{"".join(blocks)}</div>'
 
 
+if "active_sys_code" not in st.session_state:
+    st.session_state["active_sys_code"] = "SYS_C"
+
+def set_active_sys(code: str):
+    st.session_state["active_sys_code"] = code
+
+
 # ---------------------------------------------------------------------------
 # SIDEBAR CONFIGURATION
 # ---------------------------------------------------------------------------
 with st.sidebar:
     brand_placeholder = st.empty()
 
-    st.subheader("1. Active System Architecture")
-    sys_family = st.radio(
-        "Select Architecture Pipeline:",
-        [
-            "🏛️ SYS C: Adaptive Multi-Hop RAG",
-            "⚡ SYS B: Single-Pass Hybrid + Rerank",
-            "📦 SYS A: Vanilla Dense Baseline",
-        ],
-        index=0,
-        help="Switch between SYS C (Adaptive Multi-Hop State Machine with Sufficiency Critic), SYS B (Single-Pass Okapi BM25 + BGE Dense + Cross-Encoder Reranker), and SYS A (Vanilla Dense Baseline).",
-        key="active_sys_family",
+    st.subheader("1. System Architecture")
+    active_code = st.session_state.get("active_sys_code", "SYS_C")
+
+    def on_side_sys_change():
+        st.session_state["active_sys_code"] = st.session_state["side_sys_choice"]
+
+    side_sys_options = {
+        "SYS_C": "SYS C // Adaptive Multi-Hop RAG",
+        "SYS_B": "SYS B // Single-Pass Hybrid + Rerank",
+        "SYS_A": "SYS A // Vanilla Dense Baseline",
+    }
+    st.selectbox(
+        "Active Pipeline:",
+        options=["SYS_C", "SYS_B", "SYS_A"],
+        index=["SYS_C", "SYS_B", "SYS_A"].index(active_code),
+        format_func=lambda x: side_sys_options[x],
+        key="side_sys_choice",
+        on_change=on_side_sys_change,
+        help="Select between SYS C (Adaptive Multi-Hop State Machine with Sufficiency Critic), SYS B (Single-Pass Okapi BM25 + BGE Dense + Cross-Encoder Reranker), and SYS A (Vanilla Dense Baseline).",
     )
 
-    if sys_family.startswith("🏛️ SYS C"):
+    if active_code == "SYS_B":
+        mode_selection = "system_b"
+        active_sys_prefix = "SYS.B"
+        active_sys_sub = "SINGLE-PASS HYBRID + RERANK"
+    elif active_code == "SYS_A":
+        mode_selection = "system_a"
+        active_sys_prefix = "SYS.A"
+        active_sys_sub = "VANILLA DENSE BASELINE"
+    else:
+        active_sys_prefix = "SYS.C"
+        active_sys_sub = "ADAPTIVE MULTI-HOP RAG"
         mode_selection = st.selectbox(
             "SYS C Operating Mode",
             options=["v2_aamr", "adaptive_v1", "fixed_1hop", "fixed_3hop"],
             index=0,
             format_func=lambda x: {
-                "v2_aamr": "SYS C (v2): Agentic AMR (XBRL + 10-K Text Router)",
-                "adaptive_v1": "SYS C (v1): Adaptive Multi-Hop (Text Only)",
-                "fixed_1hop": "SYS C (Ablation): Fixed 1-Hop",
-                "fixed_3hop": "SYS C (Ablation): Fixed 3-Hop",
+                "v2_aamr": "Agentic AMR (v2: XBRL + 10-K Router)",
+                "adaptive_v1": "Adaptive AMR (v1: Text Only)",
+                "fixed_1hop": "Ablation: Fixed 1-Hop",
+                "fixed_3hop": "Ablation: Fixed 3-Hop",
             }[x],
             help="Select SYS C variant: Adaptive Agentic (v2), Text-only Adaptive (v1), or Ablation hops.",
+            key="side_sys_c_mode",
         )
-    elif sys_family.startswith("⚡ SYS B"):
-        mode_selection = "system_b"
-    else:
-        mode_selection = "system_a"
 
     active_sys_prefix = "SYS.B" if mode_selection == "system_b" else ("SYS.A" if mode_selection == "system_a" else "SYS.C")
     active_sys_sub = (
@@ -1736,7 +1782,7 @@ with st.sidebar:
         max_hops = 1
         sufficiency_threshold = 1.0
     elif mode_selection == "system_a":
-        st.info("📘 **SYS A Placeholder**: Vanilla single-pass dense vector lookup without BM25, Cross-Encoder reranking, or Critic reflection.")
+        st.info("**SYS A Baseline**: Vanilla single-pass dense vector lookup without BM25, Cross-Encoder reranking, or Critic reflection.")
         sys_b_retrieval_mode = "dense"
         sys_b_alpha = 1.0
         sys_b_top_k = 4
@@ -1863,36 +1909,19 @@ with st.sidebar:
     st.divider()
 
     st.subheader("3. Benchmark Presets (Evaluation Suite)")
-    preset_suite = st.radio(
-        "Benchmark Suite:",
-        ["FinQA Academic Benchmark (2015+ Pool)", "Canonical Golden Set (60 Qs)"],
-        index=0,
-        horizontal=True,
-        key="preset_suite_selector",
-    )
-    if preset_suite.startswith("FinQA"):
-        st.caption("Verified SEC 10-K evaluation queries (FY2015–FY2025):")
-        all_pool = load_benchmark_pool()
-        for group_label, recipe_key in BENCHMARK_RECIPE_GROUPS.items():
-            group_items = [q for q in all_pool if q.get("recipe") == recipe_key]
-            if not group_items:
-                continue
-            with st.expander(f"{group_label}", expanded=(recipe_key == "table")):
-                for item in group_items:
-                    btn_label = f"[{item['id'].upper()}] {item['ticker']} FY{item['year']}: {item['question'][:45]}..."
-                    if st.button(btn_label, use_container_width=True, key=f"side_bm_{item['id']}"):
-                        st.session_state["user_query_input"] = item["question"]
-                        st.session_state["active_benchmark_item"] = item
-                        st.rerun()
-    else:
-        st.caption("Load verified multi-hop SEC 10-K evaluation queries:")
-        for tier_title, questions in TIERED_GOLDEN_QUERIES.items():
-            with st.expander(tier_title, expanded=(tier_title.startswith("Tier 1"))):
-                for q_id, q_label, full_q in questions:
-                    if st.button(f"{q_id}: {q_label}", use_container_width=True, key=f"side_{q_id}"):
-                        st.session_state["user_query_input"] = full_q
-                        st.session_state["active_benchmark_item"] = None
-                        st.rerun()
+    st.caption("Verified SEC 10-K FinQA/TAT-QA evaluation queries (FY2015–FY2025):")
+    all_pool = load_benchmark_pool()
+    for group_label, recipe_key in BENCHMARK_RECIPE_GROUPS.items():
+        group_items = [q for q in all_pool if q.get("recipe") == recipe_key]
+        if not group_items:
+            continue
+        with st.expander(f"{group_label}", expanded=(recipe_key == "table")):
+            for item in group_items:
+                btn_label = f"[{item['id'].upper()}] {item['ticker']} FY{item['year']}: {item['question'][:45]}..."
+                if st.button(btn_label, use_container_width=True, key=f"side_bm_{item['id']}"):
+                    st.session_state["user_query_input"] = item["question"]
+                    st.session_state["active_benchmark_item"] = item
+                    st.rerun()
 
     st.divider()
 
@@ -1951,32 +1980,32 @@ st.markdown(
 # Top-Level System Architecture Switcher (Instant 1-click toggling between SYS C, SYS B, and SYS A)
 top_col1, top_col2, top_col3 = st.columns(3)
 with top_col1:
-    if st.button(
-        "🏛️ SYS C: Adaptive Multi-Hop RAG" + (" (ACTIVE)" if active_sys_prefix == "SYS.C" else ""),
+    st.button(
+        "SYS C // ADAPTIVE MULTI-HOP" + (" [ACTIVE]" if active_sys_prefix == "SYS.C" else ""),
         type="primary" if active_sys_prefix == "SYS.C" else "secondary",
         use_container_width=True,
         key="nav_btn_sys_c",
-    ):
-        st.session_state["active_sys_family"] = "🏛️ SYS C: Adaptive Multi-Hop"
-        st.rerun()
+        on_click=set_active_sys,
+        args=("SYS_C",),
+    )
 with top_col2:
-    if st.button(
-        "⚡ SYS B: Single-Pass Hybrid + Rerank" + (" (ACTIVE)" if active_sys_prefix == "SYS.B" else ""),
+    st.button(
+        "SYS B // HYBRID + RERANK" + (" [ACTIVE]" if active_sys_prefix == "SYS.B" else ""),
         type="primary" if active_sys_prefix == "SYS.B" else "secondary",
         use_container_width=True,
         key="nav_btn_sys_b",
-    ):
-        st.session_state["active_sys_family"] = "⚡ SYS B: Single-Pass Hybrid + Rerank"
-        st.rerun()
+        on_click=set_active_sys,
+        args=("SYS_B",),
+    )
 with top_col3:
-    if st.button(
-        "📦 SYS A: Vanilla Dense Baseline" + (" (ACTIVE)" if active_sys_prefix == "SYS.A" else ""),
+    st.button(
+        "SYS A // DENSE BASELINE" + (" [ACTIVE]" if active_sys_prefix == "SYS.A" else ""),
         type="primary" if active_sys_prefix == "SYS.A" else "secondary",
         use_container_width=True,
         key="nav_btn_sys_a",
-    ):
-        st.session_state["active_sys_family"] = "📦 SYS A: Vanilla Dense Baseline"
-        st.rerun()
+        on_click=set_active_sys,
+        args=("SYS_A",),
+    )
 
 # Company Coverage Ticker Strip (Clean summary of data availability)
 ticker_badges = "".join(
@@ -1992,7 +2021,7 @@ st.markdown(
     f'{ticker_badges}'
     f'</div>'
     f'<div style="font-family:var(--quant-mono); font-size:0.70rem; color:var(--text-muted);">'
-    f'📊 <strong>Available Corpus:</strong> <code>FY2010 – FY2026</code> &bull; 10 Large-Cap Filers'
+    f'<strong>Available Corpus:</strong> <code>FY2010 – FY2026</code> &bull; 10 Large-Cap Filers'
     f'</div>'
     f'</div>',
     unsafe_allow_html=True,
@@ -2001,7 +2030,7 @@ st.markdown(
 # Main-Stage Quick-Start Preset Chips (FTUX 1-Click Action across 1, 2, and 3 Hops)
 st.markdown(
     '<div style="font-family:var(--quant-mono); font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--text-color); margin-bottom:6px;">'
-    '⚡ FinQA Academic Benchmark Presets (Click any chip to test across SYS A, SYS B, or SYS C):'
+    'FinQA Academic Benchmark Presets (1-Click Test across SYS A, SYS B, or SYS C):'
     '</div>',
     unsafe_allow_html=True,
 )
@@ -2011,51 +2040,28 @@ if len(featured_bms) >= 4:
     col_q1, col_q2, col_q3, col_q4 = st.columns(4)
     with col_q1:
         f1 = featured_bms[0]
-        if st.button(f"🟢 1-Hop Math ({f1['id'].upper()})\n{f1['ticker']} FY{f1['year']} Restructuring R&D", use_container_width=True, key="quick_bm1"):
+        if st.button(f"[T1] 1-HOP MATH // {f1['id'].upper()}\n{f1['ticker']} FY{f1['year']} Restructuring R&D", use_container_width=True, key="quick_bm1"):
             st.session_state["user_query_input"] = f1["question"]
             st.session_state["active_benchmark_item"] = f1
             st.rerun()
     with col_q2:
         f2 = featured_bms[1]
         years_s = "-".join(str(y)[2:] for y in f2.get("applicable_years", [f2["year"]]))
-        if st.button(f"🔵 2-Hop Cross-Year ({f2['id'].upper()})\n{f2['ticker']} FY{years_s} Diluted EPS YoY", use_container_width=True, key="quick_bm2"):
+        if st.button(f"[T2] CROSS-YEAR // {f2['id'].upper()}\n{f2['ticker']} FY{years_s} Diluted EPS YoY", use_container_width=True, key="quick_bm2"):
             st.session_state["user_query_input"] = f2["question"]
             st.session_state["active_benchmark_item"] = f2
             st.rerun()
     with col_q3:
         f3 = featured_bms[2]
-        if st.button(f"🟣 Table + Footnote ({f3['id'].upper()})\n{f3['ticker']} FY{f3['year']} Tegra Processor", use_container_width=True, key="quick_bm3"):
+        if st.button(f"[T3] TABLE + FOOTNOTE // {f3['id'].upper()}\n{f3['ticker']} FY{f3['year']} Tegra Processor", use_container_width=True, key="quick_bm3"):
             st.session_state["user_query_input"] = f3["question"]
             st.session_state["active_benchmark_item"] = f3
             st.rerun()
     with col_q4:
         f4 = featured_bms[3]
-        if st.button(f"🟡 Cloud Infrastructure ({f4['id'].upper()})\n{f4['ticker']} FY{f4['year']} Cloud GPU Leases", use_container_width=True, key="quick_bm4"):
+        if st.button(f"[T4] CLOUD LEASES // {f4['id'].upper()}\n{f4['ticker']} FY{f4['year']} Cloud GPU Leases", use_container_width=True, key="quick_bm4"):
             st.session_state["user_query_input"] = f4["question"]
             st.session_state["active_benchmark_item"] = f4
-            st.rerun()
-
-with st.expander("⚡ Or load Multi-Company Canonical Golden Presets (GOLD-01, 16, 36, 51)", expanded=False):
-    col_g1, col_g2, col_g3, col_g4 = st.columns(4)
-    with col_g1:
-        if st.button("🟢 GOLD-01 (1 Hop)\nNVDA Period & HQ", use_container_width=True, key="quick_g01"):
-            st.session_state["user_query_input"] = "What was NVIDIA's fiscal year 2026 period end date, and where is its principal executive office located?"
-            st.session_state["active_benchmark_item"] = None
-            st.rerun()
-    with col_g2:
-        if st.button("🔵 GOLD-16 (2 Hops)\nNVDA YoY Growth", use_container_width=True, key="quick_g16"):
-            st.session_state["user_query_input"] = "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate."
-            st.session_state["active_benchmark_item"] = None
-            st.rerun()
-    with col_g3:
-        if st.button("🟣 GOLD-36 (2 Hops)\nNVDA Compute vs Notes", use_container_width=True, key="quick_g36"):
-            st.session_state["user_query_input"] = "How did NVIDIA's Compute & Networking segment perform in FY2026, and what specific direct customer concentration percentages were disclosed in the Notes to Consolidated Financial Statements?"
-            st.session_state["active_benchmark_item"] = None
-            st.rerun()
-    with col_g4:
-        if st.button("🟡 GOLD-51 (3 Hops)\nCloud Margins Battle", use_container_width=True, key="quick_g51"):
-            st.session_state["user_query_input"] = "Compare the 2024 enterprise cloud segment revenue, operating income, and operating margin across Microsoft (Intelligent Cloud), Amazon (AWS), and Alphabet (Google Cloud). Which cloud provider generated the highest operating margin in 2024, and which achieved the highest year-over-year revenue growth rate?"
-            st.session_state["active_benchmark_item"] = None
             st.rerun()
 
 # Query Input Console
@@ -2087,7 +2093,7 @@ if active_bm and query_text.strip() == active_bm.get("question", "").strip():
         f'<div style="margin-top:4px; margin-bottom:12px; padding:9px 13px; background:var(--term-bg-surface); border:1px solid var(--term-border); border-left:4px solid #10B981; border-radius:var(--quant-radius);">'
         f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">'
         f'<span style="font-family:var(--quant-mono); font-size:0.75rem; font-weight:800; color:#10B981;">'
-        f'🎯 ACADEMIC BENCHMARK GROUND TRUTH SPEC // {qid.upper()} ({tkr} &bull; FY{yrs_str} &bull; {rcp.upper()})'
+        f'BENCHMARK SPECIFICATION // FINQA VERIFIED GROUND TRUTH // {qid.upper()} ({tkr} &bull; FY{yrs_str} &bull; {rcp.upper()})'
         f'</span>'
         f'<span class="metric-badge badge-emerald">VERIFIED FINQA / TAT-QA</span>'
         f'</div>'
@@ -2100,7 +2106,7 @@ if active_bm and query_text.strip() == active_bm.get("question", "").strip():
     )
     gold_ev = active_bm.get("gold_evidence", [])
     if gold_ev:
-        with st.expander(f"📌 Ground-Truth SEC 10-K Evidence Quotes ({len(gold_ev)} Filings / Sections Mapped)", expanded=False):
+        with st.expander(f"Ground-Truth SEC 10-K Evidence References ({len(gold_ev)} Filings / Sections Mapped)", expanded=False):
             for i, ev in enumerate(gold_ev):
                 st.markdown(
                     f"**[{i+1}] {html.escape(str(ev.get('doc_id', '')))}** &bull; "
@@ -2111,7 +2117,7 @@ if active_bm and query_text.strip() == active_bm.get("question", "").strip():
 
 col_run, col_hint = st.columns([1.5, 5.5])
 with col_run:
-    run_btn = st.button(f"⚡ Execute {active_sys_prefix} Query", type="primary", use_container_width=True)
+    run_btn = st.button(f"EXECUTE // {active_sys_prefix} QUERY", type="primary", use_container_width=True)
 with col_hint:
     profile_desc = (
         f"SYS B ({sys_b_retrieval_mode.upper()}) • Alpha: {sys_b_alpha:.2f} • Top-K: {sys_b_top_k} (No Critic)"
@@ -2124,7 +2130,7 @@ with col_hint:
     )
     st.markdown(
         f'<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:3px;">'
-        f'<span class="metric-badge badge-emerald">⚡ {html.escape(selected_provider.upper())} Engine Ready</span>'
+        f'<span class="metric-badge badge-emerald">{html.escape(selected_provider.upper())} ENGINE READY</span>'
         f'<span style="font-family:var(--quant-mono); font-size:0.70rem; opacity:0.85;">Active Profile: <code>{html.escape(profile_desc)}</code></span>'
         f'</div>',
         unsafe_allow_html=True,
@@ -2179,13 +2185,13 @@ if run_btn and query_text.strip():
                 unsafe_allow_html=True,
             )
             label_title = (
-                "⚡ Executing SYS A Single-Pass Vanilla Dense Baseline (Placeholder)..."
+                "Executing SYS A Single-Pass Vanilla Dense Baseline (Placeholder)..."
                 if is_sys_a
-                else f"⚡ Executing SYS B Single-Pass Pipeline ({eff_b_mode}, alpha={eff_b_alpha:.2f})..."
+                else f"Executing SYS B Single-Pass Pipeline ({eff_b_mode}, alpha={eff_b_alpha:.2f})..."
             )
             with status_log_slot.status(label_title, expanded=True) as status_box:
                 status_box.write(
-                    f"🔎 **[{active_sys_prefix} Retriever]** Running `{eff_b_mode}` (alpha=`{eff_b_alpha:.2f}`, top_k=`{eff_b_topk}`)..."
+                    f"**[{active_sys_prefix} Retriever]** Running `{eff_b_mode}` (alpha=`{eff_b_alpha:.2f}`, top_k=`{eff_b_topk}`)..."
                 )
                 eff_b_tickers = list(selected_tickers) if selected_tickers else None
                 active_bm = st.session_state.get("active_benchmark_item")
@@ -2209,15 +2215,15 @@ if run_btn and query_text.strip():
                 b_raw = live_state.get("system_b_raw", {})
                 b_timings = b_raw.get("timings", {})
                 status_box.write(
-                    f"📚 **[{active_sys_prefix} Corpus: {b_raw.get('corpus_source')}]** Indexed `{b_raw.get('corpus_chunks', 0):,}` chunks ➔ "
+                    f"**[{active_sys_prefix} Corpus: {b_raw.get('corpus_source')}]** Indexed `{b_raw.get('corpus_chunks', 0):,}` chunks ➔ "
                     f"Retrieved `{len(b_raw.get('hits', []))}` top hits in `{float(b_timings.get('retrieval_seconds', 0.0)):.2f}s`"
                 )
                 status_box.write(
-                    f"✍️ **[{active_sys_prefix} Single-Pass Generator]** Generated answer in `{float(b_timings.get('generation_seconds', 0.0)):.2f}s` "
+                    f"**[{active_sys_prefix} Single-Pass Generator]** Generated answer in `{float(b_timings.get('generation_seconds', 0.0)):.2f}s` "
                     f"(Citations recognized: `{b_raw.get('has_citations')}`)"
                 )
                 status_box.update(
-                    label=f"✅ {active_sys_prefix} ({eff_b_mode}) — Completed in {total_wall_time:.2f}s (Single-Pass | {len(b_raw.get('hits', []))} Chunks)",
+                    label=f"[DONE] {active_sys_prefix} ({eff_b_mode}) — Completed in {total_wall_time:.2f}s (Single-Pass | {len(b_raw.get('hits', []))} Chunks)",
                     state="complete",
                     expanded=False,
                 )
@@ -2310,7 +2316,7 @@ if run_btn and query_text.strip():
                 unsafe_allow_html=True,
             )
 
-            with status_log_slot.status("⚡ Executing SYS C Multi-Hop LangGraph State Machine...", expanded=True) as status_box:
+            with status_log_slot.status("Executing SYS C Multi-Hop LangGraph State Machine...", expanded=True) as status_box:
                 for step_event in compiled_graph.stream(live_state):
                     for node_name, node_update in step_event.items():
                         if isinstance(node_update, dict):
@@ -2331,19 +2337,19 @@ if run_btn and query_text.strip():
                             t_list = live_state.get("target_tickers") or []
                             sq_list = live_state.get("sub_queries") or []
                             status_box.write(
-                                f"🧭 **[C.01 Planner / Decomposer]** Extracted tickers `{t_list}` & planned `{len(sq_list)}` atomic sub-queries ({elapsed:.2f}s)"
+                                f"**[C.01 Planner / Decomposer]** Extracted tickers `{t_list}` & planned `{len(sq_list)}` atomic sub-queries ({elapsed:.2f}s)"
                             )
                         elif node_name == "tabular_tool":
                             next_active = "retriever"
                             tab_cnt = len(live_state.get("tabular_evidence", []) or [])
                             status_box.write(
-                                f"📊 **[C.02 Tabular XBRL Router]** Injected `{tab_cnt}` deterministic SEC XBRL financial block(s) ({elapsed:.2f}s)"
+                                f"**[C.02 Tabular XBRL Router]** Injected `{tab_cnt}` deterministic SEC XBRL financial block(s) ({elapsed:.2f}s)"
                             )
                         elif node_name == "retriever":
                             next_active = "critic"
                             ev_cnt = len(live_state.get("accumulated_evidence", []) or [])
                             status_box.write(
-                                f"🔎 **[C.03 Hybrid 10-K Retriever — Hop {cur_hop}]** Accumulated `{ev_cnt}` total evidence chunks ({elapsed:.2f}s)"
+                                f"**[C.03 Hybrid 10-K Retriever — Hop {cur_hop}]** Accumulated `{ev_cnt}` total evidence chunks ({elapsed:.2f}s)"
                             )
                         elif node_name == "critic":
                             s_score = float(live_state.get("sufficiency_score", 0.0) or 0.0)
@@ -2351,27 +2357,27 @@ if run_btn and query_text.strip():
                             if is_suff or cur_hop >= effective_max_hops:
                                 next_active = "synthesizer"
                                 status_box.write(
-                                    f"⚖️ **[C.04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` ≥ `{sufficiency_threshold:.2f}` ➔ **Sufficient! Routing to Synthesizer** ({elapsed:.2f}s)"
+                                    f"**[C.04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` ≥ `{sufficiency_threshold:.2f}` ➔ **Sufficient! Routing to Synthesizer** ({elapsed:.2f}s)"
                                 )
                             else:
                                 next_active = "generator"
                                 loop_just_triggered = True
                                 gaps = live_state.get("missing_premises", []) or []
                                 status_box.write(
-                                    f"🔄 **[C.04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` < `{sufficiency_threshold:.2f}` ➔ **Triggering Hop {cur_hop + 1} Reflection Loop** (Missing: `{gaps[:2]}`) ({elapsed:.2f}s)"
+                                    f"**[C.04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` < `{sufficiency_threshold:.2f}` ➔ **Triggering Hop {cur_hop + 1} Reflection Loop** (Missing: `{gaps[:2]}`) ({elapsed:.2f}s)"
                                 )
                         elif node_name == "generator":
                             next_active = "retriever"
                             loop_just_triggered = True
                             new_sq = live_state.get("current_sub_query", "")
                             status_box.write(
-                                f"🧠 **[Hop {cur_hop} Sub-Query Generator]** Formulated targeted follow-up: `{new_sq}` ({elapsed:.2f}s)"
+                                f"**[Hop {cur_hop} Sub-Query Generator]** Formulated targeted follow-up: `{new_sq}` ({elapsed:.2f}s)"
                             )
                         elif node_name == "synthesizer":
                             next_active = "guardrail"
                             c_cnt = len(live_state.get("citations", []) or [])
                             status_box.write(
-                                f"✍️ **[C.05 Executive Synthesizer]** Drafted response with `{c_cnt}` inline SEC citations ({elapsed:.2f}s)"
+                                f"**[C.05 Executive Synthesizer]** Drafted response with `{c_cnt}` inline SEC citations ({elapsed:.2f}s)"
                             )
                         elif node_name == "guardrail":
                             g_rep = live_state.get("guardrail_report", {}) or {}
@@ -2381,17 +2387,17 @@ if run_btn and query_text.strip():
                             if not passed and rep_cnt < max_rep:
                                 next_active = "repair"
                                 status_box.write(
-                                    f"🛠️ **[C.06 Active Guardrail]** Flagged `{len(g_rep.get('ungrounded_numbers', []))}` ungrounded figure(s) ➔ Routing to Self-Healing Repair ({elapsed:.2f}s)"
+                                    f"**[C.06 Active Guardrail]** Flagged `{len(g_rep.get('ungrounded_numbers', []))}` ungrounded figure(s) ➔ Routing to Self-Healing Repair ({elapsed:.2f}s)"
                                 )
                             else:
                                 next_active = None
                                 status_box.write(
-                                    f"🛡️ **[C.06 Active Guardrail]** Verified `{len(g_rep.get('verified_numbers', []))}` financial figures (Faithfulness: `{g_rep.get('faithfulness_score', 1.0):.2f}`) ({elapsed:.2f}s)"
+                                    f"**[C.06 Active Guardrail]** Verified `{len(g_rep.get('verified_numbers', []))}` financial figures (Faithfulness: `{g_rep.get('faithfulness_score', 1.0):.2f}`) ({elapsed:.2f}s)"
                                 )
                         elif node_name == "repair":
                             next_active = "guardrail"
                             status_box.write(
-                                f"🔧 **[Self-Healing Repair]** Completed closed-loop numerical grounding repair pass ({elapsed:.2f}s)"
+                                f"**[Self-Healing Repair]** Completed closed-loop numerical grounding repair pass ({elapsed:.2f}s)"
                             )
 
                         pipeline_viz_slot.markdown(
@@ -2413,7 +2419,7 @@ if run_btn and query_text.strip():
                 total_wall_time = time.perf_counter() - start_time
                 live_state.setdefault("telemetry", {})["rq3_summary"] = summarize_rq3_metrics(live_state)
                 status_box.update(
-                    label=f"✅ SYS C Execution Log — Completed in {total_wall_time:.2f}s ({live_state.get('current_hop', 1)}/{effective_max_hops} Hops | Sufficiency: {live_state.get('sufficiency_score', 0.0):.2f})",
+                    label=f"[DONE] SYS C Execution Log — Completed in {total_wall_time:.2f}s ({live_state.get('current_hop', 1)}/{effective_max_hops} Hops | Sufficiency: {live_state.get('sufficiency_score', 0.0):.2f})",
                     state="complete",
                     expanded=False,
                 )
@@ -2508,10 +2514,10 @@ if "last_system_c_result" in st.session_state:
 
     res_tab_brief, res_tab_rq1, res_tab_rq2, res_tab_rq3 = st.tabs(
         [
-            "📑 [01] Executive Brief & Citations",
-            "🧭 [RQ1] Multi-Hop Reasoning Trace (Adaptivity)",
-            "🛡️ [RQ2] Hallucination Audit (Grounding)",
-            "⚡ [RQ3] Latency & Cost Economics (Pareto)",
+            "[01] Executive Brief & Citations",
+            "[RQ1] Multi-Hop Trace (Adaptivity)",
+            "[RQ2] Grounding Audit (Faithfulness)",
+            "[RQ3] Latency & Economics (Pareto)",
         ]
     )
 
@@ -2519,7 +2525,7 @@ if "last_system_c_result" in st.session_state:
         final_answer = result.get("final_answer") or ""
         tkr_display = ", ".join(str(t) for t in all_tkrs) if all_tkrs else "AUTO"
         yr_display = ", ".join(f"FY{y}" for y in f_years) if f_years else "MULTI-PERIOD"
-        audit_status = "PASSED ✓" if result.get("guardrail_passed", True) else "FLAGGED ⚠"
+        audit_status = "PASSED" if result.get("guardrail_passed", True) else "FLAGGED"
         audit_col = "#10B981" if result.get("guardrail_passed", True) else "#F59E0B"
 
         if final_answer:
@@ -2535,7 +2541,7 @@ if "last_system_c_result" in st.session_state:
                 unsafe_allow_html=True,
             )
             st.markdown(formatted_answer, unsafe_allow_html=True)
-            with st.expander("📋 Copy Executive Brief (Clean Markdown)", expanded=False):
+            with st.expander("Copy Executive Brief (Markdown)", expanded=False):
                 st.code(final_answer, language="markdown")
         else:
             st.info("No synthesis generated.")
@@ -2548,16 +2554,16 @@ if "last_system_c_result" in st.session_state:
             st.markdown(
                 f'<div style="margin:10px 0; padding:8px 12px; background:rgba(16, 185, 129, 0.08); border:1px solid rgba(16, 185, 129, 0.35); border-radius:var(--quant-radius);">'
                 f'<span style="font-family:var(--quant-mono); font-size:0.75rem; font-weight:800; color:#10B981;">'
-                f'🎯 BENCHMARK GROUND TRUTH EVALUATION // Expected: <code style="color:#10B981;">{html.escape(bm_gt)}</code>{prog_part}'
+                f'BENCHMARK GROUND TRUTH EVALUATION // Expected: <code style="color:#10B981;">{html.escape(bm_gt)}</code>{prog_part}'
                 f'</span>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
 
-        st.markdown("##### ✓ Scale-Verified Numerical Claims *(hover pill for SEC chunk provenance)*")
+        st.markdown("##### Scale-Verified Numerical Claims *(hover pill for SEC chunk provenance)*")
         st.markdown(verified_pills_html, unsafe_allow_html=True)
 
-        st.markdown("##### 📌 Ground-Truth SEC 10-K Citations Mapped (RQ2)")
+        st.markdown("##### Ground-Truth SEC 10-K Citations Mapped (RQ2)")
         if citations:
             cit_cols = st.columns(2)
             for idx, cit in enumerate(citations):
@@ -2592,7 +2598,7 @@ if "last_system_c_result" in st.session_state:
             )
         st.markdown(render_multihop_timeline_html(result), unsafe_allow_html=True)
 
-        with st.expander("📊 System B (Kevin) Published 60-Query Benchmark Summary (`reports/system_b/`)", expanded=bool(b_raw_info)):
+        with st.expander("System B Benchmark Summary (Published 60-Query Results)", expanded=bool(b_raw_info)):
             from src.system_b.ui_bridge import load_system_b_eval_summary
 
             b_summary = load_system_b_eval_summary()
@@ -2650,7 +2656,7 @@ if "last_system_c_result" in st.session_state:
             st.markdown("##### ⚠ Flagged / Ungrounded Figures *(hover for audit reason)*")
             st.markdown(ungrounded_pills_html, unsafe_allow_html=True)
 
-        with st.expander("📊 Full Grounding Audit Ledger (Touch / Mobile Inspector)", expanded=False):
+        with st.expander("Full Grounding Audit Ledger (Touch / Mobile Inspector)", expanded=False):
             audit_rows = []
             for num in verified_nums:
                 audit_rows.append({
@@ -2712,7 +2718,7 @@ if "last_system_c_result" in st.session_state:
 # SEC 10-K XBRL DATA EXPLORER
 # ---------------------------------------------------------------------------
 st.divider()
-st.subheader("📊 SEC 10-K XBRL Ground-Truth Explorer")
+st.subheader("SEC 10-K XBRL Ground-Truth Explorer")
 with st.expander("Explore Canonical SEC XBRL Financial Filings (`sec_financials` / `data/financials.csv`)", expanded=False):
     df_fin = load_financials_data()
     if not df_fin.empty:
