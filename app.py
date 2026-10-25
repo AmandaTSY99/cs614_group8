@@ -1649,21 +1649,36 @@ def render_multihop_timeline_html(state: Dict[str, Any]) -> str:
 with st.sidebar:
     brand_placeholder = st.empty()
 
-    st.subheader("1. Pipeline Configuration")
-    mode_selection = st.selectbox(
-        "Architecture Mode",
-        options=["v2_aamr", "adaptive_v1", "fixed_1hop", "fixed_3hop", "system_b", "system_a"],
+    st.subheader("1. Active System Architecture")
+    sys_family = st.radio(
+        "Select Architecture Pipeline:",
+        [
+            "🏛️ SYS C: Adaptive Multi-Hop RAG",
+            "⚡ SYS B: Single-Pass Hybrid + Rerank",
+            "📦 SYS A: Vanilla Dense Baseline",
+        ],
         index=0,
-        format_func=lambda x: {
-            "v2_aamr": "SYS C (v2): Agentic AMR (XBRL + 10-K Text Router)",
-            "adaptive_v1": "SYS C (v1): Adaptive Multi-Hop (Text Only)",
-            "fixed_1hop": "SYS C (Ablation): Fixed 1-Hop",
-            "fixed_3hop": "SYS C (Ablation): Fixed 3-Hop",
-            "system_b": "SYS B: Single-Pass Hybrid + Rerank (Kevin)",
-            "system_a": "SYS A: Vanilla Single-Pass Dense RAG (Placeholder)",
-        }[x],
-        help="Select between SYS C (Adaptive Multi-Hop State Machine with Sufficiency Critic), SYS B (Single-Pass Okapi BM25 + BGE Dense + Cross-Encoder Reranker), and SYS A (Vanilla Dense RAG Baseline Placeholder).",
+        help="Switch between SYS C (Adaptive Multi-Hop State Machine with Sufficiency Critic), SYS B (Single-Pass Okapi BM25 + BGE Dense + Cross-Encoder Reranker), and SYS A (Vanilla Dense Baseline).",
+        key="active_sys_family",
     )
+
+    if sys_family.startswith("🏛️ SYS C"):
+        mode_selection = st.selectbox(
+            "SYS C Operating Mode",
+            options=["v2_aamr", "adaptive_v1", "fixed_1hop", "fixed_3hop"],
+            index=0,
+            format_func=lambda x: {
+                "v2_aamr": "SYS C (v2): Agentic AMR (XBRL + 10-K Text Router)",
+                "adaptive_v1": "SYS C (v1): Adaptive Multi-Hop (Text Only)",
+                "fixed_1hop": "SYS C (Ablation): Fixed 1-Hop",
+                "fixed_3hop": "SYS C (Ablation): Fixed 3-Hop",
+            }[x],
+            help="Select SYS C variant: Adaptive Agentic (v2), Text-only Adaptive (v1), or Ablation hops.",
+        )
+    elif sys_family.startswith("⚡ SYS B"):
+        mode_selection = "system_b"
+    else:
+        mode_selection = "system_a"
 
     active_sys_prefix = "SYS.B" if mode_selection == "system_b" else ("SYS.A" if mode_selection == "system_a" else "SYS.C")
     active_sys_sub = (
@@ -1843,18 +1858,11 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("3. SEC Company Filter")
-    selected_tickers = st.multiselect(
-        "Filter Ticker(s) (Optional)",
-        options=list(COMPANIES.keys()),
-        default=[],
-        format_func=lambda t: f"{t} ({COMPANIES[t]['name']})",
-        help="Leave empty for the pipeline decomposer to automatically extract target tickers from your question.",
-    )
+    selected_tickers: List[str] = []
 
     st.divider()
 
-    st.subheader("4. Golden Benchmark Presets")
+    st.subheader("3. Benchmark Presets (Evaluation Suite)")
     preset_suite = st.radio(
         "Benchmark Suite:",
         ["FinQA Academic Benchmark (2015+ Pool)", "Canonical Golden Set (60 Qs)"],
@@ -1933,24 +1941,59 @@ st.markdown(
 <span class="metric-badge badge-emerald">● SUPABASE PG: ONLINE</span>
 <span class="metric-badge badge-amber">ACTIVE: {active_sys_prefix}</span>
 <span class="metric-badge">ENGINE: {html.escape(selected_provider.upper())}</span>
-<span class="metric-badge badge-cyan">10 SEC CORPORA (1993–2026)</span>
+<span class="metric-badge badge-cyan">10 CORPORA (FY2010–FY2026)</span>
 </div>
 </div>
 """,
     unsafe_allow_html=True,
 )
 
-# Company Coverage Ticker Strip (FTUX Orientation)
+# Top-Level System Architecture Switcher (Instant 1-click toggling between SYS C, SYS B, and SYS A)
+top_col1, top_col2, top_col3 = st.columns(3)
+with top_col1:
+    if st.button(
+        "🏛️ SYS C: Adaptive Multi-Hop RAG" + (" (ACTIVE)" if active_sys_prefix == "SYS.C" else ""),
+        type="primary" if active_sys_prefix == "SYS.C" else "secondary",
+        use_container_width=True,
+        key="nav_btn_sys_c",
+    ):
+        st.session_state["active_sys_family"] = "🏛️ SYS C: Adaptive Multi-Hop"
+        st.rerun()
+with top_col2:
+    if st.button(
+        "⚡ SYS B: Single-Pass Hybrid + Rerank" + (" (ACTIVE)" if active_sys_prefix == "SYS.B" else ""),
+        type="primary" if active_sys_prefix == "SYS.B" else "secondary",
+        use_container_width=True,
+        key="nav_btn_sys_b",
+    ):
+        st.session_state["active_sys_family"] = "⚡ SYS B: Single-Pass Hybrid + Rerank"
+        st.rerun()
+with top_col3:
+    if st.button(
+        "📦 SYS A: Vanilla Dense Baseline" + (" (ACTIVE)" if active_sys_prefix == "SYS.A" else ""),
+        type="primary" if active_sys_prefix == "SYS.A" else "secondary",
+        use_container_width=True,
+        key="nav_btn_sys_a",
+    ):
+        st.session_state["active_sys_family"] = "📦 SYS A: Vanilla Dense Baseline"
+        st.rerun()
+
+# Company Coverage Ticker Strip (Clean summary of data availability)
 ticker_badges = "".join(
-    f'<span class="metric-badge" title="{html.escape(COMPANIES[t]["name"])} — {html.escape(COMPANIES[t]["sector"])} (Filings: {html.escape(COMPANIES[t]["filings"])})" style="cursor:help;">'
-    f'<strong>{t}</strong> <span style="font-size:0.65rem; opacity:0.75;">{COMPANIES[t]["filings"].split()[-1]}</span>'
+    f'<span class="metric-badge" title="{html.escape(COMPANIES[t]["name"])} &bull; {html.escape(COMPANIES[t]["sector"])}" style="cursor:help;">'
+    f'<strong>{t}</strong>'
     f'</span>'
     for t in sorted(COMPANIES.keys())
 )
 st.markdown(
-    f'<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:12px; padding:6px 12px; background:var(--term-bg-surface); border:1px solid var(--term-border); border-radius:var(--quant-radius);">'
-    f'<span style="font-family:var(--quant-mono); font-size:0.68rem; font-weight:800; text-transform:uppercase; color:var(--quant-amber);">Pre-Indexed 10-K Corpora:</span>'
+    f'<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:12px; padding:7px 12px; background:var(--term-bg-surface); border:1px solid var(--term-border); border-radius:var(--quant-radius);">'
+    f'<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'
+    f'<span style="font-family:var(--quant-mono); font-size:0.68rem; font-weight:800; text-transform:uppercase; color:var(--quant-amber);">Indexed 10-K Filings:</span>'
     f'{ticker_badges}'
+    f'</div>'
+    f'<div style="font-family:var(--quant-mono); font-size:0.70rem; color:var(--text-muted);">'
+    f'📊 <strong>Available Corpus:</strong> <code>FY2010 – FY2026</code> &bull; 10 Large-Cap Filers'
+    f'</div>'
     f'</div>',
     unsafe_allow_html=True,
 )
