@@ -1292,32 +1292,67 @@ with st.sidebar:
     st.subheader("1. Pipeline Configuration")
     mode_selection = st.selectbox(
         "Architecture Mode",
-        options=["v2_aamr", "adaptive_v1", "fixed_1hop", "fixed_3hop"],
+        options=["v2_aamr", "adaptive_v1", "system_b", "fixed_1hop", "fixed_3hop"],
         index=0,
         format_func=lambda x: {
-            "v2_aamr": "v2: Agentic AMR (XBRL + 10-K Text Router)",
-            "adaptive_v1": "v1: Adaptive Multi-Hop (Text Only)",
+            "v2_aamr": "System C v2: Agentic AMR (XBRL + 10-K Text Router)",
+            "adaptive_v1": "System C v1: Adaptive Multi-Hop (Text Only)",
+            "system_b": "System B: Single-Pass Hybrid + Rerank (Kevin)",
             "fixed_1hop": "Baseline: Fixed 1-Hop",
             "fixed_3hop": "Baseline: Fixed 3-Hop",
         }[x],
-        help="System C v2 dynamically routes quantitative metric requests to Supabase XBRL tables and qualitative context (risks, MD&A) to SEC text chunks.",
+        help="Compare System C (Adaptive Multi-Hop State Machine) against System B (Single-Pass Okapi BM25 + BGE Dense + Cross-Encoder Reranker) and Fixed-Hop Baselines.",
     )
 
-    max_hops = st.slider(
-        "Max Retrieval Hops",
-        min_value=1,
-        max_value=10,
-        value=3,
-        help="Maximum sequential search-and-reasoning iterations allowed for the multi-hop agent.",
-    )
-    sufficiency_threshold = st.slider(
-        "Critic Sufficiency Threshold",
-        min_value=0.50,
-        max_value=1.00,
-        value=0.85,
-        step=0.05,
-        help="Quantitative sufficiency threshold ([0.0, 1.0]). If Critic score >= threshold, System C triggers Early Stopping.",
-    )
+    if mode_selection == "system_b":
+        sys_b_retrieval_mode = st.selectbox(
+            "System B Retrieval Mode",
+            options=["hybrid_rerank", "hybrid", "bm25", "dense"],
+            index=0,
+            format_func=lambda m: {
+                "hybrid_rerank": "Hybrid + Cross-Encoder Rerank (System B Full)",
+                "hybrid": "Weighted Hybrid Fusion (BM25 + Dense)",
+                "bm25": "Okapi BM25 Sparse Only",
+                "dense": "BGE Dense Vector Only",
+            }[m],
+            help="Select between System B's 4 retrieval modes implemented in src/system_b/retrieval.py.",
+        )
+        sys_b_alpha = st.slider(
+            "Hybrid Fusion Alpha (Dense Weight)",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.50,
+            step=0.05,
+            help="Weight between normalized dense score (alpha) and normalized Okapi BM25 score (1 - alpha).",
+        )
+        sys_b_top_k = st.slider(
+            "Top-K Retrieved Chunks",
+            min_value=1,
+            max_value=10,
+            value=5,
+            help="Number of final context chunks passed to the single-pass System B generator.",
+        )
+        max_hops = 1
+        sufficiency_threshold = 1.0
+    else:
+        sys_b_retrieval_mode = "hybrid_rerank"
+        sys_b_alpha = 0.50
+        sys_b_top_k = 5
+        max_hops = st.slider(
+            "Max Retrieval Hops",
+            min_value=1,
+            max_value=10,
+            value=3,
+            help="Maximum sequential search-and-reasoning iterations allowed for the multi-hop agent.",
+        )
+        sufficiency_threshold = st.slider(
+            "Critic Sufficiency Threshold",
+            min_value=0.50,
+            max_value=1.00,
+            value=0.85,
+            step=0.05,
+            help="Quantitative sufficiency threshold ([0.0, 1.0]). If Critic score >= threshold, System C triggers Early Stopping.",
+        )
 
     st.divider()
 
@@ -1558,174 +1593,232 @@ if not run_btn and "last_system_c_result" not in st.session_state:
 # ---------------------------------------------------------------------------
 if run_btn and query_text.strip():
     try:
-        from src.system_c.graph import build_system_c_graph
-        from src.system_c.state import create_initial_state
-        from src.system_c.telemetry import summarize_rq3_metrics
+        if mode_selection == "system_b":
+            from src.system_b.ui_bridge import execute_system_b_for_streamlit
 
-        effective_max_hops = max_hops
-        force_max = False
-        graph_mode = mode_selection
-        if mode_selection == "fixed_1hop":
-            effective_max_hops = 1
-            force_max = True
-            graph_mode = "v1_amr"
-        elif mode_selection == "fixed_3hop":
-            effective_max_hops = 3
-            force_max = True
-            graph_mode = "v1_amr"
-        elif mode_selection == "adaptive_v1":
-            graph_mode = "v1_amr"
-
-        target_ticker_arg = selected_tickers[0] if len(selected_tickers) == 1 else None
-        target_tickers_arg = list(selected_tickers) if selected_tickers else None
-
-        live_state: Dict[str, Any] = dict(
-            create_initial_state(
-                query=query_text.strip(),
-                max_hops=effective_max_hops,
-                mode=graph_mode,
-                target_ticker=target_ticker_arg,
-                target_tickers=target_tickers_arg,
-                force_max_hops=force_max,
-                sufficiency_threshold=sufficiency_threshold,
+            pipeline_viz_slot.markdown(
+                render_visual_state_graph(
+                    state={"max_hops": 1, "sufficiency_threshold": 1.0, "current_hop": 1},
+                    active_node="retriever",
+                    visited_nodes=[],
+                    elapsed_sec=0.0,
+                    is_finished=False,
+                ),
+                unsafe_allow_html=True,
             )
-        )
+            with status_log_slot.status(
+                f"⚡ Executing System B Single-Pass Pipeline ({sys_b_retrieval_mode}, alpha={sys_b_alpha:.2f})...",
+                expanded=True,
+            ) as status_box:
+                status_box.write(
+                    f"🔎 **[System B Retriever]** Running `{sys_b_retrieval_mode}` (alpha=`{sys_b_alpha:.2f}`, top_k=`{sys_b_top_k}`)..."
+                )
+                live_state, visited_nodes, total_wall_time = execute_system_b_for_streamlit(
+                    query=query_text.strip(),
+                    selected_tickers=list(selected_tickers) if selected_tickers else None,
+                    retrieval_mode=sys_b_retrieval_mode,
+                    alpha=sys_b_alpha,
+                    top_k=sys_b_top_k,
+                )
+                b_raw = live_state.get("system_b_raw", {})
+                b_timings = b_raw.get("timings", {})
+                status_box.write(
+                    f"📚 **[System B Corpus: {b_raw.get('corpus_source')}]** Indexed `{b_raw.get('corpus_chunks', 0):,}` chunks ➔ "
+                    f"Retrieved `{len(b_raw.get('hits', []))}` top hits in `{float(b_timings.get('retrieval_seconds', 0.0)):.2f}s`"
+                )
+                status_box.write(
+                    f"✍️ **[System B Single-Pass Generator]** Generated answer in `{float(b_timings.get('generation_seconds', 0.0)):.2f}s` "
+                    f"(Citations recognized: `{b_raw.get('has_citations')}`)"
+                )
+                status_box.update(
+                    label=f"✅ System B ({sys_b_retrieval_mode}) — Completed in {total_wall_time:.2f}s (Single-Pass | {len(b_raw.get('hits', []))} Chunks)",
+                    state="complete",
+                    expanded=False,
+                )
 
-        compiled_graph = build_system_c_graph()
-        visited_nodes: List[str] = []
-        start_time = time.perf_counter()
+            pipeline_viz_slot.markdown(
+                render_visual_state_graph(
+                    state=live_state,
+                    active_node=None,
+                    visited_nodes=visited_nodes,
+                    elapsed_sec=total_wall_time,
+                    is_finished=True,
+                    loop_triggered=False,
+                ),
+                unsafe_allow_html=True,
+            )
+            st.session_state["last_system_c_result"] = live_state
+            st.session_state["last_system_c_visited"] = visited_nodes
+            st.session_state["last_system_c_wall_time"] = total_wall_time
+        else:
+            from src.system_c.graph import build_system_c_graph
+            from src.system_c.state import create_initial_state
+            from src.system_c.telemetry import summarize_rq3_metrics
 
-        # Highlight Node 01 (Decomposer) immediately upon click
-        pipeline_viz_slot.markdown(
-            render_visual_state_graph(
-                state=live_state,
-                active_node="decomposer",
-                visited_nodes=visited_nodes,
-                elapsed_sec=0.0,
-                is_finished=False,
-            ),
-            unsafe_allow_html=True,
-        )
+            effective_max_hops = max_hops
+            force_max = False
+            graph_mode = mode_selection
+            if mode_selection == "fixed_1hop":
+                effective_max_hops = 1
+                force_max = True
+                graph_mode = "v1_amr"
+            elif mode_selection == "fixed_3hop":
+                effective_max_hops = 3
+                force_max = True
+                graph_mode = "v1_amr"
+            elif mode_selection == "adaptive_v1":
+                graph_mode = "v1_amr"
 
-        with status_log_slot.status("⚡ Executing System C Multi-Hop LangGraph State Machine...", expanded=True) as status_box:
-            for step_event in compiled_graph.stream(live_state):
-                for node_name, node_update in step_event.items():
-                    if isinstance(node_update, dict):
-                        live_state.update(node_update)
-                    if node_name not in visited_nodes:
-                        visited_nodes.append(node_name)
+            target_ticker_arg = selected_tickers[0] if len(selected_tickers) == 1 else None
+            target_tickers_arg = list(selected_tickers) if selected_tickers else None
 
-                    elapsed = time.perf_counter() - start_time
-                    cur_hop = int(live_state.get("current_hop", 1) or 1)
+            live_state = dict(
+                create_initial_state(
+                    query=query_text.strip(),
+                    max_hops=effective_max_hops,
+                    mode=graph_mode,
+                    target_ticker=target_ticker_arg,
+                    target_tickers=target_tickers_arg,
+                    force_max_hops=force_max,
+                    sufficiency_threshold=sufficiency_threshold,
+                )
+            )
 
-                    next_active: Optional[str] = None
-                    loop_just_triggered = False
-                    if node_name == "decomposer":
-                        if live_state.get("mode") == "v2_aamr" and live_state.get("needs_tabular_tool"):
-                            next_active = "tabular_tool"
-                        else:
+            compiled_graph = build_system_c_graph()
+            visited_nodes = []
+            start_time = time.perf_counter()
+
+            # Highlight Node 01 (Decomposer) immediately upon click
+            pipeline_viz_slot.markdown(
+                render_visual_state_graph(
+                    state=live_state,
+                    active_node="decomposer",
+                    visited_nodes=visited_nodes,
+                    elapsed_sec=0.0,
+                    is_finished=False,
+                ),
+                unsafe_allow_html=True,
+            )
+
+            with status_log_slot.status("⚡ Executing System C Multi-Hop LangGraph State Machine...", expanded=True) as status_box:
+                for step_event in compiled_graph.stream(live_state):
+                    for node_name, node_update in step_event.items():
+                        if isinstance(node_update, dict):
+                            live_state.update(node_update)
+                        if node_name not in visited_nodes:
+                            visited_nodes.append(node_name)
+
+                        elapsed = time.perf_counter() - start_time
+                        cur_hop = int(live_state.get("current_hop", 1) or 1)
+
+                        next_active: Optional[str] = None
+                        loop_just_triggered = False
+                        if node_name == "decomposer":
+                            if live_state.get("mode") == "v2_aamr" and live_state.get("needs_tabular_tool"):
+                                next_active = "tabular_tool"
+                            else:
+                                next_active = "retriever"
+                            t_list = live_state.get("target_tickers") or []
+                            sq_list = live_state.get("sub_queries") or []
+                            status_box.write(
+                                f"🧭 **[01 Planner / Decomposer]** Extracted tickers `{t_list}` & planned `{len(sq_list)}` atomic sub-queries ({elapsed:.2f}s)"
+                            )
+                        elif node_name == "tabular_tool":
                             next_active = "retriever"
-                        t_list = live_state.get("target_tickers") or []
-                        sq_list = live_state.get("sub_queries") or []
-                        status_box.write(
-                            f"🧭 **[01 Planner / Decomposer]** Extracted tickers `{t_list}` & planned `{len(sq_list)}` atomic sub-queries ({elapsed:.2f}s)"
-                        )
-                    elif node_name == "tabular_tool":
-                        next_active = "retriever"
-                        tab_cnt = len(live_state.get("tabular_evidence", []) or [])
-                        status_box.write(
-                            f"📊 **[02 Tabular XBRL Router]** Injected `{tab_cnt}` deterministic SEC XBRL financial block(s) ({elapsed:.2f}s)"
-                        )
-                    elif node_name == "retriever":
-                        next_active = "critic"
-                        ev_cnt = len(live_state.get("accumulated_evidence", []) or [])
-                        status_box.write(
-                            f"🔎 **[03 Hybrid 10-K Retriever — Hop {cur_hop}]** Accumulated `{ev_cnt}` total evidence chunks ({elapsed:.2f}s)"
-                        )
-                    elif node_name == "critic":
-                        s_score = float(live_state.get("sufficiency_score", 0.0) or 0.0)
-                        is_suff = bool(live_state.get("is_sufficient", False))
-                        if is_suff or cur_hop >= effective_max_hops:
-                            next_active = "synthesizer"
+                            tab_cnt = len(live_state.get("tabular_evidence", []) or [])
                             status_box.write(
-                                f"⚖️ **[04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` ≥ `{sufficiency_threshold:.2f}` ➔ **Sufficient! Routing to Synthesizer** ({elapsed:.2f}s)"
+                                f"📊 **[02 Tabular XBRL Router]** Injected `{tab_cnt}` deterministic SEC XBRL financial block(s) ({elapsed:.2f}s)"
                             )
-                        else:
-                            next_active = "generator"
+                        elif node_name == "retriever":
+                            next_active = "critic"
+                            ev_cnt = len(live_state.get("accumulated_evidence", []) or [])
+                            status_box.write(
+                                f"🔎 **[03 Hybrid 10-K Retriever — Hop {cur_hop}]** Accumulated `{ev_cnt}` total evidence chunks ({elapsed:.2f}s)"
+                            )
+                        elif node_name == "critic":
+                            s_score = float(live_state.get("sufficiency_score", 0.0) or 0.0)
+                            is_suff = bool(live_state.get("is_sufficient", False))
+                            if is_suff or cur_hop >= effective_max_hops:
+                                next_active = "synthesizer"
+                                status_box.write(
+                                    f"⚖️ **[04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` ≥ `{sufficiency_threshold:.2f}` ➔ **Sufficient! Routing to Synthesizer** ({elapsed:.2f}s)"
+                                )
+                            else:
+                                next_active = "generator"
+                                loop_just_triggered = True
+                                gaps = live_state.get("missing_premises", []) or []
+                                status_box.write(
+                                    f"🔄 **[04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` < `{sufficiency_threshold:.2f}` ➔ **Triggering Hop {cur_hop + 1} Reflection Loop** (Missing: `{gaps[:2]}`) ({elapsed:.2f}s)"
+                                )
+                        elif node_name == "generator":
+                            next_active = "retriever"
                             loop_just_triggered = True
-                            gaps = live_state.get("missing_premises", []) or []
+                            new_sq = live_state.get("current_sub_query", "")
                             status_box.write(
-                                f"🔄 **[04 Sufficiency Critic — Hop {cur_hop}]** Score `{s_score:.2f}` < `{sufficiency_threshold:.2f}` ➔ **Triggering Hop {cur_hop + 1} Reflection Loop** (Missing: `{gaps[:2]}`) ({elapsed:.2f}s)"
+                                f"🧠 **[Hop {cur_hop} Sub-Query Generator]** Formulated targeted follow-up: `{new_sq}` ({elapsed:.2f}s)"
                             )
-                    elif node_name == "generator":
-                        next_active = "retriever"
-                        loop_just_triggered = True
-                        new_sq = live_state.get("current_sub_query", "")
-                        status_box.write(
-                            f"🧠 **[Hop {cur_hop} Sub-Query Generator]** Formulated targeted follow-up: `{new_sq}` ({elapsed:.2f}s)"
-                        )
-                    elif node_name == "synthesizer":
-                        next_active = "guardrail"
-                        c_cnt = len(live_state.get("citations", []) or [])
-                        status_box.write(
-                            f"✍️ **[05 Executive Synthesizer]** Drafted response with `{c_cnt}` inline SEC citations ({elapsed:.2f}s)"
-                        )
-                    elif node_name == "guardrail":
-                        g_rep = live_state.get("guardrail_report", {}) or {}
-                        passed = bool(live_state.get("guardrail_passed", True))
-                        rep_cnt = int(live_state.get("repair_count", 0) or 0)
-                        max_rep = int(live_state.get("max_repairs", 1) or 1)
-                        if not passed and rep_cnt < max_rep:
-                            next_active = "repair"
+                        elif node_name == "synthesizer":
+                            next_active = "guardrail"
+                            c_cnt = len(live_state.get("citations", []) or [])
                             status_box.write(
-                                f"🛠️ **[06 Active Guardrail]** Flagged `{len(g_rep.get('ungrounded_numbers', []))}` ungrounded figure(s) ➔ Routing to Self-Healing Repair ({elapsed:.2f}s)"
+                                f"✍️ **[05 Executive Synthesizer]** Drafted response with `{c_cnt}` inline SEC citations ({elapsed:.2f}s)"
                             )
-                        else:
-                            next_active = None
+                        elif node_name == "guardrail":
+                            g_rep = live_state.get("guardrail_report", {}) or {}
+                            passed = bool(live_state.get("guardrail_passed", True))
+                            rep_cnt = int(live_state.get("repair_count", 0) or 0)
+                            max_rep = int(live_state.get("max_repairs", 1) or 1)
+                            if not passed and rep_cnt < max_rep:
+                                next_active = "repair"
+                                status_box.write(
+                                    f"🛠️ **[06 Active Guardrail]** Flagged `{len(g_rep.get('ungrounded_numbers', []))}` ungrounded figure(s) ➔ Routing to Self-Healing Repair ({elapsed:.2f}s)"
+                                )
+                            else:
+                                next_active = None
+                                status_box.write(
+                                    f"🛡️ **[06 Active Guardrail]** Verified `{len(g_rep.get('verified_numbers', []))}` financial figures (Faithfulness: `{g_rep.get('faithfulness_score', 1.0):.2f}`) ({elapsed:.2f}s)"
+                                )
+                        elif node_name == "repair":
+                            next_active = "guardrail"
                             status_box.write(
-                                f"🛡️ **[06 Active Guardrail]** Verified `{len(g_rep.get('verified_numbers', []))}` financial figures (Faithfulness: `{g_rep.get('faithfulness_score', 1.0):.2f}`) ({elapsed:.2f}s)"
+                                f"🔧 **[Self-Healing Repair]** Completed closed-loop numerical grounding repair pass ({elapsed:.2f}s)"
                             )
-                    elif node_name == "repair":
-                        next_active = "guardrail"
-                        status_box.write(
-                            f"🔧 **[Self-Healing Repair]** Completed closed-loop numerical grounding repair pass ({elapsed:.2f}s)"
+
+                        pipeline_viz_slot.markdown(
+                            render_visual_state_graph(
+                                state=live_state,
+                                active_node=next_active,
+                                visited_nodes=visited_nodes,
+                                elapsed_sec=elapsed,
+                                is_finished=(next_active is None),
+                                loop_triggered=loop_just_triggered,
+                            ),
+                            unsafe_allow_html=True,
                         )
 
-                    pipeline_viz_slot.markdown(
-                        render_visual_state_graph(
-                            state=live_state,
-                            active_node=next_active,
-                            visited_nodes=visited_nodes,
-                            elapsed_sec=elapsed,
-                            is_finished=(next_active is None),
-                            loop_triggered=loop_just_triggered,
-                        ),
-                        unsafe_allow_html=True,
-                    )
+                total_wall_time = time.perf_counter() - start_time
+                live_state.setdefault("telemetry", {})["rq3_summary"] = summarize_rq3_metrics(live_state)
+                status_box.update(
+                    label=f"✅ Execution Log — Completed in {total_wall_time:.2f}s ({live_state.get('current_hop', 1)}/{effective_max_hops} Hops | Sufficiency: {live_state.get('sufficiency_score', 0.0):.2f})",
+                    state="complete",
+                    expanded=False,
+                )
 
-            total_wall_time = time.perf_counter() - start_time
-            live_state.setdefault("telemetry", {})["rq3_summary"] = summarize_rq3_metrics(live_state)
-            status_box.update(
-                label=f"✅ Execution Log — Completed in {total_wall_time:.2f}s ({live_state.get('current_hop', 1)}/{effective_max_hops} Hops | Sufficiency: {live_state.get('sufficiency_score', 0.0):.2f})",
-                state="complete",
-                expanded=False,
+            pipeline_viz_slot.markdown(
+                render_visual_state_graph(
+                    state=live_state,
+                    active_node=None,
+                    visited_nodes=visited_nodes,
+                    elapsed_sec=total_wall_time,
+                    is_finished=True,
+                    loop_triggered=False,
+                ),
+                unsafe_allow_html=True,
             )
 
-        pipeline_viz_slot.markdown(
-            render_visual_state_graph(
-                state=live_state,
-                active_node=None,
-                visited_nodes=visited_nodes,
-                elapsed_sec=total_wall_time,
-                is_finished=True,
-                loop_triggered=False,
-            ),
-            unsafe_allow_html=True,
-        )
-
-        st.session_state["last_system_c_result"] = live_state
-        st.session_state["last_system_c_visited"] = visited_nodes
-        st.session_state["last_system_c_wall_time"] = total_wall_time
+            st.session_state["last_system_c_result"] = live_state
+            st.session_state["last_system_c_visited"] = visited_nodes
+            st.session_state["last_system_c_wall_time"] = total_wall_time
 
     except Exception as exc:
         import traceback
@@ -1826,11 +1919,48 @@ if "last_system_c_result" in st.session_state:
             st.caption("No structured citation records logged for this run.")
 
     with res_tab_rq1:
-        st.markdown("#### Autonomous Multi-Hop Reflection & Retrieval Audit Timeline (RQ1)")
-        st.caption(
-            "Visualizing each hop's atomic sub-query, retrieved SEC 10-K evidence chunks, Critic sufficiency score, and conditional reflection loop edges."
-        )
+        b_raw_info = result.get("system_b_raw")
+        if b_raw_info:
+            st.markdown("#### System B (Kevin) — Single-Pass Hybrid Retrieval & Cross-Encoder Rerank Breakdown")
+            st.caption(
+                f"Mode: `{b_raw_info.get('mode')}` | Alpha (Dense Weight): `{b_raw_info.get('alpha', 0.5):.2f}` | "
+                f"Corpus Source: `{b_raw_info.get('corpus_source')}` (`{b_raw_info.get('corpus_chunks', 0):,}` chunks)"
+            )
+            b_hits = b_raw_info.get("hits", [])
+            if b_hits:
+                st.dataframe(pd.DataFrame(b_hits), use_container_width=True, hide_index=True)
+            st.divider()
+        else:
+            st.markdown("#### Autonomous Multi-Hop Reflection & Retrieval Audit Timeline (RQ1)")
+            st.caption(
+                "Visualizing each hop's atomic sub-query, retrieved SEC 10-K evidence chunks, Critic sufficiency score, and conditional reflection loop edges."
+            )
         st.markdown(render_multihop_timeline_html(result), unsafe_allow_html=True)
+
+        with st.expander("📊 System B (Kevin) Published 60-Query Benchmark Summary (`reports/system_b/`)", expanded=bool(b_raw_info)):
+            from src.system_b.ui_bridge import load_system_b_eval_summary
+
+            b_summary = load_system_b_eval_summary()
+            b_modes = b_summary.get("modes", {})
+            if b_modes:
+                rows_b = []
+                for m_name, m_stats in b_modes.items():
+                    rows_b.append({
+                        "Retrieval Mode": m_name,
+                        "Retrieval Attempts": m_stats.get("attempts", 60),
+                        "Generated Answers": m_stats.get("completed", 35),
+                        "Pure Abstentions": m_stats.get("pure_abstentions", 0),
+                        "Answers w/ Valid Citations": m_stats.get("answers_with_recognized_citations", 0),
+                        "Invalid Citation Labels": m_stats.get("answers_with_invalid_citation_labels", 0),
+                        "Ref Token F1 Proxy": round(float(m_stats.get("mean_reference_token_f1_proxy", 0.0)), 4),
+                        "Median Latency (s)": round(float(m_stats.get("latency_p50_seconds", 0.0)), 2),
+                        "Reported Tokens": m_stats.get("total_reported_tokens", 0),
+                    })
+                st.dataframe(pd.DataFrame(rows_b), use_container_width=True, hide_index=True)
+                st.caption(
+                    "Source: `reports/system_b/full_eval_summary/summary.json` (240 retrieval runs across 60 Golden Benchmark questions; "
+                    "35 generated per mode before provider daily token quota limit)."
+                )
 
     with res_tab_rq2:
         st.markdown("#### Scale-Normalized Numerical Grounding & Hallucination Audit (RQ2)")
