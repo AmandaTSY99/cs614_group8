@@ -163,3 +163,116 @@ def fuzzy_financial_match(
             return True
 
     return False
+
+
+def _extract_categorized_numbers(text: str) -> Tuple[List[float], List[float]]:
+    """
+    Extract numbers from text categorized into:
+    1. Absolute numbers (currency, counts, statement lines) that serve as bases for ratios/growths.
+    2. Explicit percentage figures (tagged with %).
+    """
+    abs_nums: List[float] = []
+    pct_nums: List[float] = []
+
+    # 1. Explicit percentages
+    for m in re.finditer(r"\b(\d+(?:\.\d+)?)\s*%", text):
+        try:
+            pct_nums.append(float(m.group(1)))
+        except ValueError:
+            pass
+
+    # 2. Absolute numbers (dollars, counts, line items)
+    # Ignore standalone percentages and likely 4-digit fiscal years (1990..2030)
+    for m in re.finditer(r"\$?\s*(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\b\d+\.\d+|\b\d+\b)", text):
+        raw = m.group(1).replace(",", "")
+        if re.fullmatch(r"199\d|20[0-2]\d", raw):
+            continue
+        end_pos = m.end()
+        after = text[end_pos:end_pos+4]
+        if "%" in after:
+            continue
+        try:
+            val = float(raw)
+            if val > 0:
+                abs_nums.append(val)
+        except ValueError:
+            pass
+
+    return list(dict.fromkeys(abs_nums)), list(dict.fromkeys(pct_nums))
+
+
+def verify_arithmetic_derivation(
+    claim_token: str,
+    evidence_text: str,
+    tolerance: float = 0.015,
+) -> bool:
+    """
+    Verify whether `claim_token` represents a mathematically valid financial derivation
+    (such as operating margin %, gross margin %, YoY growth %, or spread difference)
+    derived from numbers present in `evidence_text`.
+
+    Prevents false-positive hallucination flags when an LLM computes analytical metrics
+    that are not literally printed in filing text chunks or tables.
+    """
+    claim_val = parse_financial_value(claim_token)
+    if claim_val is None or claim_val == 0.0:
+        return False
+
+    is_pct = "%" in claim_token or "bps" in claim_token
+    abs_nums, pct_nums = _extract_categorized_numbers(evidence_text)
+
+    # 1. Margin & Ratio Derivation (from absolute statement figures): R = (A / B) * 100
+    if is_pct and len(abs_nums) >= 2:
+        nums = abs_nums[:40]
+        derived_ratios: List[float] = []
+        for i in range(len(nums)):
+            for j in range(len(nums)):
+                if i == j:
+                    continue
+                a, b = nums[i], nums[j]
+                if a < b and b >= 10.0:
+                    ratio_pct = (a / b) * 100.0
+                    derived_ratios.append(ratio_pct)
+                    # Absolute match within 0.25 percentage points (e.g. 62.0% vs 61.96%)
+                    if abs(claim_val - ratio_pct) <= 0.25:
+                        return True
+
+        # Check YoY Growth on absolute figures: ((A - B) / B) * 100
+        for i in range(len(nums)):
+            for j in range(len(nums)):
+                if i == j:
+                    continue
+                a, b = nums[i], nums[j]
+                if b >= 10.0 and 0.1 <= (a / b) <= 10.0:
+                    growth_pct = ((a - b) / b) * 100.0
+                    if abs(claim_val - growth_pct) <= 0.25:
+                        return True
+
+        # Check percentage point spread between derived margins: |R1 - R2|
+        for r1 in derived_ratios[:20]:
+            for r2 in derived_ratios[:20]:
+                spread = abs(r1 - r2)
+                if spread >= 0.1 and abs(claim_val - spread) <= 0.25:
+                    return True
+
+    # 2. Percentage Point Spread between explicit percentages in evidence: |P1 - P2|
+    if is_pct and len(pct_nums) >= 2:
+        for p1 in pct_nums:
+            for p2 in pct_nums:
+                spread = abs(p1 - p2)
+                if spread >= 0.1 and abs(claim_val - spread) <= 0.25:
+                    return True
+
+    # 3. Absolute Difference on dollar amounts: |A - B|
+    if not is_pct and len(abs_nums) >= 2:
+        nums = abs_nums[:40]
+        for i in range(len(nums)):
+            for j in range(len(nums)):
+                if i == j:
+                    continue
+                diff = abs(nums[i] - nums[j])
+                if diff > 0 and (abs(claim_val - diff) / max(diff, 1.0)) <= 0.005:
+                    return True
+
+    return False
+

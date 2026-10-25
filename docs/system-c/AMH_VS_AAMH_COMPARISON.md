@@ -116,3 +116,15 @@ Our deployed application provides a four-stage audit workflow structured directl
   * System B (Hybrid RAG) improves chunk recall, but still hallucinates or misreads dense ASCII/markdown tables.
   * System C (`v2_aamr`) achieves **100% numerical grounding on audited metrics** because it pulls numbers from structured financial tables and uses self-healing repair.
 * **Inference Economics (RQ3):** On single-hop queries, our Critic triggers early-stopping on Hop 1, slashing token consumption by **$62\%$** and latency by **$58\%$** compared to fixed 3-hop systems.
+
+---
+
+## 6. Anti-Convergence Firewalls: How AMH and AAMR Remain Distinct
+
+To ensure that AMH (`v1_amr`) and AAMR (`v2_aamr`) do not converge into a single hybrid system, the codebase enforces strict programmatic firewalls:
+
+1. **Routing Firewall:** In [`src/system_c/graph.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/graph.py), `route_after_decomposer` gates the `tabular_tool` behind `mode == "v2_aamr"`. AMH always routes directly to the unstructured text retriever.
+2. **Evidence Firewall:** AMH never populates `tabular_evidence`. The Critic's tabular sufficiency shortcut in [`src/system_c/nodes/critic.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/critic.py) only executes when `tabular_evidence` is present.
+3. **Guardrail Firewall:** In AMH (`v1_amr`), guardrails operate in **passive audit mode** (reporting faithfulness score for RQ2 baseline comparison). Active closed-loop self-repair (`repair_node`) is exclusively enabled for AAMR (`v2_aamr`).
+4. **Shared Engine Upgrades:** Infrastructure improvements that apply to all modes (e.g. eliminating the Critic's sliding window blind spot, mathematical verification of derived ratios) enhance both systems without violating their distinct modal contracts.
+

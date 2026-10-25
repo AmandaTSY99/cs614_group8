@@ -437,6 +437,42 @@ def test_financial_scale_normalizer_unit_matching():
     assert report["ungrounded_numbers"] == []
 
 
+def test_arithmetic_derivation_margin_and_growth_grounding():
+    """Verify that calculated margins, YoY growth, and spreads are recognized as grounded derivations (AUD-01)."""
+    from src.system_c.guardrails.scale_normalizer import verify_arithmetic_derivation
+
+    # Evidence contains raw figures: Revenue = 130,497 and Operating Income = 80,854
+    # (Operating margin = 80,854 / 130,497 = 61.96% -> 62.0%)
+    raw_evidence = """
+    NVIDIA CORP (in millions)
+    FY2025 Revenue: 60,922
+    FY2025 Operating Income: 32,972
+    FY2026 Revenue: 130,497
+    FY2026 Operating Income: 80,854
+    """
+
+    # 1. Operating margin derivations (62.0% for FY26, 54.1% for FY25)
+    assert verify_arithmetic_derivation("62.0%", raw_evidence) is True
+    assert verify_arithmetic_derivation("61.96%", raw_evidence) is True
+    assert verify_arithmetic_derivation("54.1%", raw_evidence) is True
+
+    # 2. Percentage point spread (|61.96% - 54.12%| = 7.84% -> 7.8% or 7.9%)
+    assert verify_arithmetic_derivation("7.8%", raw_evidence) is True
+
+    # 3. Random ungrounded percentage or number MUST be rejected
+    assert verify_arithmetic_derivation("43.7%", raw_evidence) is False
+    assert verify_arithmetic_derivation("999999", raw_evidence) is False
+
+    # 4. End-to-end integration with verify_numerical_grounding
+    evidence = [{"chunk_id": "F-NVDA", "content": raw_evidence}]
+    answer = "NVIDIA achieved an operating margin of 62.0% in FY2026, up from 54.1% in FY2025 [F-NVDA]."
+    report = verify_numerical_grounding(answer, evidence)
+    assert report["numerical_grounding_error_rate"] == 0.0
+    assert "62.0%" in report["verified_numbers"]
+    assert "54.1%" in report["verified_numbers"]
+    assert report["ungrounded_numbers"] == []
+
+
 def test_active_self_healing_repair_loop(monkeypatch):
     """Verify that when an ungrounded number is flagged, the graph triggers repair_node and re-audits."""
     from src.system_c.graph import build_system_c_graph
