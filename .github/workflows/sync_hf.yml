@@ -4,8 +4,10 @@ on:
   push:
     branches:
       - main
+      - dev
       - feat/system-c-core
       - feature/system-c-adaptive-rag
+      - feat/system-c-benchmark-integration
   workflow_dispatch:
 
 jobs:
@@ -29,7 +31,7 @@ jobs:
           mkdir -p /tmp/hf_deploy
           cp -r app.py requirements.txt README.md src /tmp/hf_deploy/
           mkdir -p /tmp/hf_deploy/data
-          cp data/financials.csv data/filings_index.csv /tmp/hf_deploy/data/
+          cp data/financials.csv data/filings_index.csv data/benchmark_qa_pool_2015.json data/golden_eval_set.json /tmp/hf_deploy/data/
 
           # Initialize a clean, lightweight Git repository (only ~3 MB)
           cd /tmp/hf_deploy
