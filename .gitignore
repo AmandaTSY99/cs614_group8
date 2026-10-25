@@ -19,6 +19,12 @@ ENV/
 .env
 .env.*
 !.env.example
+.streamlit/secrets.toml
+secrets.toml
+*.pem
+*.key
+credentials.json
+service_account*.json
 
 # --- Jupyter ---
 .ipynb_checkpoints/

@@ -18,8 +18,9 @@ from src.system_c.state import create_initial_state
 from src.system_c.nodes.decomposer import decomposer_node
 
 
-def test_gemini_native_payload_and_parsing():
+def test_gemini_native_payload_and_parsing(monkeypatch):
     """Verify Gemini native caller constructs proper Google API payload and parses candidates."""
+    monkeypatch.setenv("GEMINI_API_KEY", "mock-test-key")
     mock_response_data = {
         "candidates": [
             {
@@ -48,8 +49,9 @@ def test_gemini_native_payload_and_parsing():
         assert mock_urlopen.called
 
 
-def test_gemini_json_mode_payload():
+def test_gemini_json_mode_payload(monkeypatch):
     """Verify Gemini request includes responseMimeType when json_mode=True."""
+    monkeypatch.setenv("GEMINI_API_KEY", "mock-test-key")
     mock_response_data = {
         "candidates": [
             {
@@ -79,6 +81,7 @@ def test_gemini_decomposer_node_integration(monkeypatch):
     """Verify Decomposer routes properly with provider set to gemini."""
     monkeypatch.setenv("LLM_PROVIDER", "gemini")
     monkeypatch.setenv("LLM_MODEL", "gemini-flash-latest")
+    monkeypatch.setenv("GEMINI_API_KEY", "mock-test-key")
 
     state = create_initial_state(
         query="What was Apple's total revenue and operating income in fiscal 2024?",
@@ -147,3 +150,15 @@ def test_unsupported_provider_raises_clear_error(monkeypatch):
     with pytest.raises(ValueError) as excinfo:
         call_llm(state=state, node_name="decomposer", messages=[{"role": "user", "content": "hi"}])
     assert "Unsupported LLM_PROVIDER" in str(excinfo.value)
+
+
+def test_gemini_missing_api_key_raises_clear_error(monkeypatch):
+    """Verify Gemini provider raises actionable ValueError when no API key is provided."""
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+    messages = [{"role": "user", "content": "Hello"}]
+
+    with pytest.raises(ValueError) as excinfo:
+        _call_gemini_native("gemini-flash-latest", messages)
+    assert "GEMINI_API_KEY (or GOOGLE_API_KEY) is not set" in str(excinfo.value)
+

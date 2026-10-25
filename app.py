@@ -1370,17 +1370,31 @@ with st.sidebar:
     user_api_key = st.text_input(
         "API Key (Optional)",
         type="password",
-        placeholder="Leave blank to use pre-configured system key",
-        help="Paste your private Gemini, Groq, Cohere, or OpenAI key here. If left blank, the app uses pre-configured keys.",
+        placeholder="Enter key or set in .env / secrets",
+        help="Paste your private Gemini, Groq, Cohere, or OpenAI key here. If left blank, the app checks .env or Streamlit secrets.",
+    )
+    active_env_key = (
+        os.getenv(f"{selected_provider.upper()}_API_KEY")
+        or (selected_provider == "gemini" and os.getenv("GOOGLE_API_KEY"))
     )
     if user_api_key.strip():
         st.markdown(
             '<span class="metric-badge badge-amber">● Custom User Key Active</span>',
             unsafe_allow_html=True,
         )
+    elif active_env_key:
+        st.markdown(
+            '<span class="metric-badge badge-emerald">● Environment / Secret Key Active</span>',
+            unsafe_allow_html=True,
+        )
+    elif selected_provider == "mock":
+        st.markdown(
+            '<span class="metric-badge badge-emerald">● Mock Mode (No Key Required)</span>',
+            unsafe_allow_html=True,
+        )
     else:
         st.markdown(
-            '<span class="metric-badge badge-emerald">● Built-in System Key Active</span>',
+            '<span class="metric-badge badge-amber">⚠ Key Required (Paste above or set in .env)</span>',
             unsafe_allow_html=True,
         )
 
@@ -1397,10 +1411,6 @@ with st.sidebar:
             os.environ["COHERE_API_KEY"] = user_api_key.strip()
         elif selected_provider == "openai":
             os.environ["OPENAI_API_KEY"] = user_api_key.strip()
-    else:
-        if selected_provider == "gemini":
-            os.environ["GEMINI_API_KEY"] = "AIzaSyCRjeOAKS9-Lb7zXpwW294GOLD6vM6pUxw"
-            os.environ["GOOGLE_API_KEY"] = "AIzaSyCRjeOAKS9-Lb7zXpwW294GOLD6vM6pUxw"
 
     st.divider()
 

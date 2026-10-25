@@ -107,9 +107,6 @@ def _call_ollama(
     return content, int(prompt_tokens), int(completion_tokens)
 
 
-DEFAULT_GEMINI_API_KEY = "AIzaSyCRjeOAKS9-Lb7zXpwW294GOLD6vM6pUxw"
-
-
 def _call_gemini_native(
     model: str,
     messages: List[Dict[str, str]],
@@ -117,7 +114,12 @@ def _call_gemini_native(
     json_mode: bool = False,
 ) -> Tuple[str, int, int]:
     """Call Google Gemini generateContent REST API natively without needing third-party SDKs."""
-    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or DEFAULT_GEMINI_API_KEY
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError(
+            "GEMINI_API_KEY (or GOOGLE_API_KEY) is not set. "
+            "Please provide your Gemini key in .env, Streamlit Secrets, or via the UI."
+        )
     if not model or "1.5" in model or "2.0" in model:
         model = "gemini-flash-latest"
 
