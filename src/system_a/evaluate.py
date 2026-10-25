@@ -22,7 +22,7 @@ import pandas as pd
 from .pipeline import generate
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_BENCHMARK = [ROOT / "benchmark" / "benchmark_qa.jsonl"]   # amanda.jsonl with the reviewed corrections applied
+DEFAULT_BENCHMARK = [ROOT / "benchmark" / "benchmark_qa_0.jsonl"]   # amanda.jsonl with the reviewed corrections applied
 NUMBER_RE = re.compile(r"\d[\d,]*(?:\.\d+)?")
 SCALES = (1, 100, 0.01, 1e3, 1e-3, 1e6, 1e-6, 1e9, 1e-9)     # e.g. "$3.19 billion" vs "$3,192,049 thousand"
 STOPWORDS = {"the", "and", "for", "with", "that", "this", "from", "its", "was", "were", "are", "has", "have",

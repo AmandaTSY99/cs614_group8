@@ -11,7 +11,7 @@ dist/
 
 # --- IPYNB files ---
 build_syst_a.ipynb
-bechmark_qa.ipynb
+benchmark_qa.ipynb
 
 # --- Virtual environments ---
 .venv/
