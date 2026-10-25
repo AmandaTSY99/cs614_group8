@@ -341,6 +341,9 @@ def _call_mock(
         if state.get("force_max_hops"):
             target_hop = state.get("max_hops", 3)
             is_suff = hop >= target_hop
+        elif state.get("telemetry", {}).get("mock_sufficient_at_hop") is not None:
+            target_hop = int(state["telemetry"]["mock_sufficient_at_hop"])
+            is_suff = hop >= target_hop
         elif explicit_score is not None:
             threshold = float(state.get("sufficiency_threshold", 0.85))
             is_suff = float(explicit_score) >= threshold

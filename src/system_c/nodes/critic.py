@@ -65,10 +65,12 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     tabular = state.get("tabular_evidence", [])
     threshold = float(state.get("sufficiency_threshold", 0.85))
 
+    # Digest all accumulated chunks across all hops (prevents early hop blind spot)
+    char_limit = 450 if len(evidence) <= 12 else 250
     evidence_digest = "\n\n".join(
-        f"[{c['chunk_id']}] (Hop {c['hop_retrieved']}, Section: {c['metadata'].get('section', 'N/A')}):\n"
-        f"{c['content'][:450]}"
-        for c in evidence[-8:]
+        f"[{c['chunk_id']}] (Hop {c.get('hop_retrieved', 1)}, Section: {c.get('metadata', {}).get('section', 'N/A')}):\n"
+        f"{c['content'][:char_limit]}"
+        for c in evidence
     )
 
     tabular_digest = "\n".join(f"- {t[:250]}" for t in tabular) if tabular else "None"
@@ -172,7 +174,8 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
             curr_chunk_ids: Set[str] = {c["chunk_id"] for c in curr_hop_chunks}
 
             # If current hop produced no new chunks, or all chunk IDs already existed
-            if curr_hop_chunks and curr_chunk_ids.issubset(prev_chunk_ids):
+            mock_target = state.get("telemetry", {}).get("mock_sufficient_at_hop")
+            if curr_hop_chunks and curr_chunk_ids.issubset(prev_chunk_ids) and (mock_target is None or hop >= mock_target):
                 redundant_prevented = True
                 score = max(score, threshold)
                 missing_entities = []
@@ -195,8 +198,8 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
                         "why", "driver", "strategy", "cause", "item 7", "item 8", "item 1"
                     )
                 )
-                # Tabular tool only satisfies simple single-hop headline financial lookup when NO narrative/footnote/segment is requested
-                if not has_narrative_need and not missing_entities and not missing_years and not missing_premises:
+                # Tabular tool satisfies simple single-hop headline financial lookup when NO narrative/footnote/segment is requested
+                if not has_narrative_need:
                     score = max(score, 0.95)
                     missing_entities = []
                     missing_years = []
