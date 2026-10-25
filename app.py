@@ -1338,8 +1338,8 @@ with st.sidebar:
 
     if selected_provider == "groq":
         model_options = {
-            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Universal Free (Instant)",
             "openai/gpt-oss-120b": "OpenAI GPT-OSS (120B) — Team Notebook Default",
+            "llama-3.1-8b-instant": "Llama 3.1 (8B) — Universal Free (Instant)",
             "llama-3.3-70b-versatile": "Llama 3.3 (70B) — Flagship",
             "gemma2-9b-it": "Google Gemma 2 (9B)",
         }
@@ -1814,7 +1814,7 @@ if "last_system_c_result" in st.session_state:
             for idx, cit in enumerate(citations):
                 with cit_cols[idx % 2]:
                     with st.expander(
-                        f"[{cit.get('tag', 'Citation')}] — {cit.get('ticker', 'SEC')} FY{cit.get('fiscal_year', '')} ({cit.get('section', '10-K')})",
+                        f"{cit.get('tag', '[Citation]')} — {cit.get('ticker', 'SEC')} FY{cit.get('fiscal_year', '')} ({cit.get('section', '10-K')})",
                         expanded=(idx < 2),
                     ):
                         st.markdown(f"**Chunk ID**: `{cit.get('chunk_id')}`")

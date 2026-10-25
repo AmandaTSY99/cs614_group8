@@ -455,14 +455,27 @@ def call_llm(
     messages: List[Dict[str, str]],
     temperature: float = 0.0,
     json_mode: bool = False,
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
 ) -> Tuple[str, Dict[str, Any]]:
     """
     Execute an LLM call using the configured provider and automatically record RQ3 telemetry.
 
+    `provider` / `model` override the configured provider/model for this call only (e.g. a separate
+    guardrail judge). When the configured provider is `mock`, mock is always used so tests stay offline.
+
     Returns:
         `(response_text, updated_telemetry_dict)`
     """
-    provider, model = get_llm_config()
+    cfg_provider, cfg_model = get_llm_config()
+    if cfg_provider == "mock" or (provider is None and model is None):
+        provider, model = cfg_provider, cfg_model
+    else:
+        provider = (provider or cfg_provider).strip().lower()
+        if not model:
+            if provider != cfg_provider:
+                raise ValueError(f"call_llm: a model is required when overriding the provider to '{provider}'.")
+            model = cfg_model
     hop = state.get("current_hop", 0)
     start = time.perf_counter()
 
