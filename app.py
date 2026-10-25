@@ -1345,7 +1345,8 @@ with st.sidebar:
         }
     elif selected_provider == "gemini":
         model_options = {
-            "gemini-flash-latest": "Gemini Flash (Latest — Fast & Free)",
+            "gemini-1.5-flash": "Gemini 1.5 Flash (Fast & Free Tier)",
+            "gemini-2.0-flash": "Gemini 2.0 Flash (Next-Gen)",
         }
     elif selected_provider == "cohere":
         model_options = {

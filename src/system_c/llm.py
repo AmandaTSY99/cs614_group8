@@ -58,9 +58,9 @@ def get_llm_config() -> Tuple[str, str]:
         if provider == "ollama":
             model = "qwen2.5:7b"
         elif provider == "gemini":
-            model = "gemini-flash-latest"
+            model = "gemini-1.5-flash"
         elif provider == "groq":
-            model = "llama-3.1-8b-instant"
+            model = "openai/gpt-oss-120b"
         elif provider == "cohere":
             model = "command-r"
         elif provider == "openai":
@@ -122,8 +122,8 @@ def _call_gemini_native(
             "GEMINI_API_KEY (or GOOGLE_API_KEY) is not set. "
             "Please provide your Gemini key in .env, Streamlit Secrets, or via the UI."
         )
-    if not model or "1.5" in model or "2.0" in model:
-        model = "gemini-flash-latest"
+    if not model or "flash-latest" in model:
+        model = "gemini-1.5-flash"
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
     contents = []
@@ -154,12 +154,28 @@ def _call_gemini_native(
             c_tok = usage.get("candidatesTokenCount") or _estimate_tokens(content)
             return content, int(p_tok), int(c_tok)
     except Exception as exc:
+        gemini_err = str(exc)
+        if hasattr(exc, "read"):
+            try:
+                raw_body = exc.read().decode("utf-8")
+                parsed_err = json.loads(raw_body)
+                gemini_err = parsed_err.get("error", {}).get("message", raw_body)
+            except Exception:
+                pass
+
         groq_key = os.getenv("GROQ_API_KEY")
         if groq_key:
-            return _call_groq_or_openai("groq", "llama-3.1-8b-instant", messages, temperature=temperature)
+            try:
+                return _call_groq_or_openai("groq", "openai/gpt-oss-120b", messages, temperature=temperature)
+            except Exception as groq_exc:
+                raise ValueError(
+                    f"Google Gemini Error: {gemini_err}. Automatic fallback to Groq also failed: {groq_exc}. "
+                    "Please check your API keys or switch to '🧪 Mock Mode' in the sidebar to test immediately."
+                ) from exc
+
         raise ValueError(
-            f"Google Gemini API timed out or throttled ({str(exc)}). "
-            "Tip: Switch LLM Provider in the sidebar to 'Groq LPU (500+ tok/s)' or 'Mock Engine' for instant responses."
+            f"Google Gemini API Error: {gemini_err}. "
+            "Please verify your GEMINI_API_KEY / GOOGLE_API_KEY or switch to '🧪 Mock Mode' in the sidebar."
         ) from exc
 
 
