@@ -9,6 +9,9 @@ dist/
 *.egg-info/
 .eggs/
 
+# --- IPYNB files ---
+build_syst_a.ipynb
+
 # --- Virtual environments ---
 .venv/
 venv/
