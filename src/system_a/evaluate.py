@@ -124,7 +124,7 @@ def run_benchmark(indexes, qas, k=TOP_K, scope="gold", generate_answers=True,
     with out_path.open("w", encoding="utf-8") as f:
         for n, qa in enumerate(qas, 1):
             pairs = gold_pairs(qa) if scope == "gold" else []
-            retrieved = {}                                       # one retrieval per collection (rag3 and rag4 share one)
+            retrieved = {}                                       # one retrieval per collection (rag3/rag4 share one, rag5/rag6 another)
             for variant, index in indexes.items():
                 if id(index) not in retrieved:
                     hits = index.retrieve(qa["question"], k, pairs)

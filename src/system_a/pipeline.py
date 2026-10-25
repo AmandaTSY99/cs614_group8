@@ -3,6 +3,7 @@
 rag5: RAG 3 chunks embedded with the company and fiscal year in front (contextual chunk header). Default.
 rag3: structure-based chunks (Items, headings, tables) + bge-small.
 rag4: same retrieval as rag3, plus the financials.csv rows for the filtered companies and years.
+rag6: same retrieval as rag5, plus the financials.csv rows (RAG 5 + RAG 4's lookup).
 """
 from .financials import FINANCIALS_NOTE, lookup_financials
 from .llm import DEFAULT_MODEL, chat
@@ -12,12 +13,15 @@ VARIANTS = {
     "rag5": {"collection": "rag5_structure_header_bge", "financials": False},
     "rag3": {"collection": "rag3_structure_bge", "financials": False},
     "rag4": {"collection": "rag3_structure_bge", "financials": True},
+    "rag6": {"collection": "rag5_structure_header_bge", "financials": True},
 }
 DEFAULT_VARIANT = "rag5"
 TOP_K = 10
 RAG_SYSTEM = ("Answer the question using ONLY the context below. Cite the chunk ids you used, like [2]. "
               "Each chunk is labelled with its company and fiscal year. "
-              "If the answer is not in the context, reply exactly: Not found in the provided context.")
+              "If the context answers only part of the question, answer that part and say which parts "
+              "are not in the context. "
+              "If none of the answer is in the context, reply exactly: Not found in the provided context.")
 
 
 def generate(question, hits, variant=DEFAULT_VARIANT, pairs=None, model=DEFAULT_MODEL):

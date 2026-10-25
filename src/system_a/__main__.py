@@ -1,10 +1,10 @@
-"""System A command line: RAG 5 (default), RAG 3 or RAG 4, for one query or the benchmark.
+"""System A command line: RAG 5 (default), RAG 3, RAG 4 or RAG 6, for one query or the benchmark.
 
 Run from the repo root (e.g. in the container, /workspace):
   python -m src.system_a --query "What was NVIDIA's total revenue?" --tickers NVDA --years 2026
   python -m src.system_a --query "..." --tickers NVDA --years 2026 --variant rag4
   python -m src.system_a --benchmark                          # every QA, RAG 5
-  python -m src.system_a --benchmark --all-variants --limit 10   # RAG 5, 3 and 4
+  python -m src.system_a --benchmark --all-variants --limit 10   # RAG 5, 3, 4 and 6
   python -m src.system_a --benchmark --no-generate            # retrieval metrics only, no LLM calls
 """
 import argparse
@@ -25,7 +25,7 @@ from .retrieval import EMBED_MODEL, ChromaIndex, QueryEmbedder
 def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    parser = argparse.ArgumentParser(description="System A: RAG 5 / RAG 3 / RAG 4 (dense retrieval, one LLM call)")
+    parser = argparse.ArgumentParser(description="System A: RAG 5 / RAG 3 / RAG 4 / RAG 6 (dense retrieval, one LLM call)")
     inputs = parser.add_mutually_exclusive_group(required=True)
     inputs.add_argument("--query", help="Answer one question")
     inputs.add_argument("--benchmark", type=Path, nargs="*",
@@ -64,15 +64,15 @@ def main():
         collection = args.collection or VARIANTS[variant]["collection"]
         if collection not in opened:
             opened[collection] = ChromaIndex(args.chroma_dir, collection, embedder)
-            # Supabase holds the rag3 chunks only, so it can stand in for rag3 / rag4 but not rag5:
-            # if args.store == "supabase":
+            # Supabase holds the rag3 chunks only (no company/year header), so it can stand in for rag3 only:
+            # if args.store == "supabase" and collection == "rag3_structure_bge":
             #     opened[collection] = SupabaseIndex(args.supabase_table, embedder)
     indexes = {v: opened[args.collection or VARIANTS[v]["collection"]] for v in variants}
 
     if args.query:
         pairs = [(t, y) for t in args.tickers or [None] for y in args.years or [None]] if args.tickers or args.years else []
-        if "rag4" in variants and not args.tickers:
-            print("Note: rag4 adds financials.csv rows only for the companies given with --tickers")
+        if any(VARIANTS[v]["financials"] for v in variants) and not args.tickers:
+            print("Note: rag4/rag6 add financials.csv rows only for the companies given with --tickers")
         for variant, index in indexes.items():
             hits = index.retrieve(args.query, args.top_k, pairs)
             print(f"=== {variant} ({index.name}) ===")
