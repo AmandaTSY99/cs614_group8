@@ -64,3 +64,6 @@ TAT-QA/
 
 # -- trash --
 .Trash*/
+
+# --- archives ---
+amanda_archive/
