@@ -1,0 +1,24 @@
+FROM python:3.12-slim
+
+# RQ2 evaluation image: the System C image plus RAGAS. Stage 2 (score.py / report.py) runs here;
+# Stage 1 (generate.py) keeps using the regular `system-c` image, which has no RAGAS.
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /workspace
+
+# CPU-only PyTorch first so sentence-transformers doesn't pull the multi-GB CUDA build
+RUN pip install --upgrade pip && \
+    pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# Same project dependencies as the base image
+COPY requirements.txt requirements-eval.txt ./
+RUN pip install -r requirements.txt
+
+# Separate step on purpose: ragas needs openai 1.x while requirements.txt pins openai 3.x, so pip
+# downgrades openai (and a couple of small packages) in THIS image only. requirements-eval.txt also pins
+# langchain-community==0.3.31, because ragas 0.4.3 does not import with langchain-community 0.4.x.
+RUN pip install -r requirements-eval.txt
+
+CMD ["python", "scripts/rq2/score.py", "--help"]

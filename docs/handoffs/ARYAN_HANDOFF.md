@@ -77,6 +77,12 @@ I have put functional baseline implementations in your 3 files so the full pipel
 * **One LLM call:** `call_llm(state, "repair", ...)`.
 * **Outputs to return:** `draft_answer`, `final_answer`, `citations` (rebuilt from the repaired text with `build_citation_records`), `repair_count`, `repair_history` and `telemetry`.
 
+### RQ2 evaluation ([`scripts/rq2/`](../../scripts/rq2))
+* Two stages: `generate.py` runs the systems in the `cs614` env and writes `records.jsonl`; `score.py` and `report.py` run in the `cs614-eval` env (ragas 0.4.3) and read only the JSONL files.
+* Metrics: RAGAS faithfulness, answer relevancy, context recall/precision and factual correctness, plus custom citation precision/recall/F1 (section-level), numeric accuracy and the guardrail's numerical grounding error rate.
+* Usage: `python scripts/rq2/generate.py --systems system_c_v1,system_c_v2 --run-id smoke --limit 3`, then `python scripts/rq2/score.py --run reports/rq2/smoke` and `python scripts/rq2/report.py --run reports/rq2/smoke`. Docker: the `rq2-eval` service (`Dockerfile.eval`, untested).
+* Status: smoke run only (`reports/rq2/smoke/`); the full run is pending and the System A / B adapters are stubs.
+
 ---
 
 ## 3. Git Branching Workflow (How We Work Without Stepping on Each Other)
