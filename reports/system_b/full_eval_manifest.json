@@ -1,0 +1,42 @@
+{
+  "python": "3.11.6",
+  "platform": "Windows",
+  "source_sha256": {
+    "src/system_b/retrieval.py": "044a96457a571b24a7380d95db5443fed62f28d820ae6cf1bc5350aaefdf8546",
+    "src/system_b/adapters.py": "a24fe9684660a62e55d3bfad3c0f1ae89e04f034cc4c708b0298b75dc3aab2c2",
+    "src/system_b/pipeline.py": "ea055dcaa3235ad6fb471f72e15ce48fa1527ab2a9fe0422c68e059af672b49a",
+    "src/system_b/__main__.py": "d229001252aa33be8b21021b8955b7462e91a23e2eec7989c667a4ae6f07258c",
+    "data/golden_eval_set.json": "39fe779dcfb494b26fffd07725bb1c482183b0ac5932bc3e095b74c15df135ba"
+  },
+  "model": "openai/gpt-oss-120b",
+  "provider": "Groq",
+  "collection": "rag3_structure_bge",
+  "chunks": 141833,
+  "alpha": 0.5,
+  "top_k": 5,
+  "candidate_count": 30,
+  "rerank_candidates": 30,
+  "note": "Local working-tree code; resumed successes retain original timings.",
+  "packages": {
+    "chromadb": "1.5.9",
+    "sentence-transformers": "6.1.0",
+    "openai": "3.31.0",
+    "torch": "2.14.1",
+    "transformers": "5.20.2"
+  },
+  "final_source_sha256": {
+    "src/system_b/retrieval.py": "1a3994720ba62275a5e10d1444309c7ad93bbb0a29004169ffede2e6b13dee49",
+    "src/system_b/adapters.py": "a24fe9684660a62e55d3bfad3c0f1ae89e04f034cc4c708b0298b75dc3aab2c2",
+    "src/system_b/pipeline.py": "0471d89af4a8a3e09df389c197817a02e5bac04c6c2fa9094296cef954cf22a4",
+    "src/system_b/__main__.py": "023824e3c577b543b9fe99a769e949566b90bb3ef77c741cab66801ba3699136",
+    "data/golden_eval_set.json": "79612e0fbd9f3ce2cb4dba8ec5c1de5ba76c59c739b163ad2d86b3497bca7ef2"
+  },
+  "final_results_sha256": "ea26583a696a5c85b7f576feddefa95c7b1f274240780eef20f474e9e53350f2",
+  "status": {
+    "retrieval_completed": 240,
+    "generation_completed": 140,
+    "generation_quota_blocked": 100,
+    "tests_passed": 17
+  },
+  "correction": "Explicit filing pairs added for GOLD-52 and GOLD-55; their retrieval rerun successfully."
+}
