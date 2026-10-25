@@ -14,6 +14,15 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
+from src.system_c.benchmark_adapter import (
+    FEATURED_BENCHMARK_IDS,
+    benchmark_to_system_c_query,
+    get_benchmark_by_id,
+    get_featured_benchmark_questions,
+    load_benchmark_pool,
+    run_finqa_program,
+)
+
 # Ensure repo root is in sys.path
 REPO_ROOT = os.path.abspath(os.path.dirname(__file__))
 if REPO_ROOT not in sys.path:
@@ -708,6 +717,14 @@ TIERED_GOLDEN_QUERIES = {
             "Compare the digital advertising revenue performance and year-over-year growth rate of Meta Platforms versus Alphabet in 2024. Which company achieved a higher percentage growth rate in advertising?",
         ),
     ],
+}
+
+BENCHMARK_RECIPE_GROUPS = {
+    "Single Table Quantitative Math (10 Qs)": "table",
+    "Cross-Year Multi-Hop Table Reconciliation (6 Qs)": "cross_year_table",
+    "Table + Footnotes Hybrid Verification (12 Qs)": "table_text",
+    "Narrative Business Strategy & Risk (8 Qs)": "text",
+    "Cross-Year Qualitative Evolution (4 Qs)": "cross_year_text",
 }
 
 NODE_META = [
@@ -1838,13 +1855,36 @@ with st.sidebar:
     st.divider()
 
     st.subheader("4. Golden Benchmark Presets")
-    st.caption("Load verified multi-hop SEC 10-K evaluation queries:")
-    for tier_title, questions in TIERED_GOLDEN_QUERIES.items():
-        with st.expander(tier_title, expanded=(tier_title.startswith("Tier 1"))):
-            for q_id, q_label, full_q in questions:
-                if st.button(f"{q_id}: {q_label}", use_container_width=True, key=f"side_{q_id}"):
-                    st.session_state["user_query_input"] = full_q
-                    st.rerun()
+    preset_suite = st.radio(
+        "Benchmark Suite:",
+        ["FinQA Academic Benchmark (2015+ Pool)", "Canonical Golden Set (60 Qs)"],
+        index=0,
+        horizontal=True,
+        key="preset_suite_selector",
+    )
+    if preset_suite.startswith("FinQA"):
+        st.caption("Verified SEC 10-K evaluation queries (FY2015–FY2025):")
+        all_pool = load_benchmark_pool()
+        for group_label, recipe_key in BENCHMARK_RECIPE_GROUPS.items():
+            group_items = [q for q in all_pool if q.get("recipe") == recipe_key]
+            if not group_items:
+                continue
+            with st.expander(f"{group_label}", expanded=(recipe_key == "table")):
+                for item in group_items:
+                    btn_label = f"[{item['id'].upper()}] {item['ticker']} FY{item['year']}: {item['question'][:45]}..."
+                    if st.button(btn_label, use_container_width=True, key=f"side_bm_{item['id']}"):
+                        st.session_state["user_query_input"] = item["question"]
+                        st.session_state["active_benchmark_item"] = item
+                        st.rerun()
+    else:
+        st.caption("Load verified multi-hop SEC 10-K evaluation queries:")
+        for tier_title, questions in TIERED_GOLDEN_QUERIES.items():
+            with st.expander(tier_title, expanded=(tier_title.startswith("Tier 1"))):
+                for q_id, q_label, full_q in questions:
+                    if st.button(f"{q_id}: {q_label}", use_container_width=True, key=f"side_{q_id}"):
+                        st.session_state["user_query_input"] = full_q
+                        st.session_state["active_benchmark_item"] = None
+                        st.rerun()
 
     st.divider()
 
@@ -1918,32 +1958,67 @@ st.markdown(
 # Main-Stage Quick-Start Preset Chips (FTUX 1-Click Action across 1, 2, and 3 Hops)
 st.markdown(
     '<div style="font-family:var(--quant-mono); font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--text-color); margin-bottom:6px;">'
-    '⚡ Quick-Start Evaluation Presets (Click any chip to test across SYS A, SYS B, or SYS C):'
+    '⚡ FinQA Academic Benchmark Presets (Click any chip to test across SYS A, SYS B, or SYS C):'
     '</div>',
     unsafe_allow_html=True,
 )
-col_q1, col_q2, col_q3, col_q4 = st.columns(4)
-with col_q1:
-    if st.button("🟢 1-Hop Fact (GOLD-01)\nNVDA FY26 Period & HQ (1 Hop)", use_container_width=True, key="quick_g01"):
-        st.session_state["user_query_input"] = "What was NVIDIA's fiscal year 2026 period end date, and where is its principal executive office located?"
-        st.rerun()
-with col_q2:
-    if st.button("🔵 2-Hop Tabular (GOLD-16)\nNVDA FY25-26 YoY Growth (2 Hops)", use_container_width=True, key="quick_g16"):
-        st.session_state["user_query_input"] = "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate."
-        st.rerun()
-with col_q3:
-    if st.button("🟣 2-Hop Notes (GOLD-36)\nNVDA Compute vs Notes (2 Hops)", use_container_width=True, key="quick_g36"):
-        st.session_state["user_query_input"] = "How did NVIDIA's Compute & Networking segment perform in FY2026, and what specific direct customer concentration percentages were disclosed in the Notes to Consolidated Financial Statements?"
-        st.rerun()
-with col_q4:
-    if st.button("🟡 3-Hop Cloud (GOLD-51)\nMSFT vs AWS vs Google Cloud (3 Hops)", use_container_width=True, key="quick_g51"):
-        st.session_state["user_query_input"] = "Compare the 2024 enterprise cloud segment revenue, operating income, and operating margin across Microsoft (Intelligent Cloud), Amazon (AWS), and Alphabet (Google Cloud). Which cloud provider generated the highest operating margin in 2024, and which achieved the highest year-over-year revenue growth rate?"
-        st.rerun()
+
+featured_bms = get_featured_benchmark_questions()
+if len(featured_bms) >= 4:
+    col_q1, col_q2, col_q3, col_q4 = st.columns(4)
+    with col_q1:
+        f1 = featured_bms[0]
+        if st.button(f"🟢 1-Hop Math ({f1['id'].upper()})\n{f1['ticker']} FY{f1['year']} Restructuring R&D", use_container_width=True, key="quick_bm1"):
+            st.session_state["user_query_input"] = f1["question"]
+            st.session_state["active_benchmark_item"] = f1
+            st.rerun()
+    with col_q2:
+        f2 = featured_bms[1]
+        years_s = "-".join(str(y)[2:] for y in f2.get("applicable_years", [f2["year"]]))
+        if st.button(f"🔵 2-Hop Cross-Year ({f2['id'].upper()})\n{f2['ticker']} FY{years_s} Diluted EPS YoY", use_container_width=True, key="quick_bm2"):
+            st.session_state["user_query_input"] = f2["question"]
+            st.session_state["active_benchmark_item"] = f2
+            st.rerun()
+    with col_q3:
+        f3 = featured_bms[2]
+        if st.button(f"🟣 Table + Footnote ({f3['id'].upper()})\n{f3['ticker']} FY{f3['year']} Tegra Processor", use_container_width=True, key="quick_bm3"):
+            st.session_state["user_query_input"] = f3["question"]
+            st.session_state["active_benchmark_item"] = f3
+            st.rerun()
+    with col_q4:
+        f4 = featured_bms[3]
+        if st.button(f"🟡 Cloud Infrastructure ({f4['id'].upper()})\n{f4['ticker']} FY{f4['year']} Cloud GPU Leases", use_container_width=True, key="quick_bm4"):
+            st.session_state["user_query_input"] = f4["question"]
+            st.session_state["active_benchmark_item"] = f4
+            st.rerun()
+
+with st.expander("⚡ Or load Multi-Company Canonical Golden Presets (GOLD-01, 16, 36, 51)", expanded=False):
+    col_g1, col_g2, col_g3, col_g4 = st.columns(4)
+    with col_g1:
+        if st.button("🟢 GOLD-01 (1 Hop)\nNVDA Period & HQ", use_container_width=True, key="quick_g01"):
+            st.session_state["user_query_input"] = "What was NVIDIA's fiscal year 2026 period end date, and where is its principal executive office located?"
+            st.session_state["active_benchmark_item"] = None
+            st.rerun()
+    with col_g2:
+        if st.button("🔵 GOLD-16 (2 Hops)\nNVDA YoY Growth", use_container_width=True, key="quick_g16"):
+            st.session_state["user_query_input"] = "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate."
+            st.session_state["active_benchmark_item"] = None
+            st.rerun()
+    with col_g3:
+        if st.button("🟣 GOLD-36 (2 Hops)\nNVDA Compute vs Notes", use_container_width=True, key="quick_g36"):
+            st.session_state["user_query_input"] = "How did NVIDIA's Compute & Networking segment perform in FY2026, and what specific direct customer concentration percentages were disclosed in the Notes to Consolidated Financial Statements?"
+            st.session_state["active_benchmark_item"] = None
+            st.rerun()
+    with col_g4:
+        if st.button("🟡 GOLD-51 (3 Hops)\nCloud Margins Battle", use_container_width=True, key="quick_g51"):
+            st.session_state["user_query_input"] = "Compare the 2024 enterprise cloud segment revenue, operating income, and operating margin across Microsoft (Intelligent Cloud), Amazon (AWS), and Alphabet (Google Cloud). Which cloud provider generated the highest operating margin in 2024, and which achieved the highest year-over-year revenue growth rate?"
+            st.session_state["active_benchmark_item"] = None
+            st.rerun()
 
 # Query Input Console
 default_query = st.session_state.get(
     "user_query_input",
-    "What was Apple's total revenue, operating income, and net income in fiscal 2024?",
+    "What percentage of Meta Platforms' total restructuring charges for 2023 was recorded under research and development?",
 )
 query_text = st.text_area(
     "SEC 10-K Financial Intelligence Prompt (edit query or run any preset chip above):",
@@ -1951,6 +2026,45 @@ query_text = st.text_area(
     height=75,
     placeholder="e.g. Compare NVIDIA and Microsoft cloud and data center performance in 2024...",
 )
+
+active_bm = st.session_state.get("active_benchmark_item")
+if active_bm and query_text.strip() == active_bm.get("question", "").strip():
+    qid = html.escape(str(active_bm.get("id", "")))
+    tkr = html.escape(str(active_bm.get("ticker", "")))
+    yrs_str = ", ".join(str(y) for y in active_bm.get("applicable_years", [active_bm.get("year", "")]))
+    rcp = html.escape(str(active_bm.get("recipe", "")))
+    ans = html.escape(str(active_bm.get("answer", "")))
+    prog = str(active_bm.get("program", "")).strip()
+    prog_val = run_finqa_program(prog) if prog else None
+    prog_html = f'&nbsp;&bull;&nbsp; <strong>FinQA Formula:</strong> <code>{html.escape(prog)}</code>' if prog else ""
+    if prog_val is not None:
+        prog_html += f' ➔ <code>{prog_val:.4f}</code>'
+
+    st.markdown(
+        f'<div style="margin-top:4px; margin-bottom:12px; padding:9px 13px; background:var(--term-bg-surface); border:1px solid var(--term-border); border-left:4px solid #10B981; border-radius:var(--quant-radius);">'
+        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">'
+        f'<span style="font-family:var(--quant-mono); font-size:0.75rem; font-weight:800; color:#10B981;">'
+        f'🎯 ACADEMIC BENCHMARK GROUND TRUTH SPEC // {qid.upper()} ({tkr} &bull; FY{yrs_str} &bull; {rcp.upper()})'
+        f'</span>'
+        f'<span class="metric-badge badge-emerald">VERIFIED FINQA / TAT-QA</span>'
+        f'</div>'
+        f'<div style="font-size:0.83rem; color:var(--text-color);">'
+        f'<strong>Expected Ground Truth:</strong> <code style="color:#10B981; font-weight:bold;">{ans}</code>'
+        f'{prog_html}'
+        f'</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+    gold_ev = active_bm.get("gold_evidence", [])
+    if gold_ev:
+        with st.expander(f"📌 Ground-Truth SEC 10-K Evidence Quotes ({len(gold_ev)} Filings / Sections Mapped)", expanded=False):
+            for i, ev in enumerate(gold_ev):
+                st.markdown(
+                    f"**[{i+1}] {html.escape(str(ev.get('doc_id', '')))}** &bull; "
+                    f"`{html.escape(str(ev.get('item', '')))}` &bull; "
+                    f"*{html.escape(str(ev.get('heading', '')))}* ({html.escape(str(ev.get('kind', 'text')).upper())})"
+                )
+                st.code(ev.get("quote", ""), language="markdown")
 
 col_run, col_hint = st.columns([1.5, 5.5])
 with col_run:
@@ -2030,9 +2144,15 @@ if run_btn and query_text.strip():
                 status_box.write(
                     f"🔎 **[{active_sys_prefix} Retriever]** Running `{eff_b_mode}` (alpha=`{eff_b_alpha:.2f}`, top_k=`{eff_b_topk}`)..."
                 )
+                eff_b_tickers = list(selected_tickers) if selected_tickers else None
+                active_bm = st.session_state.get("active_benchmark_item")
+                if active_bm and query_text.strip() == active_bm.get("question", "").strip():
+                    if not eff_b_tickers and active_bm.get("ticker"):
+                        eff_b_tickers = [active_bm["ticker"]]
+
                 live_state, visited_nodes, total_wall_time = execute_system_b_for_streamlit(
                     query=query_text.strip(),
-                    selected_tickers=list(selected_tickers) if selected_tickers else None,
+                    selected_tickers=eff_b_tickers,
                     retrieval_mode=eff_b_mode,
                     alpha=eff_b_alpha,
                     top_k=eff_b_topk,
@@ -2100,6 +2220,15 @@ if run_btn and query_text.strip():
             target_ticker_arg = selected_tickers[0] if len(selected_tickers) == 1 else None
             target_tickers_arg = list(selected_tickers) if selected_tickers else None
 
+            # Propagate benchmark hints if executing an active benchmark QA
+            active_bm = st.session_state.get("active_benchmark_item")
+            bm_years_hint = []
+            if active_bm and query_text.strip() == active_bm.get("question", "").strip():
+                if not target_ticker_arg and active_bm.get("ticker"):
+                    target_ticker_arg = active_bm["ticker"]
+                    target_tickers_arg = [active_bm["ticker"]]
+                bm_years_hint = active_bm.get("applicable_years") or ([active_bm["year"]] if active_bm.get("year") else [])
+
             live_state = dict(
                 create_initial_state(
                     query=query_text.strip(),
@@ -2111,6 +2240,12 @@ if run_btn and query_text.strip():
                     sufficiency_threshold=sufficiency_threshold,
                 )
             )
+            if active_bm and query_text.strip() == active_bm.get("question", "").strip():
+                live_state["ground_truth_answer"] = active_bm.get("answer")
+                live_state["ground_truth_program"] = active_bm.get("program")
+                live_state["benchmark_id"] = active_bm.get("id")
+                if bm_years_hint and not live_state.get("target_fiscal_years"):
+                    live_state["target_fiscal_years"] = bm_years_hint
 
             compiled_graph = build_system_c_graph()
             visited_nodes = []
@@ -2361,6 +2496,20 @@ if "last_system_c_result" in st.session_state:
                 st.code(final_answer, language="markdown")
         else:
             st.info("No synthesis generated.")
+
+        # Academic Benchmark Evaluation Summary
+        bm_gt = result.get("ground_truth_answer") or (st.session_state.get("active_benchmark_item", {}).get("answer") if st.session_state.get("active_benchmark_item", {}).get("question", "").strip() == query_text.strip() else None)
+        bm_prog = result.get("ground_truth_program") or (st.session_state.get("active_benchmark_item", {}).get("program") if st.session_state.get("active_benchmark_item", {}).get("question", "").strip() == query_text.strip() else None)
+        if bm_gt:
+            prog_part = f" &bull; <strong>FinQA Formula:</strong> <code>{html.escape(bm_prog)}</code>" if bm_prog else ""
+            st.markdown(
+                f'<div style="margin:10px 0; padding:8px 12px; background:rgba(16, 185, 129, 0.08); border:1px solid rgba(16, 185, 129, 0.35); border-radius:var(--quant-radius);">'
+                f'<span style="font-family:var(--quant-mono); font-size:0.75rem; font-weight:800; color:#10B981;">'
+                f'🎯 BENCHMARK GROUND TRUTH EVALUATION // Expected: <code style="color:#10B981;">{html.escape(bm_gt)}</code>{prog_part}'
+                f'</span>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
 
         st.markdown("##### ✓ Scale-Verified Numerical Claims *(hover pill for SEC chunk provenance)*")
         st.markdown(verified_pills_html, unsafe_allow_html=True)
