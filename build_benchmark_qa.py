@@ -11,11 +11,14 @@ Each person writes their own file, benchmark/parts/<name>.jsonl, so teammates ca
 without conflicts. Questions made by anyone (every file in benchmark/parts/) are never repeated: their sources
 are not reused, and near-duplicate questions are rejected.
 
+Recipe targets count every part file, so QAs already in benchmark/parts/ (e.g. kept_fy2015.jsonl) are not
+made again: a run only fills the gaps.
+
 Usage (from the repo root; git pull first so teammates' parts are counted):
-    python build_benchmark_qa.py --name amanda                          # all recipes; resumes where it stopped
-    python build_benchmark_qa.py --name amanda --recipes table,text     # only some recipes (split work by recipe)
-    python build_benchmark_qa.py --dry-run                              # print one prompt per recipe, no API calls
-    python build_benchmark_qa.py --merge                                # combine all parts into benchmark_qa.jsonl
+    python build_benchmark_qa.py --name amanda --min-year 2015          # all recipes; resumes where it stopped
+    python build_benchmark_qa.py --name amanda --min-year 2015 --recipes table,text   # only some recipes
+    python build_benchmark_qa.py --dry-run --min-year 2015              # print one prompt per recipe, no API calls
+    python build_benchmark_qa.py --merge                                # combine all parts into benchmark_qa_1.jsonl
 """
 import argparse
 import csv
@@ -31,21 +34,28 @@ from pathlib import Path
 ROOT = Path(__file__).parent
 DATA_DIR = ROOT / "data"
 PARTS_DIR = ROOT / "benchmark" / "parts"                  # one file per person: <name>.jsonl
-FINAL_PATH = ROOT / "benchmark" / "benchmark_qa.jsonl"    # all parts merged by --merge
+FINAL_PATH = ROOT / "benchmark" / "benchmark_qa_1.jsonl"  # all parts merged by --merge (v0 is benchmark_qa_0.jsonl)
 SEED = 614
 
 # Question writer. Must differ from the RAG pipeline's answer model (openai/gpt-oss-120b).
 QA_MODEL = os.getenv("QA_MODEL", "qwen/qwen3.8-27b")
 
-# recipe -> (number of QAs, type, scope). Totals: 100 QAs; 45 numeric, 35 qualitative, 20 mixed.
+# recipe -> (number of QAs, type, scope). Totals: 100 QAs; 45 numeric, 35 qualitative, 20 mixed
+# (same type mix as v0; 5 table + 5 text QAs became cross-company ones).
 RECIPES = {
-    "table":            (25, "numeric",     "single_doc"),  # one table + the paragraph above it
-    "text":             (20, "qualitative", "single_doc"),  # one section of narrative text
-    "table_text":       (20, "mixed",       "single_doc"),  # a table + a related section from another Item
-    "cross_year_table": (20, "numeric",     "cross_year"),  # the same table in two filings of one company
-    "cross_year_text":  (15, "qualitative", "cross_year"),  # the same section in two filings of one company
+    "table":               (20, "numeric",     "single_doc"),     # one table + the paragraph above it
+    "text":                (15, "qualitative", "single_doc"),     # one section of narrative text
+    "table_text":          (20, "mixed",       "single_doc"),     # a table + a related section from another Item
+    "cross_year_table":    (20, "numeric",     "cross_year"),     # the same table in two filings of one company
+    "cross_year_text":     (15, "qualitative", "cross_year"),     # the same section in two filings of one company
+    "cross_company_table": (5,  "numeric",     "cross_company"),  # similar tables of two companies, same fiscal year
+    "cross_company_text":  (5,  "qualitative", "cross_company"),  # the same section of two companies, same fiscal year
 }
 CROSS_YEAR_GAP = (3, 6)    # years between the two filings, so the newer one does not already restate the older figures
+# Too vague or boilerplate to pair sections on (page furniture, auditor's report wording, safe-harbour notes)
+GENERIC_HEADINGS = re.compile(r"^(part [iv]+|table of contents|index|signatures?|\(?in millions.*|opinions? on .*|"
+                              r"basis for (the )?opinions?|report of independent registered public accounting firm|"
+                              r".*forward-looking statements|available information|.*limitations of internal control.*)$")
 MAX_WORDS = 900            # cap on a text source shown to the LLM (keeps a call within Groq free-tier 8K tokens/min)
 CORE_ITEMS = {"1", "1A", "7", "7A", "8"}   # Business, Risk Factors, MD&A, Market Risk, Financial Statements
 
@@ -58,13 +68,13 @@ STOPWORDS = {"million", "billion", "fiscal", "total", "years", "ended", "which",
 
 # --- 1. Load and parse filings ---
 
-def load_filings():
-    """One dict per 10-K.md filing. Older plain-text 10-K.txt filings are skipped for now."""
+def load_filings(min_year=None):
+    """One dict per 10-K.md filing from `min_year` on. Older plain-text 10-K.txt filings are skipped for now."""
     filings = []
     with open(DATA_DIR / "filings_index.csv", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             folder = ROOT / row["local_folder"]
-            if (folder / "10-K.md").exists():
+            if (folder / "10-K.md").exists() and int(folder.name[2:6]) >= (min_year or 0):
                 filings.append({"doc_id": f"{row['ticker']}_{folder.name}", "ticker": row["ticker"],
                                 "company": row["filer"], "year": int(folder.name[2:6]), "path": folder / "10-K.md"})
     return filings
@@ -159,26 +169,32 @@ def pick_sources(recipe, filings_by_ticker, rng):
                         key=lambda t: -len(content_words(t["text"]) & content_words(table["text"])))
         return [(filing, table), (filing, rng.choice(others[:3]))] if others else None
 
-    # Cross-year: the same table / section in an older filing of the same company.
-    older = [f for f in filings_by_ticker[ticker] if CROSS_YEAR_GAP[0] <= filing["year"] - f["year"] <= CROSS_YEAR_GAP[1]]
-    if not older:
+    # Cross-year: an older filing of the same company. Cross-company: another company's filing for the same fiscal year.
+    if recipe.startswith("cross_year"):
+        others = [f for f in filings_by_ticker[ticker] if CROSS_YEAR_GAP[0] <= filing["year"] - f["year"] <= CROSS_YEAR_GAP[1]]
+        min_overlap = 0.5
+    else:
+        others = [f for t, fs in filings_by_ticker.items() if t != ticker for f in fs if f["year"] == filing["year"]]
+        min_overlap = 0.3                                        # different companies label their rows differently
+    if not others:
         return None
-    old = rng.choice(older)
-    old_tables, old_texts = units(old["path"])
-    if recipe == "cross_year_table":                             # match tables by their row labels
+    other = rng.choice(others)
+    other_tables, other_texts = units(other["path"])
+    if recipe.endswith("_table"):                                # match tables by their row labels
         pairs = []
         for t in tables:
-            best = max(old_tables, key=lambda o: jaccard(row_labels(t["table"]), row_labels(o["table"])), default=None)
-            if best and jaccard(row_labels(t["table"]), row_labels(best["table"])) >= 0.5:
+            best = max(other_tables, key=lambda o: jaccard(row_labels(t["table"]), row_labels(o["table"])), default=None)
+            if best and jaccard(row_labels(t["table"]), row_labels(best["table"])) >= min_overlap:
                 pairs.append((t, best))
     else:                                                        # match sections by Item and heading (digits ignored)
-        key = lambda u: (u["item_no"], re.sub(r"\d+", "", u["heading"].lower()))
-        old_by_key = {key(o): o for o in old_texts if o["heading"]}
-        pairs = [(t, old_by_key[key(t)]) for t in texts if t["heading"] and key(t) in old_by_key]
+        key = lambda u: (u["item_no"], re.sub(r"\d+", "", u["heading"].lower()).strip())
+        usable = lambda u: u["heading"] and not GENERIC_HEADINGS.match(key(u)[1])
+        other_by_key = {key(o): o for o in other_texts if usable(o)}
+        pairs = [(t, other_by_key[key(t)]) for t in texts if usable(t) and key(t) in other_by_key]
     if not pairs:
         return None
-    new_unit, old_unit = rng.choice(pairs)
-    return [(filing, new_unit), (old, old_unit)]
+    unit, other_unit = rng.choice(pairs)
+    return [(filing, unit), (other, other_unit)]
 
 
 # --- 3. Prompt the question writer ---
@@ -188,6 +204,7 @@ Rules:
 - Use ONLY the sources given. Every fact in the answer must be supported by them.
 - The question must stand alone: name the company and fiscal year(s), and never refer to "the table", "the passage" or "the source".
 - Ask what an analyst or investor would genuinely want to know. Avoid trivia such as page numbers or exhibit lists.
+- Never put the figures needed for the answer in the question; the system being tested must find them.
 - Each gold_evidence quote must be copied VERBATIM from its source: a complete table row (cells separated by |) for table facts, or one sentence for text facts.
 - If the sources cannot support a good question of the requested kind, return {"skip": "<reason>"}.
 Return one JSON object and nothing else."""
@@ -211,6 +228,8 @@ def build_prompt(recipe, sources, hop):
               for n, (f, u) in enumerate(sources, 1)]
     if len(sources) > 1:
         hop_task = f"Multi-hop: the question must need facts from EVERY source ({', '.join(f'S{n}' for n in range(1, len(sources) + 1))}); quote evidence from each."
+        if RECIPES[recipe][2] == "cross_company":
+            hop_task += " Compare the two companies, naming both and the fiscal year."
     elif hop == "multi":
         hop_task = ("Multi-hop: the question must combine at least two separate facts from DIFFERENT table rows, "
                     "or a table row + a sentence, or different sentences. gold_evidence must have at least 2 entries, one per fact.")
@@ -331,10 +350,12 @@ def to_record(qa_id, qa, recipe, sources, hop, made_by):
                          "item": unit["item"], "heading": unit["heading"],
                          "kind": "table" if in_table else "text", "quote": ev["quote"]})
     newest = max(sources, key=lambda s: s[0]["year"])[0]
+    filings = list({f["ticker"]: f for f, _ in sources}.values())          # cross-company: both companies
     return {"id": qa_id, "type": qa_type, "question": qa["question"], "answer": str(qa["answer"]),
             "program": qa.get("program", "") if qa_type != "qualitative" else "",
             "key_points": qa.get("key_points", []) if qa_type != "numeric" else [],
-            "gold_evidence": evidence, "company": newest["company"], "ticker": newest["ticker"], "year": newest["year"],
+            "gold_evidence": evidence, "company": "; ".join(f["company"] for f in filings),
+            "ticker": ", ".join(f["ticker"] for f in filings), "year": newest["year"],
             "scope": scope, "hop": hop, "recipe": recipe,
             "sources": [source_key(f, u) for f, u in sources], "generator": QA_MODEL, "made_by": made_by}
 
@@ -355,16 +376,19 @@ def merge():
         r["id"] = f"q{n:03d}"
     FINAL_PATH.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in merged), encoding="utf-8")
     for recipe, (target, _, _) in RECIPES.items():
-        print(f"{recipe:17} {sum(r['recipe'] == recipe for r in merged):3}/{target}")
+        print(f"{recipe:20} {sum(r['recipe'] == recipe for r in merged):3}/{target}")
+    for qa_type in ("numeric", "qualitative", "mixed"):
+        print(f"{qa_type:20} {sum(r['type'] == qa_type for r in merged):3}/{sum(t for t, ty, _ in RECIPES.values() if ty == qa_type)}")
     print(f"{len(merged)} QAs saved to {FINAL_PATH}")
 
 
-def main(name, recipes, dry_run=False):
+def main(name, recipes, dry_run=False, min_year=None):
     rng = random.Random(SEED)
     filings_by_ticker = {}
-    for f in load_filings():
+    for f in load_filings(min_year):
         filings_by_ticker.setdefault(f["ticker"], []).append(f)
-    print(f"{sum(map(len, filings_by_ticker.values()))} 10-K.md filings, {len(filings_by_ticker)} companies, writer model: {QA_MODEL}")
+    print(f"{sum(map(len, filings_by_ticker.values()))} 10-K.md filings from FY{min_year or 'any'}, "
+          f"{len(filings_by_ticker)} companies, writer model: {QA_MODEL}")
 
     if dry_run:
         for recipe in recipes:
@@ -416,7 +440,7 @@ def main(name, recipes, dry_run=False):
                 if reason:
                     print(f"  [{recipe}] rejected: {reason}")
                     continue
-                n_mine = sum(r["made_by"] == name for r in records) + 1
+                n_mine = sum(r["id"].startswith(f"{name}-") for r in records) + 1
                 record = to_record(f"{name}-{n_mine:03d}", qa, recipe, sources, hop, name)
                 out.write(json.dumps(record, ensure_ascii=False) + "\n")
                 out.flush()
@@ -435,8 +459,9 @@ if __name__ == "__main__":
     parser.add_argument("--recipes", default=",".join(RECIPES), help=f"comma-separated subset of: {', '.join(RECIPES)}")
     parser.add_argument("--dry-run", action="store_true", help="print one prompt per recipe without calling the LLM")
     parser.add_argument("--merge", action="store_true", help="combine benchmark/parts/*.jsonl into the final benchmark")
+    parser.add_argument("--min-year", type=int, help="only use filings from this fiscal year on, e.g. 2015")
     args = parser.parse_args()
     if args.merge:
         merge()
     else:
-        main(args.name.strip().lower(), [r.strip() for r in args.recipes.split(",")], args.dry_run)
+        main(args.name.strip().lower(), [r.strip() for r in args.recipes.split(",")], args.dry_run, args.min_year)

@@ -12,6 +12,10 @@ dist/
 # --- IPYNB files ---
 build_syst_a.ipynb
 bechmark_qa.ipynb
+amanda_archive/
+
+# --- Jupyter trash (files deleted in JupyterLab) ---
+.Trash-0/
 
 # --- Virtual environments ---
 .venv/
