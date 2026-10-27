@@ -122,8 +122,8 @@ def _call_gemini_native(
             "GEMINI_API_KEY (or GOOGLE_API_KEY) is not set. "
             "Please provide your Gemini key in .env, Streamlit Secrets, or via the UI."
         )
-    if not model or "flash-latest" in model:
-        model = "gemini-1.5-flash"
+    if not model or any(k in model for k in ["flash-latest", "1.5", "2.0", "2.5-flash-lite"]):
+        model = "gemini-3-flash-preview"
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
     contents = []
@@ -136,47 +136,55 @@ def _call_gemini_native(
         gen_config["responseMimeType"] = "application/json"
 
     payload = {"contents": contents, "generationConfig": gen_config}
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            candidates = data.get("candidates", [])
-            if not candidates:
-                raise ValueError(f"Gemini returned no candidates: {data}")
-            content = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-            usage = data.get("usageMetadata", {})
-            p_tok = usage.get("promptTokenCount") or _estimate_tokens(" ".join(m.get("content", "") for m in messages))
-            c_tok = usage.get("candidatesTokenCount") or _estimate_tokens(content)
-            return content, int(p_tok), int(c_tok)
-    except Exception as exc:
-        gemini_err = str(exc)
-        if hasattr(exc, "read"):
-            try:
-                raw_body = exc.read().decode("utf-8")
-                parsed_err = json.loads(raw_body)
-                gemini_err = parsed_err.get("error", {}).get("message", raw_body)
-            except Exception:
-                pass
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                candidates = data.get("candidates", [])
+                if not candidates:
+                    raise ValueError(f"Gemini returned no candidates: {data}")
+                content = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                usage = data.get("usageMetadata", {})
+                p_tok = usage.get("promptTokenCount") or _estimate_tokens(" ".join(m.get("content", "") for m in messages))
+                c_tok = usage.get("candidatesTokenCount") or _estimate_tokens(content)
+                return content, int(p_tok), int(c_tok)
+        except Exception as exc:
+            gemini_err = str(exc)
+            if hasattr(exc, "read"):
+                try:
+                    raw_body = exc.read().decode("utf-8")
+                    parsed_err = json.loads(raw_body)
+                    gemini_err = parsed_err.get("error", {}).get("message", raw_body)
+                except Exception:
+                    pass
 
-        groq_key = os.getenv("GROQ_API_KEY")
-        if groq_key:
-            try:
-                return _call_groq_or_openai("groq", "openai/gpt-oss-120b", messages, temperature=temperature)
-            except Exception as groq_exc:
-                raise ValueError(
-                    f"Google Gemini Error: {gemini_err}. Automatic fallback to Groq also failed: {groq_exc}. "
-                    "Please check your API keys or switch to '🧪 Mock Mode' in the sidebar to test immediately."
-                ) from exc
+            is_transient = any(k in gemini_err.lower() for k in ["503", "demand", "unavailable", "rate", "429", "timeout", "timed out"])
+            if is_transient and attempt < max_retries - 1:
+                delay = 1.5 * (2 ** attempt)
+                time.sleep(delay)
+                continue
 
-        raise ValueError(
-            f"Google Gemini API Error: {gemini_err}. "
-            "Please verify your GEMINI_API_KEY / GOOGLE_API_KEY or switch to '🧪 Mock Mode' in the sidebar."
-        ) from exc
+            groq_key = os.getenv("GROQ_API_KEY")
+            if groq_key:
+                try:
+                    return _call_groq_or_openai("groq", "openai/gpt-oss-120b", messages, temperature=temperature)
+                except Exception as groq_exc:
+                    raise ValueError(
+                        f"Google Gemini Error: {gemini_err}. Automatic fallback to Groq also failed: {groq_exc}. "
+                        "Please check your API keys or switch to '🧪 Mock Mode' in the sidebar to test immediately."
+                    ) from exc
+
+            raise ValueError(
+                f"Google Gemini API Error: {gemini_err}. "
+                "Please verify your GEMINI_API_KEY / GOOGLE_API_KEY or switch to '🧪 Mock Mode' in the sidebar."
+            ) from exc
 
 
 def _call_groq_or_openai(

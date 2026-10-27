@@ -278,6 +278,30 @@ class SystemBAdapter(SystemAdapter):
                 "rate_limit_retries": 0,
                 "finish_reason": "stop",
             }
+        elif os.getenv("LLM_PROVIDER") == "gemini":
+            from src.system_c.llm import _call_gemini_native
+            def _gemini_gen(msgs):
+                content, p_tok, c_tok = _call_gemini_native("gemini-3-flash-preview", msgs, temperature=0.0)
+                return {
+                    "answer": content,
+                    "usage": {"prompt_tokens": p_tok, "completion_tokens": c_tok, "total_tokens": p_tok + c_tok},
+                    "model": "gemini-3-flash-preview",
+                    "rate_limit_retries": 0,
+                    "finish_reason": "stop",
+                }
+            generator = _gemini_gen
+        elif os.getenv("LLM_PROVIDER") == "groq" or os.getenv("GROQ_API_KEY"):
+            from src.system_c.llm import _call_groq_or_openai
+            def _groq_gen(msgs):
+                content, p_tok, c_tok = _call_groq_or_openai("groq", "openai/gpt-oss-120b", msgs, temperature=0.0)
+                return {
+                    "answer": content,
+                    "usage": {"prompt_tokens": p_tok, "completion_tokens": c_tok, "total_tokens": p_tok + c_tok},
+                    "model": "openai/gpt-oss-120b",
+                    "rate_limit_retries": 0,
+                    "finish_reason": "stop",
+                }
+            generator = _groq_gen
         else:
             from src.system_b.adapters import Generator
             generator = Generator(model=os.environ.get("SYSTEM_B_MODEL") or "openai/gpt-oss-120b",

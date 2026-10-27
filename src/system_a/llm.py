@@ -7,7 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 DEFAULT_MODEL = "openai/gpt-oss-120b"     # on Groq; with LLM_PROVIDER=openai pass --model
-KEY_NAMES = {"groq": "GROQ_API_KEY", "openai": "OPENAI_API_KEY", "mock": "MOCK_KEY"}
+KEY_NAMES = {"groq": "GROQ_API_KEY", "openai": "OPENAI_API_KEY", "gemini": "GEMINI_API_KEY", "mock": "MOCK_KEY"}
 LAST_TELEMETRY = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "model": DEFAULT_MODEL, "provider": "mock"}
 
 
@@ -49,6 +49,20 @@ def get_client():
 def chat(messages, model=DEFAULT_MODEL, temperature=0.0, max_tokens=1500):
     """One chat-completion call. Returns the reply text."""
     global LAST_TELEMETRY
+    provider = os.getenv("LLM_PROVIDER", "groq").strip().lower()
+    if provider == "gemini":
+        from src.system_c.llm import _call_gemini_native
+        m = "gemini-3-flash-preview" if ("flash" in model or model == DEFAULT_MODEL) else model
+        content, p_tok, c_tok = _call_gemini_native(m, messages, temperature=temperature)
+        LAST_TELEMETRY = {
+            "prompt_tokens": p_tok,
+            "completion_tokens": c_tok,
+            "total_tokens": p_tok + c_tok,
+            "model": m,
+            "provider": "gemini",
+        }
+        return content
+
     kwargs = dict(model=model, messages=messages, temperature=temperature, max_tokens=max_tokens)
     if "gpt-oss" in model:
         kwargs["reasoning_effort"] = "low"
