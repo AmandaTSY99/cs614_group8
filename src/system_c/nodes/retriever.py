@@ -20,6 +20,58 @@ from src.system_c.telemetry import track_node_latency
 # In-memory cache of chunked filings per `(ticker, fiscal_year)` to keep multi-hop retrieval fast
 _CORPUS_CACHE: Dict[str, List[Dict[str, Any]]] = {}
 _CROSS_ENCODER: Any = None
+_DENSE_EMBEDDER: Any = None
+
+EMBED_MODEL = "BAAI/bge-small-en-v1.5"
+BGE_QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
+
+
+def _get_dense_embedder():
+    global _DENSE_EMBEDDER
+    if _DENSE_EMBEDDER is None:
+        from sentence_transformers import SentenceTransformer
+        _DENSE_EMBEDDER = SentenceTransformer(EMBED_MODEL)
+    return _DENSE_EMBEDDER
+
+
+def _fetch_dense_candidates_from_supabase(
+    query: str,
+    tickers: List[str],
+    fiscal_years: Optional[List[int]] = None,
+    k: int = 20,
+) -> Dict[str, float]:
+    """Query top-k nearest neighbor chunk IDs and cosine similarities directly from Supabase pgvector."""
+    supabase_url = os.getenv("SUPABASE_DB_URL")
+    if not supabase_url or os.getenv("LLM_PROVIDER") == "mock":
+        return {}
+    try:
+        import psycopg
+
+        embedder = _get_dense_embedder()
+        vec = embedder.encode([BGE_QUERY_PREFIX + query], normalize_embeddings=True)[0]
+        params: Dict[str, Any] = {"vec": "[" + ",".join(map(str, vec.tolist())) + "]", "k": k}
+        conditions = []
+        if tickers:
+            conditions.append("ticker = ANY(%(tickers)s)")
+            params["tickers"] = tickers
+        if fiscal_years:
+            conditions.append("fiscal_year = ANY(%(years)s)")
+            params["years"] = [int(y) for y in fiscal_years]
+        where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+        with psycopg.connect(supabase_url, sslmode="require", autocommit=True) as conn:
+            rows = conn.execute(
+                f"""
+                SELECT chunk_id, 1 - (embedding <=> %(vec)s::vector) AS sim
+                FROM sec_chunks
+                {where}
+                ORDER BY embedding <=> %(vec)s::vector
+                LIMIT %(k)s
+                """,
+                params,
+            ).fetchall()
+            return {r[0]: float(r[1]) for r in rows}
+    except Exception:
+        return {}
 
 
 def _fetch_chunks_from_supabase(
@@ -202,11 +254,21 @@ def retrieve_10k_chunks(
             )
         ]
 
+    target_tickers = tickers or ([ticker] if ticker else ["NVDA"])
+    dense_sims = _fetch_dense_candidates_from_supabase(query, target_tickers, fiscal_years, k=max(top_k * 6, 25))
+
     scored = []
     for rec in records:
-        sc = _bm25_and_lexical_score(query, rec.get("embed_text", rec["text"]))
-        if sc > 0:
-            scored.append({**rec, "score": sc})
+        lex_sc = _bm25_and_lexical_score(query, rec.get("embed_text", rec["text"]))
+        dense_sc = dense_sims.get(rec["id"], 0.0)
+        if dense_sims:
+            norm_lex = min(1.0, lex_sc / 3.0)
+            score = 0.5 * dense_sc + 0.5 * norm_lex if (dense_sc > 0 or lex_sc > 0) else 0.0
+        else:
+            score = lex_sc
+
+        if score > 0:
+            scored.append({**rec, "score": score})
 
     if not scored:
         scored = [{**rec, "score": 0.1} for rec in records[: top_k * 2]]

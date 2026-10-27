@@ -134,6 +134,8 @@ def run_system_c(
     fiscal_years: Optional[list[int]] = None,
     mock_sufficient_at_hop: Optional[int] = None,
     force_max_hops: bool = False,
+    target_tickers: Optional[list[str]] = None,
+    target_pairs: Optional[list[list[Any]]] = None,
     sufficiency_threshold: float = 0.85,
     max_repairs: int = 1,
     checkpointer: Optional[Any] = None,
@@ -150,9 +152,12 @@ def run_system_c(
         target_ticker=target_ticker,
         fiscal_years=fiscal_years,
         force_max_hops=force_max_hops,
+        target_tickers=target_tickers,
         sufficiency_threshold=sufficiency_threshold,
         max_repairs=max_repairs,
     )
+    if target_pairs:
+        initial_state["target_pairs"] = target_pairs
     if mock_sufficient_at_hop is not None:
         initial_state["telemetry"]["mock_sufficient_at_hop"] = mock_sufficient_at_hop
 

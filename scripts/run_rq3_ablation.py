@@ -519,7 +519,7 @@ def export_ablation_results(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="RQ3 Inference Economics Ablation Benchmark.")
-    parser.add_argument("--eval-set", type=str, default="data/golden_eval_set.json", help="Path to golden eval set JSON.")
+    parser.add_argument("--eval-set", type=str, default="data/benchmark_qa_pool_2015.json", help="Path to academic benchmark pool JSON.")
     parser.add_argument("--provider", type=str, default=None, choices=["ollama", "groq", "gemini", "cohere", "openai", "mock"], help="LLM Provider override.")
     parser.add_argument("--model", type=str, default=None, help="LLM Model name override.")
     parser.add_argument("--mock", action="store_true", help="Shortcut to run with --provider mock.")

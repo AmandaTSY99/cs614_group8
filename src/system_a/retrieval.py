@@ -3,9 +3,19 @@
 Every index has the same interface: `retrieve(query, k, pairs)` returns a list of
 {"id", "score", "text", "meta"} dicts, best first, with score = cosine similarity.
 """
+import json
+import os
 from pathlib import Path
 
 import chromadb
+from dotenv import load_dotenv
+try:
+    import psycopg
+    from psycopg import sql
+except ImportError:
+    psycopg = None
+    sql = None
+
 try:
     from sentence_transformers import SentenceTransformer
 except ImportError:
@@ -62,62 +72,67 @@ class ChromaIndex:
 
 
 # --- Supabase (pgvector) --------------------------------------------------------------------
-# The shared table holds the RAG 3 chunks for FY2023-2026 only (20,125 rows), so benchmark QAs on
-# older filings cannot be answered from it. Needs psycopg (requirements.txt) and SUPABASE_DB_* in .env.
-# To use it: uncomment this class, plus the --store / --supabase-table lines in __main__.py.
-#
-# import getpass
-# import os
-#
-# import psycopg
-# from dotenv import load_dotenv
-# from psycopg import sql
-#
-#
-# class SupabaseIndex:
-#     """The shared Supabase table: same chunks and model as rag3_structure_bge, searched with pgvector."""
-#
-#     def __init__(self, table="chunks", embedder=None):
-#         load_dotenv(ROOT / ".env")                    # SUPABASE_DB_* (no password stored there)
-#         if not os.environ.get("SUPABASE_DB_PASSWORD"):
-#             os.environ["SUPABASE_DB_PASSWORD"] = getpass.getpass("Enter your SUPABASE_DB_PASSWORD: ")
-#         self.conn = psycopg.connect(
-#             host=os.environ["SUPABASE_DB_HOST"],
-#             port=os.environ["SUPABASE_DB_PORT"],
-#             dbname=os.environ["SUPABASE_DB_NAME"],
-#             user=os.environ["SUPABASE_DB_USER"],
-#             password=os.environ["SUPABASE_DB_PASSWORD"],
-#             sslmode="require",
-#             autocommit=True,
-#         )
-#         self.table = sql.Identifier(table)
-#         self.embed = embedder or QueryEmbedder()
-#         self.name = f"supabase:{table}"
-#         count = self.conn.execute(sql.SQL("select count(*) from {}").format(self.table)).fetchone()[0]
-#         print(f"{self.name}: {count:,} rows")
-#
-#     def retrieve(self, query, k=5, pairs=None):
-#         vec = self.embed(query)
-#         params = {"vec": "[" + ",".join(map(str, vec.tolist())) + "]", "k": k}
-#         conditions = []
-#         for n, (ticker, year) in enumerate(pairs or []):
-#             parts = []
-#             if ticker:
-#                 parts.append(sql.SQL("ticker = {}").format(sql.Placeholder(f"t{n}")))
-#                 params[f"t{n}"] = ticker
-#             if year:
-#                 parts.append(sql.SQL("fiscal_year = {}").format(sql.Placeholder(f"y{n}")))
-#                 params[f"y{n}"] = year
-#             if parts:
-#                 conditions.append(sql.SQL("(") + sql.SQL(" and ").join(parts) + sql.SQL(")"))
-#         where = sql.SQL("where ") + sql.SQL(" or ").join(conditions) if conditions else sql.SQL("")
-#         rows = self.conn.execute(sql.SQL("""
-#             select chunk_id, 1 - (embedding <=> %(vec)s::vector), content, ticker, fiscal_year, section, metadata
-#             from {} {}
-#             order by embedding <=> %(vec)s::vector
-#             limit %(k)s
-#         """).format(self.table, where), params).fetchall()
-#         return [{"id": id_, "score": score, "text": text,
-#                  "meta": {**(meta or {}), "doc_id": id_.rsplit(":", 1)[0],
-#                           "ticker": ticker, "fiscal_year": year, "section": section}}
-#                 for id_, score, text, ticker, year, section, meta in rows]
+# Holds all 95,044 chunks and BGE-small embeddings for FY2010-FY2026, searched with pgvector HNSW cosine index.
+
+class SupabaseIndex:
+    """The shared Supabase table: 95,044 chunks and rag5 BGE-small embeddings (FY2010-FY2026), searched with pgvector."""
+
+    def __init__(self, table="sec_chunks", embedder=None, conn_url=None):
+        if psycopg is None:
+            raise ImportError("psycopg is required for SupabaseIndex. Please install psycopg[binary,pool].")
+        load_dotenv(ROOT / ".env")
+        url = conn_url or os.environ.get("SUPABASE_DB_URL")
+        if url:
+            self.conn = psycopg.connect(url, sslmode="require", autocommit=True)
+        else:
+            host = os.environ.get("SUPABASE_DB_HOST")
+            user = os.environ.get("SUPABASE_DB_USER")
+            password = os.environ.get("SUPABASE_DB_PASSWORD")
+            dbname = os.environ.get("SUPABASE_DB_NAME", "postgres")
+            port = os.environ.get("SUPABASE_DB_PORT", "5432")
+            if not (host and user and password):
+                raise ValueError("SUPABASE_DB_URL or (SUPABASE_DB_HOST, USER, PASSWORD) required.")
+            self.conn = psycopg.connect(
+                host=host, port=port, dbname=dbname, user=user, password=password, sslmode="require", autocommit=True
+            )
+        self.table = sql.Identifier(table)
+        self.embed = embedder or QueryEmbedder()
+        self.name = f"supabase:{table}"
+
+    def retrieve(self, query, k=5, pairs=None):
+        vec = self.embed(query)
+        params = {"vec": "[" + ",".join(map(str, vec.tolist())) + "]", "k": k}
+        conditions = []
+        for n, (ticker, year) in enumerate(pairs or []):
+            parts = []
+            if ticker:
+                parts.append(sql.SQL("ticker = {}").format(sql.Placeholder(f"t{n}")))
+                params[f"t{n}"] = ticker
+            if year:
+                parts.append(sql.SQL("fiscal_year = {}").format(sql.Placeholder(f"y{n}")))
+                params[f"y{n}"] = int(year)
+            if parts:
+                conditions.append(sql.SQL("(") + sql.SQL(" and ").join(parts) + sql.SQL(")"))
+        where = sql.SQL("where ") + sql.SQL(" or ").join(conditions) if conditions else sql.SQL("")
+        rows = self.conn.execute(sql.SQL("""
+            select chunk_id, 1 - (embedding <=> %(vec)s::vector) as score, content, ticker, fiscal_year, section, metadata
+            from {} {}
+            order by embedding <=> %(vec)s::vector
+            limit %(k)s
+        """).format(self.table, where), params).fetchall()
+        results = []
+        for id_, score, text, ticker, year, section, meta in rows:
+            meta_dict = meta if isinstance(meta, dict) else (json.loads(meta) if meta else {})
+            results.append({
+                "id": id_,
+                "score": float(score) if score is not None else 0.0,
+                "text": text,
+                "meta": {
+                    **meta_dict,
+                    "doc_id": id_.rsplit(":", 1)[0],
+                    "ticker": ticker,
+                    "fiscal_year": year,
+                    "section": section,
+                }
+            })
+        return results

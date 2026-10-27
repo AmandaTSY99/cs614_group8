@@ -45,11 +45,19 @@ def test_contexts_keep_retrieval_order():
     assert hops == list(dict.fromkeys(hops))  # no reordering / duplicates introduced by the adapter
 
 
-@pytest.mark.parametrize("cls", [SystemAAdapter, SystemBAdapter])
-def test_stub_adapters_raise_with_contract(cls):
-    with pytest.raises(NotImplementedError):
-        cls().answer(QUESTION)
-    assert "ADAPTER_KEYS" in cls.__doc__
+@pytest.mark.parametrize("adapter_factory", [
+    lambda: SystemAAdapter(),
+    lambda: SystemBAdapter(),
+    lambda: SystemCAdapter("v1_amr"),
+    lambda: SystemCAdapter("v2_aamr"),
+])
+def test_all_system_adapters_return_schema(adapter_factory):
+    out = adapter_factory().answer(QUESTION)
+    assert set(out) == set(ADAPTER_KEYS)
+    assert out["answer"]
+    assert out["retrieved_contexts"]
+    assert len(out["contexts_meta"]) == len(out["retrieved_contexts"])
+    assert set(out["tokens"]) == {"prompt", "completion", "total"}
 
 
 class _FakeAdapter(SystemAdapter):
@@ -66,6 +74,7 @@ class _FakeAdapter(SystemAdapter):
             "contexts_meta": [{"chunk_id": "a:1", "ticker": "NVDA", "fiscal_year": 2026, "section": "Item 7"}] * 2,
             "citations": [], "guardrail_report": None, "hops": 1,
             "tokens": {"prompt": 10, "completion": 5, "total": 15}, "cost_usd": 0.0, "latency_ms": 1.0,
+            "stage_timings_ms": {"retrieval_ms": 0.5, "generation_ms": 0.5},
             "model": "fake", "provider": "fake",
         }
 

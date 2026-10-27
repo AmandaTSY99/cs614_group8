@@ -17,9 +17,7 @@ import pandas as pd
 from .evaluate import DEFAULT_BENCHMARK, ROOT, load_benchmark, run_benchmark, summarize
 from .llm import DEFAULT_MODEL
 from .pipeline import DEFAULT_VARIANT, TOP_K, VARIANTS, generate, show_hits
-from .retrieval import EMBED_MODEL, ChromaIndex, QueryEmbedder
-
-# from .retrieval import SupabaseIndex
+from .retrieval import EMBED_MODEL, ChromaIndex, QueryEmbedder, SupabaseIndex
 
 
 def main():
@@ -38,8 +36,9 @@ def main():
     parser.add_argument("--chroma-dir", default="chroma_db")
     parser.add_argument("--collection", help="Override the variant's own collection (see VARIANTS in pipeline.py)")
     parser.add_argument("--embed-model", default=EMBED_MODEL, help="Must match the model that built the collection")
-    # parser.add_argument("--store", choices=["chroma", "supabase"], default="chroma")
-    # parser.add_argument("--supabase-table", default="chunks")
+    parser.add_argument("--store", choices=["supabase", "chroma"], default="supabase",
+                        help="Vector store backend: 'supabase' (sec_chunks pgvector, default) or local 'chroma'")
+    parser.add_argument("--supabase-table", default="sec_chunks")
     # Retrieval
     parser.add_argument("--top-k", type=int, default=TOP_K)
     parser.add_argument("--tickers", nargs="+", default=[], help="--query only: limit to these companies")
@@ -63,10 +62,10 @@ def main():
     for variant in variants:
         collection = args.collection or VARIANTS[variant]["collection"]
         if collection not in opened:
-            opened[collection] = ChromaIndex(args.chroma_dir, collection, embedder)
-            # Supabase holds the rag3 chunks only (no company/year header), so it can stand in for rag3 only:
-            # if args.store == "supabase" and collection == "rag3_structure_bge":
-            #     opened[collection] = SupabaseIndex(args.supabase_table, embedder)
+            if args.store == "supabase":
+                opened[collection] = SupabaseIndex(args.supabase_table, embedder)
+            else:
+                opened[collection] = ChromaIndex(args.chroma_dir, collection, embedder)
     indexes = {v: opened[args.collection or VARIANTS[v]["collection"]] for v in variants}
 
     if args.query:

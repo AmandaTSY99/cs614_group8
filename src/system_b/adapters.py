@@ -39,6 +39,88 @@ class ChromaSource:
         return list(zip(result['ids'][0], [1 - d for d in result['distances'][0]]))
 
 
+class SupabaseSource:
+    """Supabase pgvector source for System B: 95,044 chunks and rag5 BGE-small embeddings."""
+
+    def __init__(self, table='sec_chunks'):
+        import os
+        from dotenv import load_dotenv
+        load_dotenv(Path(__file__).resolve().parents[2] / '.env')
+        url = os.environ.get('SUPABASE_DB_URL')
+        if not url:
+            raise ValueError('SUPABASE_DB_URL is required for SupabaseSource')
+        import psycopg
+        self.conn = psycopg.connect(url, sslmode='require', autocommit=True)
+        self.table = table
+        self.embedder = None
+
+    def records(self, scope=None):
+        import json
+        from psycopg import sql
+        conditions = []
+        params = {}
+        if scope:
+            pairs = scope.filing_pairs or [(t, y) for t in scope.tickers or [None] for y in scope.years or [None]]
+            for n, (ticker, year) in enumerate(pairs):
+                parts = []
+                if ticker:
+                    parts.append(sql.SQL("ticker = {}").format(sql.Placeholder(f"t{n}")))
+                    params[f"t{n}"] = ticker
+                if year:
+                    parts.append(sql.SQL("fiscal_year = {}").format(sql.Placeholder(f"y{n}")))
+                    params[f"y{n}"] = int(year)
+                if parts:
+                    conditions.append(sql.SQL("(") + sql.SQL(" and ").join(parts) + sql.SQL(")"))
+        where = sql.SQL("where ") + sql.SQL(" or ").join(conditions) if conditions else sql.SQL("")
+        query = sql.SQL("select chunk_id, content, ticker, fiscal_year, section, metadata from {} {} order by chunk_id").format(
+            sql.Identifier(self.table), where
+        )
+        rows = self.conn.execute(query, params).fetchall()
+        records = []
+        for cid, text, ticker, year, sec, meta in rows:
+            meta_dict = meta if isinstance(meta, dict) else (json.loads(meta) if meta else {})
+            records.append({
+                'id': cid,
+                'text': text,
+                'meta': {
+                    **meta_dict,
+                    'ticker': ticker,
+                    'fiscal_year': year,
+                    'section': sec,
+                    'doc_id': cid.rsplit(':', 1)[0],
+                }
+            })
+        return records
+
+    def __call__(self, query, scope, k):
+        if self.embedder is None:
+            from sentence_transformers import SentenceTransformer
+            self.embedder = SentenceTransformer(BGE_MODEL)
+        from psycopg import sql
+        vector = self.embedder.encode([BGE_PREFIX + query], normalize_embeddings=True)[0]
+        params = {"vec": "[" + ",".join(map(str, vector.tolist())) + "]", "k": k}
+        conditions = []
+        pairs = scope.filing_pairs or [(t, y) for t in scope.tickers or [None] for y in scope.years or [None]] if scope else []
+        for n, (ticker, year) in enumerate(pairs):
+            parts = []
+            if ticker:
+                parts.append(sql.SQL("ticker = {}").format(sql.Placeholder(f"t{n}")))
+                params[f"t{n}"] = ticker
+            if year:
+                parts.append(sql.SQL("fiscal_year = {}").format(sql.Placeholder(f"y{n}")))
+                params[f"y{n}"] = int(year)
+            if parts:
+                conditions.append(sql.SQL("(") + sql.SQL(" and ").join(parts) + sql.SQL(")"))
+        where = sql.SQL("where ") + sql.SQL(" or ").join(conditions) if conditions else sql.SQL("")
+        rows = self.conn.execute(sql.SQL("""
+            select chunk_id, 1 - (embedding <=> %(vec)s::vector)
+            from {} {}
+            order by embedding <=> %(vec)s::vector
+            limit %(k)s
+        """).format(sql.Identifier(self.table), where), params).fetchall()
+        return [(r[0], float(r[1])) for r in rows]
+
+
 class Reranker:
     def __init__(self, model='BAAI/bge-reranker-large'):
         self.name, self.model = model, None

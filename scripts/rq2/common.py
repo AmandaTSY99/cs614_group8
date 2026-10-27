@@ -12,7 +12,8 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Tuple
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-GOLDEN_PATH = REPO_ROOT / "data" / "golden_eval_set.json"
+BENCHMARK_PATH = REPO_ROOT / "data" / "benchmark_qa_pool_2015.json"
+GOLDEN_PATH = BENCHMARK_PATH  # backward-compatibility alias
 RUNS_ROOT = REPO_ROOT / "reports" / "rq2"
 
 RECORDS_FILE = "records.jsonl"
@@ -43,11 +44,25 @@ def parse_list_field(value: Any) -> List[Any]:
     return list(parsed) if isinstance(parsed, (list, tuple)) else [parsed]
 
 
-def load_golden(path: Path = GOLDEN_PATH) -> List[Dict[str, Any]]:
-    questions = json.loads(Path(path).read_text(encoding="utf-8"))
-    for q in questions:
+def load_golden(path: Path = BENCHMARK_PATH) -> List[Dict[str, Any]]:
+    path = Path(path)
+    text = path.read_text(encoding="utf-8")
+    records = json.loads(text) if path.suffix == ".json" else [json.loads(l) for l in text.splitlines() if l.strip()]
+    questions = []
+    for q in records:
+        # Normalize Amanda benchmark schema to adapter input conventions
+        if "query" not in q and "question" in q:
+            q["query"] = q["question"]
+        if "ground_truth_answer" not in q and "answer" in q:
+            q["ground_truth_answer"] = q["answer"]
+        if "fiscal_years" not in q:
+            years = q.get("applicable_years") or ([int(q["year"])] if q.get("year") else [])
+            q["fiscal_years"] = years
+        if "target_tickers" not in q and q.get("ticker"):
+            q["target_tickers"] = [q["ticker"]]
         q["ground_truth_numbers"] = parse_list_field(q.get("ground_truth_numbers"))
         q["target_sections"] = parse_list_field(q.get("target_sections"))
+        questions.append(q)
     return questions
 
 
