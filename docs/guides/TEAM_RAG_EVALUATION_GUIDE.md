@@ -124,34 +124,39 @@ output = adapter.answer(clean_query)
 ## 5. How to Evaluate Each Research Question
 
 ### For Amanda & Kevin: Evaluating RQ1 (Retrieval & Evidence Sufficiency)
-* **Goal:** Evaluate chunk precision, chunk recall, Mean Reciprocal Rank (MRR), and early stopping vs. saturation.
-* **Extraction:**
-  ```python
-  retrieved_ids = [m["chunk_id"] for m in output["contexts_meta"]]
-  gold_ids = [e["chunk_id"] for e in raw_record["gold_evidence"]]
-  
-  hit = any(gid in retrieved_ids for gid in gold_ids)
-  precision = len(set(retrieved_ids).intersection(set(gold_ids))) / max(1, len(retrieved_ids))
-  recall = len(set(retrieved_ids).intersection(set(gold_ids))) / max(1, len(gold_ids))
+* **Pre-Built Turnkey Evaluator:**
+  ```bash
+  # Instant offline evaluation on pre-generated 160 benchmark records (0 API cost, runs in 2s):
+  python scripts/rq1/evaluate_rq1.py
   ```
-* **Early Stopping Metric:**
-  Check `output["hops"]`. For single-hop questions, verify whether System C stopped at Hop 1 or executed redundant hops.
+* **Metrics Computed:**
+  - `overall_evidence_recall_pct`: % of gold evidence items retrieved across all candidate contexts.
+  - `multihop_evidence_recall_pct`: Evidence recall on multi-hop questions.
+  - `cross_section_discovery_rate_pct`: % of queries spanning non-adjacent 10-K sections (e.g. Item 7 + Item 8) where chunks were fetched from both sections.
+  - `context_precision_pct`: Ratio of retrieved chunks containing gold evidence.
+* **Outputs:**
+  - `reports/rq1/summary_metrics.csv`
+  - `reports/rq1/summary_metrics.json`
 
 ---
 
 ### For Aryan: Evaluating RQ2 (Grounding, Faithfulness & Citations)
-* **Goal:** Measure numerical correctness, keypoint recall, citation precision, and hallucination rates.
-* **Extraction:**
-  ```python
-  from src.system_a.evaluate import numeric_correct, keypoint_recall
+* **Pre-Built Pipeline:**
+  ```bash
+  # Stage 1: Generate answers per system on benchmark (or use pre-generated reports/rq3/records.jsonl)
+  python scripts/rq2/generate.py --systems system_a,system_b,system_c_v1,system_c_v2 --run-id full
 
-  is_correct = numeric_correct(raw_record["answer"], output["answer"])
-  kp_score = keypoint_recall(raw_record.get("key_points", []), output["answer"])
-  citations = output["citations"]
-  guardrail = output["guardrail_report"] # Check ungrounded_numbers and unsupported_sentences
+  # Stage 2: Automated LLM Judge for Faithfulness & Grounding (RAGAS + Custom)
+  python scripts/rq2/score.py --run reports/rq2/full
+
+  # Stage 3: Generate Summary Scorecard with Bootstrap 95% CIs
+  python scripts/rq2/report.py --run reports/rq2/full
   ```
-* **Automated LLM Judge:**
-  Use `scripts/rq2/score.py` or `scripts/rq2/judge.py` to evaluate semantic faithfulness against retrieved contexts.
+* **Metrics Computed:**
+  - RAGAS Faithfulness & Answer Relevancy
+  - Citation Precision, Recall, and F1
+  - Numerical Grounding Error Rate (exact-match on numbers, dates, dollar amounts)
+  - Hallucination Guardrail Audits (`ungrounded_numbers`, `unsupported_sentences`)
 
 ---
 
@@ -174,6 +179,13 @@ output = adapter.answer(clean_query)
 
 ## 6. Environment Setup & Key Configurations
 
+### Python Environment Dependencies
+Ensure your environment (`cs614` / `cs614-eval`) has the verified compatible dependencies installed:
+```bash
+pip install "sentence-transformers==3.4.1" "transformers==4.57.6" "huggingface-hub==0.34.6" "datasets==5.0.1" tf-keras brotli openai pandas scipy psycopg2-binary python-dotenv
+```
+
+### Environment Keys (`.env`)
 Ensure `.env` in the repository root has the following verified keys:
 
 ```dotenv
@@ -218,3 +230,25 @@ MAX_BUDGET_USD="5.0"
 * **Production Core Branch:** `dev`
 * **Inference Economics Feature Branch:** `feat/rq3-inference-economics`
 * **UI Invariant:** Front-end code in `app.py` must remain completely untouched by CLI evaluation scripts.
+
+---
+
+## 9. Ready-to-Copy Team Slack / Discord Announcement
+
+```markdown
+Hey team! 🚀 The unified evaluation harness for our 4 core RAG systems (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) is now fully merged and verified on branch `dev`.
+
+Key updates:
+1. All 4 systems now speak the exact same adapter interface (`adapter.answer(q)` in `scripts/rq2/adapters.py`).
+2. Fixed-3-hop ablation has been retired; all research questions evaluate strictly on the 4 core systems.
+3. OpenAI `gpt-5.4` compatibility and Supabase pgvector pooling (port 5432) are tested and operational.
+4. Pre-computed benchmark outputs for all 160 runs are saved in `reports/rq3/records.jsonl`.
+
+How to run your RQ:
+- **Amanda & Kevin (RQ1 - Retrieval & Evidence Sufficiency):** Run `python scripts/rq1/evaluate_rq1.py` for immediate evidence recall & cross-section discovery scores (takes 2 seconds offline, $0 cost).
+- **Aryan (RQ2 - Grounding, Citations & Hallucination):** Run `python scripts/rq2/score.py --run reports/rq2/full` using the pre-built pipeline.
+- **Anish (RQ3 - Inference Economics):** Run `python scripts/rq3/evaluate_rq3.py`.
+
+Full documentation & AI agent instructions: `docs/guides/TEAM_RAG_EVALUATION_GUIDE.md`
+```
+
