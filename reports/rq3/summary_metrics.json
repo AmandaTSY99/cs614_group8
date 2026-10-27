@@ -3,11 +3,11 @@
     "system_c_v1": {
       "n_queries": 1,
       "latency": {
-        "mean_ms": 63295.4,
+        "mean_ms": 6615.2,
         "std_ms": NaN,
-        "p50_ms": 63295.4,
-        "p90_ms": 63295.4,
-        "p99_ms": 63295.4,
+        "p50_ms": 6615.2,
+        "p90_ms": 6615.2,
+        "p99_ms": 6615.2,
         "stages_mean_ms": {
           "retrieval": 0.0,
           "rerank": 0.0,
@@ -16,15 +16,15 @@
         }
       },
       "tokens": {
-        "mean_prompt": 7796.0,
-        "mean_completion": 990.0,
-        "mean_total": 8786.0
+        "mean_prompt": 4450.0,
+        "mean_completion": 321.0,
+        "mean_total": 4771.0
       },
       "economics": {
-        "mean_cost_per_query_usd": 0.001763,
-        "cost_per_1k_queries_usd": 1.763,
-        "cost_per_correct_answer_usd": 0.0018,
-        "robust_risk_adjusted_loss_per_query_usd": 0.0018
+        "mean_cost_per_query_usd": 0.01594,
+        "cost_per_1k_queries_usd": 15.94,
+        "cost_per_correct_answer_usd": 0.0159,
+        "robust_risk_adjusted_loss_per_query_usd": 0.0159
       },
       "hop_dynamics": {
         "mean_hops": 1.0,
@@ -47,28 +47,28 @@
     "system_b": {
       "n_queries": 1,
       "latency": {
-        "mean_ms": 8940.3,
+        "mean_ms": 9829.3,
         "std_ms": NaN,
-        "p50_ms": 8940.3,
-        "p90_ms": 8940.3,
-        "p99_ms": 8940.3,
+        "p50_ms": 9829.3,
+        "p90_ms": 9829.3,
+        "p99_ms": 9829.3,
         "stages_mean_ms": {
-          "retrieval": 7937.7,
-          "rerank": 7815.8,
+          "retrieval": 7331.7,
+          "rerank": 7266.0,
           "agent_critic": 0.0,
-          "synthesis": 884.3
+          "synthesis": 2375.1
         }
       },
       "tokens": {
-        "mean_prompt": 1059.0,
-        "mean_completion": 155.0,
-        "mean_total": 1214.0
+        "mean_prompt": 995.0,
+        "mean_completion": 102.0,
+        "mean_total": 1097.0
       },
       "economics": {
-        "mean_cost_per_query_usd": 0.000252,
-        "cost_per_1k_queries_usd": 0.252,
-        "cost_per_correct_answer_usd": 0.0003,
-        "robust_risk_adjusted_loss_per_query_usd": 0.0003
+        "mean_cost_per_query_usd": 0.00021,
+        "cost_per_1k_queries_usd": 0.21,
+        "cost_per_correct_answer_usd": 0.0002,
+        "robust_risk_adjusted_loss_per_query_usd": 0.0002
       },
       "hop_dynamics": {
         "mean_hops": 1.0,
@@ -91,11 +91,11 @@
     "system_c_v2": {
       "n_queries": 1,
       "latency": {
-        "mean_ms": 62513.7,
+        "mean_ms": 7362.4,
         "std_ms": NaN,
-        "p50_ms": 62513.7,
-        "p90_ms": 62513.7,
-        "p99_ms": 62513.7,
+        "p50_ms": 7362.4,
+        "p90_ms": 7362.4,
+        "p99_ms": 7362.4,
         "stages_mean_ms": {
           "retrieval": 0.0,
           "rerank": 0.0,
@@ -104,15 +104,15 @@
         }
       },
       "tokens": {
-        "mean_prompt": 6919.0,
-        "mean_completion": 1108.0,
-        "mean_total": 8027.0
+        "mean_prompt": 4805.0,
+        "mean_completion": 314.0,
+        "mean_total": 5119.0
       },
       "economics": {
-        "mean_cost_per_query_usd": 0.001703,
-        "cost_per_1k_queries_usd": 1.703,
-        "cost_per_correct_answer_usd": 0.0017,
-        "robust_risk_adjusted_loss_per_query_usd": 0.0017
+        "mean_cost_per_query_usd": 0.016723,
+        "cost_per_1k_queries_usd": 16.723,
+        "cost_per_correct_answer_usd": 0.0167,
+        "robust_risk_adjusted_loss_per_query_usd": 0.0167
       },
       "hop_dynamics": {
         "mean_hops": 1.0,
@@ -135,28 +135,28 @@
     "system_a": {
       "n_queries": 1,
       "latency": {
-        "mean_ms": 21052.8,
+        "mean_ms": 2448.6,
         "std_ms": NaN,
-        "p50_ms": 21052.8,
-        "p90_ms": 21052.8,
-        "p99_ms": 21052.8,
+        "p50_ms": 2448.6,
+        "p90_ms": 2448.6,
+        "p99_ms": 2448.6,
         "stages_mean_ms": {
-          "retrieval": 53.1,
+          "retrieval": 60.5,
           "rerank": 0.0,
           "agent_critic": 0.0,
-          "synthesis": 17253.8
+          "synthesis": 2388.1
         }
       },
       "tokens": {
-        "mean_prompt": 2359.0,
-        "mean_completion": 195.0,
-        "mean_total": 2554.0
+        "mean_prompt": 2295.0,
+        "mean_completion": 112.0,
+        "mean_total": 2407.0
       },
       "economics": {
-        "mean_cost_per_query_usd": 0.000471,
-        "cost_per_1k_queries_usd": 0.471,
-        "cost_per_correct_answer_usd": 0.0005,
-        "robust_risk_adjusted_loss_per_query_usd": 0.0005
+        "mean_cost_per_query_usd": 0.000411,
+        "cost_per_1k_queries_usd": 0.411,
+        "cost_per_correct_answer_usd": 0.0004,
+        "robust_risk_adjusted_loss_per_query_usd": 0.0004
       },
       "hop_dynamics": {
         "mean_hops": 1.0,
@@ -239,8 +239,8 @@
     "n_queries": 1,
     "cascade_accuracy_pct": 100.0,
     "escalation_rate_pct": 0.0,
-    "mean_latency_ms": 8940.3,
-    "mean_cost_usd": 0.000252,
-    "cost_per_1k_queries_usd": 0.252
+    "mean_latency_ms": 9829.3,
+    "mean_cost_usd": 0.00021,
+    "cost_per_1k_queries_usd": 0.21
   }
 }
