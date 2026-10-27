@@ -304,7 +304,7 @@ class SystemBAdapter(SystemAdapter):
             generator = _groq_gen
         else:
             from src.system_b.adapters import Generator
-            generator = Generator(model=os.environ.get("SYSTEM_B_MODEL") or "openai/gpt-oss-120b",
+            generator = Generator(model=os.environ.get("SYSTEM_B_MODEL") or os.environ.get("LLM_MODEL") or "gpt-4o-mini",
                                   base_url=os.environ.get("SYSTEM_B_BASE_URL"))
 
         result = run(retriever, query_text, scope, generator)

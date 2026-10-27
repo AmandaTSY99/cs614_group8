@@ -46,10 +46,12 @@ def get_client():
     return OpenAI(max_retries=5)
 
 
-def chat(messages, model=DEFAULT_MODEL, temperature=0.0, max_tokens=1500):
+def chat(messages, model=None, temperature=0.0, max_tokens=1500):
     """One chat-completion call. Returns the reply text."""
     global LAST_TELEMETRY
     provider = os.getenv("LLM_PROVIDER", "groq").strip().lower()
+    if not model or model == DEFAULT_MODEL:
+        model = os.getenv("LLM_MODEL") or ("gpt-4o-mini" if provider == "openai" else DEFAULT_MODEL)
     if provider == "gemini":
         from src.system_c.llm import _call_gemini_native
         m = "gemini-3-flash-preview" if ("flash" in model or model == DEFAULT_MODEL) else model
