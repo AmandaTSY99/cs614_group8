@@ -29,7 +29,7 @@ pip install "sentence-transformers==3.4.1" "transformers==4.57.6" tf-keras brotl
 Create or update `.env` in the project root with the Supabase database connection and your preferred LLM provider:
 ```dotenv
 # Database connection for SEC 10-K filing chunks (95,000 chunks)
-SUPABASE_DB_URL="postgresql://postgres.jfhpjggjoabgpoxwezuc:ue%21K8zrd.%26%26SMub@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+SUPABASE_DB_URL="postgresql://postgres.jfhpjggjoabgpoxwezuc:[YOUR_PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
 
 # --- Provider Options for Testing ---
 # Option A: 100% Free Mock Mode (No keys needed, instant, tests code flow)
