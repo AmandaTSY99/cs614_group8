@@ -118,11 +118,11 @@ This file contains 160 completed results with full answers, all retrieved chunks
 
 ### Amanda & Kevin: RQ1 (Retrieval Completeness)
 * **What you are proving:** Does multi-hop retrieval find scattered evidence across different 10-K sections (e.g. Item 7 MD&A and Item 8 Footnotes) that single-pass RAG misses?
-* **Starter Script Provided:** We built a starter template for you at `scripts/rq1/evaluate_rq1.py`.
+* **Starter Script Provided:** We built a reference evaluation script for you at `scripts/rq1/evaluate_rq1.py`.
   ```bash
   python scripts/rq1/evaluate_rq1.py
   ```
-  *Note: This is a starter reference implementation. It checks evidence recall and cross-section discovery. You own RQ1, so feel free to customize, add metrics (like MRR or NDCG), or replace it.*
+  *Note: It evaluates the real `retrieved_contexts` and `contexts_meta` across all 4 systems (Evidence Recall, Full Evidence Discovery Rate, Document Recall, MRR, Context Precision, Multi-Hop Recall, and Cross-Section Discovery Rate) and fails loudly if `retrieved_contexts` is missing. You own RQ1, so feel free to customize or extend it.*
 
 ---
 
@@ -130,13 +130,16 @@ This file contains 160 completed results with full answers, all retrieved chunks
 * **What you are proving:** Does evidence reflection stop the model from hallucinating numbers or fabricating financial figures?
 * **Existing Pipeline:**
   ```bash
-  # Step 1: Score faithfulness and citations using your judge
+  # Step 1: Generate across all 4 systems (or copy reports/rq3/records.jsonl into reports/rq2/full/records.jsonl)
+  python scripts/rq2/generate.py --run-id full
+
+  # Step 2: Score faithfulness, citations, numeric accuracy, and grounding error rate
   python scripts/rq2/score.py --run reports/rq2/full
 
-  # Step 2: Generate the report
+  # Step 3: Generate the report with bootstrap 95% CIs across all 4 categories
   python scripts/rq2/report.py --run reports/rq2/full
   ```
-  *You can also point `score.py` directly at `reports/rq3/records.jsonl` to score the 160 pre-generated answers immediately.*
+  *Note: `load_golden()` automatically populates `category`, `target_sections` (from `gold_evidence`), `ground_truth_numbers`, `target_tickers`, and `target_pairs` for all 40 questions in `data/benchmark_qa_pool_2015.json`. And `reports/rq3/records.jsonl` already contains all 160 records with full `retrieved_contexts`, `contexts_meta`, `citations`, `guardrail_report`, `target_sections`, and `ground_truth_numbers`.*
 
 ---
 

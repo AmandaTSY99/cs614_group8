@@ -123,7 +123,7 @@ class SystemAAdapter(SystemAdapter):
         if self._index is not None:
             return self._index
         import os
-        from src.system_a.retrieval import ChromaIndex, SupabaseIndex
+        from src.system_a.retrieval import SupabaseIndex
         if os.getenv("LLM_PROVIDER") == "mock":
             class _MockIndex:
                 name = "mock_index"
@@ -140,14 +140,12 @@ class SystemAAdapter(SystemAdapter):
             return self._index
 
         supabase_url = os.getenv("SUPABASE_DB_URL")
-        if supabase_url:
-            try:
-                self._index = SupabaseIndex(table="sec_chunks")
-                return self._index
-            except Exception as e:
-                import logging
-                logging.getLogger("adapters").warning(f"Failed to initialize SupabaseIndex: {e}")
-        self._index = ChromaIndex(collection="rag5_structure_header_bge")
+        if not supabase_url and not os.getenv("SUPABASE_DB_HOST"):
+            raise RuntimeError(
+                "SUPABASE_DB_URL is not set. Live System A requires Supabase pgvector (sec_chunks) "
+                "and does not fall back to local ChromaDB."
+            )
+        self._index = SupabaseIndex(table="sec_chunks")
         return self._index
 
     def answer(self, question: Dict[str, Any]) -> Dict[str, Any]:
@@ -157,7 +155,11 @@ class SystemAAdapter(SystemAdapter):
         query_text = question.get("query") or question.get("question") or ""
         tickers = question.get("target_tickers") or ([question["ticker"]] if question.get("ticker") else ["NVDA"])
         years = question.get("fiscal_years") or ([int(question["year"])] if question.get("year") else [2026])
-        pairs = [(t, y) for t in tickers for y in years] if tickers and years else []
+        raw_pairs = question.get("target_pairs") or question.get("scope")
+        if isinstance(raw_pairs, list) and raw_pairs and isinstance(raw_pairs[0], (list, tuple)) and len(raw_pairs[0]) == 2:
+            pairs = [(str(t), int(y) if y else None) for t, y in raw_pairs]
+        else:
+            pairs = [(t, y) for t in tickers for y in years] if tickers and years else []
 
         index = self._get_index()
         t_ret0 = time.perf_counter()
@@ -225,32 +227,37 @@ class SystemBAdapter(SystemAdapter):
         if self._source is not None:
             return self._source
         import os
-        from src.system_b.adapters import ChromaSource, SupabaseSource
+        from src.system_b.adapters import SupabaseSource
         if os.getenv("LLM_PROVIDER") == "mock":
             class _MockSource:
                 def records(self, scope=None):
-                    t = (scope.tickers[0] if scope and scope.tickers else "NVDA")
-                    y = (scope.years[0] if scope and scope.years else 2026)
+                    if scope and getattr(scope, "filing_pairs", None):
+                        t, y = scope.filing_pairs[0]
+                    else:
+                        t = (scope.tickers[0] if scope and scope.tickers else "NVDA")
+                        y = (scope.years[0] if scope and scope.years else 2026)
                     return [{
                         "id": f"{t}_FY{y}_MOCK:1",
                         "text": f"{t} fiscal {y} evidence text for query.",
                         "meta": {"ticker": t, "fiscal_year": y, "section": "Item 7"}
                     }]
                 def __call__(self, query, scope, k):
-                    t = (scope.tickers[0] if scope and scope.tickers else "NVDA")
-                    y = (scope.years[0] if scope and scope.years else 2026)
+                    if scope and getattr(scope, "filing_pairs", None):
+                        t, y = scope.filing_pairs[0]
+                    else:
+                        t = (scope.tickers[0] if scope and scope.tickers else "NVDA")
+                        y = (scope.years[0] if scope and scope.years else 2026)
                     return [(f"{t}_FY{y}_MOCK:1", 0.95)]
             self._source = _MockSource()
             return self._source
 
         supabase_url = os.getenv("SUPABASE_DB_URL")
-        if supabase_url:
-            try:
-                self._source = SupabaseSource(table="sec_chunks")
-                return self._source
-            except Exception:
-                pass
-        self._source = ChromaSource()
+        if not supabase_url:
+            raise RuntimeError(
+                "SUPABASE_DB_URL is not set. Live System B requires Supabase pgvector (sec_chunks) "
+                "and does not fall back to local ChromaDB."
+            )
+        self._source = SupabaseSource(table="sec_chunks")
         return self._source
 
     def answer(self, question: Dict[str, Any]) -> Dict[str, Any]:
@@ -262,17 +269,23 @@ class SystemBAdapter(SystemAdapter):
         query_text = question.get("query") or question.get("question") or ""
         tickers = question.get("target_tickers") or ([question["ticker"]] if question.get("ticker") else ["NVDA"])
         years = question.get("fiscal_years") or ([int(question["year"])] if question.get("year") else [2026])
-        scope = Scope(tuple(t.upper() for t in tickers), tuple(years))
+        raw_pairs = question.get("target_pairs") or question.get("scope")
+        if isinstance(raw_pairs, list) and raw_pairs and isinstance(raw_pairs[0], (list, tuple)) and len(raw_pairs[0]) == 2:
+            filing_pairs = tuple((str(t).upper(), int(y)) for t, y in raw_pairs if t and y)
+            scope = Scope(filing_pairs=filing_pairs) if filing_pairs else Scope(tuple(t.upper() for t in tickers), tuple(years))
+        else:
+            scope = Scope(tuple(t.upper() for t in tickers), tuple(years))
 
         source = self._get_source()
         records = source.records(scope) if hasattr(source, "records") and callable(getattr(source, "records")) else []
         if hasattr(source, "records") and not records:
             records = getattr(source, "records")()
         config = Config(alpha=0.5, candidates=30, rerank_candidates=30, top_k=self.top_k, mode=self.mode)
-        reranker = Reranker() if os.getenv("LLM_PROVIDER") != "mock" else lambda q, txts: [0.9] * len(txts)
+        provider = os.getenv("LLM_PROVIDER", "openai").strip().lower()
+        reranker = Reranker() if provider != "mock" else lambda q, txts: [0.9] * len(txts)
         retriever = Retriever(records, source, reranker, config)
 
-        if os.getenv("LLM_PROVIDER") == "mock":
+        if provider == "mock":
             generator = lambda msgs: {
                 "answer": "System B mock answer citing [1].",
                 "usage": {"prompt_tokens": 80, "completion_tokens": 30, "total_tokens": 110},
@@ -280,26 +293,28 @@ class SystemBAdapter(SystemAdapter):
                 "rate_limit_retries": 0,
                 "finish_reason": "stop",
             }
-        elif os.getenv("LLM_PROVIDER") == "gemini":
+        elif provider == "gemini":
             from src.system_c.llm import _call_gemini_native
+            gem_model = os.environ.get("SYSTEM_B_MODEL") or os.environ.get("LLM_MODEL") or "gemini-3-flash-preview"
             def _gemini_gen(msgs):
-                content, p_tok, c_tok = _call_gemini_native("gemini-3-flash-preview", msgs, temperature=0.0)
+                content, p_tok, c_tok = _call_gemini_native(gem_model, msgs, temperature=0.0)
                 return {
                     "answer": content,
                     "usage": {"prompt_tokens": p_tok, "completion_tokens": c_tok, "total_tokens": p_tok + c_tok},
-                    "model": "gemini-3-flash-preview",
+                    "model": gem_model,
                     "rate_limit_retries": 0,
                     "finish_reason": "stop",
                 }
             generator = _gemini_gen
-        elif os.getenv("LLM_PROVIDER") == "groq" or os.getenv("GROQ_API_KEY"):
+        elif provider == "groq":
             from src.system_c.llm import _call_groq_or_openai
+            groq_model = os.environ.get("SYSTEM_B_MODEL") or os.environ.get("LLM_MODEL") or "openai/gpt-oss-120b"
             def _groq_gen(msgs):
-                content, p_tok, c_tok = _call_groq_or_openai("groq", "openai/gpt-oss-120b", msgs, temperature=0.0)
+                content, p_tok, c_tok = _call_groq_or_openai("groq", groq_model, msgs, temperature=0.0)
                 return {
                     "answer": content,
                     "usage": {"prompt_tokens": p_tok, "completion_tokens": c_tok, "total_tokens": p_tok + c_tok},
-                    "model": "openai/gpt-oss-120b",
+                    "model": groq_model,
                     "rate_limit_retries": 0,
                     "finish_reason": "stop",
                 }
@@ -367,7 +382,7 @@ class SystemBAdapter(SystemAdapter):
                 "generation_ms": round(timings.get("generation_seconds", 0.0) * 1000.0, 1),
             },
             "model": result.get("model", "mock"),
-            "provider": os.environ.get("LLM_PROVIDER", "groq"),
+            "provider": provider,
         }
 
 

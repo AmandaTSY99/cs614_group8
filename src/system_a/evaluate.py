@@ -23,11 +23,15 @@ from .pipeline import TOP_K, generate
 
 ROOT = Path(__file__).resolve().parents[2]
 _DEFAULT_FILE = (
-    ROOT / "data" / "benchmark_qa_0.jsonl"
-    if (ROOT / "data" / "benchmark_qa_0.jsonl").is_file()
-    else ROOT / "benchmark" / "benchmark_qa_0.jsonl"
+    ROOT / "data" / "benchmark_qa_pool_2015.json"
+    if (ROOT / "data" / "benchmark_qa_pool_2015.json").is_file()
+    else (
+        ROOT / "data" / "benchmark_qa_0.jsonl"
+        if (ROOT / "data" / "benchmark_qa_0.jsonl").is_file()
+        else ROOT / "benchmark" / "benchmark_qa_0.jsonl"
+    )
 )
-DEFAULT_BENCHMARK = [_DEFAULT_FILE]   # benchmark_qa_0.jsonl in data/ (or legacy benchmark/)
+DEFAULT_BENCHMARK = [_DEFAULT_FILE]   # canonical 2015+ benchmark in data/benchmark_qa_pool_2015.json
 NUMBER_RE = re.compile(r"\d[\d,]*(?:\.\d+)?")
 SCALES = (1, 100, 0.01, 1e3, 1e-3, 1e6, 1e-6, 1e9, 1e-9)     # e.g. "$3.19 billion" vs "$3,192,049 thousand"
 STOPWORDS = {"the", "and", "for", "with", "that", "this", "from", "its", "was", "were", "are", "has", "have",

@@ -42,7 +42,8 @@ def _fetch_dense_candidates_from_supabase(
 ) -> Dict[str, float]:
     """Query top-k nearest neighbor chunk IDs and cosine similarities directly from Supabase pgvector."""
     supabase_url = os.getenv("SUPABASE_DB_URL")
-    if not supabase_url or os.getenv("LLM_PROVIDER") == "mock":
+    is_mock = os.getenv("LLM_PROVIDER", "").strip().lower() == "mock"
+    if not supabase_url or is_mock:
         return {}
     try:
         import psycopg
@@ -71,6 +72,8 @@ def _fetch_dense_candidates_from_supabase(
             ).fetchall()
             return {r[0]: float(r[1]) for r in rows}
     except Exception:
+        if not is_mock:
+            raise
         return {}
 
 
@@ -79,53 +82,54 @@ def _fetch_chunks_from_supabase(
 ) -> List[Dict[str, Any]]:
     """Fetch pre-computed 10-K structure chunks directly from Supabase Cloud `sec_chunks`."""
     supabase_url = os.getenv("SUPABASE_DB_URL")
+    is_mock = os.getenv("LLM_PROVIDER", "").strip().lower() == "mock"
     if not supabase_url:
         return []
     try:
         import json
-        import psycopg2
+        import psycopg
 
-        with psycopg2.connect(supabase_url, sslmode="require", connect_timeout=3) as conn:
-            with conn.cursor() as cur:
-                if fiscal_years:
-                    cur.execute(
-                        """
-                        SELECT chunk_id, section, content, metadata
-                        FROM sec_chunks
-                        WHERE ticker = ANY(%s) AND fiscal_year = ANY(%s)
-                        ORDER BY chunk_id;
-                        """,
-                        (tickers, fiscal_years),
-                    )
-                else:
-                    cur.execute(
-                        """
-                        SELECT chunk_id, section, content, metadata
-                        FROM sec_chunks
-                        WHERE ticker = ANY(%s)
-                        ORDER BY fiscal_year DESC, chunk_id;
-                        """,
-                        (tickers,),
-                    )
-                rows = cur.fetchall()
-                if not rows:
-                    return []
-                records = []
-                for r in rows:
-                    meta = r[3] if isinstance(r[3], dict) else json.loads(r[3] or "{}")
-                    doc_hdr = (
-                        f"{meta.get('filer', '')} ({meta.get('ticker', '')}) 10-K, "
-                        f"fiscal year {meta.get('fiscal_year', '')}, "
-                        f"period ended {meta.get('fiscal_year_end', '')}"
-                    )
-                    records.append({
-                        "id": r[0],
-                        "text": r[2],
-                        "meta": meta,
-                        "embed_text": f"{doc_hdr}\n{r[2]}",
-                    })
-                return records
+        with psycopg.connect(supabase_url, sslmode="require", autocommit=True) as conn:
+            if fiscal_years:
+                rows = conn.execute(
+                    """
+                    SELECT chunk_id, section, content, metadata
+                    FROM sec_chunks
+                    WHERE ticker = ANY(%s) AND fiscal_year = ANY(%s)
+                    ORDER BY chunk_id;
+                    """,
+                    (tickers, [int(y) for y in fiscal_years]),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    """
+                    SELECT chunk_id, section, content, metadata
+                    FROM sec_chunks
+                    WHERE ticker = ANY(%s)
+                    ORDER BY fiscal_year DESC, chunk_id;
+                    """,
+                    (tickers,),
+                ).fetchall()
+            if not rows:
+                return []
+            records = []
+            for r in rows:
+                meta = r[3] if isinstance(r[3], dict) else json.loads(r[3] or "{}")
+                doc_hdr = (
+                    f"{meta.get('filer', '')} ({meta.get('ticker', '')}) 10-K, "
+                    f"fiscal year {meta.get('fiscal_year', '')}, "
+                    f"period ended {meta.get('fiscal_year_end', '')}"
+                )
+                records.append({
+                    "id": r[0],
+                    "text": r[2],
+                    "meta": meta,
+                    "embed_text": f"{doc_hdr}\n{r[2]}",
+                })
+            return records
     except Exception:
+        if not is_mock:
+            raise
         return []
 
 
@@ -140,6 +144,13 @@ def _get_cached_chunks(
     2. Queries live Supabase Cloud `sec_chunks` table (pre-computed chunks).
     3. Falls back to on-disk chunking only if database is offline/unreachable.
     """
+    is_mock = os.getenv("LLM_PROVIDER", "").strip().lower() == "mock"
+    if not is_mock and not os.getenv("SUPABASE_DB_URL"):
+        raise RuntimeError(
+            "SUPABASE_DB_URL is not set. Live System C requires Supabase pgvector (sec_chunks) "
+            "and does not fall back to local files or synthetic chunks."
+        )
+
     target_tickers = tickers or ([ticker] if ticker else ["NVDA"])
     tickers_key = ",".join(sorted(target_tickers))
     years_key = ",".join(str(y) for y in sorted(fiscal_years)) if fiscal_years else "LATEST"
@@ -149,11 +160,14 @@ def _get_cached_chunks(
 
     # Primary: Query pre-computed chunks from Supabase Cloud
     records = _fetch_chunks_from_supabase(target_tickers, fiscal_years)
+    if not records and fiscal_years and os.getenv("SUPABASE_DB_URL") and not is_mock:
+        # If multi-company query has disjoint fiscal years (e.g. NVDA FY2026 vs MSFT FY2024), widen year filter
+        records = _fetch_chunks_from_supabase(target_tickers, None)
     if records:
         _CORPUS_CACHE[cache_key] = records
         return records
 
-    # Secondary Fallback: Read from local files if offline/database unavailable
+    # Secondary Fallback (Mock / Offline Unit Tests Only): Read from local files if present
     filings = load_filings(
         tickers=target_tickers,
         fiscal_years=fiscal_years if fiscal_years else None,
@@ -237,7 +251,12 @@ def retrieve_10k_chunks(
     """
     records = _get_cached_chunks(ticker=ticker, fiscal_years=fiscal_years, tickers=tickers)
     if not records:
-        # Synthetic fallback only if data directory is absent
+        if os.getenv("LLM_PROVIDER", "").strip().lower() != "mock":
+            raise RuntimeError(
+                f"No chunks retrieved from Supabase sec_chunks for tickers={tickers or [ticker]}, "
+                f"fiscal_years={fiscal_years}. Refusing to return synthetic dummy chunks in live mode."
+            )
+        # Synthetic fallback strictly for mock mode unit tests when local data directory is absent
         return [
             EvidenceChunk(
                 chunk_id=f"{ticker or 'NVDA'}_FY2026_SYNTH:{hop}",

@@ -59,6 +59,15 @@ def build_record(system: str, q: Dict[str, Any], out: Dict[str, Any], run_id: st
     }
 
 
+def _sanitize_for_adapter(q: Dict[str, Any]) -> Dict[str, Any]:
+    """Strip ground-truth fields before passing question to any RAG system adapter."""
+    forbidden = {
+        "answer", "ground_truth_answer", "ground_truth_numbers",
+        "program", "key_points", "gold_evidence", "target_sections", "sources",
+    }
+    return {k: v for k, v in q.items() if k not in forbidden}
+
+
 def generate(
     adapters: Dict[str, SystemAdapter],
     questions: List[Dict[str, Any]],
@@ -80,7 +89,8 @@ def generate(
                 counts["skipped"] += 1
                 continue
             try:
-                record = build_record(system, q, adapter.answer(q), run_id, commit)
+                sanitized_q = _sanitize_for_adapter(q)
+                record = build_record(system, q, adapter.answer(sanitized_q), run_id, commit)
             except Exception as exc:  # recorded and retried on the next run
                 counts["failed"] += 1
                 append_jsonl(errors_path, {
@@ -105,7 +115,7 @@ def select_questions(questions: List[Dict[str, Any]], ids: Optional[List[str]], 
 
 def main() -> None:
     p = argparse.ArgumentParser(description="RQ2 Stage 1: generate answers per system and question.")
-    p.add_argument("--systems", default="system_c_v1,system_c_v2")
+    p.add_argument("--systems", default="system_a,system_b,system_c_v1,system_c_v2")
     p.add_argument("--run-id", required=True)
     p.add_argument("--eval-set", default=str(GOLDEN_PATH))
     p.add_argument("--ids", default=None, help="Comma-separated question ids.")
