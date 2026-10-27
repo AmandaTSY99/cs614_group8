@@ -118,19 +118,19 @@ This file contains 160 completed results with full answers, all retrieved chunks
 
 ### Amanda & Kevin: RQ1 (Retrieval Completeness)
 * **What you are proving:** Does multi-hop retrieval find scattered evidence across different 10-K sections (e.g. Item 7 MD&A and Item 8 Footnotes) that single-pass RAG misses?
-* **Starter Script Provided:** We built a reference evaluation script for you at `scripts/rq1/evaluate_rq1.py`.
+* **Starter Skeleton Base Provided:** We wired up a working starter skeleton at `scripts/rq1/evaluate_rq1.py` so the plumbing to the 4 systems and Supabase `retrieved_contexts` is ready out of the box:
   ```bash
   python scripts/rq1/evaluate_rq1.py
   ```
-  *Note: It evaluates the real `retrieved_contexts` and `contexts_meta` across all 4 systems (Evidence Recall, Full Evidence Discovery Rate, Document Recall, MRR, Context Precision, Multi-Hop Recall, and Cross-Section Discovery Rate) and fails loudly if `retrieved_contexts` is missing. You own RQ1, so feel free to customize or extend it.*
+  *Note: **You own RQ1 completely.** This script is purely a starter skeleton to verify that all 4 systems return real retrieved chunks from Supabase (`sec_chunks`). Feel free to modify the retrieval metrics, add your own statistical tests/visualizations, or replace the script entirely with your own RQ1 evaluation pipeline.*
 
 ---
 
 ### Aryan: RQ2 (Grounding, Citations & Hallucination)
 * **What you are proving:** Does evidence reflection stop the model from hallucinating numbers or fabricating financial figures?
-* **Existing Pipeline:**
+* **Starter Skeleton & Existing Pipeline:** Your RQ2 pipeline in `scripts/rq2/` is wired up to all 4 systems (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) and the 40-question `2015+` benchmark:
   ```bash
-  # Step 1: Generate across all 4 systems (or copy reports/rq3/records.jsonl into reports/rq2/full/records.jsonl)
+  # Step 1: Generate across all 4 systems (or use pre-generated records in reports/rq3/records.jsonl)
   python scripts/rq2/generate.py --run-id full
 
   # Step 2: Score faithfulness, citations, numeric accuracy, and grounding error rate
@@ -139,7 +139,7 @@ This file contains 160 completed results with full answers, all retrieved chunks
   # Step 3: Generate the report with bootstrap 95% CIs across all 4 categories
   python scripts/rq2/report.py --run reports/rq2/full
   ```
-  *Note: `load_golden()` automatically populates `category`, `target_sections` (from `gold_evidence`), `ground_truth_numbers`, `target_tickers`, and `target_pairs` for all 40 questions in `data/benchmark_qa_pool_2015.json`. And `reports/rq3/records.jsonl` already contains all 160 records with full `retrieved_contexts`, `contexts_meta`, `citations`, `guardrail_report`, `target_sections`, and `ground_truth_numbers`.*
+  *Note: **You own RQ2 completely.** The adapter plumbing (`load_golden()` and `records.jsonl`) is pre-populated with `retrieved_contexts`, `contexts_meta`, `citations`, `guardrail_report`, `target_sections`, and `ground_truth_numbers` so you can run, customize, or extend your RQ2 evaluation immediately.*
 
 ---
 
