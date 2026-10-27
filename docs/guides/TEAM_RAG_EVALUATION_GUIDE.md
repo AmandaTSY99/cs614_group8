@@ -1,29 +1,55 @@
-# CS614 Team Engineering Guide: Unified 4-System RAG Evaluation Harness
+# Team Engineering Guide: Evaluating the 4 Financial RAG Systems
 
-**Target Audience:** Team Engineers (Amanda, Aryan, Kevin, Anish) and their AI coding assistants (Claude, GPT, Gemini, Cursor).  
+**Target Audience:** Amanda, Aryan, Kevin, Anish, and your AI coding assistants (Claude, Cursor, Copilot, ChatGPT).  
 **Branch:** `dev`  
-**Purpose:** Single source of truth for connecting to, querying, and evaluating the 4 core financial RAG systems across **RQ1 (Retrieval)**, **RQ2 (Grounding & Citations)**, and **RQ3 (Inference Economics)** without breaking interfaces or leaking ground truth.
+**Purpose:** Simple, plain-English instructions for connecting to the 4 RAG systems and running your evaluations for **RQ1 (Retrieval)**, **RQ2 (Grounding & Citations)**, and **RQ3 (Inference Economics)**.
 
 ---
 
-## 1. Architecture Overview: The 4 Core RAG Systems
+## 1. What are the 4 Systems We Are Testing?
 
-All systems are strictly standardized under a uniform adapter interface in `scripts/rq2/adapters.py`.
+Every research question in our paper evaluates the exact same **4 RAG systems**:
 
-| System ID | System Name | Architectural Paradigm | LLM Calls | Retrieval Mechanism |
-| :--- | :--- | :--- | :---: | :--- |
-| **`system_a`** | Vanilla Dense Baseline | Single-pass dense RAG | 1 | Supabase Cloud `sec_chunks` (BGE-small, top-10 chunks) |
-| **`system_b`** | Advanced Hybrid Single-Pass | Reciprocal Rank Fusion + Cross-Encoder | 1 | Supabase dense + BM25 keyword fusion + `BAAI/bge-reranker-large` |
-| **`system_c_v1`** | Adaptive Multi-Hop RAG (AMR) | Dynamic iterative reflection DAG | 1 to 4 | Query Decomposer $\rightarrow$ 1–3 Hops $\rightarrow$ Sufficiency Critic $\rightarrow$ Guardrail |
-| **`system_c_v2`** | Agentic Multi-Hop RAG (AAMR) | Deterministic Tools + Iterative DAG | 1 to 4 | SEC XBRL tabular tool $\rightarrow$ 1–3 Hops $\rightarrow$ Critic $\rightarrow$ Guardrail |
-
-> **⚠️ NOTE FOR ALL AGENTS:** The ablation variant `system_c_fixed_3hop` has been deprecated and excluded from team evaluations. All research questions evaluate exclusively on these **4 core systems**.
+1. **`system_a` (Vanilla Dense Baseline):** Standard vector search (top-10 chunks from Supabase) $\rightarrow$ 1 LLM answer.
+2. **`system_b` (Advanced Hybrid Single-Pass):** Vector search + BM25 keyword search + cross-encoder reranking $\rightarrow$ 1 LLM answer. Does **not** hop.
+3. **`system_c_v1` (Adaptive Multi-Hop):** Breaks question into sub-queries, loops through 1 to 3 retrieval hops, checks evidence with a Critic, and verifies numbers with a Guardrail.
+4. **`system_c_v2` (Agentic Multi-Hop with Financial Tools):** Pulls structured financial data from an SEC XBRL tool first, then loops through 1 to 3 hops with Critic and Guardrail.
 
 ---
 
-## 2. Quickstart: 10-Line Python Invocation
+## 2. Quick Setup (3 Steps)
 
-Any AI agent or script can query all 4 systems uniformly using the following snippet:
+### Step 1: Install Dependencies
+Open your terminal in the project root and run:
+```bash
+pip install "sentence-transformers==3.4.1" "transformers==4.57.6" tf-keras brotli openai pandas scipy psycopg2-binary python-dotenv
+```
+
+### Step 2: Configure Your `.env` File
+Create or update `.env` in the project root with the Supabase database connection and your preferred LLM provider:
+```dotenv
+# Database connection for SEC 10-K filing chunks (95,000 chunks)
+SUPABASE_DB_URL="postgresql://postgres.jfhpjggjoabgpoxwezuc:ue%21K8zrd.%26%26SMub@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+
+# --- Provider Options for Testing ---
+# Option A: 100% Free Mock Mode (No keys needed, instant, tests code flow)
+# LLM_PROVIDER="mock"
+
+# Option B: Free Groq Cloud
+# LLM_PROVIDER="groq"
+# GROQ_API_KEY="your-groq-key"
+
+# Option C: Official Shared Model (Used for final benchmarks)
+LLM_PROVIDER="openai"
+LLM_MODEL="gpt-5.4"
+OPENAI_API_KEY="your-openai-key"
+```
+
+---
+
+## 3. How to Query the Systems (Simple Python Code)
+
+All 4 systems are connected to a single function in `scripts/rq2/adapters.py`. Here is how any script can query them:
 
 ```python
 import os
@@ -32,12 +58,12 @@ load_dotenv(override=True)
 
 from scripts.rq2.adapters import get_adapters
 
-# 1. Initialize the 4 systems
+# Load the 4 systems
 adapters = get_adapters(["system_a", "system_b", "system_c_v1", "system_c_v2"])
 
-# 2. Formulate query record
-query_payload = {
-    "id": "query-001",
+# Example question
+question = {
+    "id": "q-001",
     "question": "What was Apple's total revenue in fiscal year 2021?",
     "ticker": "AAPL",
     "target_tickers": ["AAPL"],
@@ -45,210 +71,91 @@ query_payload = {
     "fiscal_years": [2021]
 }
 
-# 3. Execute and inspect outputs
-for name, adapter in adapters.items():
-    output = adapter.answer(query_payload)
-    print(f"[{name}] Answer: {output['answer'][:80]}...")
-    print(f"[{name}] Latency: {output['latency_ms']:.0f}ms | Tokens: {output['tokens']['total']}")
+# Run any system
+output = adapters["system_c_v2"].answer(question)
+
+print("Answer:", output["answer"])
+print("Retrieved Chunks:", len(output["retrieved_contexts"]))
+print("Latency:", output["latency_ms"], "ms")
 ```
+
+### What `output` Contains:
+* `output["answer"]`: The final text generated by the model.
+* `output["retrieved_contexts"]`: List of raw text chunks fetched from SEC filings.
+* `output["contexts_meta"]`: List of chunk metadata (`chunk_id`, `ticker`, `fiscal_year`, `section`).
+* `output["citations"]`: List of citations linked to chunks.
+* `output["guardrail_report"]`: Hallucination audit report (System C only).
+* `output["hops"]`: Number of retrieval hops taken (1 for System A/B; 1 to 3 for System C).
+* `output["latency_ms"]`: Wall-clock execution time in milliseconds.
+* `output["tokens"]`: `{"prompt": ..., "completion": ..., "total": ...}` token counts.
 
 ---
 
-## 3. The Unified Output Schema (`ADAPTER_KEYS`)
+## 4. The 40-Question Academic Benchmark
 
-Every call to `adapter.answer(payload)` returns a Python dictionary with guaranteed keys:
-
-```python
-{
-    "answer": str,                  # Final generated answer with citation tags (e.g., "[1]" or "[AAPL FY2021, Item 8, chunk:123]")
-    "retrieved_contexts": list[str],# Raw text strings of all retrieved chunks in production order
-    "contexts_meta": list[dict],    # Chunk metadata: [{"chunk_id": str, "ticker": str, "fiscal_year": int, "section": str}, ...]
-    "citations": list[dict],        # Explicit citation mappings: [{"tag": str, "chunk_id": str, ...}, ...]
-    "guardrail_report": dict | None,# System C only: audit report (ungrounded numbers, unsupported sentences, severity score)
-    "hops": int,                    # Number of retrieval hops executed (1 for single-pass, 1 to 3 for System C)
-    "tokens": {                     # Exact token consumption from provider usage metadata
-        "prompt": int,
-        "completion": int,
-        "total": int
-    },
-    "cost_usd": float,              # Estimated financial cost in USD using unified pricing
-    "latency_ms": float,            # End-to-end wall-clock latency in milliseconds
-    "stage_timings_ms": {           # Granular breakdown for ablation & bottleneck analysis
-        "retrieval_ms": float,
-        "rerank_ms": float,         # System B only
-        "agent_critic_ms": float,   # System C only
-        "synthesis_ms": float
-    },
-    "model": str,                   # Model used (e.g., "gpt-5.4")
-    "provider": str                 # Provider used (e.g., "openai")
-}
-```
-
----
-
-## 4. Benchmark Dataset & Strict Anti-Leakage Firewall
-
-### Canonical Dataset
-* **Path:** `data/benchmark_qa_pool_2015.json`
-* **Size:** 40 canonical academic questions strictly filtered to fiscal years $\ge 2015$.
-* **Schema per question:**
-  ```json
-  {
-    "id": "amanda-001",
-    "question": "For Johnson & Johnson's fiscal year 2022...",
-    "ticker": "JNJ",
-    "year": 2022,
-    "recipe": "table",
-    "hop": "single",
-    "type": "numeric",
-    "answer": "-25.64%",
-    "program": "subtract(3.9, 2.9)...",
-    "key_points": ["accumulated benefit obligation decreased..."],
-    "gold_evidence": [{"chunk_id": "JNJ_FY2022_2023-01-01:381", "ticker": "JNJ", "year": 2022, "section": "Item 8"}]
-  }
+* **File Location:** `data/benchmark_qa_pool_2015.json`
+* **Contents:** 40 canonical financial questions covering Apple, Microsoft, Amazon, Tesla, J&J, Nvidia, etc.
+* **Anti-Leakage Rule (Crucial for Academic Rigor):**
+  Never pass the ground-truth answer or gold evidence chunks to the RAG systems! Use the built-in sanitizer:
+  ```python
+  from scripts.rq3.run_rq3_experiment import sanitize_input_for_system
+  clean_q = sanitize_input_for_system(raw_benchmark_record)
+  output = adapter.answer(clean_q)
   ```
 
-### 🛑 Anti-Leakage Firewall (Mandatory for All RQs)
-To ensure scientific validity, systems must **never** receive ground-truth answers, reasoning programs, or gold evidence chunks. Always use the built-in sanitizer from `scripts/rq3/run_rq3_experiment.py`:
+---
 
-```python
-from scripts.rq3/run_rq3_experiment import sanitize_input_for_system
+## 5. Precomputed Outputs (Save Time & Budget)
 
-# Strips 'answer', 'program', 'key_points', 'gold_evidence', and quotes
-clean_query = sanitize_input_for_system(raw_benchmark_record)
-output = adapter.answer(clean_query)
-```
+To save you from spending API money or waiting 10 minutes every time you test your metrics, the complete run of all 40 questions across all 4 systems is **already saved** in:
+👉 `reports/rq3/records.jsonl`
+
+This file contains 160 completed results with full answers, all retrieved chunks, and token metrics. You can write and test your evaluation scripts directly against this file in **2 seconds for $0.00**.
 
 ---
 
-## 5. How to Evaluate Each Research Question
+## 6. How to Run Each Research Question
 
-### For Amanda & Kevin: Evaluating RQ1 (Retrieval & Evidence Sufficiency)
-* **Pre-Built Turnkey Evaluator:**
+### Amanda & Kevin: RQ1 (Retrieval Completeness)
+* **What you are proving:** Does multi-hop retrieval find scattered evidence across different 10-K sections (e.g. Item 7 MD&A and Item 8 Footnotes) that single-pass RAG misses?
+* **Starter Script Provided:** We built a starter template for you at `scripts/rq1/evaluate_rq1.py`.
   ```bash
-  # Instant offline evaluation on pre-generated 160 benchmark records (0 API cost, runs in 2s):
   python scripts/rq1/evaluate_rq1.py
   ```
-* **Metrics Computed:**
-  - `overall_evidence_recall_pct`: % of gold evidence items retrieved across all candidate contexts.
-  - `multihop_evidence_recall_pct`: Evidence recall on multi-hop questions.
-  - `cross_section_discovery_rate_pct`: % of queries spanning non-adjacent 10-K sections (e.g. Item 7 + Item 8) where chunks were fetched from both sections.
-  - `context_precision_pct`: Ratio of retrieved chunks containing gold evidence.
-* **Outputs:**
-  - `reports/rq1/summary_metrics.csv`
-  - `reports/rq1/summary_metrics.json`
+  *Note: This is a starter reference implementation. It checks evidence recall and cross-section discovery. You own RQ1, so feel free to customize, add metrics (like MRR or NDCG), or replace it.*
 
 ---
 
-### For Aryan: Evaluating RQ2 (Grounding, Faithfulness & Citations)
-* **Pre-Built Pipeline:**
+### Aryan: RQ2 (Grounding, Citations & Hallucination)
+* **What you are proving:** Does evidence reflection stop the model from hallucinating numbers or fabricating financial figures?
+* **Existing Pipeline:**
   ```bash
-  # Stage 1: Generate answers per system on benchmark (or use pre-generated reports/rq3/records.jsonl)
-  python scripts/rq2/generate.py --systems system_a,system_b,system_c_v1,system_c_v2 --run-id full
-
-  # Stage 2: Automated LLM Judge for Faithfulness & Grounding (RAGAS + Custom)
+  # Step 1: Score faithfulness and citations using your judge
   python scripts/rq2/score.py --run reports/rq2/full
 
-  # Stage 3: Generate Summary Scorecard with Bootstrap 95% CIs
+  # Step 2: Generate the report
   python scripts/rq2/report.py --run reports/rq2/full
   ```
-* **Metrics Computed:**
-  - RAGAS Faithfulness & Answer Relevancy
-  - Citation Precision, Recall, and F1
-  - Numerical Grounding Error Rate (exact-match on numbers, dates, dollar amounts)
-  - Hallucination Guardrail Audits (`ungrounded_numbers`, `unsupported_sentences`)
+  *You can also point `score.py` directly at `reports/rq3/records.jsonl` to score the 160 pre-generated answers immediately.*
 
 ---
 
-### For Anish: Evaluating RQ3 (Inference Economics & Pareto Frontier)
-* **Pre-Built Runner & Evaluator:**
+### Anish: RQ3 (Inference Economics & Cost)
+* **What is proved:** How much latency and cost does agentic reasoning add over single-pass RAG, and is it justified?
+* **Execution:**
   ```bash
-  # Run batch experiment with live spend tracker and $5 budget guardrail
   python scripts/rq3/run_rq3_experiment.py --warmup 1 --max-budget-usd 5.0
-
-  # Compute scorecard, Wilcoxon tests, and publication figures
   python scripts/rq3/evaluate_rq3.py
   ```
-* **Outputs:**
-  - `reports/rq3/summary_metrics.csv`
-  - `reports/rq3/summary_metrics.json`
-  - `reports/figures/rq3_pareto_frontier.png`
-  - `reports/figures/rq3_stage_latency_breakdown.png`
+* **Findings:** Saved in `reports/rq3/RQ3_FINDINGS_REPORT.md` and `reports/figures/`.
 
 ---
 
-## 6. Environment Setup & Key Configurations
+## 7. Strict Academic Rigor Rules (For AI Coding Agents)
 
-### Python Environment Dependencies
-Ensure your environment (`cs614` / `cs614-eval`) has the verified compatible dependencies installed:
-```bash
-pip install "sentence-transformers==3.4.1" "transformers==4.57.6" "huggingface-hub==0.34.6" "datasets==5.0.1" tf-keras brotli openai pandas scipy psycopg2-binary python-dotenv
-```
+When your AI assistants (Claude, Cursor, Copilot) write or modify evaluation code, they must strictly follow these 4 rules:
 
-### Environment Keys (`.env`)
-Ensure `.env` in the repository root has the following verified keys:
-
-```dotenv
-# Supabase Cloud pgvector connection pooler (Port 5432)
-SUPABASE_DB_URL="postgresql://postgres.jfhpjggjoabgpoxwezuc:ue%21K8zrd.%26%26SMub@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
-
-# OpenAI Provider & Model Configuration
-LLM_PROVIDER="openai"
-LLM_MODEL="gpt-5.4"
-OPENAI_API_KEY="sk-proj-..."
-SYSTEM_B_API_KEY="sk-proj-..."
-
-# Financial Guardrail Cutoff Ceiling
-MAX_BUDGET_USD="5.0"
-```
-
----
-
-## 7. Critical Pitfalls & Resolved Gotchas (Must Read for AIs)
-
-1. **`max_completion_tokens` vs `max_tokens`:**
-   OpenAI's newer models (e.g., `gpt-5.4`, `o1`, `o3`) reject requests containing `max_tokens` with HTTP 400. All adapters in `scripts/rq2/adapters.py` and `src/system_*/llm.py` have been patched to pass `max_completion_tokens`. Do **not** revert these parameters to `max_tokens`.
-
-2. **Brotli Decompression on Python 3.13 (`httpx2`):**
-   If you encounter `TypeError: process() takes no keyword arguments` in `httpx2/_decoders.py`, it is caused by Google's C-based `brotli` module not accepting `output_buffer_limit`. This has been resolved in the virtual environment via:
-   ```python
-   self._decompress = lambda data, **kwargs: self.decompressor.process(data)
-   ```
-
-3. **Supabase Database Pooler:**
-   Always use the pooled connection URL (`aws-0-ap-southeast-1.pooler.supabase.com`) on port 5432. Direct database connections may exceed concurrent connection limits when multi-hop agents launch parallel sub-queries.
-
-4. **Zero Silent Fails (Loud Stops):**
-   The benchmark harness runs in `fail_fast=True` mode by default. If any adapter throws an unhandled exception or breaches the budget limit, it dumps a stack trace banner to `stderr` and terminates immediately (`exit(1)`). Do not wrap errors with generic `try...except: pass`.
-
-5. **Streaming Resumability:**
-   Results stream line-by-line to `reports/rq3/records.jsonl`. If an experiment process is halted, re-running the script without `--clean` will automatically skip already completed `(system, question_id)` pairs and resume seamlessly.
-
----
-
-## 8. Summary of Branches & Maintenance
-* **Production Core Branch:** `dev`
-* **Inference Economics Feature Branch:** `feat/rq3-inference-economics`
-* **UI Invariant:** Front-end code in `app.py` must remain completely untouched by CLI evaluation scripts.
-
----
-
-## 9. Ready-to-Copy Team Slack / Discord Announcement
-
-```markdown
-Hey team! 🚀 The unified evaluation harness for our 4 core RAG systems (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) is now fully merged and verified on branch `dev`.
-
-Key updates:
-1. All 4 systems now speak the exact same adapter interface (`adapter.answer(q)` in `scripts/rq2/adapters.py`).
-2. Fixed-3-hop ablation has been retired; all research questions evaluate strictly on the 4 core systems.
-3. OpenAI `gpt-5.4` compatibility and Supabase pgvector pooling (port 5432) are tested and operational.
-4. Pre-computed benchmark outputs for all 160 runs are saved in `reports/rq3/records.jsonl`.
-
-How to run your RQ:
-- **Amanda & Kevin (RQ1 - Retrieval & Evidence Sufficiency):** Run `python scripts/rq1/evaluate_rq1.py` for immediate evidence recall & cross-section discovery scores (takes 2 seconds offline, $0 cost).
-- **Aryan (RQ2 - Grounding, Citations & Hallucination):** Run `python scripts/rq2/score.py --run reports/rq2/full` using the pre-built pipeline.
-- **Anish (RQ3 - Inference Economics):** Run `python scripts/rq3/evaluate_rq3.py`.
-
-Full documentation & AI agent instructions: `docs/guides/TEAM_RAG_EVALUATION_GUIDE.md`
-```
-
+1. **Firewall Integrity:** Do not leak ground-truth answers or evidence into the prompt. The RAG systems must answer blind.
+2. **Benchmark Uniformity:** Only evaluate against `data/benchmark_qa_pool_2015.json` (40 questions). Never swap in a synthetic or unapproved test set.
+3. **No UI Edits:** `app.py` is locked for the Streamlit demo. All evaluation work must remain strictly in `scripts/` and CLI.
+4. **Fail-Fast / Loud Stops:** Do not write silent `try...except: pass` blocks that hide failures. If a query fails, dump the stack trace and fail loudly so data is never silently corrupted.
