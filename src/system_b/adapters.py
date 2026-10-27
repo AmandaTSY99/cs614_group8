@@ -147,8 +147,12 @@ class Generator:
         from openai import RateLimitError
         for attempt in range(9):
             try:
-                response = self.client.chat.completions.create(model=self.model, messages=messages,
-                    temperature=0, max_tokens=1500)
+                call_kwargs = dict(model=self.model, messages=messages, temperature=0)
+                if "gpt-5" in self.model or "o1" in self.model or "o3" in self.model:
+                    call_kwargs["max_completion_tokens"] = 1500
+                else:
+                    call_kwargs["max_tokens"] = 1500
+                response = self.client.chat.completions.create(**call_kwargs)
                 break
             except RateLimitError as exc:
                 if attempt == 8 or 'tokens per day' in str(exc).lower():

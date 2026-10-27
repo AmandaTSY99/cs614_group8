@@ -221,8 +221,11 @@ def _call_groq_or_openai(
         "model": model,
         "messages": messages,
         "temperature": temperature,
-        "max_tokens": max_tokens,
     }
+    if provider == "openai" or "gpt-5" in model or "o1" in model or "o3" in model:
+        kwargs["max_completion_tokens"] = max_tokens
+    else:
+        kwargs["max_tokens"] = max_tokens
     if "gpt-oss" in model:
         kwargs["reasoning_effort"] = "low"
 

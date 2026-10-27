@@ -17,6 +17,7 @@ MODEL_PRICING_PER_1M: Dict[str, Dict[str, float]] = {
     "llama-3.1-8b-instant": {"prompt": 0.05, "completion": 0.08},
     "gpt-4o-mini": {"prompt": 0.15, "completion": 0.60},
     "gpt-4o": {"prompt": 2.50, "completion": 10.00},
+    "gpt-5.4": {"prompt": 2.50, "completion": 15.00},
     "gemini-1.5-flash": {"prompt": 0.075, "completion": 0.30},
     "gemini-2.0-flash": {"prompt": 0.10, "completion": 0.40},
     "command-r": {"prompt": 0.15, "completion": 0.60},

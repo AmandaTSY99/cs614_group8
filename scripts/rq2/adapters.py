@@ -144,8 +144,9 @@ class SystemAAdapter(SystemAdapter):
             try:
                 self._index = SupabaseIndex(table="sec_chunks")
                 return self._index
-            except Exception:
-                pass
+            except Exception as e:
+                import logging
+                logging.getLogger("adapters").warning(f"Failed to initialize SupabaseIndex: {e}")
         self._index = ChromaIndex(collection="rag5_structure_header_bge")
         return self._index
 
@@ -184,7 +185,8 @@ class SystemAAdapter(SystemAdapter):
         contexts_meta = [_chunk_meta({"chunk_id": h["id"], "metadata": h["meta"]}) for h in hits]
         prompt_tok = telemetry.get("prompt_tokens", 0)
         comp_tok = telemetry.get("completion_tokens", 0)
-        cost_usd = (prompt_tok * 0.15 + comp_tok * 0.60) / 1_000_000.0
+        from src.system_c.telemetry import compute_call_cost_usd
+        cost_usd = compute_call_cost_usd(telemetry.get("model", "gpt-4o-mini"), prompt_tok, comp_tok)
 
         return {
             "answer": gen_out["answer"],
@@ -341,7 +343,8 @@ class SystemBAdapter(SystemAdapter):
         usage = result.get("usage") or {}
         prompt_tok = usage.get("prompt_tokens", 0)
         comp_tok = usage.get("completion_tokens", 0)
-        cost_usd = (prompt_tok * 0.15 + comp_tok * 0.60) / 1_000_000.0
+        from src.system_c.telemetry import compute_call_cost_usd
+        cost_usd = compute_call_cost_usd(result.get("model", os.environ.get("LLM_MODEL", "gpt-4o-mini")), prompt_tok, comp_tok)
 
         timings = result.get("timings", {})
         return {
