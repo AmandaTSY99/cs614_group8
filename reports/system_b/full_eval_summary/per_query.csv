@@ -1,0 +1,467 @@
+question_id,mode,category,status,error,answer,reference_token_f1_proxy,has_recognized_citation,invalid_citation_label_count,explicit_abstention,pure_abstention,total_seconds,retrieval_seconds,generation_seconds,prompt_tokens,completion_tokens,total_tokens,finish_reason,rate_limit_retries
+GOLD-01,dense,single_hop_factual,ok,,Not found in the provided context.,0.0,False,0,True,True,10.75051109999913,9.19519389999914,1.5551416000016616,1014,230,1244,,
+GOLD-01,bm25,single_hop_factual,ok,,Not found in the provided context.,0.0,False,0,True,True,0.8320769999991171,0.15749720000167144,0.6745269999992161,1484,103,1587,,
+GOLD-01,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.0,False,0,True,True,1.524463800000376,0.31762999999773456,1.206777499999589,1405,331,1736,,
+GOLD-01,hybrid_rerank,single_hop_factual,ok,,"NVIDIA’s fiscal year 2026 ended on **January 25, 2026**【1】. Its principal executive office (headquarters) is located in **Santa Clara, California**【3】.",0.8085106382978723,True,0,False,False,23.652190699998755,22.87372350000078,0.7782121999989613,1099,174,1273,,
+GOLD-02,dense,single_hop_factual,ok,,Apple Inc.’s independent registered public accounting firm for the fiscal year ended September 28 2024 was Ernst & Young LLP【5】.,0.926829268292683,True,0,False,False,3.295656999998755,2.411226300002454,0.8843750000014552,693,201,894,,
+GOLD-02,bm25,single_hop_factual,ok,,Not found in the provided context.,0.07407407407407407,False,0,True,True,1.0996066000006977,0.341279600001144,0.758275500000309,980,117,1097,,
+GOLD-02,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.07407407407407407,False,0,True,True,1.193250899999839,0.43980220000230474,0.7533950999968511,861,105,966,,
+GOLD-02,hybrid_rerank,single_hop_factual,ok,,"Apple Inc.’s independent registered public accounting firm for the fiscal year ended September 28, 2024 was **Ernst & Young LLP**【1】.",0.926829268292683,True,0,False,False,19.204273600000306,18.266704199999367,0.9374758999983897,1433,156,1589,,
+GOLD-03,dense,single_hop_factual,ok,,Not found in the provided context.,0.11764705882352941,False,0,True,True,3.119470100002218,2.4771743999990576,0.6422500999979093,384,103,487,,
+GOLD-03,bm25,single_hop_factual,ok,,"Apple Inc. is incorporated in **California**. Its principal executive offices (corporate headquarters) are located at **One Apple Park Way, Cupertino, California 95014**. The company’s IRS employer identification number is **94‑2404110**【1】.",0.7666666666666667,True,0,False,False,1.2221248999994714,0.2623632000031648,0.9597102000006998,430,225,655,,
+GOLD-03,hybrid,single_hop_factual,ok,,"Apple Inc. is incorporated in **California**. Its principal executive office (corporate headquarters) is listed as **One Apple Park Way, Cupertino, California 95014**. The company’s IRS employer identification number is **94‑2404110**【1】.",0.7,True,0,False,False,1.3954950999977882,0.4743354999991425,0.9211139999970328,409,174,583,,
+GOLD-03,hybrid_rerank,single_hop_factual,ok,,"Apple Inc. is incorporated in **California**. Its principal executive office (corporate headquarters) is listed as **One Apple Park Way, Cupertino, California 95014**. The company’s IRS employer identification number is **94‑2404110**【1】.",0.7,True,0,False,False,17.181375899999694,16.25155630000154,0.9297474000013608,692,169,861,,
+GOLD-04,dense,single_hop_factual,ok,,"Microsoft Corporation is incorporated under the laws of the State of **Washington**【1】. Its corporate headquarters are located in **Redmond, Washington**【4】.",0.7441860465116279,True,0,False,False,2.4794862999988254,1.6151137000015297,0.8643057000008412,1466,192,1658,,
+GOLD-04,bm25,single_hop_factual,ok,,"Microsoft Corporation is incorporated under the laws of the State of **Washington**【4】, and its corporate headquarters is located in **Redmond, Washington** (as indicated in the signing location of the report)【5】.",0.6037735849056604,True,0,False,False,1.3634889999993902,0.24006509999890113,1.123364399998536,1243,277,1520,,
+GOLD-04,hybrid,single_hop_factual,ok,,"Microsoft Corporation is incorporated under the laws of the State of Washington【1】.
+The address of its corporate headquarters is not provided in the supplied context.",0.5833333333333334,True,0,False,False,1.1992308999979286,0.409253699999681,0.7899237999990874,1457,212,1669,,
+GOLD-04,hybrid_rerank,single_hop_factual,ok,,"Microsoft Corporation is incorporated under the laws of the **State of Washington**【3】, and its corporate headquarters is located in **Redmond, Washington** (the City of Redmond, State of Washington)【4】.",0.6274509803921569,True,0,False,False,18.285963599999377,17.24487379999846,1.0410209000001487,1398,299,1697,,
+GOLD-05,dense,single_hop_factual,ok,,Not found in the provided context.,0.058823529411764705,False,0,True,True,1.1893760999992082,0.22494260000166832,0.9643837999974494,876,214,1090,,
+GOLD-05,bm25,single_hop_factual,ok,,Not found in the provided context.,0.058823529411764705,False,0,True,True,8.175155300003098,0.26103889999649255,7.914043099997798,1331,140,1471,,
+GOLD-05,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.058823529411764705,False,0,True,True,12.279619600001752,0.5036665000006906,11.775903599998855,1541,115,1656,,
+GOLD-05,hybrid_rerank,single_hop_factual,ok,,Not found in the provided context.,0.058823529411764705,False,0,True,True,20.35786250000092,19.477683799999795,0.8801126999969711,1352,102,1454,,
+GOLD-06,dense,single_hop_factual,ok,,Not found in the provided context.,0.058823529411764705,False,0,True,True,4.037689500000852,1.2475883999977668,2.7900493999986793,1623,73,1696,,
+GOLD-06,bm25,single_hop_factual,ok,,Not found in the provided context.,0.058823529411764705,False,0,True,True,12.476996500001405,0.27916929999992135,12.197769700000208,1557,212,1769,,
+GOLD-06,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.058823529411764705,False,0,True,True,13.477536800000962,0.44017300000268733,13.037306100002752,1573,166,1739,,
+GOLD-06,hybrid_rerank,single_hop_factual,ok,,Not found in the provided context.,0.058823529411764705,False,0,True,True,16.979851600000984,15.955515099998593,1.0242818000006082,1479,146,1625,,
+GOLD-07,dense,single_hop_factual,ok,,Not found in the provided context.,0.07142857142857142,False,0,True,True,10.471235200002411,9.759740100002091,0.7113079999980982,998,101,1099,stop,0
+GOLD-07,bm25,single_hop_factual,ok,,"Ernst & Young LLP served as Amazon.com, Inc.’s independent registered public accounting firm for the fiscal year ended December 31, 2024【3】.",1.0,True,0,False,False,2.2021213000007265,0.22587430000203312,1.9761939000018174,1082,166,1248,,
+GOLD-07,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.07142857142857142,False,0,True,True,1.1549889000016265,0.432620899999165,0.7223120000016934,1126,125,1251,stop,0
+GOLD-07,hybrid_rerank,single_hop_factual,ok,,Not found in the provided context.,0.07142857142857142,False,0,True,True,22.325125300001673,21.493304600000556,0.8314338000018324,1220,137,1357,stop,0
+GOLD-08,dense,single_hop_factual,ok,,Not found in the provided context.,0.06666666666666667,False,0,True,True,2.7016025000011723,1.9921586000018578,0.7093922999993083,584,99,683,stop,0
+GOLD-08,bm25,single_hop_factual,ok,,Not found in the provided context.,0.06666666666666667,False,0,True,True,1.1375699000018358,0.3472907999966992,0.7902039000000514,1589,205,1794,stop,0
+GOLD-08,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.06666666666666667,False,0,True,True,1.0386986000012257,0.4361176999991585,0.6025254000014684,1157,124,1281,stop,0
+GOLD-08,hybrid_rerank,single_hop_factual,ok,,Not found in the provided context.,0.06666666666666667,False,0,True,True,17.93446060000133,17.182093899999018,0.752292999997735,1643,101,1744,stop,0
+GOLD-09,dense,single_hop_factual,ok,,Not found in the provided context.,0.05555555555555555,False,0,True,True,1.076419500001066,0.300337299999228,0.7760206000020844,877,164,1041,stop,0
+GOLD-09,bm25,single_hop_factual,ok,,Not found in the provided context.,0.05555555555555555,False,0,True,True,1.2098395000029996,0.26258379999853787,0.9470999000004667,875,245,1120,stop,0
+GOLD-09,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.05555555555555555,False,0,True,True,1.5506864999988466,0.43931639999937033,1.1113105999975232,920,254,1174,stop,0
+GOLD-09,hybrid_rerank,single_hop_factual,ok,,Not found in the provided context.,0.05555555555555555,False,0,True,True,18.398081600000296,17.39550969999982,1.0025022999980138,1077,252,1329,stop,0
+GOLD-10,dense,single_hop_factual,ok,,Not found in the provided context.,0.0625,False,0,True,True,1.9619043999991845,1.0165713999995205,0.9452763999979652,1073,242,1315,stop,0
+GOLD-10,bm25,single_hop_factual,ok,,"Meta Platforms, Inc. is incorporated in **Delaware**, its principal executive offices (corporate headquarters) are at **1 Meta Way, Menlo Park, California 94025**, and its IRS employer identification number is **20‑1665019**【3】【1】.",0.8421052631578947,True,0,False,False,1.2455807000005734,0.23411159999886877,1.0112192999986291,1122,233,1355,stop,0
+GOLD-10,hybrid,single_hop_factual,ok,,"- **State of incorporation:** Delaware [3]
+- **Corporate headquarters address:** 1 Meta Way, Menlo Park, California 94025 [1]
+- **IRS employer identification number:** 20‑1665019 [3]",0.5652173913043478,True,0,False,False,10.567454300002282,0.3723886000007042,10.19500429999971,1122,255,1377,stop,1
+GOLD-10,hybrid_rerank,single_hop_factual,ok,,Not found in the provided context.,0.0625,False,0,True,True,17.97193530000004,17.148056300000462,0.8238190000010945,1483,139,1622,stop,0
+GOLD-11,dense,single_hop_factual,ok,,Not found in the provided context.,0.07142857142857142,False,0,True,True,0.8959245000005467,0.19003650000013295,0.7058334999965155,867,113,980,stop,0
+GOLD-11,bm25,single_hop_factual,ok,,Not found in the provided context.,0.07142857142857142,False,0,True,True,9.034619099998963,0.1731424000026891,8.861429000000498,957,119,1076,stop,1
+GOLD-11,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.07142857142857142,False,0,True,True,8.236307899998792,0.31846349999977974,7.917790100000275,957,138,1095,stop,1
+GOLD-11,hybrid_rerank,single_hop_factual,ok,,"Ernst & Young LLP served as the independent registered public accounting firm for Meta Platforms, Inc. for the fiscal year ended December 31, 2024【1】.",0.9333333333333333,True,0,False,False,16.86586249999891,16.03918220000196,0.8266240999982983,1188,153,1341,stop,0
+GOLD-12,dense,single_hop_factual,ok,,Not found in the provided context.,0.10256410256410256,False,0,True,True,2.5370588000005228,1.1703675999997358,1.3666386000004422,919,435,1354,stop,0
+GOLD-12,bm25,single_hop_factual,ok,,Not found in the provided context.,0.10256410256410256,False,0,True,True,9.451925999997911,0.28522760000123526,9.16664160000073,909,282,1191,stop,1
+GOLD-12,hybrid,single_hop_factual,ok,,"- **State of incorporation:** Texas (Tesla converted from Delaware to a Texas corporation on June 13, 2024) [4]
+- **Principal executive office address:** 1 Tesla Road, Austin, Texas 78725 [5]
+- **Independent registered public accounting firm:** PricewaterhouseCoopers LLP [3]",0.48484848484848486,True,0,False,False,9.886744100000215,0.3939049000000523,9.492784900001425,790,417,1207,stop,1
+GOLD-12,hybrid_rerank,single_hop_factual,ok,,"- **State of incorporation:** Texas (Tesla converted to a Texas corporation on June 13, 2024)【2】
+- **Principal executive office address:** 1 Tesla Road, Austin, Texas 78725【3】
+- **Independent registered public accounting firm:** PricewaterhouseCoopers LLP【4】",0.5,True,0,False,False,17.329465500002698,16.128529000001436,1.2008562000009988,1246,301,1547,stop,0
+GOLD-13,dense,single_hop_factual,ok,,"JPMorgan Chase & Co.’s principal executive offices are at its headquarters in New York City, 383 Madison Avenue. The firm is incorporated under the laws of the State of Delaware. 【4】【1】",0.7017543859649122,True,0,False,False,5.318451999999525,4.471650100000261,0.8467467999980727,969,193,1162,stop,0
+GOLD-13,bm25,single_hop_factual,ok,,Not found in the provided context.,0.06060606060606061,False,0,True,True,9.392809799999668,0.2542178999974567,9.138538600000174,1290,211,1501,stop,1
+GOLD-13,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.06060606060606061,False,0,True,True,10.4225918000011,0.5524658000031195,9.870075999999244,1185,195,1380,stop,1
+GOLD-13,hybrid_rerank,single_hop_factual,ok,,"JPMorgan Chase & Co.’s principal executive offices are located at **383 Madison Avenue, New York City, New York**【4】. The firm is incorporated under **Delaware law** (incorporated in Delaware in 1968)【1】.",0.631578947368421,True,0,False,False,19.068928799999412,18.0667480000011,1.0021076000011817,1074,200,1274,stop,0
+GOLD-14,dense,single_hop_factual,ok,,"- Fiscal year 2024 period end date: **December 29, 2024**【1】
+- Principal corporate office location: **Not found in the provided context**
+- State of incorporation: **New Jersey**【4】",0.41379310344827586,True,0,True,False,1.942977199996676,0.9052384999995411,1.0376884999968752,1235,258,1493,stop,0
+GOLD-14,bm25,single_hop_factual,ok,,Not found in the provided context.,0.05,False,0,True,True,11.475440700000036,0.221419400000741,11.25396980000005,1309,279,1588,stop,1
+GOLD-14,hybrid,single_hop_factual,ok,,"- **Fiscal year 2024 period‑end date:** December 29, 2024 [3]
+- **State of incorporation:** New Jersey [1]
+- **Principal corporate office location:** Not found in the provided context.",0.41379310344827586,True,0,True,False,11.937825600001815,0.47989529999904335,11.457856700002594,1408,406,1814,stop,1
+GOLD-14,hybrid_rerank,single_hop_factual,ok,,"- **Fiscal year 2024 period‑end date:** December 29, 2024 [1]
+- **Principal corporate office location:** One Johnson & Johnson Plaza, New Brunswick, New Jersey 08933 [3]
+- **State of incorporation:** New Jersey [3] (also noted as incorporated in the State of New Jersey) [2]",0.6197183098591549,True,0,False,False,15.709154899999703,14.425172800001747,1.2839095999988785,1089,319,1408,stop,0
+GOLD-15,dense,single_hop_factual,ok,,Not found in the provided context.,0.09090909090909091,False,0,True,True,6.243768299998919,1.384449000001041,4.859238600001845,1109,98,1207,stop,1
+GOLD-15,bm25,single_hop_factual,ok,,Not found in the provided context.,0.09090909090909091,False,0,True,True,7.470565899999201,0.3464721999989706,7.124038100002508,760,137,897,stop,1
+GOLD-15,hybrid,single_hop_factual,ok,,Not found in the provided context.,0.09090909090909091,False,0,True,True,5.321034199998394,0.4477703000011388,4.873202899998432,663,165,828,stop,1
+GOLD-15,hybrid_rerank,single_hop_factual,ok,,Not found in the provided context.,0.09090909090909091,False,0,True,True,16.41899569999805,15.584230799999204,0.8346998999986681,1367,107,1474,stop,0
+GOLD-16,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03278688524590164,False,0,True,True,5.2600103999975545,1.4640682999997807,3.7958912000030978,1263,77,1340,stop,1
+GOLD-16,bm25,quantitative_tabular,ok,,"**Revenue**
+
+- FY 2025: **$130,497 million**
+- FY 2026: **$215,938 million**
+
+**Operating Income**
+
+- FY 2025: **$81,453 million**
+- FY 2026: **$130,387 million**
+
+**Net Income**
+
+- FY 2025: **$72,880 million**
+- FY 2026: **$120,067 million**
+
+**Year‑over‑year revenue growth**
+
+\[
+\frac{215{,}938 - 130{,}497}{130{,}497}\times 100\% \approx 65.5\%
+\]
+
+So, NVIDIA’s revenue grew about **65.5 %** from FY 2025 to FY 2026, while operating income rose from $81.5 billion to $130.4 billion and net income increased from $72.9 billion to $120.1 billion.
+
+*Source: NVIDIA FY2026 10‑K financial tables (which include FY2025 figures)【5】*",0.5641025641025641,True,0,False,False,13.023676599997998,0.1904184000013629,12.833041300000332,1577,517,2094,stop,1
+GOLD-16,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03278688524590164,False,0,True,True,13.242973699998402,0.37226449999798206,12.87065900000016,1344,187,1531,stop,1
+GOLD-16,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03278688524590164,False,0,True,True,20.812737899999775,20.02291250000053,0.789740600001096,1362,86,1448,stop,0
+GOLD-17,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,0.8295489000011003,0.2647612999971898,0.5647366999983205,821,115,936,stop,0
+GOLD-17,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,7.317232199999125,0.2738260999976774,7.043340700001863,1254,183,1437,stop,1
+GOLD-17,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,9.722080700001243,0.43261420000271755,9.289398000000801,1077,176,1253,stop,1
+GOLD-17,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,17.825378700003057,16.739015300001483,1.086283500000718,1178,260,1438,stop,0
+GOLD-18,dense,quantitative_tabular,ok,,Not found in the provided context.,0.031746031746031744,False,0,True,True,3.549216700001125,2.4702734999991662,1.0788706000021193,1247,100,1347,stop,0
+GOLD-18,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.031746031746031744,False,0,True,True,10.408275999998295,0.18589510000310838,10.222324999998818,1190,286,1476,stop,1
+GOLD-18,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.031746031746031744,False,0,True,True,11.418926000002102,0.4782290000002831,10.940649100000883,1420,166,1586,stop,1
+GOLD-18,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.031746031746031744,False,0,True,True,19.16606409999804,18.240390099999786,0.9256083000000217,1420,191,1611,stop,0
+GOLD-19,dense,quantitative_tabular,ok,,Not found in the provided context.,0.037037037037037035,False,0,True,True,3.3764084999966144,0.20224450000023353,3.1741150000016205,1193,90,1283,stop,1
+GOLD-19,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.037037037037037035,False,0,True,True,9.169312100002571,0.11699720000251546,9.052261000000726,1109,147,1256,stop,1
+GOLD-19,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.037037037037037035,False,0,True,True,9.286255600000004,0.31370260000039707,8.972501099997316,1030,144,1174,stop,1
+GOLD-19,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.037037037037037035,False,0,True,True,14.865760900000168,14.032716900001105,0.8329854000003252,1326,119,1445,stop,0
+GOLD-20,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,7.019987899999251,1.2098242999963986,5.810108300000138,1462,97,1559,stop,1
+GOLD-20,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,4.964521499998227,0.1258648999973957,4.838607599998795,564,82,646,stop,1
+GOLD-20,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,11.632758200001263,0.35199240000292775,11.280716799999936,1309,368,1677,stop,1
+GOLD-20,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,11.74933400000009,10.880119299999933,0.8691402000004018,1235,158,1393,stop,0
+GOLD-21,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,12.358247899999697,0.2078583999973489,12.150325700000394,1489,263,1752,stop,1
+GOLD-21,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,11.138805800001137,0.17336770000110846,10.965389500001038,1369,132,1501,stop,1
+GOLD-21,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,13.068577499998355,0.3753534999996191,12.693174099997123,1374,269,1643,stop,1
+GOLD-21,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,18.18975599999976,17.35393280000062,0.8357545999970171,1427,154,1581,stop,0
+GOLD-22,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03333333333333333,False,0,True,True,5.906681799999205,1.092000199998438,4.814624700000422,1440,179,1619,stop,1
+GOLD-22,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03333333333333333,False,0,True,True,10.864721400001145,0.13167600000087987,10.732978500000172,1208,118,1326,stop,1
+GOLD-22,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03333333333333333,False,0,True,True,9.342757899998105,0.3178556999991997,9.024853700000676,1298,229,1527,stop,1
+GOLD-22,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03333333333333333,False,0,True,True,18.374341200000345,17.069146800000453,1.3051384999998845,1424,361,1785,stop,0
+GOLD-23,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,8.107166699999652,0.20693820000087726,7.9001777000012225,1411,141,1552,stop,1
+GOLD-23,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,9.358205500000622,0.21106590000272263,9.147090799997386,1148,231,1379,stop,1
+GOLD-23,hybrid,quantitative_tabular,ok,,"**Net income**
+- 2023: $30,425 million [2]
+- 2024: $59,248 million [1]
+
+**Diluted earnings per share (EPS)**
+- 2023: $2.90 [2]
+- 2024: $5.53 [1]
+
+**Total assets** – Not found in the provided context.",0.5,True,0,True,False,11.771040299998276,0.39011699999900884,11.380863499998668,1253,327,1580,stop,1
+GOLD-23,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,17.14308190000156,16.250827600000775,0.8921784000012849,1447,238,1685,stop,0
+GOLD-24,dense,quantitative_tabular,ok,,Not found in the provided context.,0.07272727272727272,False,0,True,True,5.795247400001244,1.0446961000016017,4.7504834000028495,1196,90,1286,stop,1
+GOLD-24,bm25,quantitative_tabular,ok,,"Alphabet’s consolidated results grew markedly from 2023 to 2024:
+
+| Metric | 2023 | 2024 | Change |
+|--------|------|------|--------|
+| **Revenues** | $307,394 million | $350,018 million | +$42,624 million (≈ 14 % increase) |
+| **Operating income** | $84,293 million | $112,390 million | +$28,097 million (≈ 33 % increase) |
+| **Operating margin** | 27 % | 32 % | +5 percentage‑points |
+
+Thus, Alphabet’s revenues rose by about 14 %, operating income jumped roughly 33 %, and the operating margin improved from 27 % to 32 % between 2023 and 2024. 【1】",0.5785123966942148,True,0,False,False,10.538144399997691,0.10706949999803328,10.431020500000159,1200,336,1536,stop,1
+GOLD-24,hybrid,quantitative_tabular,ok,,"Alphabet’s 2024 results showed growth across all three metrics compared with 2023:
+
+| Metric | 2023 | 2024 | Change |
+|--------|------|------|--------|
+| Consolidated revenues | $307,394 million | $350,018 million | ↑ $42,624 million (≈14%) |
+| Operating income | $84,293 million | $112,390 million | ↑ $28,097 million (≈33%) |
+| Operating margin | 27% | 32% | ↑ 5 percentage points |
+
+Thus, revenues rose by about 14%, operating income increased by roughly 33%, and the operating margin improved from 27% to 32% year‑over‑year【3】.",0.5289256198347108,True,0,False,False,12.423356300001615,0.28867669999817736,12.134615299997677,1270,285,1555,stop,1
+GOLD-24,hybrid_rerank,quantitative_tabular,ok,,"Alphabet’s financial performance improved markedly from 2023 to 2024:
+
+| Metric | 2023 | 2024 | Change |
+|--------|------|------|--------|
+| Consolidated revenues | $307,394 million | $350,018 million | +$42,624 million (≈ 14 %) |
+| Operating income | $84,293 million | $112,390 million | +$28,097 million (≈ 33 %) |
+| Operating margin | 27 % | 32 % | +5 percentage points |
+
+Thus, revenues grew by about 14 %, operating income rose roughly 33 %, and the operating margin increased from 27 % to 32 % year‑over‑year【4】.",0.5811965811965812,True,0,False,False,15.964600499999506,14.662501599999814,1.3020130000004428,1450,326,1776,stop,0
+GOLD-25,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,6.023600800002896,0.18971270000110962,5.833837399997719,1315,135,1450,stop,1
+GOLD-25,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,14.218847600001027,0.16609390000303392,14.052703199999087,1714,200,1914,stop,1
+GOLD-25,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,12.927944799997931,0.34622500000114087,12.581671399999323,1423,462,1885,stop,1
+GOLD-25,hybrid_rerank,quantitative_tabular,ok,,"**2023**
+- Net income: **$73.795 billion**【3】
+- Operating cash flow: **$101.7 billion**【1】
+- Diluted earnings per share: **$5.80**【3】
+
+**2024**
+- Net income: **$100.118 billion**【3】
+- Operating cash flow: *not provided in the supplied excerpts*
+- Diluted earnings per share: **$8.04**【3】",0.5227272727272727,True,0,False,False,17.75198939999973,16.3159928999994,1.435937099999137,1530,427,1957,stop,0
+GOLD-26,dense,quantitative_tabular,ok,,"**Meta’s financial comparison**
+
+| Year | Total revenue | Income from operations (operating income) | Net income* |
+|------|---------------|--------------------------------------------|-------------|
+| 2023 | $134.90 billion (≈ $134.902 billion) | $46.75 billion | Not found in the provided context |
+| 2024 | $164.50 billion | $69.38 billion | Not found in the provided context |
+
+*The 10‑K excerpts do not include a net‑income figure for either year, so it cannot be reported.
+
+**Year‑over‑year revenue growth (2023 → 2024)**
+
+\[
+\text{Growth rate} = \frac{164.50 - 134.90}{134.90}
+= \frac{29.60}{134.90}
+\approx 0.2195 \; \text{or} \; 21.9\%
+\]
+
+**Sources**
+
+- 2023 total revenue and operating income: Meta FY2023 10‑K, Executive Overview of Full Year 2023 Results [1].
+- 2024 total revenue and operating income: Meta FY2024 10‑K, Executive Overview of Full Year 2024 Results [2].",0.3626373626373626,True,0,True,False,9.431051600000501,0.7239971999988484,8.706995900000038,1193,534,1727,stop,1
+GOLD-26,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03225806451612903,False,0,True,True,12.170908600000985,0.17108460000235937,11.999774399999296,1253,146,1399,stop,1
+GOLD-26,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03225806451612903,False,0,True,True,11.651758600000903,0.3649721000001591,11.286731800002599,1209,337,1546,stop,1
+GOLD-26,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03225806451612903,False,0,True,True,15.809773099997983,14.643771700000798,1.1659326999979385,1231,301,1532,stop,0
+GOLD-27,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03508771929824561,False,0,True,True,6.376911399998789,0.22010389999923063,6.156748000001244,1242,269,1511,stop,1
+GOLD-27,bm25,quantitative_tabular,ok,,"**2023**
+- **Cash and cash equivalents (including marketable securities):** $65.40 billion【2】
+- **Diluted EPS:** $14.87【2】 (also shown in the EPS table【4】)
+- **Operating cash flow:** *Not found in the provided context*
+
+**2024**
+- **Cash and cash equivalents (including marketable securities):** $77.81 billion【5】
+- **Diluted EPS:** $23.86【5】 (also shown in the EPS table【4】)
+- **Operating cash flow:** *Not found in the provided context*",0.46846846846846846,True,0,True,False,13.909526200000982,0.14339380000092206,13.766078000000562,1346,541,1887,stop,1
+GOLD-27,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03508771929824561,False,0,True,True,13.615348899998935,0.310619099996984,13.304674499999237,1323,304,1627,stop,1
+GOLD-27,hybrid_rerank,quantitative_tabular,ok,,"- **Cash and cash equivalents (including restricted cash)**
+  * 2024: **$45.438 billion** [2]
+  * 2023: **$42.827 billion** [2]
+
+- **Operating cash flow (cash provided by operating activities)**
+  * 2024: **$62.36 billion** [1]
+  * 2023: Not provided in the supplied context.
+
+- **Diluted earnings per share (EPS)**
+  * 2024: Not provided in the supplied context.
+  * 2023: Not provided in the supplied context.",0.3076923076923077,True,0,False,False,16.572030199997243,15.04528990000108,1.5266811000001326,1250,492,1742,stop,0
+GOLD-28,dense,quantitative_tabular,ok,,Not found in the provided context.,0.037037037037037035,False,0,True,True,9.269616400000814,1.0927708999988681,8.176780300000246,1497,234,1731,stop,1
+GOLD-28,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.037037037037037035,False,0,True,True,12.046799499999906,0.19675939999797265,11.84996780000074,1372,75,1447,stop,1
+GOLD-28,hybrid,quantitative_tabular,ok,,"**Total revenues**
+- 2023: $96.77 billion [2]
+- 2024: $97.69 billion [4]
+
+**Net income attributable to common stockholders**
+- 2023: $15.00 billion [2]
+- 2024: $7.09 billion [4]
+
+**Percentage change in net income**
+\[
+\frac{7.09\text{ B} - 15.00\text{ B}}{15.00\text{ B}} \times 100 \approx -52.7\%
+\]
+
+So net income fell by roughly **52.7 %** from 2023 to 2024.
+
+**Diluted EPS** – Not found in the provided context.",0.33043478260869563,True,0,True,False,9.868894600000203,0.4333746999982395,9.43546829999832,1099,360,1459,stop,1
+GOLD-28,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.037037037037037035,False,0,True,True,18.539782699997886,17.579331900000398,0.9603973000012047,1998,167,2165,stop,0
+GOLD-29,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,9.181218999998237,0.22382650000145077,8.957335300001432,1197,127,1324,stop,1
+GOLD-29,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,9.919250400002056,0.17175349999888567,9.747438399997918,1261,110,1371,stop,1
+GOLD-29,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,9.378562699999748,0.37518809999892255,9.003327399997943,1213,152,1365,stop,1
+GOLD-29,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03636363636363636,False,0,True,True,17.869419700000435,16.977735200001916,0.8916128999990178,1357,147,1504,stop,0
+GOLD-30,dense,quantitative_tabular,ok,,"**2023 (FY 2023)**
+- Total net revenue: **$158.1 billion**【1】
+- Net income: **$49.6 billion**【1】
+- Diluted earnings per share: **$16.23**【1】
+
+**2024 (FY 2024)**
+- Total net revenue: **$177.6 billion**【2】
+- Net income: **$58.5 billion**【2】
+- Diluted earnings per share: **$19.75**【2】
+
+**Comparison**
+- **Total net revenue** increased by about **$19.5 billion** (≈12% growth) from 2023 to 2024.
+- **Net income** rose by roughly **$8.9 billion** (≈18% growth).
+- **Diluted EPS** grew from **$16.23** to **$19.75**, an increase of about **$3.52** per share (≈22% growth).",0.4492753623188406,True,0,False,False,5.494730700000218,4.265806100000191,1.2288650999980746,1280,341,1621,stop,0
+GOLD-30,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03389830508474576,False,0,True,True,5.726102100001299,0.16294099999868195,5.56306869999753,777,81,858,stop,1
+GOLD-30,hybrid,quantitative_tabular,ok,,"- **Total net revenue**
+  • 2023: $158.1 billion [1]
+  • 2024: $177.6 billion [3]
+  → Revenue rose by about $19.5 billion (≈12%).
+
+- **Net income**
+  • 2023: $49.6 billion [1]
+  • 2024: $58.5 billion [3]
+  → Net income increased by roughly $8.9 billion (≈18%).
+
+- **Diluted earnings per share (EPS)**
+  • 2023: $16.23 per share [1]
+  • 2024: $19.75 per share [3]
+  → Diluted EPS grew by about $3.52 (≈22%).",0.47368421052631576,True,0,False,False,9.094248100002005,0.5171110000010231,8.577081499999622,1150,426,1576,stop,1
+GOLD-30,hybrid_rerank,quantitative_tabular,ok,,"**2023 (Fiscal year ending Dec 31, 2023)**
+- **Total net revenue:** $158,104 million (≈ $158.1 billion)【4】
+- **Net income:** $49,552 million (≈ $49.6 billion)【4】
+- **Diluted earnings per share:** $16.23【4】
+
+**2024 (Fiscal year ending Dec 31, 2024)**
+- **Total net revenue:** $177,556 million (≈ $177.6 billion)【2】
+- **Net income:** $58,471 million (≈ $58.5 billion)【2】
+- **Diluted earnings per share:** $19.75【2】
+
+**Comparison**
+- **Total net revenue** rose from $158.1 billion in 2023 to $177.6 billion in 2024 – an increase of about $19.5 billion (≈ 12%).
+- **Net income** grew from $49.6 billion in 2023 to $58.5 billion in 2024 – an increase of roughly $8.9 billion (≈ 18%).
+- **Diluted EPS** climbed from $16.23 in 2023 to $19.75 in 2024 – an increase of $3.52 per share (≈ 22%).",0.46153846153846156,True,0,False,False,23.30877959999998,21.290924699998868,2.017776700002287,1873,617,2490,stop,0
+GOLD-31,dense,quantitative_tabular,ok,,Not found in the provided context.,0.0,False,0,True,True,5.153380900002958,0.3977591000002576,4.755550800000492,906,79,985,stop,1
+GOLD-31,bm25,quantitative_tabular,ok,,"- **2023 year‑end**
+  * Total assets: **$591,696 million**
+  * Total liabilities: **$263,818 million**
+  * Stockholders’ equity: **$327,878 million**
+
+- **2024 year‑end**
+  * Total assets: **$669,614 million**
+  * Total liabilities: **$324,856 million**
+  * Stockholders’ equity: **$344,758 million**
+
+These figures come from JPMorgan Chase’s balance‑sheet table showing the 2024 and 2023 amounts【1】.",0.4954128440366973,True,0,False,False,10.456367099999625,0.22104350000154227,10.235140500000853,1215,350,1565,stop,1
+GOLD-31,hybrid,quantitative_tabular,ok,,"JPMorgan Chase’s balance‑sheet totals were:
+
+| Year‑end | Total assets | Total liabilities | Stockholders’ equity |
+|----------|--------------|-------------------|----------------------|
+| 2023 | **$591,696 million** | **$263,818 million** | **$327,878 million** |
+| 2024 | **$669,614 million** | **$324,856 million** | **$344,758 million** |
+
+These figures come from the firm’s 2024 Form 10‑K balance‑sheet table, which lists the 2024 and 2023 amounts side‑by‑side【3】.",0.3793103448275862,True,0,False,False,11.011520500000188,0.5942558999995526,10.41721360000156,1215,360,1575,stop,1
+GOLD-31,hybrid_rerank,quantitative_tabular,ok,,"- **2023 (year‑end)**
+  * Total assets: **$591,696 million**
+  * Total liabilities: **$263,818 million**
+  * Stockholders’ equity: **$327,878 million**
+
+- **2024 (year‑end)**
+  * Total assets: **$669,614 million**
+  * Total liabilities: **$324,856 million**
+  * Stockholders’ equity: **$344,758 million**
+
+These figures are taken from the balance‑sheet table in Note 33 of JPMorgan Chase’s FY2024 Form 10‑K, which lists the 2024 and 2023 amounts side‑by‑side【3】.",0.45528455284552843,True,0,False,False,21.817193300001236,20.32180840000001,1.4952800999999454,1346,347,1693,stop,0
+GOLD-32,dense,quantitative_tabular,ok,,Not found in the provided context.,0.028985507246376812,False,0,True,True,1.6123747999990883,0.8285458000027575,0.7837695000016538,1048,102,1150,stop,0
+GOLD-32,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.028985507246376812,False,0,True,True,13.930630400001974,0.1800221999983478,13.750547299998289,1828,109,1937,stop,1
+GOLD-32,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.028985507246376812,False,0,True,True,10.21061539999937,0.3599885000003269,9.850572800001828,1150,75,1225,stop,1
+GOLD-32,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.028985507246376812,False,0,True,True,18.25774960000126,17.454157000000123,0.8035325999990164,1828,105,1933,stop,0
+GOLD-33,dense,quantitative_tabular,ok,,Not found in the provided context.,0.0,False,0,True,True,3.2119925000006333,0.20297729999947478,3.0089420000003884,995,168,1163,stop,1
+GOLD-33,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.0,False,0,True,True,8.179582600001595,0.2733633000025293,7.906167799999821,849,193,1042,stop,1
+GOLD-33,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.0,False,0,True,True,10.406563199998345,0.4171109000017168,9.989407299999584,1123,157,1280,stop,1
+GOLD-33,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.0,False,0,True,True,12.807333499997185,12.041345900001033,0.7659204000010504,1111,115,1226,stop,0
+GOLD-34,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03125,False,0,True,True,2.4025037999999768,1.0640714000001026,1.3383764999998675,733,387,1120,stop,0
+GOLD-34,bm25,quantitative_tabular,ok,,"**Total revenues**
+- FY 2025: Walmart U.S. $465,009 million + Walmart International $123,363 million = **$588,372 million**【1†L9-L16】
+- FY 2024: Walmart U.S. $443,802 million + Walmart International $116,049 million = **$559,851 million**【1†L9-L16】
+
+**Operating income**
+- FY 2025: Walmart U.S. $23,882 million + Walmart International $5,501 million = **$29,383 million**【1†L13-L20】
+- FY 2024: Walmart U.S. $22,154 million + Walmart International $4,909 million = **$27,063 million**【1†L13-L20】
+
+**Consolidated net income**
+- FY 2025: **$19,436 million**【5†L7-L9】
+- FY 2024: **$15,511 million**【5†L7-L9】
+
+**Comparison**
+- Total revenues rose from about $560 billion in FY 2024 to about $588 billion in FY 2025.
+- Operating income increased from roughly $27 billion to about $29 billion.
+- Consolidated net income grew from $15.5 billion to $19.4 billion.",0.37373737373737376,False,0,False,False,19.652068600000348,0.1393869999992603,19.512221500001033,1837,967,2804,stop,1
+GOLD-34,hybrid,quantitative_tabular,ok,,"**Total revenues**
+- FY 2025: Walmart U.S. $465,009 m + Walmart International $123,363 m + Sam’s Club U.S. (net sales $90,238 m + membership $2,323 m) = **≈ $680,933 million**【1】
+- FY 2024: Walmart U.S. $443,802 m + Walmart International $116,049 m + Sam’s Club U.S. (net sales $86,179 m + membership $2,051 m) = **≈ $648,081 million**【1】
+
+**Operating income** (sum of the two segments for which it is disclosed)
+- FY 2025: Walmart U.S. $23,882 m + Walmart International $5,501 m = **$29,383 million**【1】
+- FY 2024: Walmart U.S. $22,154 m + Walmart International $4,909 m = **$27,063 million**【1】
+*(Sam’s Club operating income is not provided in the supplied excerpts.)*
+
+**Consolidated net income**
+- FY 2025: **$20.2 billion**【2】
+- FY 2024: **$16.3 billion**【3】
+
+**Comparison**
+- **Total revenues** rose from about **$648 billion** in FY 2024 to about **$681 billion** in FY 2025 (≈ + $33 billion).
+- **Operating income** (for the disclosed segments) increased from **$27.1 billion** to **$29.4 billion** (≈ + $2.3 billion).
+- **Consolidated net income** grew from **$16.3 billion** to **$20.2 billion** (≈ + $3.9 billion).",0.2892561983471074,True,0,False,False,15.210164199997962,0.305921600000147,14.904188999997132,1169,1090,2259,stop,1
+GOLD-34,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03125,False,0,True,True,19.245631700003287,18.163406899999245,1.0821603999975196,1072,304,1376,stop,0
+GOLD-35,dense,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,7.315966300000582,0.20014400000218302,7.115768199997547,1260,249,1509,stop,1
+GOLD-35,bm25,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,13.582931400000234,0.1856922000006307,13.397174499998073,1353,344,1697,stop,1
+GOLD-35,hybrid,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,10.249336400000175,0.35188930000003893,9.897400600002584,1073,117,1190,stop,1
+GOLD-35,hybrid_rerank,quantitative_tabular,ok,,Not found in the provided context.,0.03773584905660377,False,0,True,True,18.20482980000088,17.07573709999997,1.1290240000016638,1212,310,1522,stop,0
+GOLD-36,dense,cross_section_multihop,retrieval_only,,,,,,,,10.119139999998879,10.119090500000311,,,,,,
+GOLD-36,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.25219640000068466,0.2521680000027118,,,,,,
+GOLD-36,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.3947169000020949,0.3946840999997221,,,,,,
+GOLD-36,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,28.03726800000004,28.03722249999919,,,,,,
+GOLD-37,dense,cross_section_multihop,retrieval_only,,,,,,,,1.6143628999998327,1.6143320000010135,,,,,,
+GOLD-37,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.2357317999994848,0.23570449999897392,,,,,,
+GOLD-37,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.3863074000000779,0.38627740000083577,,,,,,
+GOLD-37,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,15.893197800000053,15.893146499998693,,,,,,
+GOLD-38,dense,cross_section_multihop,retrieval_only,,,,,,,,1.9541183999972418,1.9540879999985918,,,,,,
+GOLD-38,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.2913492000006954,0.29132039999967674,,,,,,
+GOLD-38,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.4387657000006584,0.4387361000008241,,,,,,
+GOLD-38,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,15.730354299997998,15.730310299997655,,,,,,
+GOLD-39,dense,cross_section_multihop,retrieval_only,,,,,,,,2.0040549999976065,2.0040254999985336,,,,,,
+GOLD-39,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.2903385999998136,0.29030970000167144,,,,,,
+GOLD-39,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.4464274000019941,0.44639449999885983,,,,,,
+GOLD-39,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,16.195681299999706,16.19564089999767,,,,,,
+GOLD-40,dense,cross_section_multihop,retrieval_only,,,,,,,,1.908193700000993,1.9081652999993821,,,,,,
+GOLD-40,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.2857173000011244,0.2856904000000213,,,,,,
+GOLD-40,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.4734296999995422,0.4734004999991157,,,,,,
+GOLD-40,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,17.350496099999873,17.35044410000046,,,,,,
+GOLD-41,dense,cross_section_multihop,retrieval_only,,,,,,,,1.2775278000008257,1.2774949000013294,,,,,,
+GOLD-41,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.2453601000015624,0.24532869999893592,,,,,,
+GOLD-41,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.4016643999966618,0.4016367000003811,,,,,,
+GOLD-41,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,15.495871899998747,15.49583949999942,,,,,,
+GOLD-42,dense,cross_section_multihop,retrieval_only,,,,,,,,0.7925696000020253,0.7925388000003295,,,,,,
+GOLD-42,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.3185760000014852,0.3185464999987744,,,,,,
+GOLD-42,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.46204000000216183,0.4620097999977588,,,,,,
+GOLD-42,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,17.536578899998858,17.536523099999613,,,,,,
+GOLD-43,dense,cross_section_multihop,retrieval_only,,,,,,,,1.1594532999988587,1.159410600001138,,,,,,
+GOLD-43,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.3064269000024069,0.3063959999999497,,,,,,
+GOLD-43,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.4802151000003505,0.48017410000102245,,,,,,
+GOLD-43,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,20.104957399998966,20.1049133000015,,,,,,
+GOLD-44,dense,cross_section_multihop,retrieval_only,,,,,,,,1.7258742999983951,1.7258411000002525,,,,,,
+GOLD-44,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.318986499998573,0.3189559000020381,,,,,,
+GOLD-44,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.4832304000010481,0.48319700000138255,,,,,,
+GOLD-44,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,16.55250689999957,16.552468800000497,,,,,,
+GOLD-45,dense,cross_section_multihop,retrieval_only,,,,,,,,4.39590490000046,4.395872599998256,,,,,,
+GOLD-45,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.367351900000358,0.3673218000003544,,,,,,
+GOLD-45,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.6788382000013371,0.6788054999997257,,,,,,
+GOLD-45,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,14.382789799998136,14.382744599999569,,,,,,
+GOLD-46,dense,cross_section_multihop,retrieval_only,,,,,,,,0.3615955999994185,0.36156130000017583,,,,,,
+GOLD-46,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.30917150000095717,0.30914150000171503,,,,,,
+GOLD-46,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.6354390999986208,0.6353982000000542,,,,,,
+GOLD-46,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,14.270448700000998,14.270415599999978,,,,,,
+GOLD-47,dense,cross_section_multihop,retrieval_only,,,,,,,,0.8907369000007748,0.8907048000000941,,,,,,
+GOLD-47,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.23674380000011297,0.23671470000044792,,,,,,
+GOLD-47,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.38423449999754666,0.38420579999728943,,,,,,
+GOLD-47,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,13.118659199997637,13.118619699998817,,,,,,
+GOLD-48,dense,cross_section_multihop,retrieval_only,,,,,,,,0.1595143000013195,0.15947220000089146,,,,,,
+GOLD-48,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.25464970000030007,0.2546111999981804,,,,,,
+GOLD-48,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.38213729999915813,0.38210310000067693,,,,,,
+GOLD-48,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,17.72101250000196,17.72096539999984,,,,,,
+GOLD-49,dense,cross_section_multihop,retrieval_only,,,,,,,,1.1703216999994766,1.1702886999992188,,,,,,
+GOLD-49,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.3410867999991751,0.34105690000069444,,,,,,
+GOLD-49,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.4547738000001118,0.45474450000256184,,,,,,
+GOLD-49,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,18.992851599999995,18.99281830000109,,,,,,
+GOLD-50,dense,cross_section_multihop,retrieval_only,,,,,,,,0.16210750000027474,0.16207589999976335,,,,,,
+GOLD-50,bm25,cross_section_multihop,retrieval_only,,,,,,,,0.310526099998242,0.3104960000018764,,,,,,
+GOLD-50,hybrid,cross_section_multihop,retrieval_only,,,,,,,,0.449721100001625,0.4496916999996756,,,,,,
+GOLD-50,hybrid_rerank,cross_section_multihop,retrieval_only,,,,,,,,18.7663289000011,18.766286300000502,,,,,,
+GOLD-51,dense,multi_company_comparison,retrieval_only,,,,,,,,3.1483729999999923,3.1483439000003273,,,,,,
+GOLD-51,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.2374221000027319,0.23739049999858253,,,,,,
+GOLD-51,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.5108838000014657,0.5108533999991778,,,,,,
+GOLD-51,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,15.150955799999792,15.150910500000464,,,,,,
+GOLD-52,dense,multi_company_comparison,retrieval_only,,,,,,,,10.484552699999767,10.48451329999807,,,,,,
+GOLD-52,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.4911573999997927,0.49112509999758913,,,,,,
+GOLD-52,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.7701841999987664,0.7701540000016394,,,,,,
+GOLD-52,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,18.437612499998068,18.43754489999992,,,,,,
+GOLD-53,dense,multi_company_comparison,retrieval_only,,,,,,,,0.7765652000016416,0.7765343999999459,,,,,,
+GOLD-53,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.2661946000007447,0.26616330000251764,,,,,,
+GOLD-53,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.448513000003004,0.44847289999961504,,,,,,
+GOLD-53,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,14.73268299999836,14.732621900002414,,,,,,
+GOLD-54,dense,multi_company_comparison,retrieval_only,,,,,,,,1.4948734999998123,1.4948395999999775,,,,,,
+GOLD-54,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.2329370999977982,0.2329016000003321,,,,,,
+GOLD-54,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.45339679999960936,0.4533685999995214,,,,,,
+GOLD-54,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,18.14292629999909,18.1428777000001,,,,,,
+GOLD-55,dense,multi_company_comparison,retrieval_only,,,,,,,,3.288789000001998,3.2887542999997095,,,,,,
+GOLD-55,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.29290860000037355,0.29287750000003143,,,,,,
+GOLD-55,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.505133400001796,0.5051032999981544,,,,,,
+GOLD-55,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,18.667280199999368,18.66723710000224,,,,,,
+GOLD-56,dense,multi_company_comparison,retrieval_only,,,,,,,,0.26547279999795137,0.2654426999979478,,,,,,
+GOLD-56,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.22459840000010445,0.22456659999807016,,,,,,
+GOLD-56,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.4521492000021681,0.45212099999844213,,,,,,
+GOLD-56,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,14.91559849999976,14.915560299999925,,,,,,
+GOLD-57,dense,multi_company_comparison,retrieval_only,,,,,,,,0.41636690000086674,0.4163355999990017,,,,,,
+GOLD-57,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.33096300000033807,0.3309307000017725,,,,,,
+GOLD-57,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.7312990999998874,0.7312716000014916,,,,,,
+GOLD-57,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,15.736362600000575,15.736317499999132,,,,,,
+GOLD-58,dense,multi_company_comparison,retrieval_only,,,,,,,,0.26228529999934835,0.2622522999990906,,,,,,
+GOLD-58,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.20208240000283695,0.2020486000001256,,,,,,
+GOLD-58,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.4078503999990062,0.40782170000238693,,,,,,
+GOLD-58,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,15.895497500001511,15.89546110000083,,,,,,
+GOLD-59,dense,multi_company_comparison,retrieval_only,,,,,,,,1.1460408000020834,1.1460059999990335,,,,,,
+GOLD-59,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.2883423999992374,0.28831300000092597,,,,,,
+GOLD-59,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.5152257999980066,0.515194600000541,,,,,,
+GOLD-59,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,14.694000100000267,14.693954800000938,,,,,,
+GOLD-60,dense,multi_company_comparison,retrieval_only,,,,,,,,0.22353020000082324,0.2234980999965046,,,,,,
+GOLD-60,bm25,multi_company_comparison,retrieval_only,,,,,,,,0.3016126999973494,0.30158230000233743,,,,,,
+GOLD-60,hybrid,multi_company_comparison,retrieval_only,,,,,,,,0.49860850000186474,0.4985789999991539,,,,,,
+GOLD-60,hybrid_rerank,multi_company_comparison,retrieval_only,,,,,,,,14.56795240000065,14.567904700001236,,,,,,

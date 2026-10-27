@@ -4,10 +4,55 @@ services:
     container_name: cs614-jupyter
     ports:
       - "127.0.0.1:8888:8888"   # only reachable from your own machine
+    environment:
+      - PYTHONPATH=/workspace
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - .:/workspace                         # project folder: notebooks and data are saved on your machine
       - hf-cache:/root/.cache/huggingface    # keep downloaded embedding models between restarts
     restart: unless-stopped
+
+  system-c:
+    build: .
+    container_name: cs614-system-c
+    environment:
+      - PYTHONPATH=/workspace
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - LLM_PROVIDER=ollama
+      - LLM_MODEL=qwen2.5:7b
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/workspace
+      - hf-cache:/root/.cache/huggingface
+    working_dir: /workspace
+    command: ["python", "scripts/demo_milestone1_system_c.py", "--mock"]
+
+  # RQ2 Stage 2: score + report an existing run (generate with the `system-c` service first).
+  # API keys come from /workspace/.env (the project folder is mounted); .env is never copied into the image.
+  rq2-eval:
+    build:
+      context: .
+      dockerfile: Dockerfile.eval
+    container_name: cs614-rq2-eval
+    environment:
+      - PYTHONPATH=/workspace
+      - EVAL_JUDGE_PROVIDER=${EVAL_JUDGE_PROVIDER:-openai}
+      - EVAL_JUDGE_MODEL=${EVAL_JUDGE_MODEL:-gpt-4o-mini}
+      - RQ2_RUN=${RQ2_RUN:-reports/rq2/smoke}
+      - RQ2_SCORES_FILE=${RQ2_SCORES_FILE:-scores.jsonl}
+    volumes:
+      - .:/workspace
+      - hf-cache:/root/.cache/huggingface
+    working_dir: /workspace
+    command:
+      - sh
+      - -c
+      - >-
+        python scripts/rq2/score.py --run "$$RQ2_RUN" --scores-file "$$RQ2_SCORES_FILE" &&
+        python scripts/rq2/report.py --run "$$RQ2_RUN" --scores-file "$$RQ2_SCORES_FILE"
 
 volumes:
   hf-cache:

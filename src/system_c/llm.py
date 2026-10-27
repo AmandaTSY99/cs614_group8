@@ -1,0 +1,533 @@
+"""
+Unified LLM Client & Automatic RQ3 Telemetry Wrapper for System C.
+
+Supports:
+1. `LLM_PROVIDER="ollama"` (Local zero-API-key execution via `qwen2.5:7b` / `llama3.1:8b` / `gemma2:9b`)
+2. `LLM_PROVIDER="groq"`   (Team notebook default: `openai/gpt-oss-120b` or `llama-3.3-70b-versatile`)
+3. `LLM_PROVIDER="openai"` (Cloud OpenAI: `gpt-4o-mini` / `gpt-4o`)
+4. `LLM_PROVIDER="mock"`   (Deterministic instant responses for fast pytest & CI verification)
+
+IMPORTANT FOR ARYAN & ANISH:
+Always call `call_llm(state, node_name, messages)` instead of raw SDK calls so that RQ3
+token consumption, latency, and cost metrics are automatically logged into `state["telemetry"]`.
+"""
+
+import json
+import os
+import re
+import time
+import urllib.request
+from typing import Any, Dict, List, Optional, Tuple
+
+from dotenv import load_dotenv
+
+from src.system_c.telemetry import record_llm_call
+
+load_dotenv(override=False)
+
+
+def clean_and_parse_json(raw_text: str) -> Dict[str, Any]:
+    """
+    Robust JSON parser for LLM responses.
+    Handles markdown code fences, trailing commas, and returns an empty dict on failure.
+    """
+    cleaned = raw_text.strip()
+    fence_match = re.search(r"\{.*\}", cleaned, flags=re.DOTALL)
+    if fence_match:
+        cleaned = fence_match.group(0)
+    # Strip trailing commas before closing braces/brackets (common local LLM issue)
+    cleaned = re.sub(r",\s*([\]}])", r"\1", cleaned)
+    try:
+        return json.loads(cleaned)
+    except Exception:
+        try:
+            import ast
+            parsed = ast.literal_eval(cleaned)
+            return parsed if isinstance(parsed, dict) else {}
+        except Exception:
+            return {}
+
+
+def get_llm_config() -> Tuple[str, str]:
+    """Return `(provider, model)` based on environment variables."""
+    provider = os.getenv("LLM_PROVIDER", "ollama").strip().lower()
+    if provider == "mock":
+        return "mock", "mock"
+    model = os.getenv("LLM_MODEL", "").strip()
+    if not model:
+        if provider == "ollama":
+            model = "qwen2.5:7b"
+        elif provider == "gemini":
+            model = "gemini-1.5-flash"
+        elif provider == "groq":
+            model = "openai/gpt-oss-120b"
+        elif provider == "cohere":
+            model = "command-r"
+        elif provider == "openai":
+            model = "gpt-4o-mini"
+        else:
+            model = "mock"
+    return provider, model
+
+
+def _estimate_tokens(text: str) -> int:
+    """Fallback token estimator (~1.3 tokens per word) when provider omits usage stats."""
+    return max(1, int(len(text.split()) * 1.3))
+
+
+def _call_ollama(
+    model: str,
+    messages: List[Dict[str, str]],
+    temperature: float = 0.0,
+    json_mode: bool = False,
+) -> Tuple[str, int, int]:
+    """Call local Ollama HTTP API (`http://localhost:11434/api/chat`) without needing an API key."""
+    base_url = os.getenv("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
+    payload: Dict[str, Any] = {
+        "model": model,
+        "messages": messages,
+        "stream": False,
+        "options": {"temperature": temperature},
+    }
+    if json_mode:
+        payload["format"] = "json"
+
+    req = urllib.request.Request(
+        f"{base_url}/api/chat",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=90) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+
+    content = data.get("message", {}).get("content", "")
+    prompt_tokens = data.get("prompt_eval_count") or _estimate_tokens(
+        " ".join(m.get("content", "") for m in messages)
+    )
+    completion_tokens = data.get("eval_count") or _estimate_tokens(content)
+    return content, int(prompt_tokens), int(completion_tokens)
+
+
+def _call_gemini_native(
+    model: str,
+    messages: List[Dict[str, str]],
+    temperature: float = 0.0,
+    json_mode: bool = False,
+) -> Tuple[str, int, int]:
+    """Call Google Gemini generateContent REST API natively without needing third-party SDKs."""
+    api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError(
+            "GEMINI_API_KEY (or GOOGLE_API_KEY) is not set. "
+            "Please provide your Gemini key in .env, Streamlit Secrets, or via the UI."
+        )
+    if not model or any(k in model for k in ["flash-latest", "1.5", "2.0", "2.5-flash-lite"]):
+        model = "gemini-3-flash-preview"
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+    contents = []
+    for m in messages:
+        role = "user" if m.get("role") in ["user", "system"] else "model"
+        contents.append({"role": role, "parts": [{"text": m.get("content", "")}]})
+
+    gen_config: Dict[str, Any] = {"temperature": temperature, "maxOutputTokens": 1024}
+    if json_mode:
+        gen_config["responseMimeType"] = "application/json"
+
+    payload = {"contents": contents, "generationConfig": gen_config}
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                candidates = data.get("candidates", [])
+                if not candidates:
+                    raise ValueError(f"Gemini returned no candidates: {data}")
+                content = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                usage = data.get("usageMetadata", {})
+                p_tok = usage.get("promptTokenCount") or _estimate_tokens(" ".join(m.get("content", "") for m in messages))
+                c_tok = usage.get("candidatesTokenCount") or _estimate_tokens(content)
+                return content, int(p_tok), int(c_tok)
+        except Exception as exc:
+            gemini_err = str(exc)
+            if hasattr(exc, "read"):
+                try:
+                    raw_body = exc.read().decode("utf-8")
+                    parsed_err = json.loads(raw_body)
+                    gemini_err = parsed_err.get("error", {}).get("message", raw_body)
+                except Exception:
+                    pass
+
+            is_transient = any(k in gemini_err.lower() for k in ["503", "demand", "unavailable", "rate", "429", "timeout", "timed out"])
+            if is_transient and attempt < max_retries - 1:
+                delay = 1.5 * (2 ** attempt)
+                time.sleep(delay)
+                continue
+
+            groq_key = os.getenv("GROQ_API_KEY")
+            if groq_key:
+                try:
+                    return _call_groq_or_openai("groq", "openai/gpt-oss-120b", messages, temperature=temperature)
+                except Exception as groq_exc:
+                    raise ValueError(
+                        f"Google Gemini Error: {gemini_err}. Automatic fallback to Groq also failed: {groq_exc}. "
+                        "Please check your API keys or switch to '🧪 Mock Mode' in the sidebar to test immediately."
+                    ) from exc
+
+            raise ValueError(
+                f"Google Gemini API Error: {gemini_err}. "
+                "Please verify your GEMINI_API_KEY / GOOGLE_API_KEY or switch to '🧪 Mock Mode' in the sidebar."
+            ) from exc
+
+
+def _call_groq_or_openai(
+    provider: str,
+    model: str,
+    messages: List[Dict[str, str]],
+    temperature: float = 0.0,
+    max_tokens: int = 1024,
+) -> Tuple[str, int, int]:
+    """Call Groq, OpenAI, or Cohere chat completions API."""
+    if provider == "groq":
+        from groq import Groq
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("GROQ_API_KEY is not set. Please provide your Groq API key in the UI or in Streamlit Secrets.")
+        client = Groq(api_key=api_key)
+    elif provider == "cohere":
+        from openai import OpenAI
+        api_key = os.getenv("COHERE_API_KEY")
+        if not api_key:
+            raise ValueError("COHERE_API_KEY is not set. Please provide your Cohere API key in the UI or in Streamlit Secrets.")
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.cohere.ai/compatibility/v1",
+        )
+    else:
+        from openai import OpenAI
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY is not set. Please provide your OpenAI API key in the UI or in Streamlit Secrets.")
+        client = OpenAI(api_key=api_key)
+
+    kwargs: Dict[str, Any] = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+    }
+    if provider == "openai" or "gpt-5" in model or "o1" in model or "o3" in model:
+        kwargs["max_completion_tokens"] = max_tokens
+    else:
+        kwargs["max_tokens"] = max_tokens
+    if "gpt-oss" in model:
+        kwargs["reasoning_effort"] = "low"
+
+    try:
+        resp = client.chat.completions.create(**kwargs)
+    except Exception as err:
+        err_msg = str(err).lower()
+        if provider == "groq" and any(k in err_msg for k in ["does not exist", "model_not_found", "not have access", "404"]):
+            fallback_models = [
+                "openai/gpt-oss-120b",
+                "llama-3.3-70b-versatile",
+                "llama-3.1-8b-instant",
+                "gemma2-9b-it",
+            ]
+            resp = None
+            for fb in fallback_models:
+                if fb != kwargs["model"]:
+                    try:
+                        kwargs["model"] = fb
+                        resp = client.chat.completions.create(**kwargs)
+                        break
+                    except Exception:
+                        continue
+            if resp is None:
+                raise ValueError(
+                    f"Groq API Error: None of the standard models were accessible with your current GROQ_API_KEY ({err}). "
+                    "Please verify your key permissions at console.groq.com or switch the LLM Provider to '🧪 Mock Mode' in the sidebar to test immediately."
+                ) from err
+        else:
+            raise err
+
+    content = resp.choices[0].message.content or ""
+    usage = getattr(resp, "usage", None)
+    prompt_tokens = getattr(usage, "prompt_tokens", None) or _estimate_tokens(
+        " ".join(m.get("content", "") for m in messages)
+    )
+    completion_tokens = getattr(usage, "completion_tokens", None) or _estimate_tokens(content)
+    return content, int(prompt_tokens), int(completion_tokens)
+
+
+def _call_mock(
+    node_name: str,
+    messages: List[Dict[str, str]],
+    state: Dict[str, Any],
+) -> Tuple[str, int, int]:
+    """Deterministic mock responder for fast unit tests and CI validation."""
+    user_prompt = messages[-1].get("content", "") if messages else ""
+    prompt_tokens = _estimate_tokens(" ".join(m.get("content", "") for m in messages))
+    hop = state.get("current_hop", 1)
+    query = state.get("original_query", "")
+
+    if node_name == "decomposer":
+        # Detect all tickers and fiscal years from query
+        found_tickers = []
+        for t in ("AAPL", "AMZN", "GOOGL", "JNJ", "JPM", "META", "MSFT", "NVDA", "TSLA", "WMT"):
+            pattern = rf"\b{t.lower()}\b"
+            if re.search(pattern, query.lower()):
+                found_tickers.append(t)
+        for name, t in (
+            ("apple", "AAPL"),
+            ("microsoft", "MSFT"),
+            ("amazon", "AMZN"),
+            ("alphabet", "GOOGL"),
+            ("google", "GOOGL"),
+            ("meta", "META"),
+            ("nvidia", "NVDA"),
+            ("tesla", "TSLA"),
+            ("jpmorgan", "JPM"),
+            ("walmart", "WMT"),
+        ):
+            if name in query.lower() and t not in found_tickers:
+                found_tickers.append(t)
+
+        ticker = found_tickers[0] if found_tickers else "NVDA"
+        years = [int(y) for y in ("2023", "2024", "2025", "2026") if y in query] or [2026]
+        is_multi = len(found_tickers) > 1 or any(
+            w in query.lower()
+            for w in ("impact", "footnote", "covenant", "compare", "how did", "supply", "across", "concentration", "risk")
+        )
+
+        plans: List[Dict[str, Any]] = []
+        if len(found_tickers) > 1:
+            for tkr in found_tickers:
+                y = years[0] if years else 2024
+                is_quant = any(w in query.lower() for w in ("margin", "revenue", "income", "eps", "debt", "ratio", "table", "asset", "liability"))
+                plans.append({
+                    "query": f"{tkr} FY{y} revenue, operating margin, and reported financials",
+                    "target_tool": "tabular_tool" if is_quant else "retriever",
+                    "ticker": tkr,
+                    "fiscal_year": y,
+                })
+                if any(w in query.lower() for w in ("risk", "supply", "chain", "footnote", "contingenc")):
+                    plans.append({
+                        "query": f"{tkr} FY{y} supply chain, risk factors, and footnote disclosures",
+                        "target_tool": "retriever",
+                        "ticker": tkr,
+                        "fiscal_year": y,
+                    })
+        elif is_multi:
+            plans = [
+                {
+                    "query": f"{ticker} FY{years[0]} primary business drivers and operational segment performance",
+                    "target_tool": "retriever",
+                    "ticker": ticker,
+                    "fiscal_year": years[0],
+                },
+                {
+                    "query": f"{ticker} FY{years[0]} financial statement footnotes, debt covenants, and quantitative breakdown",
+                    "target_tool": "tabular_tool" if any(w in query.lower() for w in ("margin", "revenue", "income", "eps", "debt", "ratio", "table")) else "retriever",
+                    "ticker": ticker,
+                    "fiscal_year": years[0],
+                },
+            ]
+        else:
+            plans = [
+                {
+                    "query": query,
+                    "target_tool": "tabular_tool" if any(w in query.lower() for w in ("margin", "revenue", "income", "eps", "debt", "ratio", "table")) else "retriever",
+                    "ticker": ticker,
+                    "fiscal_year": years[0],
+                }
+            ]
+
+        resp_obj = {
+            "target_ticker": ticker,
+            "target_tickers": found_tickers or [ticker],
+            "fiscal_years": years,
+            "query_complexity": "multi_hop" if is_multi else "single_hop",
+            "needs_tabular_tool": any(p.get("target_tool") == "tabular_tool" for p in plans),
+            "sub_query_plans": plans,
+            "sub_queries": [p["query"] for p in plans],
+        }
+        content = json.dumps(resp_obj)
+
+    elif node_name == "critic":
+        # Check for explicit mock score override in state telemetry
+        explicit_score = state.get("telemetry", {}).get("mock_sufficiency_score")
+        tabular = state.get("tabular_evidence", [])
+        q_lower = query.lower()
+        has_qual = any(w in q_lower for w in ("risk", "footnote", "note", "segment", "cloud", "aws", "concentration", "impact", "legal", "covenant", "contingenc", "why", "driver", "strategy", "cause", "compare", "versus", "vs"))
+
+        if state.get("force_max_hops"):
+            target_hop = state.get("max_hops", 3)
+            is_suff = hop >= target_hop
+        elif state.get("telemetry", {}).get("mock_sufficient_at_hop") is not None:
+            target_hop = int(state["telemetry"]["mock_sufficient_at_hop"])
+            is_suff = hop >= target_hop
+        elif explicit_score is not None:
+            threshold = float(state.get("sufficiency_threshold", 0.85))
+            is_suff = float(explicit_score) >= threshold
+        elif tabular and not has_qual and state.get("query_complexity") == "single_hop":
+            is_suff = True
+        else:
+            tickers = state.get("target_tickers") or []
+            if len(tickers) >= 3 or ("across" in q_lower and ("cloud" in q_lower or "provider" in q_lower)):
+                target_hop = 3
+            elif len(tickers) == 2 or has_qual or "between" in q_lower or len(state.get("fiscal_years") or []) > 1:
+                target_hop = 2
+            elif state.get("query_complexity") == "single_hop":
+                target_hop = 1
+            else:
+                target_hop = state.get("telemetry", {}).get("mock_sufficient_at_hop", 2)
+            is_suff = hop >= target_hop
+
+        if explicit_score is not None:
+            sufficiency_score = float(explicit_score)
+        else:
+            sufficiency_score = 0.95 if is_suff else 0.50
+
+        missing_ent = [] if is_suff else [
+            f"FY{(state.get('fiscal_years') or [2026])[0]} specific quantitative footnote line items"
+        ]
+        missing_yrs = [] if is_suff else [
+            y for y in state.get("fiscal_years", [])
+            if not any(str(y) in c["content"] for c in state.get("accumulated_evidence", []))
+        ]
+        missing_prem = [] if is_suff else [
+            f"Specific quantitative footnote breakdown and risk factor disclosures for {state.get('target_ticker', 'NVDA')}"
+        ]
+
+        resp_obj = {
+            "sufficiency_score": sufficiency_score,
+            "is_sufficient": is_suff,
+            "missing_entities": missing_ent,
+            "missing_years": missing_yrs,
+            "missing_premises": missing_prem,
+            "critic_reasoning": (
+                f"Hop {hop}: Quantitative sufficiency score {sufficiency_score:.2f} satisfies completeness criteria."
+                if is_suff
+                else f"Hop {hop}: Quantitative sufficiency score {sufficiency_score:.2f} indicates missing footnote or entity details."
+            ),
+        }
+        content = json.dumps(resp_obj)
+
+    elif node_name == "generator":
+        missing = state.get("missing_premises", ["quantitative footnote details"])
+        ticker = state.get("target_ticker") or "NVDA"
+        years = state.get("fiscal_years") or [2026]
+        content = json.dumps(
+            {
+                "follow_up_query": f"{ticker} FY{years[0]} Item 8 footnote table details for: {missing[0]}",
+                "reasoning": f"Conditioned on Hop {hop} chunks to resolve missing premise.",
+            }
+        )
+
+    elif node_name == "synthesizer":
+        evidence = state.get("accumulated_evidence", [])
+        tabular = state.get("tabular_evidence", [])
+        cites = []
+        cite_tags = []
+        for ch in evidence[:2]:
+            cid = ch["chunk_id"]
+            sec = ch["metadata"].get("section", "Item 7")
+            tkr = ch["metadata"].get("ticker", "NVDA")
+            fy = ch["metadata"].get("fiscal_year", 2026)
+            tag = f"[{tkr} FY{fy}, {sec}, {cid}]"
+            cite_tags.append(tag)
+            cites.append(
+                {
+                    "tag": tag,
+                    "chunk_id": cid,
+                    "ticker": tkr,
+                    "fiscal_year": fy,
+                    "section": sec,
+                    "supported_claim": ch["content"][:120],
+                }
+            )
+        if tabular:
+            tag = f"[F-{state.get('target_ticker', 'NVDA')}-{(state.get('fiscal_years') or [2026])[0]}]"
+            cite_tags.append(tag)
+        tags_str = " ".join(cite_tags) if cite_tags else "[NVDA FY2026, Item 7]"
+        content = (
+            f"Based on the retrieved SEC 10-K disclosures, {state.get('target_ticker', 'NVDA')} reported strong "
+            f"operational results alongside disclosed risk and footnote factors {tags_str}."
+        )
+
+    elif node_name == "repair":
+        # In mock mode, repair excises ungrounded numbers to produce a 100% grounded answer
+        draft = state.get("draft_answer") or ""
+        ungrounded = state.get("guardrail_report", {}).get("ungrounded_numbers", [])
+        repaired = draft
+        for bad_num in ungrounded:
+            repaired = repaired.replace(bad_num, "[figure not disclosed in filing]")
+        content = repaired
+
+    else:
+        content = f"Mock response for {node_name}: {user_prompt[:80]}"
+
+    completion_tokens = _estimate_tokens(content)
+    return content, prompt_tokens, completion_tokens
+
+
+def call_llm(
+    state: Dict[str, Any],
+    node_name: str,
+    messages: List[Dict[str, str]],
+    temperature: float = 0.0,
+    json_mode: bool = False,
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
+) -> Tuple[str, Dict[str, Any]]:
+    """
+    Execute an LLM call using the configured provider and automatically record RQ3 telemetry.
+
+    `provider` / `model` override the configured provider/model for this call only (e.g. a separate
+    guardrail judge). When the configured provider is `mock`, mock is always used so tests stay offline.
+
+    Returns:
+        `(response_text, updated_telemetry_dict)`
+    """
+    cfg_provider, cfg_model = get_llm_config()
+    if cfg_provider == "mock" or (provider is None and model is None):
+        provider, model = cfg_provider, cfg_model
+    else:
+        provider = (provider or cfg_provider).strip().lower()
+        if not model:
+            if provider != cfg_provider:
+                raise ValueError(f"call_llm: a model is required when overriding the provider to '{provider}'.")
+            model = cfg_model
+    hop = state.get("current_hop", 0)
+    start = time.perf_counter()
+
+    if provider == "mock":
+        content, p_tok, c_tok = _call_mock(node_name, messages, state)
+    elif provider == "ollama":
+        content, p_tok, c_tok = _call_ollama(model, messages, temperature=temperature, json_mode=json_mode)
+    elif provider == "gemini":
+        content, p_tok, c_tok = _call_gemini_native(model, messages, temperature=temperature, json_mode=json_mode)
+    elif provider in ("groq", "openai", "cohere"):
+        content, p_tok, c_tok = _call_groq_or_openai(provider, model, messages, temperature=temperature)
+    else:
+        raise ValueError(f"Unsupported LLM_PROVIDER='{provider}'. Use 'gemini', 'groq', 'cohere', 'openai', 'ollama', or 'mock'.")
+
+    latency_ms = (time.perf_counter() - start) * 1000.0
+    updated_telemetry = record_llm_call(
+        telemetry=state.get("telemetry", {}),
+        node_name=node_name,
+        model=model,
+        provider=provider,
+        prompt_tokens=p_tok,
+        completion_tokens=c_tok,
+        latency_ms=latency_ms,
+        hop=hop,
+    )
+    return content, updated_telemetry

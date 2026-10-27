@@ -7,10 +7,11 @@ sentence-transformers==6.1.0 # local embedding models (e.g. all-MiniLM-L6-v2), n
 
 # --- Vector store ---
 chromadb==1.5.9 # embedded vector DB, persists to a local folder
+psycopg[binary,pool]==3.2.9 # connect to the shared Supabase Postgres DB (pgvector)
 
 # --- Data loading ---
 pypdf==6.20.1 # read PDF documents
-pandas==3.0.6 # tabular data handling
+pandas>=2.0.0,<3.0.0 # tabular data handling (compatible with streamlit)
 
 # --- Config ---
 python-dotenv==1.2.4 # load API keys from .env
@@ -19,3 +20,18 @@ python-dotenv==1.2.4 # load API keys from .env
 jupyterlab==4.6.4
 ipykernel==7.4.0
 ipywidgets==8.1.9 # progress bars (tqdm) render properly in notebooks
+
+# --- LangGraph & Agentic Orchestration (System C) ---
+langgraph
+langchain-core
+pydantic
+pytest
+matplotlib
+
+# --- Web UI & Microservice Gateway ---
+streamlit
+fastapi
+uvicorn
+psycopg[binary,pool]
+langgraph-checkpoint-postgres
+

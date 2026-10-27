@@ -1,0 +1,621 @@
+{
+  "metadata": {
+    "provider": "mock",
+    "model": "mock",
+    "timestamp": "2026-10-24T12:11:17Z"
+  },
+  "summary_table": [
+    {
+      "id": "Q1",
+      "name": "Single-Hop Factual (Early-Stopping Verification)",
+      "mode": "v1_amr",
+      "hop_count": 1,
+      "max_hops": 3,
+      "early_stopped": true,
+      "chunks": 4,
+      "guardrail_passed": true,
+      "grounding_err": 0.0,
+      "latency_ms": 20.27,
+      "total_tokens": 2464,
+      "cost_per_1k": 0.2794,
+      "estimated_cost_usd": 0.0002794
+    },
+    {
+      "id": "Q2",
+      "name": "Multi-Hop Cross-Section (MD&A + Financial Statement Footnotes)",
+      "mode": "v1_amr",
+      "hop_count": 2,
+      "max_hops": 3,
+      "early_stopped": true,
+      "chunks": 8,
+      "guardrail_passed": true,
+      "grounding_err": 0.0,
+      "latency_ms": 13.42,
+      "total_tokens": 4869,
+      "cost_per_1k": 0.5349,
+      "estimated_cost_usd": 0.0005349
+    },
+    {
+      "id": "Q3_v1",
+      "name": "Quantitative Financial Comparison (v1_amr - Text RAG Only)",
+      "mode": "v1_amr",
+      "hop_count": 2,
+      "max_hops": 3,
+      "early_stopped": true,
+      "chunks": 8,
+      "guardrail_passed": true,
+      "grounding_err": 0.0,
+      "latency_ms": 44.53,
+      "total_tokens": 4778,
+      "cost_per_1k": 0.5262,
+      "estimated_cost_usd": 0.0005262
+    },
+    {
+      "id": "Q3_v2",
+      "name": "Quantitative Financial Comparison (v2_aamr - Agentic XBRL Tabular Tool)",
+      "mode": "v2_aamr",
+      "hop_count": 1,
+      "max_hops": 3,
+      "early_stopped": true,
+      "chunks": 6,
+      "guardrail_passed": true,
+      "grounding_err": 0.0,
+      "latency_ms": 225.38,
+      "total_tokens": 2149,
+      "cost_per_1k": 0.2459,
+      "estimated_cost_usd": 0.0002459
+    }
+  ],
+  "detailed_traces": [
+    {
+      "meta": {
+        "id": "Q1",
+        "name": "Single-Hop Factual (Early-Stopping Verification)",
+        "query": "What was NVIDIA's fiscal year 2026 period end date, and what is the address of its principal executive office?",
+        "ticker": "NVDA",
+        "years": [
+          2026
+        ],
+        "mode": "v1_amr",
+        "max_hops": 3,
+        "description": "Tests Decomposer single_hop classification and early-stopping at Hop 1 without running redundant hops."
+      },
+      "original_query": "What was NVIDIA's fiscal year 2026 period end date, and what is the address of its principal executive office?",
+      "final_answer": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities, NVDA_FY2026_2026-01-25:365] [NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Exhibit Index, NVDA_FY2026_2026-01-25:462].",
+      "citations": [
+        {
+          "tag": "[NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities, NVDA_FY2026_2026-01-25:365]",
+          "chunk_id": "NVDA_FY2026_2026-01-25:365",
+          "ticker": "NVDA",
+          "fiscal_year": 2026,
+          "section": "Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities",
+          "supported_claim": "Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities\n(1) In the first quarter of fiscal year 2026, one inve"
+        },
+        {
+          "tag": "[NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Exhibit Index, NVDA_FY2026_2026-01-25:462]",
+          "chunk_id": "NVDA_FY2026_2026-01-25:462",
+          "ticker": "NVDA",
+          "fiscal_year": 2026,
+          "section": "Item 15. Exhibits and Financial Statement Schedules > Exhibit Index",
+          "supported_claim": "Item 15. Exhibits and Financial Statement Schedules > Exhibit Index (table)\n| 10.10+ | Amended and Restated 2007 Equity Incentive Plan - Global Performance-Base"
+        }
+      ],
+      "guardrail_report": {
+        "total_numerical_claims": 0,
+        "verified_numbers": [],
+        "ungrounded_numbers": [],
+        "numerical_grounding_error_rate": 0.0,
+        "faithfulness_score": 1.0,
+        "has_inline_citations": true
+      },
+      "telemetry": {
+        "mode": "v1_amr",
+        "calls": [
+          {
+            "node": "decomposer",
+            "hop": 0,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 287,
+            "completion_tokens": 74,
+            "total_tokens": 361,
+            "latency_ms": 0.06,
+            "cost_usd": 5.09e-05
+          },
+          {
+            "node": "critic",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 809,
+            "completion_tokens": 26,
+            "total_tokens": 835,
+            "latency_ms": 0.04,
+            "cost_usd": 8.87e-05
+          },
+          {
+            "node": "synthesizer",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 1203,
+            "completion_tokens": 65,
+            "total_tokens": 1268,
+            "latency_ms": 0.04,
+            "cost_usd": 0.0001398
+          }
+        ],
+        "node_latencies_ms": {
+          "decomposer": 0.06,
+          "retriever": 20.03,
+          "critic": 0.04,
+          "synthesizer": 0.04,
+          "guardrail": 0.1
+        },
+        "total_prompt_tokens": 2299,
+        "total_completion_tokens": 165,
+        "total_tokens": 2464,
+        "estimated_cost_usd": 0.0002794,
+        "hop_count": 1,
+        "early_stopped": true,
+        "cost_per_1k_queries_usd": 0.2794,
+        "rq3_summary": {
+          "mode": "v1_amr",
+          "hop_count": 1,
+          "max_hops": 3,
+          "early_stopped": true,
+          "total_latency_ms": 20.27,
+          "total_prompt_tokens": 2299,
+          "total_completion_tokens": 165,
+          "total_tokens": 2464,
+          "estimated_cost_usd": 0.0002794,
+          "cost_per_1k_queries_usd": 0.2794,
+          "node_latencies_ms": {
+            "decomposer": 0.06,
+            "retriever": 20.03,
+            "critic": 0.04,
+            "synthesizer": 0.04,
+            "guardrail": 0.1
+          },
+          "hop_attribution_chunk_ids": {
+            "1": [
+              "NVDA_FY2026_2026-01-25:365",
+              "NVDA_FY2026_2026-01-25:462",
+              "NVDA_FY2026_2026-01-25:406",
+              "NVDA_FY2026_2026-01-25:347"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "meta": {
+        "id": "Q2",
+        "name": "Multi-Hop Cross-Section (MD&A + Financial Statement Footnotes)",
+        "query": "How did NVIDIA Data Center segment revenue perform in FY2026, and what specific customer concentration risks or purchase obligations were disclosed in the Notes to Consolidated Financial Statements?",
+        "ticker": "NVDA",
+        "years": [
+          2026
+        ],
+        "mode": "v1_amr",
+        "max_hops": 3,
+        "description": "Requires multi-hop: Hop 1 retrieves Item 7 MD&A, Critic flags missing footnote disclosures, Hop 2 retrieves Item 8 Notes, and Synthesizer unites both."
+      },
+      "original_query": "How did NVIDIA Data Center segment revenue perform in FY2026, and what specific customer concentration risks or purchase obligations were disclosed in the Notes to Consolidated Financial Statements?",
+      "final_answer": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22] [NVDA FY2026, Item 1. Business > Business Strategies, NVDA_FY2026_2026-01-25:32].",
+      "citations": [
+        {
+          "tag": "[NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22]",
+          "chunk_id": "NVDA_FY2026_2026-01-25:22",
+          "ticker": "NVDA",
+          "fiscal_year": 2026,
+          "section": "Item 1. Business > Our Businesses",
+          "supported_claim": "Item 1. Business > Our Businesses\nWe report our business results in two segments. The Compute & Networking segment includes our Data Center accelerated computin"
+        },
+        {
+          "tag": "[NVDA FY2026, Item 1. Business > Business Strategies, NVDA_FY2026_2026-01-25:32]",
+          "chunk_id": "NVDA_FY2026_2026-01-25:32",
+          "ticker": "NVDA",
+          "fiscal_year": 2026,
+          "section": "Item 1. Business > Business Strategies",
+          "supported_claim": "Item 1. Business > Business Strategies\nNVIDIA\u2019s key strategies that shape our overall business approach include: Advancing the NVIDIA accelerated computing plat"
+        }
+      ],
+      "guardrail_report": {
+        "total_numerical_claims": 0,
+        "verified_numbers": [],
+        "ungrounded_numbers": [],
+        "numerical_grounding_error_rate": 0.0,
+        "faithfulness_score": 1.0,
+        "has_inline_citations": true
+      },
+      "telemetry": {
+        "mode": "v1_amr",
+        "calls": [
+          {
+            "node": "decomposer",
+            "hop": 0,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 299,
+            "completion_tokens": 83,
+            "total_tokens": 382,
+            "latency_ms": 0.04,
+            "cost_usd": 5.48e-05
+          },
+          {
+            "node": "critic",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 767,
+            "completion_tokens": 48,
+            "total_tokens": 815,
+            "latency_ms": 0.04,
+            "cost_usd": 9.11e-05
+          },
+          {
+            "node": "generator",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 416,
+            "completion_tokens": 37,
+            "total_tokens": 453,
+            "latency_ms": 0.02,
+            "cost_usd": 5.27e-05
+          },
+          {
+            "node": "critic",
+            "hop": 2,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 1259,
+            "completion_tokens": 26,
+            "total_tokens": 1285,
+            "latency_ms": 0.04,
+            "cost_usd": 0.0001337
+          },
+          {
+            "node": "synthesizer",
+            "hop": 2,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 1888,
+            "completion_tokens": 46,
+            "total_tokens": 1934,
+            "latency_ms": 0.05,
+            "cost_usd": 0.0002026
+          }
+        ],
+        "node_latencies_ms": {
+          "decomposer": 0.04,
+          "retriever": 13.21,
+          "critic": 0.08,
+          "generator": 0.02,
+          "synthesizer": 0.05,
+          "guardrail": 0.02
+        },
+        "total_prompt_tokens": 4629,
+        "total_completion_tokens": 240,
+        "total_tokens": 4869,
+        "estimated_cost_usd": 0.0005349,
+        "hop_count": 2,
+        "early_stopped": true,
+        "cost_per_1k_queries_usd": 0.5349,
+        "rq3_summary": {
+          "mode": "v1_amr",
+          "hop_count": 2,
+          "max_hops": 3,
+          "early_stopped": true,
+          "total_latency_ms": 13.42,
+          "total_prompt_tokens": 4629,
+          "total_completion_tokens": 240,
+          "total_tokens": 4869,
+          "estimated_cost_usd": 0.0005349,
+          "cost_per_1k_queries_usd": 0.5349,
+          "node_latencies_ms": {
+            "decomposer": 0.04,
+            "retriever": 13.21,
+            "critic": 0.08,
+            "generator": 0.02,
+            "synthesizer": 0.05,
+            "guardrail": 0.02
+          },
+          "hop_attribution_chunk_ids": {
+            "1": [
+              "NVDA_FY2026_2026-01-25:22",
+              "NVDA_FY2026_2026-01-25:32",
+              "NVDA_FY2026_2026-01-25:434",
+              "NVDA_FY2026_2026-01-25:53"
+            ],
+            "2": [
+              "NVDA_FY2026_2026-01-25:9",
+              "NVDA_FY2026_2026-01-25:245",
+              "NVDA_FY2026_2026-01-25:244",
+              "NVDA_FY2026_2026-01-25:203"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "meta": {
+        "id": "Q3_v1",
+        "name": "Quantitative Financial Comparison (v1_amr - Text RAG Only)",
+        "query": "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate.",
+        "ticker": "NVDA",
+        "years": [
+          2025,
+          2026
+        ],
+        "mode": "v1_amr",
+        "max_hops": 3,
+        "description": "Baseline multi-hop RAG relying solely on unstructured text and table chunks."
+      },
+      "original_query": "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate.",
+      "final_answer": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22] [NVDA FY2025, Item 1. Business > Our Businesses, NVDA_FY2025_2025-01-26:21].",
+      "citations": [
+        {
+          "tag": "[NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22]",
+          "chunk_id": "NVDA_FY2026_2026-01-25:22",
+          "ticker": "NVDA",
+          "fiscal_year": 2026,
+          "section": "Item 1. Business > Our Businesses",
+          "supported_claim": "Item 1. Business > Our Businesses\nWe report our business results in two segments. The Compute & Networking segment includes our Data Center accelerated computin"
+        },
+        {
+          "tag": "[NVDA FY2025, Item 1. Business > Our Businesses, NVDA_FY2025_2025-01-26:21]",
+          "chunk_id": "NVDA_FY2025_2025-01-26:21",
+          "ticker": "NVDA",
+          "fiscal_year": 2025,
+          "section": "Item 1. Business > Our Businesses",
+          "supported_claim": "Item 1. Business > Our Businesses\nWe report our business results in two segments. The Compute & Networking segment includes our Data Center accelerated computin"
+        }
+      ],
+      "guardrail_report": {
+        "total_numerical_claims": 0,
+        "verified_numbers": [],
+        "ungrounded_numbers": [],
+        "numerical_grounding_error_rate": 0.0,
+        "faithfulness_score": 1.0,
+        "has_inline_citations": true
+      },
+      "telemetry": {
+        "mode": "v1_amr",
+        "calls": [
+          {
+            "node": "decomposer",
+            "hop": 0,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 288,
+            "completion_tokens": 84,
+            "total_tokens": 372,
+            "latency_ms": 0.04,
+            "cost_usd": 5.4e-05
+          },
+          {
+            "node": "critic",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 751,
+            "completion_tokens": 49,
+            "total_tokens": 800,
+            "latency_ms": 0.05,
+            "cost_usd": 8.98e-05
+          },
+          {
+            "node": "generator",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 408,
+            "completion_tokens": 37,
+            "total_tokens": 445,
+            "latency_ms": 0.02,
+            "cost_usd": 5.19e-05
+          },
+          {
+            "node": "critic",
+            "hop": 2,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 1279,
+            "completion_tokens": 26,
+            "total_tokens": 1305,
+            "latency_ms": 0.05,
+            "cost_usd": 0.0001357
+          },
+          {
+            "node": "synthesizer",
+            "hop": 2,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 1810,
+            "completion_tokens": 46,
+            "total_tokens": 1856,
+            "latency_ms": 0.04,
+            "cost_usd": 0.0001948
+          }
+        ],
+        "node_latencies_ms": {
+          "decomposer": 0.04,
+          "retriever": 44.31,
+          "critic": 0.1,
+          "generator": 0.02,
+          "synthesizer": 0.04,
+          "guardrail": 0.02
+        },
+        "total_prompt_tokens": 4536,
+        "total_completion_tokens": 242,
+        "total_tokens": 4778,
+        "estimated_cost_usd": 0.0005262,
+        "hop_count": 2,
+        "early_stopped": true,
+        "cost_per_1k_queries_usd": 0.5262,
+        "rq3_summary": {
+          "mode": "v1_amr",
+          "hop_count": 2,
+          "max_hops": 3,
+          "early_stopped": true,
+          "total_latency_ms": 44.53,
+          "total_prompt_tokens": 4536,
+          "total_completion_tokens": 242,
+          "total_tokens": 4778,
+          "estimated_cost_usd": 0.0005262,
+          "cost_per_1k_queries_usd": 0.5262,
+          "node_latencies_ms": {
+            "decomposer": 0.04,
+            "retriever": 44.31,
+            "critic": 0.1,
+            "generator": 0.02,
+            "synthesizer": 0.04,
+            "guardrail": 0.02
+          },
+          "hop_attribution_chunk_ids": {
+            "1": [
+              "NVDA_FY2026_2026-01-25:22",
+              "NVDA_FY2025_2025-01-26:21",
+              "NVDA_FY2026_2026-01-25:32",
+              "NVDA_FY2026_2026-01-25:434"
+            ],
+            "2": [
+              "NVDA_FY2026_2026-01-25:9",
+              "NVDA_FY2025_2025-01-26:9",
+              "NVDA_FY2026_2026-01-25:245",
+              "NVDA_FY2026_2026-01-25:244"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "meta": {
+        "id": "Q3_v2",
+        "name": "Quantitative Financial Comparison (v2_aamr - Agentic XBRL Tabular Tool)",
+        "query": "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate.",
+        "ticker": "NVDA",
+        "years": [
+          2025,
+          2026
+        ],
+        "mode": "v2_aamr",
+        "max_hops": 3,
+        "description": "Agentic System C v2: routes to tabular_tool (financials.csv) for deterministic XBRL grounding [F-NVDA-2026]."
+      },
+      "original_query": "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate.",
+      "final_answer": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2025, SEC XBRL Reported Financials (financials.csv), F-NVDA-2025] [NVDA FY2026, SEC XBRL Reported Financials (financials.csv), F-NVDA-2026] [F-NVDA-2025].",
+      "citations": [
+        {
+          "tag": "[NVDA FY2025, SEC XBRL Reported Financials (financials.csv), F-NVDA-2025]",
+          "chunk_id": "F-NVDA-2025",
+          "ticker": "NVDA",
+          "fiscal_year": 2025,
+          "section": "SEC XBRL Reported Financials (financials.csv)",
+          "supported_claim": "[F-NVDA-2025] (NVDA FY2025 reported financials; amounts in USD, EPSDiluted in USD per share)\nfiscal_year,fiscal_year_end,Revenue,NetIncome,OperatingIncome,Total"
+        },
+        {
+          "tag": "[NVDA FY2026, SEC XBRL Reported Financials (financials.csv), F-NVDA-2026]",
+          "chunk_id": "F-NVDA-2026",
+          "ticker": "NVDA",
+          "fiscal_year": 2026,
+          "section": "SEC XBRL Reported Financials (financials.csv)",
+          "supported_claim": "[F-NVDA-2026] (NVDA FY2026 reported financials; amounts in USD, EPSDiluted in USD per share)\nfiscal_year,fiscal_year_end,Revenue,NetIncome,OperatingIncome,Total"
+        }
+      ],
+      "guardrail_report": {
+        "total_numerical_claims": 0,
+        "verified_numbers": [],
+        "ungrounded_numbers": [],
+        "numerical_grounding_error_rate": 0.0,
+        "faithfulness_score": 1.0,
+        "has_inline_citations": true
+      },
+      "telemetry": {
+        "mode": "v2_aamr",
+        "calls": [
+          {
+            "node": "decomposer",
+            "hop": 0,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 288,
+            "completion_tokens": 84,
+            "total_tokens": 372,
+            "latency_ms": 0.04,
+            "cost_usd": 5.4e-05
+          },
+          {
+            "node": "critic",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 851,
+            "completion_tokens": 26,
+            "total_tokens": 877,
+            "latency_ms": 0.06,
+            "cost_usd": 9.29e-05
+          },
+          {
+            "node": "synthesizer",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 855,
+            "completion_tokens": 45,
+            "total_tokens": 900,
+            "latency_ms": 0.04,
+            "cost_usd": 9.9e-05
+          }
+        ],
+        "node_latencies_ms": {
+          "decomposer": 0.04,
+          "tabular_tool": 210.34,
+          "retriever": 14.88,
+          "critic": 0.06,
+          "synthesizer": 0.04,
+          "guardrail": 0.02
+        },
+        "total_prompt_tokens": 1994,
+        "total_completion_tokens": 155,
+        "total_tokens": 2149,
+        "estimated_cost_usd": 0.0002459,
+        "hop_count": 1,
+        "early_stopped": true,
+        "cost_per_1k_queries_usd": 0.2459,
+        "rq3_summary": {
+          "mode": "v2_aamr",
+          "hop_count": 1,
+          "max_hops": 3,
+          "early_stopped": true,
+          "total_latency_ms": 225.38,
+          "total_prompt_tokens": 1994,
+          "total_completion_tokens": 155,
+          "total_tokens": 2149,
+          "estimated_cost_usd": 0.0002459,
+          "cost_per_1k_queries_usd": 0.2459,
+          "node_latencies_ms": {
+            "decomposer": 0.04,
+            "tabular_tool": 210.34,
+            "retriever": 14.88,
+            "critic": 0.06,
+            "synthesizer": 0.04,
+            "guardrail": 0.02
+          },
+          "hop_attribution_chunk_ids": {
+            "1": [
+              "F-NVDA-2025",
+              "F-NVDA-2026",
+              "NVDA_FY2026_2026-01-25:22",
+              "NVDA_FY2025_2025-01-26:21",
+              "NVDA_FY2026_2026-01-25:32",
+              "NVDA_FY2026_2026-01-25:434"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
