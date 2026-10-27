@@ -9,6 +9,10 @@ dist/
 *.egg-info/
 .eggs/
 
+# --- IPYNB files ---
+build_syst_a.ipynb
+benchmark_qa.ipynb
+
 # --- Virtual environments ---
 .venv/
 venv/
@@ -35,6 +39,7 @@ service_account*.json
 htmlcov/
 .mypy_cache/
 .ruff_cache/
+test.ipynb
 
 # --- Data (regenerate with get_nvda_10k.ipynb) ---
 data_test/
@@ -71,3 +76,13 @@ reports/system_b/*
 reports/system_b/full_eval_summary/*
 !reports/system_b/full_eval_summary/summary.json
 !reports/system_b/full_eval_summary/per_query.csv
+
+# --- QA sets ---
+FinQA/
+TAT-QA/
+
+# --- trash ---
+.Trash*/
+
+# --- archives ---
+amanda_archive/

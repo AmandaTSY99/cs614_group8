@@ -7,6 +7,7 @@ sentence-transformers==6.1.0 # local embedding models (e.g. all-MiniLM-L6-v2), n
 
 # --- Vector store ---
 chromadb==1.5.9 # embedded vector DB, persists to a local folder
+psycopg[binary,pool]==3.2.9 # connect to the shared Supabase Postgres DB (pgvector)
 
 # --- Data loading ---
 pypdf==6.20.1 # read PDF documents
