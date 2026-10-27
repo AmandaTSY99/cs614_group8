@@ -75,11 +75,12 @@ def compute_wilcoxon_tests(df: pd.DataFrame) -> Dict[str, Any]:
         return {"note": "scipy not available for Wilcoxon tests"}
 
     comparisons = [
-        ("system_c_v1", "system_c_fixed_3hop", "tokens_total", "H3a Token Savings (Adaptive vs Fixed-3Hop)"),
-        ("system_c_v1", "system_c_fixed_3hop", "latency_ms", "H3a Latency Savings (Adaptive vs Fixed-3Hop)"),
         ("system_c_v2", "system_c_v1", "hops", "H3c Hop Reduction (AAMR vs AMR)"),
-        ("system_c_v1", "system_b", "numeric_correct", "H3b Accuracy vs System B"),
+        ("system_c_v2", "system_c_v1", "latency_ms", "AAMR Latency vs AMR"),
+        ("system_c_v1", "system_b", "numeric_correct", "H3b Accuracy vs System B Hybrid"),
+        ("system_c_v2", "system_b", "numeric_correct", "AAMR Accuracy vs System B Hybrid"),
         ("system_b", "system_a", "latency_ms", "System B Rerank Latency vs System A"),
+        ("system_b", "system_a", "numeric_correct", "System B Accuracy vs System A"),
     ]
 
     p_raw, test_meta = [], []
@@ -274,14 +275,12 @@ def plot_pareto_and_figures(summary: Dict[str, Any], df: pd.DataFrame, out_dir: 
         "system_b": "#3b82f6",
         "system_c_v1": "#10b981",
         "system_c_v2": "#8b5cf6",
-        "system_c_fixed_3hop": "#f59e0b",
     }
     labels = {
         "system_a": "SYS A (Dense Baseline)",
         "system_b": "SYS B (Hybrid + Reranker)",
         "system_c_v1": "SYS C v1 (Adaptive AMR)",
         "system_c_v2": "SYS C v2 (Agentic AAMR)",
-        "system_c_fixed_3hop": "SYS C (Fixed 3-Hop Control)",
     }
 
     xs, ys, names = [], [], []

@@ -38,7 +38,7 @@ DEFAULT_BENCHMARK_2015 = REPO_ROOT / "data" / "benchmark_qa_pool_2015.json"
 DEFAULT_RECORDS_FILE = REPO_ROOT / "reports" / "rq3" / "records.jsonl"
 DEFAULT_ERRORS_FILE = REPO_ROOT / "reports" / "rq3" / "errors.jsonl"
 
-ALL_SYSTEMS = ["system_a", "system_b", "system_c_v1", "system_c_v2", "system_c_fixed_3hop"]
+ALL_SYSTEMS = ["system_a", "system_b", "system_c_v1", "system_c_v2"]
 
 
 def load_benchmark_records(path: Path, min_year: int = 2015) -> List[Dict[str, Any]]:
@@ -137,6 +137,7 @@ def run_experiment(
     verbose: bool = True,
     mock: bool = False,
     clean: bool = False,
+    fail_fast: bool = True,
 ) -> Dict[str, int]:
     """Execute the controlled RQ3 benchmark experiment across the specified systems."""
     if mock:
@@ -254,7 +255,15 @@ def run_experiment(
                 }
                 ef.write(json.dumps(err_record, ensure_ascii=False) + "\n")
                 ef.flush()
-                print(f"[{idx}/{total_tasks}] {sys_name} {q['id']} FAILED: {exc}", file=sys.stderr)
+                import traceback
+                print("\n" + "=" * 80, file=sys.stderr)
+                print(f"❌ LOUD STOP: System [{sys_name}] failed on Question [{q['id']}]!", file=sys.stderr)
+                print(f"Error Type: {type(exc).__name__}", file=sys.stderr)
+                print(f"Error Message: {exc}", file=sys.stderr)
+                traceback.print_exc()
+                print("=" * 80 + "\n", file=sys.stderr)
+                if fail_fast:
+                    raise exc
 
     return counts
 
@@ -269,6 +278,7 @@ def main():
     parser.add_argument("--warmup", type=int, default=3, help="Number of warmup queries per system (default: 3).")
     parser.add_argument("--mock", action="store_true", help="Force mock LLM provider for zero-cost rapid testing.")
     parser.add_argument("--clean", action="store_true", help="Clean prior output records before starting (disable resume).")
+    parser.add_argument("--no-fail-fast", action="store_true", help="Continue running other queries if a query fails (default is loud stop).")
     parser.add_argument("--records-out", type=Path, default=DEFAULT_RECORDS_FILE, help="Path to write records JSONL.")
     parser.add_argument("--errors-out", type=Path, default=DEFAULT_ERRORS_FILE, help="Path to write errors JSONL.")
     args = parser.parse_args()
@@ -286,6 +296,7 @@ def main():
         seed=args.seed,
         warmup_count=args.warmup,
         clean=args.clean,
+        fail_fast=not args.no_fail_fast,
     )
     print("\n" + "=" * 60)
     print(f"RQ3 Experiment Complete: {counts['generated']} generated, {counts['skipped']} skipped, {counts['failed']} failed")

@@ -135,10 +135,11 @@ def test_rq3_experiment_and_evaluate_end_to_end(tmp_path):
         mock=True,
     )
 
+    assert len(ALL_SYSTEMS) == 4
     assert records_file.exists()
     lines = records_file.read_text(encoding="utf-8").strip().splitlines()
-    # 2 queries * 5 systems = 10 records
-    assert len(lines) == 10
+    # 2 queries * 4 systems = 8 records
+    assert len(lines) == 8
 
     records = [json.loads(line) for line in lines]
     systems_seen = {r["system"] for r in records}
@@ -167,7 +168,7 @@ def test_rq3_experiment_and_evaluate_end_to_end(tmp_path):
     assert "systems" in summary
     assert "hypotheses_tests" in summary
     assert "routing_cascade_simulation" in summary
-    assert len(summary["systems"]) == 5
+    assert len(summary["systems"]) == 4
 
     for sys_name in ALL_SYSTEMS:
         s_data = summary["systems"][sys_name]
