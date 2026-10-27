@@ -178,3 +178,28 @@ def test_rq3_experiment_and_evaluate_end_to_end(tmp_path):
         assert "economics" in s_data
         assert "hop_dynamics" in s_data
         assert "accuracy" in s_data
+
+
+def test_strict_budget_cutoff_loud_stop(tmp_path):
+    """Verify that exceeding the strict budget ceiling triggers an immediate loud stop."""
+    records_file = tmp_path / "budget_records.jsonl"
+    errors_file = tmp_path / "budget_errors.jsonl"
+
+    # Set an impossible tiny budget ceiling of $0.00000001
+    with pytest.raises(RuntimeError, match="Strict financial stop"):
+        run_experiment(
+            systems=ALL_SYSTEMS,
+            benchmark_path=DEFAULT_BENCHMARK_2015,
+            out_records_path=records_file,
+            out_errors_path=errors_file,
+            limit=2,
+            seed=42,
+            warmup_count=0,
+            mock=True,
+            max_budget_usd=0.00000001,
+        )
+
+    # Check that error was logged to errors.jsonl
+    assert errors_file.exists()
+    err_text = errors_file.read_text(encoding="utf-8")
+    assert "BudgetExceededError" in err_text

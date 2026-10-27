@@ -91,9 +91,10 @@ def sanitize_input_for_system(item: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def load_done_pairs(records_path: Path) -> Set[Tuple[str, str]]:
-    """Return set of completed (system, question_id) pairs to support resuming."""
+def load_done_pairs_and_cost(records_path: Path) -> Tuple[Set[Tuple[str, str]], float]:
+    """Return set of completed (system, question_id) pairs and cumulative spend to support resuming."""
     done = set()
+    total_cost = 0.0
     if records_path.exists():
         for line in records_path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
@@ -101,8 +102,16 @@ def load_done_pairs(records_path: Path) -> Set[Tuple[str, str]]:
             try:
                 row = json.loads(line)
                 done.add((row["system"], row["question_id"]))
+                cost = row.get("cost_usd") or row.get("estimated_cost_usd") or 0.0
+                total_cost += float(cost)
             except Exception:
                 continue
+    return done, total_cost
+
+
+def load_done_pairs(records_path: Path) -> Set[Tuple[str, str]]:
+    """Return set of completed (system, question_id) pairs to support resuming."""
+    done, _ = load_done_pairs_and_cost(records_path)
     return done
 
 
@@ -138,8 +147,9 @@ def run_experiment(
     mock: bool = False,
     clean: bool = False,
     fail_fast: bool = True,
+    max_budget_usd: float = 2.0,
 ) -> Dict[str, int]:
-    """Execute the controlled RQ3 benchmark experiment across the specified systems."""
+    """Execute the controlled RQ3 benchmark experiment across the specified systems with a strict cost ceiling."""
     if mock:
         os.environ["LLM_PROVIDER"] = "mock"
 
@@ -159,9 +169,18 @@ def run_experiment(
         questions = questions[:limit]
 
     print(f"Loaded {len(questions)} benchmark questions (min_year={min_year}) for systems: {systems}")
+    print(f"Financial Guardrail Active: Strict budget ceiling = ${max_budget_usd:.2f}")
     adapters = get_adapters(systems)
-    done_pairs = load_done_pairs(out_records_path)
+    done_pairs, cumulative_cost = load_done_pairs_and_cost(out_records_path)
     counts = {"generated": 0, "skipped": 0, "failed": 0}
+
+    if cumulative_cost >= max_budget_usd:
+        print("\n" + "=" * 80, file=sys.stderr)
+        print("🛑 LOUD STOP: Prior experiment records have already reached the budget limit!", file=sys.stderr)
+        print(f"Cumulative spend: ${cumulative_cost:.4f} >= ${max_budget_usd:.2f} max budget.", file=sys.stderr)
+        print("Aborting before starting to protect your API budget.", file=sys.stderr)
+        print("=" * 80 + "\n", file=sys.stderr)
+        raise RuntimeError(f"Strict budget cutoff exceeded: Prior spend ${cumulative_cost:.4f} >= ${max_budget_usd:.2f}.")
 
     # 1. Run Warmup Phase per system
     if warmup_count > 0:
@@ -181,7 +200,7 @@ def run_experiment(
     random.shuffle(execution_queue)
 
     total_tasks = len(execution_queue)
-    print(f"Starting execution: {total_tasks} queries remaining ({counts['skipped']} already completed)\n")
+    print(f"Starting execution: {total_tasks} queries remaining ({counts['skipped']} already completed) | Current spend: ${cumulative_cost:.4f}\n")
 
     with out_records_path.open("a", encoding="utf-8") as rf, out_errors_path.open("a", encoding="utf-8") as ef:
         for idx, (sys_name, q) in enumerate(execution_queue, 1):
@@ -190,6 +209,10 @@ def run_experiment(
             try:
                 out = adapters[sys_name].answer(sanitized_q)
                 elapsed_ms = (time.perf_counter() - t_start) * 1000.0
+
+                # Track cumulative financial spend
+                q_cost = float(out.get("cost_usd") or 0.0)
+                cumulative_cost += q_cost
 
                 # Compute Time-Per-Output-Token (TPOT)
                 comp_tokens = out["tokens"].get("completion", 0)
@@ -241,9 +264,31 @@ def run_experiment(
                     status_line = (
                         f"[{idx}/{total_tasks}] {sys_name:<16} | {q['id']} | "
                         f"hops={out['hops']} | lat={out['latency_ms']:.0f}ms | "
-                        f"tokens={out['tokens']['total']:<4} | num_ok={num_correct}"
+                        f"tokens={out['tokens']['total']:<4} | cost=${q_cost:.5f} | "
+                        f"total_spent=${cumulative_cost:.4f}/${max_budget_usd:.2f} | num_ok={num_correct}"
                     )
                     print(status_line)
+
+                # Strict budget ceiling enforcement
+                if cumulative_cost >= max_budget_usd:
+                    budget_err = (
+                        f"Strict financial stop: Cumulative spend ${cumulative_cost:.4f} "
+                        f"reached or exceeded the strict cutoff threshold of ${max_budget_usd:.2f}."
+                    )
+                    err_record = {
+                        "system": sys_name,
+                        "question_id": q["id"],
+                        "error": f"BudgetExceededError: {budget_err}",
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    }
+                    ef.write(json.dumps(err_record, ensure_ascii=False) + "\n")
+                    ef.flush()
+                    print("\n" + "=" * 80, file=sys.stderr)
+                    print("🛑 LOUD STOP: Strict Budget Cutoff Guardrail Triggered!", file=sys.stderr)
+                    print(budget_err, file=sys.stderr)
+                    print("Execution halted immediately to protect your API budget.", file=sys.stderr)
+                    print("=" * 80 + "\n", file=sys.stderr)
+                    raise RuntimeError(budget_err)
 
             except Exception as exc:
                 counts["failed"] += 1
@@ -279,6 +324,7 @@ def main():
     parser.add_argument("--mock", action="store_true", help="Force mock LLM provider for zero-cost rapid testing.")
     parser.add_argument("--clean", action="store_true", help="Clean prior output records before starting (disable resume).")
     parser.add_argument("--no-fail-fast", action="store_true", help="Continue running other queries if a query fails (default is loud stop).")
+    parser.add_argument("--max-budget-usd", type=float, default=float(os.getenv("MAX_BUDGET_USD", "2.0")), help="Strict financial cutoff ceiling in USD (default: $2.00).")
     parser.add_argument("--records-out", type=Path, default=DEFAULT_RECORDS_FILE, help="Path to write records JSONL.")
     parser.add_argument("--errors-out", type=Path, default=DEFAULT_ERRORS_FILE, help="Path to write errors JSONL.")
     args = parser.parse_args()
@@ -297,6 +343,7 @@ def main():
         warmup_count=args.warmup,
         clean=args.clean,
         fail_fast=not args.no_fail_fast,
+        max_budget_usd=args.max_budget_usd,
     )
     print("\n" + "=" * 60)
     print(f"RQ3 Experiment Complete: {counts['generated']} generated, {counts['skipped']} skipped, {counts['failed']} failed")
