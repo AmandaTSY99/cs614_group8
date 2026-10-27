@@ -7,7 +7,6 @@ import json
 import os
 from pathlib import Path
 
-import chromadb
 from dotenv import load_dotenv
 try:
     import psycopg
@@ -55,6 +54,7 @@ class ChromaIndex:
     """A saved Chroma collection (built in build_vdb_base_RAG.ipynb), opened without re-embedding anything."""
 
     def __init__(self, chroma_dir="chroma_db", collection="rag3_structure_bge", embedder=None):
+        import chromadb
         path = ROOT / chroma_dir                      # an absolute chroma_dir is used as is
         self.collection = chromadb.PersistentClient(path=str(path)).get_collection(collection, embedding_function=None)
         if self.collection.count() == 0:

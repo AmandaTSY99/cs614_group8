@@ -171,16 +171,6 @@ def _call_gemini_native(
                 time.sleep(delay)
                 continue
 
-            groq_key = os.getenv("GROQ_API_KEY")
-            if groq_key:
-                try:
-                    return _call_groq_or_openai("groq", "openai/gpt-oss-120b", messages, temperature=temperature)
-                except Exception as groq_exc:
-                    raise ValueError(
-                        f"Google Gemini Error: {gemini_err}. Automatic fallback to Groq also failed: {groq_exc}. "
-                        "Please check your API keys or switch to '🧪 Mock Mode' in the sidebar to test immediately."
-                    ) from exc
-
             raise ValueError(
                 f"Google Gemini API Error: {gemini_err}. "
                 "Please verify your GEMINI_API_KEY / GOOGLE_API_KEY or switch to '🧪 Mock Mode' in the sidebar."
@@ -229,33 +219,7 @@ def _call_groq_or_openai(
     if "gpt-oss" in model:
         kwargs["reasoning_effort"] = "low"
 
-    try:
-        resp = client.chat.completions.create(**kwargs)
-    except Exception as err:
-        err_msg = str(err).lower()
-        if provider == "groq" and any(k in err_msg for k in ["does not exist", "model_not_found", "not have access", "404"]):
-            fallback_models = [
-                "openai/gpt-oss-120b",
-                "llama-3.3-70b-versatile",
-                "llama-3.1-8b-instant",
-                "gemma2-9b-it",
-            ]
-            resp = None
-            for fb in fallback_models:
-                if fb != kwargs["model"]:
-                    try:
-                        kwargs["model"] = fb
-                        resp = client.chat.completions.create(**kwargs)
-                        break
-                    except Exception:
-                        continue
-            if resp is None:
-                raise ValueError(
-                    f"Groq API Error: None of the standard models were accessible with your current GROQ_API_KEY ({err}). "
-                    "Please verify your key permissions at console.groq.com or switch the LLM Provider to '🧪 Mock Mode' in the sidebar to test immediately."
-                ) from err
-        else:
-            raise err
+    resp = client.chat.completions.create(**kwargs)
 
     content = resp.choices[0].message.content or ""
     usage = getattr(resp, "usage", None)

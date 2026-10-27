@@ -99,31 +99,61 @@ def evaluate_records(benchmark_path: Path, records_path: Path) -> Tuple[pd.DataF
             continue
 
         gold_evidence_list = gold_q.get("gold_evidence", [])
-        contexts = r.get("retrieved_contexts", [])
-        if not contexts and "prediction" in r:
-            contexts = [r["prediction"]]
+        contexts = r.get("retrieved_contexts") or []
+        contexts_meta = r.get("contexts_meta") or []
+        if not contexts:
+            raise ValueError(
+                f"Record for system='{sys_name}', question_id='{qid}' is missing 'retrieved_contexts'. "
+                "Refusing to fall back to generated answer text for retrieval evaluation."
+            )
 
-        # Track evidence hits
+        # Track evidence hits and first hit rank (for MRR)
         hits = 0
+        first_rank = None
         gold_sections: Set[str] = set()
         retrieved_sections: Set[str] = set()
 
         for ev in gold_evidence_list:
             sec = ev.get("item") or ev.get("section") or "Item 7"
-            gold_sections.add(sec.split(".")[0].strip())
-            if evidence_in_contexts(ev, contexts):
+            sec_norm = sec.split(".")[0].strip().upper()
+            gold_sections.add(sec_norm)
+            matched_at = None
+            for rank_idx, ctx in enumerate(contexts, 1):
+                if evidence_in_contexts(ev, [ctx]):
+                    matched_at = rank_idx
+                    break
+            if matched_at is not None or evidence_in_contexts(ev, contexts):
                 hits += 1
-                retrieved_sections.add(sec.split(".")[0].strip())
+                retrieved_sections.add(sec_norm)
+                if matched_at is not None and (first_rank is None or matched_at < first_rank):
+                    first_rank = matched_at
 
         total_ev = len(gold_evidence_list)
         ev_recall = hits / max(1, total_ev) if total_ev > 0 else 1.0
         all_found = (hits == total_ev) if total_ev > 0 else True
+        mrr = (1.0 / first_rank) if first_rank else 0.0
+
+        # Document recall ((ticker, year) filing level)
+        gold_docs = {
+            (str(ev.get("ticker", "")).upper(), int(ev["year"]))
+            for ev in gold_evidence_list
+            if ev.get("ticker") and ev.get("year")
+        }
+        ret_docs = {
+            (str(m.get("ticker", "")).upper(), int(m["fiscal_year"]))
+            for m in contexts_meta
+            if isinstance(m, dict) and m.get("ticker") and str(m.get("fiscal_year", "")).isdigit()
+        }
+        if gold_docs and ret_docs:
+            doc_recall = len(gold_docs & ret_docs) / len(gold_docs)
+        else:
+            doc_recall = 1.0 if hits > 0 else 0.0
 
         # Cross-section evaluation
         is_cross_section = len(gold_sections) > 1
         cross_section_hit = (len(retrieved_sections) == len(gold_sections)) if is_cross_section else None
 
-        # Context Precision (heuristic: ratio of contexts containing at least one gold mention)
+        # Context Precision (ratio of retrieved contexts containing at least one gold evidence piece)
         relevant_chunks = 0
         for ctx in contexts:
             for ev in gold_evidence_list:
@@ -141,6 +171,8 @@ def evaluate_records(benchmark_path: Path, records_path: Path) -> Tuple[pd.DataF
             "retrieved_gold_evidence": hits,
             "evidence_recall": ev_recall,
             "all_evidence_found": all_found,
+            "doc_recall": doc_recall,
+            "mrr": mrr,
             "is_cross_section": is_cross_section,
             "cross_section_hit": cross_section_hit,
             "retrieved_chunks_count": len(contexts),
@@ -159,6 +191,8 @@ def evaluate_records(benchmark_path: Path, records_path: Path) -> Tuple[pd.DataF
         n_q = len(sdf)
         mean_recall = float(sdf["evidence_recall"].mean() * 100)
         full_evidence_rate = float(sdf["all_evidence_found"].mean() * 100)
+        mean_doc_recall = float(sdf["doc_recall"].mean() * 100)
+        mean_mrr = float(sdf["mrr"].mean())
         mean_precision = float(sdf["context_precision"].mean() * 100)
 
         # Multi-hop slice
@@ -174,6 +208,8 @@ def evaluate_records(benchmark_path: Path, records_path: Path) -> Tuple[pd.DataF
             "n_queries": n_q,
             "overall_evidence_recall_pct": round(mean_recall, 2),
             "full_evidence_discovery_rate_pct": round(full_evidence_rate, 2),
+            "doc_recall_pct": round(mean_doc_recall, 2),
+            "mrr": round(mean_mrr, 3),
             "context_precision_pct": round(mean_precision, 2),
             "multihop_evidence_recall_pct": round(m_recall, 2),
             "multihop_full_discovery_pct": round(m_full, 2),

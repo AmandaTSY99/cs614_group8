@@ -129,20 +129,21 @@ def _load_records_and_backends(
 ) -> Tuple[List[Dict[str, Any]], Any, Any, str]:
     """
     Load corpus records and `(dense_adapter, reranker_adapter, corpus_source_label)`.
-    Uses local `ChromaSource` if `chroma_db/chroma.sqlite3` exists; otherwise falls back to
-    Supabase `sec_chunks` / local `data/` 10-K filings.
+    Prioritizes Supabase `sec_chunks` (`SupabaseSource` with pgvector HNSW dense search) when
+    `SUPABASE_DB_URL` is configured; falls back to local `data/` 10-K filings only in offline/mock mode.
     """
-    chroma_sqlite = Path(chroma_dir) / "chroma.sqlite3"
-    if chroma_sqlite.is_file():
-        try:
-            from src.system_b.adapters import ChromaSource, Reranker
+    if os.getenv("SUPABASE_DB_URL") and os.getenv("LLM_PROVIDER", "").strip().lower() != "mock":
+        from src.system_b.adapters import Reranker, SupabaseSource
 
-            source = ChromaSource(path=chroma_dir, collection="rag3_structure_bge")
-            records = source.records()
-            reranker = Reranker() if os.getenv("SYSTEM_B_LIVE_RERANKER", "0") == "1" else _SmartRerankerAdapter()
-            return records, source, reranker, "ChromaDB (rag3_structure_bge)"
-        except Exception:
-            pass
+        source = SupabaseSource(table="sec_chunks")
+        scope = Scope(tickers=tuple(t.upper() for t in target_tickers if t))
+        records = source.records(scope)
+        reranker = (
+            Reranker()
+            if (os.getenv("SYSTEM_B_LIVE_RERANKER", "0") == "1" or os.getenv("USE_CROSS_ENCODER", "0") == "1")
+            else _SmartRerankerAdapter()
+        )
+        return records, source, reranker, "Supabase Cloud (sec_chunks)"
 
     raw_chunks = _get_cached_chunks(tickers=target_tickers, fiscal_years=None)
     seen_ids = set()

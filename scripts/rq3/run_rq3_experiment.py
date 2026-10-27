@@ -69,21 +69,36 @@ def sanitize_input_for_system(item: Dict[str, Any]) -> Dict[str, Any]:
     Construct clean system input with query and (ticker, year) scope only.
     Excludes ground-truth answer, program, key_points, and evidence text/sections.
     """
-    years = item.get("applicable_years") or ([int(item["year"])] if item.get("year") else [])
+    years = [int(y) for y in (item.get("applicable_years") or []) if y]
+    if item.get("year") and int(item["year"]) not in years:
+        years.append(int(item["year"]))
+    for ev in item.get("gold_evidence") or []:
+        if ev.get("year") and int(ev["year"]) not in years:
+            years.append(int(ev["year"]))
+    years = sorted(years)
+
     tickers = [item["ticker"]] if item.get("ticker") else []
     if item.get("comparison_tickers"):
         tickers.extend([t for t in item["comparison_tickers"] if t not in tickers])
+    for ev in item.get("gold_evidence") or []:
+        if ev.get("ticker") and ev["ticker"] not in tickers:
+            tickers.append(ev["ticker"])
 
     qid = item.get("id") or item.get("query_id") or ""
     q_text = item.get("question") or item.get("query") or ""
 
-    pairs = [(t, y) for t in tickers for y in years] if tickers and years else []
+    ev_pairs = list(dict.fromkeys(
+        (ev["ticker"], int(ev["year"]))
+        for ev in (item.get("gold_evidence") or [])
+        if ev.get("ticker") and ev.get("year")
+    ))
+    pairs = ev_pairs if ev_pairs else ([(t, y) for t in tickers for y in years] if tickers and years else [])
     return {
         "id": qid,
         "query_id": qid,
         "query": q_text,
         "question": q_text,
-        "ticker": item.get("ticker"),
+        "ticker": item.get("ticker") or (tickers[0] if tickers else None),
         "target_tickers": tickers,
         "fiscal_years": years,
         "target_pairs": pairs,
@@ -228,18 +243,36 @@ def run_experiment(
                 prog_val = run_finqa_program(q.get("program", "")) if q.get("program") else None
 
                 qid = q.get("id") or q.get("query_id")
+                from scripts.rq2.common import _derive_category, _NUM_UNIT_RE
+                t_secs = list(dict.fromkeys(
+                    ev.get("item") for ev in (q.get("gold_evidence") or []) if ev.get("item")
+                ))
+                gt_nums: List[str] = []
+                if q.get("type") in ("numeric", "mixed") and q.get("answer"):
+                    m_num = _NUM_UNIT_RE.search(str(q["answer"]))
+                    if m_num:
+                        gt_nums = [m_num.group(0).strip()]
+
                 record = {
                     "status": "ok",
                     "system": sys_name,
                     "question_id": qid,
                     "query_id": qid,
+                    "category": q.get("category") or _derive_category(q),
                     "recipe": q.get("recipe"),
                     "hop": q.get("hop"),
                     "type": q.get("type"),
                     "question": q["question"],
                     "ground_truth_answer": q.get("answer"),
+                    "ground_truth_numbers": gt_nums,
+                    "target_sections": t_secs,
                     "gold_program_result": prog_val,
+                    "answer": ans_text,
                     "prediction": ans_text,
+                    "retrieved_contexts": out.get("retrieved_contexts", []),
+                    "contexts_meta": out.get("contexts_meta", []),
+                    "citations": out.get("citations", []),
+                    "guardrail_report": out.get("guardrail_report"),
                     "numeric_correct": num_correct,
                     "keypoint_recall": kp_recall,
                     "hops": out["hops"],

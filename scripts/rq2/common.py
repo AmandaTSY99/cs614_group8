@@ -7,6 +7,7 @@ Imported in both conda envs, so it must not import ragas or System C.
 import ast
 import json
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Tuple
@@ -22,6 +23,24 @@ SCORES_FILE = "scores.jsonl"
 
 SCHEMA_VERSION = 1
 CATEGORIES = ["single_hop_factual", "quantitative_tabular", "cross_section_multihop", "multi_company_comparison"]
+_NUM_UNIT_RE = re.compile(
+    r"[-+]?\$?\d[\d,]*(?:\.\d+)?(?:\s*(?:percentage points|%|percent|million|billion|thousand|trillion))?",
+    re.IGNORECASE,
+)
+
+
+def _derive_category(q: Dict[str, Any]) -> str:
+    if q.get("category") in CATEGORIES:
+        return str(q["category"])
+    recipe = str(q.get("recipe") or "").lower()
+    hop = str(q.get("hop") or "").lower()
+    if recipe in ("cross_year_table", "cross_year_text", "multi_company") or q.get("scope") == "multi_doc":
+        return "multi_company_comparison"
+    if recipe == "table_text" or (hop == "multi" and recipe != "table"):
+        return "cross_section_multihop"
+    if recipe == "table" or q.get("type") == "numeric":
+        return "quantitative_tabular"
+    return "single_hop_factual"
 
 
 def now_iso() -> str:
@@ -55,13 +74,57 @@ def load_golden(path: Path = BENCHMARK_PATH) -> List[Dict[str, Any]]:
             q["query"] = q["question"]
         if "ground_truth_answer" not in q and "answer" in q:
             q["ground_truth_answer"] = q["answer"]
-        if "fiscal_years" not in q:
-            years = q.get("applicable_years") or ([int(q["year"])] if q.get("year") else [])
-            q["fiscal_years"] = years
-        if "target_tickers" not in q and q.get("ticker"):
-            q["target_tickers"] = [q["ticker"]]
-        q["ground_truth_numbers"] = parse_list_field(q.get("ground_truth_numbers"))
-        q["target_sections"] = parse_list_field(q.get("target_sections"))
+        if not q.get("category"):
+            q["category"] = _derive_category(q)
+
+        # Build complete ticker and year lists from item + gold_evidence (strictly ticker/year metadata)
+        tickers: List[str] = list(q.get("target_tickers") or [])
+        if q.get("ticker") and q["ticker"] not in tickers:
+            tickers.append(q["ticker"])
+        for ct in q.get("comparison_tickers") or []:
+            if ct not in tickers:
+                tickers.append(ct)
+        for ev in q.get("gold_evidence") or []:
+            if ev.get("ticker") and ev["ticker"] not in tickers:
+                tickers.append(ev["ticker"])
+        if tickers:
+            q["target_tickers"] = tickers
+
+        years: List[int] = [int(y) for y in (q.get("fiscal_years") or q.get("applicable_years") or []) if y]
+        if q.get("year") and int(q["year"]) not in years:
+            years.append(int(q["year"]))
+        for ev in q.get("gold_evidence") or []:
+            if ev.get("year") and int(ev["year"]) not in years:
+                years.append(int(ev["year"]))
+        if years:
+            q["fiscal_years"] = sorted(years)
+
+        ev_pairs = list(dict.fromkeys(
+            (ev["ticker"], int(ev["year"]))
+            for ev in (q.get("gold_evidence") or [])
+            if ev.get("ticker") and ev.get("year")
+        ))
+        if ev_pairs:
+            q["target_pairs"] = ev_pairs
+        elif tickers and years:
+            q["target_pairs"] = [(t, y) for t in tickers for y in sorted(years)]
+
+        gt_nums = parse_list_field(q.get("ground_truth_numbers"))
+        if not gt_nums and q.get("type") in ("numeric", "mixed") and q.get("ground_truth_answer"):
+            m = _NUM_UNIT_RE.search(str(q["ground_truth_answer"]))
+            if m:
+                gt_nums = [m.group(0).strip()]
+        q["ground_truth_numbers"] = gt_nums
+
+        t_secs = parse_list_field(q.get("target_sections"))
+        if not t_secs and q.get("gold_evidence"):
+            for ev in q["gold_evidence"]:
+                sec_item = ev.get("item")
+                if sec_item:
+                    sec_label = f"{ev['ticker']} {sec_item}" if len(tickers) > 1 and ev.get("ticker") else sec_item
+                    if sec_label not in t_secs:
+                        t_secs.append(sec_label)
+        q["target_sections"] = t_secs
         questions.append(q)
     return questions
 

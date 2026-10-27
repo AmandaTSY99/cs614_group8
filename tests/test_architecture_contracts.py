@@ -130,3 +130,97 @@ def test_plug_and_play_adapter_schema_all_systems():
         assert "stage_timings_ms" in out
         assert out["model"]
         assert out["provider"]
+
+
+def test_fail_loud_when_supabase_missing_in_live_mode(monkeypatch):
+    """Invariant 6: Live mode (LLM_PROVIDER != 'mock') must fail loudly if SUPABASE_DB_URL is missing, never falling back to ChromaDB or synthetic chunks."""
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    monkeypatch.delenv("SUPABASE_DB_URL", raising=False)
+    monkeypatch.delenv("SUPABASE_DB_HOST", raising=False)
+
+    from scripts.rq2.adapters import SystemAAdapter, SystemBAdapter
+    from src.system_c.nodes.retriever import retrieve_10k_chunks
+
+    with pytest.raises(RuntimeError, match="SUPABASE_DB_URL is not set"):
+        SystemAAdapter()._get_index()
+
+    with pytest.raises(RuntimeError, match="SUPABASE_DB_URL is not set"):
+        SystemBAdapter()._get_source()
+
+    with pytest.raises(RuntimeError, match="SUPABASE_DB_URL is not set"):
+        retrieve_10k_chunks("What was revenue?", ticker="NVDA", fiscal_years=[2026])
+
+
+def test_no_groq_provider_hijacking_when_openai_selected(monkeypatch):
+    """Invariant 7: Setting GROQ_API_KEY in .env must NOT hijack System B onto Groq when LLM_PROVIDER='openai'."""
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    monkeypatch.setenv("LLM_MODEL", "gpt-5.4")
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_should_not_hijack_provider")
+
+    from scripts.rq2.adapters import SystemBAdapter
+    from src.system_b.retrieval import Scope
+
+    adapter = SystemBAdapter()
+
+    class _DummySource:
+        def records(self, scope=None):
+            return [{"id": "NVDA_2026:1", "text": "Revenue was $130B.", "meta": {"ticker": "NVDA", "fiscal_year": 2026, "section": "Item 7"}}]
+        def __call__(self, q, scope, k):
+            return [("NVDA_2026:1", 0.95)]
+
+    adapter._source = _DummySource()
+
+    called_models = []
+
+    class _DummyGenerator:
+        def __init__(self, model=None, base_url=None):
+            called_models.append(model)
+        def __call__(self, msgs):
+            return {
+                "answer": "Revenue was $130B [1].",
+                "usage": {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30},
+                "model": called_models[-1],
+                "rate_limit_retries": 0,
+                "finish_reason": "stop",
+            }
+
+    with patch("src.system_b.adapters.Generator", _DummyGenerator), patch("src.system_b.adapters.Reranker", lambda: (lambda q, txts: [0.9] * len(txts))):
+        out = adapter.answer({"id": "q1", "question": "What was revenue?", "ticker": "NVDA", "year": 2026})
+        assert out["provider"] == "openai"
+        assert out["model"] == "gpt-5.4"
+        assert called_models == ["gpt-5.4"]
+
+
+def test_rq2_load_golden_populates_all_required_fields():
+    """Invariant 8: load_golden() must populate category, target_sections, ground_truth_numbers, and target_pairs on the 40-question 2015+ benchmark."""
+    from scripts.rq2.common import CATEGORIES, load_golden
+
+    questions = load_golden(BENCHMARK_2015_PATH)
+    assert len(questions) == 40
+    for q in questions:
+        assert q.get("category") in CATEGORIES, f"{q['id']} has invalid category {q.get('category')}"
+        assert q.get("target_sections"), f"{q['id']} has empty target_sections"
+        assert q.get("target_tickers"), f"{q['id']} has empty target_tickers"
+        assert q.get("fiscal_years"), f"{q['id']} has empty fiscal_years"
+        assert q.get("target_pairs"), f"{q['id']} has empty target_pairs"
+        if q.get("type") in ("numeric", "mixed"):
+            assert q.get("ground_truth_numbers"), f"{q['id']} ({q['type']}) has empty ground_truth_numbers"
+
+
+def test_rq1_evaluate_fails_loudly_on_missing_retrieved_contexts(tmp_path):
+    """Invariant 9: evaluate_rq1.py must raise ValueError if retrieved_contexts is missing/empty rather than falling back to prediction."""
+    from scripts.rq1.evaluate_rq1 import evaluate_records
+
+    bad_records = tmp_path / "bad_records.jsonl"
+    bad_records.write_text(
+        json.dumps({
+            "system": "system_a",
+            "question_id": "amanda-001",
+            "prediction": "Some generated answer without retrieved_contexts",
+            "retrieved_contexts": [],
+        }) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="missing 'retrieved_contexts'"):
+        evaluate_records(BENCHMARK_2015_PATH, bad_records)
+

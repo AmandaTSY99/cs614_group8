@@ -39,10 +39,11 @@ def _get_financials_df(data_dir: Path = DATA_DIR) -> pd.DataFrame:
 def _lookup_financials_supabase(ticker: str, fiscal_year: Optional[int] = None) -> Optional[str]:
     """Query live Supabase PostgreSQL `sec_financials` table for structured XBRL figures."""
     db_url = os.getenv("SUPABASE_DB_URL")
-    if not db_url:
+    is_mock = os.getenv("LLM_PROVIDER", "").strip().lower() == "mock"
+    if not db_url or is_mock:
         return None
     try:
-        import psycopg2
+        import psycopg
 
         query = """
             SELECT fiscal_year, fiscal_year_end, revenue, net_income,
@@ -52,16 +53,14 @@ def _lookup_financials_supabase(ticker: str, fiscal_year: Optional[int] = None) 
             FROM sec_financials
             WHERE ticker = %s
         """
-        params = [ticker]
+        params: List[Any] = [ticker]
         if fiscal_year:
             query += " AND fiscal_year = %s"
             params.append(int(fiscal_year))
         query += " ORDER BY fiscal_year ASC;"
 
-        with psycopg2.connect(db_url, sslmode="require", connect_timeout=3) as conn:
-            with conn.cursor() as cur:
-                cur.execute(query, params)
-                rows = cur.fetchall()
+        with psycopg.connect(db_url, sslmode="require", autocommit=True) as conn:
+            rows = conn.execute(query, params).fetchall()
 
         if not rows:
             return None
@@ -82,6 +81,8 @@ def _lookup_financials_supabase(ticker: str, fiscal_year: Optional[int] = None) 
         )
         return f"[{label}] ({ticker} {scope} reported financials; amounts in USD, EPSDiluted in USD per share)\n{table}"
     except Exception:
+        if not is_mock:
+            raise
         return None
 
 
@@ -130,9 +131,12 @@ def tabular_tool_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     telemetry = dict(state.get("telemetry", {}))
     with track_node_latency(telemetry, "tabular_tool"):
         ticker = state.get("target_ticker")
+        tickers = state.get("target_tickers") or ([ticker] if ticker else [])
         years = state.get("fiscal_years") or []
         pairs = state.get("target_pairs") or (
-            [[ticker, y] for y in years] if (ticker and years) else ([[ticker, None]] if ticker else [])
+            [[t, y] for t in tickers for y in years]
+            if (tickers and years)
+            else ([[t, None] for t in tickers] if tickers else [])
         )
         blocks = lookup_financials(pairs=pairs)
         existing_evidence = list(state.get("accumulated_evidence", []))
