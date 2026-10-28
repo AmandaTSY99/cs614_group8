@@ -1,0 +1,194 @@
+[
+  {
+    "id": "amanda-013",
+    "type": "numeric",
+    "recipe": "table",
+    "question": "By how many millions of dollars did Walmart Inc.'s net property and equipment increase from fiscal year 2024 to fiscal year 2025?",
+    "gold": "$9,183 million",
+    "evidence_kinds": [
+      "table"
+    ],
+    "chunk_ranks": [
+      32
+    ],
+    "page_ranks": [
+      1
+    ],
+    "top_pages": [
+      "WMT_FY2025_2025-01-31 p.89",
+      "WMT_FY2025_2025-01-31 p.85",
+      "WMT_FY2025_2025-01-31 p.119"
+    ],
+    "text_answer": "Not found in the provided context.",
+    "text_grade": {
+      "grade": "wrong",
+      "reason": "The answer does not provide the required figure, missing the $9,183 million increase."
+    },
+    "control_answer": "Not found in the provided context.",
+    "control_grade": {
+      "grade": "wrong",
+      "reason": "The answer does not provide the required figure, missing the $9,183 million increase."
+    },
+    "visual_answer": "Based on the Consolidated Balance Sheets provided in the context, Walmart Inc.'s net property and equipment was $119,993 million as of January 31, 2025, and $110,810 million as of January 31, 2024 [p. 85].\n\nTo find the increase:\n$119,993 \\text{ million} - $110,810 \\text{ million} = $9,183 \\text{ million}$\n\nWalmart Inc.'s net property and equipment increased by **9,183** million dollars from fiscal year 2024 to fiscal year 2025.",
+    "visual_grade": {
+      "grade": "correct",
+      "reason": "The candidate correctly calculates the increase as $9,183 million, matching the gold answer."
+    }
+  },
+  {
+    "id": "amanda-048",
+    "type": "qualitative",
+    "recipe": "text",
+    "question": "How does Amazon's seasonal retail demand pattern affect its cash and accounts payable balances as of December 31?",
+    "gold": "As of December 31, Amazon's cash, cash equivalents, and marketable securities balances typically reach their highest level because consumers primarily use credit cards in its stores and the related receivables settle quickly. Correspondingly, there is typically an increase in accounts payable due to inventory purchases and third-party seller sales.",
+    "evidence_kinds": [
+      "text",
+      "text"
+    ],
+    "chunk_ranks": [
+      1,
+      1
+    ],
+    "page_ranks": [
+      1,
+      1
+    ],
+    "top_pages": [
+      "AMZN_FY2025_2025-12-31 p.13",
+      "AMZN_FY2025_2025-12-31 p.6",
+      "AMZN_FY2025_2025-12-31 p.60"
+    ],
+    "text_answer": "Amazon\u2019s seasonal retail demand, especially the higher sales volume in the fourth quarter, leads to a buildup of cash, cash equivalents and marketable securities at year\u2011end because most purchases are made with credit cards that settle quickly. At the same time, accounts payable also rise at December\u202f31 due to the increased inventory purchases and third\u2011party seller sales needed to meet holiday demand. After the new year, those payable balances are typically paid down during the first three months, which reduces the cash balances accordingly. \u30101\u3011",
+    "text_grade": {
+      "grade": "correct",
+      "reason": "Matches both key points about cash balances highest due to credit card usage and increased accounts payable from inventory and third\u2011party sales."
+    },
+    "control_answer": "[1]",
+    "control_grade": {
+      "grade": "wrong",
+      "reason": "The answer does not provide any of the required explanation about cash and accounts payable patterns."
+    },
+    "visual_answer": "Based on the provided pages, Amazon's seasonal retail demand pattern affects its cash and accounts payable balances as of December 31 in the following ways:\n\n1.  **Cash and Cash Equivalents:** As a result of holiday sales, Amazon's cash, cash equivalents, and marketable securities balances typically reach their highest level of the year as of December 31. This is because consumer payments are primarily made using credit cards, which settle quickly. [p. 13]\n2.  **Accounts Payable:** Conversely, Amazon's accounts payable balance generally declines during the first three months of the year. This decline occurs because vendors, sellers, and suppliers are paid, resulting in a corresponding decrease in the accounts payable balance. [p. 13]\n\nThe balance sheet data confirms these balances as of December 31, 2025:\n*   Cash and cash equivalents: $86,810 million [p. 60]\n*   Accounts payable: $121,909 million [p. 60]",
+    "visual_grade": {
+      "grade": "partial",
+      "reason": "Correctly notes cash at its highest level, but incorrectly describes accounts payable as declining rather than increasing."
+    }
+  },
+  {
+    "id": "amanda-056",
+    "type": "qualitative",
+    "recipe": "text",
+    "question": "What factors drove the growth in Walmart U.S. comparable sales in fiscal 2025?",
+    "gold": "The growth was driven by an increase in transactions and unit volumes, with particularly strong sales in the grocery and health and wellness categories.",
+    "evidence_kinds": [
+      "text"
+    ],
+    "chunk_ranks": [
+      1
+    ],
+    "page_ranks": [
+      1
+    ],
+    "top_pages": [
+      "WMT_FY2025_2025-01-31 p.58",
+      "WMT_FY2025_2025-01-31 p.66",
+      "WMT_FY2025_2025-01-31 p.59"
+    ],
+    "text_answer": "Walmart\u202fU.S. comparable\u2011sales growth in fiscal\u202f2025 was driven primarily by **growth in transactions and unit volumes**, with **strong sales in grocery and health\u2011and\u2011wellness categories**.  In addition, **eCommerce sales** (especially store\u2011fulfilled pickup and delivery) **positively contributed about 2.9\u202f% to comparable sales** for the year\u30101\u2020L4-L7\u3011\u30102\u2020L4-L7\u3011.",
+    "text_grade": {
+      "grade": "correct",
+      "reason": "Includes all required factors and matches gold answer"
+    },
+    "control_answer": "The growth in Walmart U.S. comparable sales in fiscal 2025 was primarily driven by growth in transactions and unit volumes, with strong sales in grocery and health and wellness. Additionally, Walmart U.S. eCommerce sales positively contributed approximately 2.9% to comparable sales, which was primarily driven by store-fulfilled pickup and delivery. [1][2]",
+    "control_grade": {
+      "grade": "correct",
+      "reason": "Includes all key points about transactions, unit volumes, grocery and health and wellness growth."
+    },
+    "visual_answer": "Based on the provided pages, the growth in Walmart U.S. comparable sales in fiscal 2025 was driven by:\n\n*   Growth in transactions and unit volumes.\n*   Strong sales in grocery and health and wellness.\n*   Positive contributions from e-commerce sales (approximately 2.9%), which were primarily driven by store-fulfilled pickup and delivery.\n\n[p. 58] [p. 66]",
+    "visual_grade": {
+      "grade": "correct",
+      "reason": "Includes all key factors: transactions, unit volumes, grocery and health & wellness sales."
+    }
+  },
+  {
+    "id": "amanda-090",
+    "type": "mixed",
+    "recipe": "table_text",
+    "question": "For Johnson & Johnson's fiscal year 2025, calculate the percentage change in the valuation allowance for continuing operations from 2024 to 2025. Additionally, identify the specific countries the company accounted for as having highly inflationary economic conditions in 2025.",
+    "gold": "The valuation allowance increased by 12.15%. The countries accounted for as having highly inflationary economic conditions are Argentina, Venezuela, Turkey, and Egypt.",
+    "evidence_kinds": [
+      "table",
+      "text"
+    ],
+    "chunk_ranks": [
+      65,
+      66
+    ],
+    "page_ranks": [
+      3,
+      1
+    ],
+    "top_pages": [
+      "JNJ_FY2025_2025-12-28 p.47",
+      "JNJ_FY2025_2025-12-28 p.87",
+      "JNJ_FY2025_2025-12-28 p.78"
+    ],
+    "text_answer": "Not found in the provided context.",
+    "text_grade": {
+      "grade": "wrong",
+      "reason": "Did not provide the required percentage change or list of countries"
+    },
+    "control_answer": "Not found in the provided context.",
+    "control_grade": {
+      "grade": "wrong",
+      "reason": "Did not provide the required percentage change or list of countries"
+    },
+    "visual_answer": "Based on the provided pages, here is the information requested:\n\n**1. Percentage Change in Valuation Allowance for Continuing Operations**\n\nAccording to the table on page 70 [p. 70], the valuation allowance for continuing operations was:\n*   **2024 (End of year):** $1,638 million\n*   **2025 (End of year):** $1,837 million\n\nThe percentage change is calculated as follows:\n$$ \\frac{1,837 - 1,638}{1,638} \\times 100 = \\frac{199}{1,638} \\times 100 \\approx 12.15\\% $$\n\nThe valuation allowance for continuing operations increased by approximately **12.15%** from 2024 to 2025.\n\n**2. Countries with Highly Inflationary Economic Conditions**\n\nAccording to the text on page 79 [p. 79], the specific countries Johnson & Johnson accounted for as having highly inflationary economic conditions in 2025 are:\n*   **Argentina**\n*   **Egypt**\n*   **Turkey**\n*   **Venezuela**",
+    "visual_grade": {
+      "grade": "correct",
+      "reason": "Provides the correct 12.15% change and lists Argentina, Venezuela, Turkey, and Egypt as the highly inflationary countries."
+    }
+  },
+  {
+    "id": "amanda-094",
+    "type": "mixed",
+    "recipe": "table_text",
+    "question": "For Meta Platforms, Inc. in fiscal year 2025, calculate the total increase in the provision for income taxes compared to 2024, and according to the Income Taxes note, what specific legislative act drove the $15.93 billion charge recorded in the third quarter of 2025?",
+    "gold": "$17,171 million. The $15.93 billion charge in the third quarter of 2025 resulted from the One Big Beautiful Bill Act (OBBBA), enacted in July 2025; $14.03 billion of it was a valuation allowance against Meta's U.S. federal deferred tax assets.",
+    "evidence_kinds": [
+      "table",
+      "text",
+      "text"
+    ],
+    "chunk_ranks": [
+      6,
+      4,
+      4
+    ],
+    "page_ranks": [
+      1,
+      2,
+      1
+    ],
+    "top_pages": [
+      "META_FY2025_2025-12-31 p.127",
+      "META_FY2025_2025-12-31 p.196",
+      "META_FY2025_2025-12-31 p.144"
+    ],
+    "text_answer": "Not found in the provided context.",
+    "text_grade": {
+      "grade": "wrong",
+      "reason": "The answer does not provide the required figures or legislative act."
+    },
+    "control_answer": "Based on the provided context, the specific legislative act that drove the $15.93 billion charge recorded in the third quarter of 2025 is the **One Big Beautiful Bill Act (OBBBA)** [4].\n\nHowever, the context **does not contain** the specific figures for the total provision for income taxes for fiscal years 2025 and 2024, nor does it provide the data necessary to calculate the total increase in the provision for income taxes compared to 2024. Therefore, that part of the question cannot be answered using only the provided context.\n\n**Answer:**\nThe specific legislative act was the **One Big Beautiful Bill Act (OBBBA)** [4]. The total increase in the provision for income taxes compared to 2024 is **Not found in the provided context**.",
+    "control_grade": {
+      "grade": "wrong",
+      "reason": "Did not provide the required increase figure of $17,171 million, only gave the legislative act"
+    },
+    "visual_answer": "Based on the provided pages, here is the answer:\n\n**1. Total Increase in Provision for Income Taxes:**\nAccording to the \"Provision for income taxes\" table on page 127 [p. 127] and the Consolidated Statements of Income on page 144 [p. 144]:\n*   Provision for income taxes in 2025: $25,474 million\n*   Provision for income taxes in 2024: $8,303 million\n\nThe total increase is calculated as:\n$25,474 million - $8,303 million = **$17,171 million** (or $17.171 billion).\n\nThis is explicitly confirmed in the text on page 127, which states: \"Our provision for income taxes in 2025 increased $17.17 billion or 207% compared to 2024...\" [p. 127].\n\n**2. Legislative Act Driving the Charge:**\nAccording to the Income Taxes note on page 127 [p. 127] and page 196 [p. 196], the specific legislative act that drove the $15.93 billion charge recorded in the third quarter of 2025 was the **One Big Beautiful Bill Act (OBBBA)**.\n\nThe text on page 127 states: \"On July 4, 2025, the One Big Beautiful Bill Act (OBBBA) was enacted... We recorded a $15.93 billion charge in the third quarter of 2025...\" [p. 127].",
+    "visual_grade": {
+      "grade": "correct",
+      "reason": "Provides the $17,171 million increase and correctly identifies the One Big Beautiful Bill Act (OBBBA) as the legislative act"
+    }
+  }
+]

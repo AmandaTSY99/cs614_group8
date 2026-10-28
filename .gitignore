@@ -86,3 +86,10 @@ TAT-QA/
 
 # --- archives ---
 amanda_archive/
+# --- ColPali eval caches ---
+colpali_eval/embs/
+colpali_eval/benchmark/embs/
+colpali_eval/benchmark/pdfs/
+colpali_eval/pdfs/
+colpali_eval/pages/
+colpali_eval/*.log
