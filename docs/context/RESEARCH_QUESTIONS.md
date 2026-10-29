@@ -4,13 +4,15 @@ This document details the scientific hypotheses, empirical metrics, and evaluati
 
 ---
 
-### RQ1: Retrieval Completeness across Non-Adjacent Sections
-* **Question:** Does iterative multi-hop retrieval successfully gather scattered clues across non-adjacent SEC 10-K sections (MD&A, Market Risk disclosures, and Financial Statement Footnotes)?
+### RQ1: Retrieval Completeness across Question Types
+* **Question:** To what extent does adaptive multi-hop retrieval (System C v1/v2) retrieve the complete set of gold evidence compared with single-pass dense (System A) and hybrid-reranked (System B) retrieval, and how does this vary with where the evidence lives: its modality (tabular vs narrative), its spread across 10-K Items, and its spread across fiscal years and companies?
 * **Evaluation Metrics:**
-  * Multi-Hop Evidence Recall@$k$
-  * Context Precision (RAGAS)
-  * Hop-by-Hop Retrieval Attribution (which hops fetched which facts)
-* **What It Proves:** Proves whether System C (Adaptive Multi-Hop) successfully discovers distant intermediate clues where single-pass baselines (System A & B) suffer from zero-recall on dependent hops.
+  * Evidence Recall@$k$ ($k$ = 5, 10) and Context Recall (all retrieved chunks), using lexical matching of gold quotes
+  * Evidence-set completeness (complete@$k$): share of questions where *all* gold evidence was retrieved
+  * Zero-recall rate
+  * Context Precision (rank-aware average precision; lexical labels, optionally RAGAS LLM-judged)
+  * All of the above broken down by recipe, modality, scope (single doc / cross-year / cross-company), evidence count and section spread, plus recall per evidence item for tables vs text
+* **What It Proves:** Whether iterative, critic-guided retrieval closes the completeness gap that single-pass systems leave on dispersed, multi-modal evidence, and at what cost to context precision. Hop counts and early stopping are covered in RQ3; citation attribution is covered in RQ2.
 * **Leads:** Xavier & Amanda.
 
 ---
