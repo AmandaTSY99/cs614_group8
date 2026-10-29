@@ -27,40 +27,58 @@ docker compose build
 
 ---
 
-## 3. Step 2: Common Execution Commands
+## 3. Step 2: Running Team Research Question Evaluations (RQ1, RQ2, RQ3)
+
+All 388 benchmark outputs across the 4 systems are precomputed in `reports/rq3/records.jsonl`. Teammates can immediately evaluate their metrics in Docker with zero API spend:
+
+```bash
+# Amanda & Kevin: RQ1 (Retrieval Completeness & Cross-Section Discovery)
+docker compose run --rm runner python scripts/rq1/evaluate_rq1.py
+
+# Aryan: RQ2 (Grounding, Citations & Hallucination Prevention)
+docker compose run --rm runner python scripts/rq2/report.py --run reports/rq2/full
+
+# Anish: RQ3 (Inference Economics & Cost Pareto Frontier)
+docker compose run --rm runner python scripts/rq3/evaluate_rq3.py
+```
+*(Note: `runner` and `system-c` point to the same container image and can be used interchangeably).*
+
+---
+
+## 4. Step 3: Common Execution Commands
 
 All commands mount your local directory (`.:/workspace`), so any reports, tables, or figures generated inside Docker persist directly onto your local machine.
 
-### A. Run Fast Unit Tests (< 1 second)
+### A. Run Fast Unit Tests (< 4 seconds)
 ```bash
-docker compose run --rm system-c pytest tests/test_system_c.py -v
+docker compose run --rm runner pytest tests/ -v
 ```
 
 ### B. Run the Milestone 1 Demo Showcase
 Runs the 3 curated SEC 10-K benchmark queries (Single-Hop early stopping, MD&A + Footnotes multi-hop, and Quantitative Tabular `v1_amr` vs `v2_aamr`) and prints the formatted comparison table:
 ```bash
 # Rapid mock mode:
-docker compose run --rm system-c python scripts/demo_milestone1_system_c.py --mock
+docker compose run --rm runner python scripts/demo_milestone1_system_c.py --mock
 
 # Or live with host Ollama (qwen2.5:7b):
-docker compose run --rm -e LLM_PROVIDER=ollama system-c python scripts/demo_milestone1_system_c.py
+docker compose run --rm -e LLM_PROVIDER=ollama runner python scripts/demo_milestone1_system_c.py
 ```
 
 ### C. Run the RQ3 Inference Economics Ablation Benchmark
 Benchmarks Fixed 1-Hop vs. Fixed 3-Hop vs. Adaptive AMR (v1) vs. Agentic AAMR (v2) and exports CSV/JSON summaries:
 ```bash
-docker compose run --rm system-c python scripts/run_rq3_ablation.py --mock
+docker compose run --rm runner python scripts/run_rq3_ablation.py --mock
 ```
 
 ### D. Generate Publication-Quality Pareto Figures
 Generates high-resolution PNG charts in `reports/figures/` (`rq3_pareto_frontier.png`, `rq3_latency_breakdown.png`, `rq3_hop_distribution.png`, and `rq3_executive_dashboard.png`):
 ```bash
-docker compose run --rm system-c python scripts/plot_rq3_pareto.py
+docker compose run --rm runner python scripts/plot_rq3_pareto.py
 ```
 
 ### E. Run an Interactive Ad-Hoc Financial Query
 ```bash
-docker compose run --rm system-c python -m src.system_c.graph \
+docker compose run --rm runner python -m src.system_c.graph \
   --mode v2_aamr \
   --max-hops 3 \
   --query "Compare NVIDIA total revenue and net income between FY2025 and FY2026, and calculate the operating margin."
@@ -68,7 +86,7 @@ docker compose run --rm system-c python -m src.system_c.graph \
 
 ---
 
-## 4. Step 3: Launching JupyterLab (Team Notebooks)
+## 5. Step 4: Launching JupyterLab (Team Notebooks)
 
 To start the interactive JupyterLab server on port `8888`:
 ```bash

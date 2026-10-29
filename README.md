@@ -18,7 +18,8 @@ pinned: false
 
 ## 1. Quick Links & Documentation
 
-* 🐳 **[Docker Quickstart Guide](DOCKER_QUICKSTART.md)** — One-line commands to run tests, demos, and ablations inside Docker.
+* 📖 **[Team Engineering & Evaluation Guide](docs/guides/TEAM_RAG_EVALUATION_GUIDE.md)** — Step-by-step instructions for running RQ1, RQ2, and RQ3 evaluations across all 4 systems.
+* 🐳 **[Docker Quickstart Guide](DOCKER_QUICKSTART.md)** — One-line commands to run tests, demos, benchmarks, and Jupyter inside Docker.
 * 🏛️ **[System C Architecture & Mermaid State Graph](ARCHITECTURE.md)** — Complete LangGraph specification (AMR v1 & AAMR v2).
 * 🔎 **[System B Setup & Evaluation Guide (Kevin)](docs/SYSTEM_B.md)** — BM25 + RAG3 dense retrieval + weighted hybrid fusion + cross-encoder reranking.
 * 📈 **[System B Evaluation Report](reports/system_b/EVALUATION_REPORT.md)** — Compact benchmark summary and per-query results.
@@ -28,22 +29,42 @@ pinned: false
 
 ---
 
-## 2. Fast Docker Commands (No Local Python Setup Needed)
+## 2. Docker Quickstart (Team Standard: Zero Local Python Setup)
+
+> [!IMPORTANT]
+> **Docker Standard:** Do not install packages locally on your host machine. Docker ensures identical Python, PyTorch, and dependency versions across macOS, Windows, and Linux.
+
+### One-Time Build
+```bash
+docker compose build
+```
+
+### Run Your Research Question Evaluation (Offline in 2s, $0 Cost)
+All 388 benchmark outputs across the 4 RAG systems are precomputed in `reports/rq3/records.jsonl`. Teammates can immediately evaluate their RQ metrics inside Docker:
 
 ```bash
-# 1. Run unit tests (< 4 sec)
-docker compose run --rm system-c pytest tests/ -v
+# Amanda & Kevin: RQ1 (Retrieval Completeness & Cross-Section Discovery)
+docker compose run --rm runner python scripts/rq1/evaluate_rq1.py
+
+# Aryan: RQ2 (Grounding, Citations & Hallucination Prevention)
+docker compose run --rm runner python scripts/rq2/report.py --run reports/rq2/full
+
+# Anish: RQ3 (Inference Economics & Cost Pareto Frontier)
+docker compose run --rm runner python scripts/rq3/evaluate_rq3.py
+```
+
+### Additional Common Docker Commands
+```bash
+# 1. Run all unit tests (< 4 sec)
+docker compose run --rm runner pytest tests/ -v
 
 # 2. Run Milestone 1 Demo Showcase (Formatted 3-query side-by-side comparison table)
-docker compose run --rm system-c python scripts/demo_milestone1_system_c.py --mock
+docker compose run --rm runner python scripts/demo_milestone1_system_c.py --mock
 
-# 3. Run RQ3 Inference Economics Ablation Benchmark (Fixed 1-Hop vs Fixed 3-Hop vs Adaptive)
-docker compose run --rm system-c python scripts/run_rq3_ablation.py --mock
+# 3. Generate Publication-Quality Pareto Figures
+docker compose run --rm runner python scripts/plot_rq3_pareto.py
 
-# 4. Generate Publication-Quality Pareto Figures
-docker compose run --rm system-c python scripts/plot_rq3_pareto.py
-
-# 5. Start interactive JupyterLab
+# 4. Start interactive JupyterLab server (http://localhost:8888)
 docker compose up jupyter
 ```
 
