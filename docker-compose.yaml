@@ -14,7 +14,7 @@ services:
       - hf-cache:/root/.cache/huggingface    # keep downloaded embedding models between restarts
     restart: unless-stopped
 
-  system-c:
+  system-c: &runner-base
     build: .
     container_name: cs614-system-c
     environment:
@@ -29,6 +29,12 @@ services:
       - hf-cache:/root/.cache/huggingface
     working_dir: /workspace
     command: ["python", "scripts/demo_milestone1_system_c.py", "--mock"]
+
+  # Team evaluation & script runner (alias of system-c environment for evaluating all 4 systems)
+  runner:
+    <<: *runner-base
+    container_name: cs614-runner
+    command: ["python", "--version"]
 
   # RQ2 Stage 2: score + report an existing run (generate with the `system-c` service first).
   # API keys come from /workspace/.env (the project folder is mounted); .env is never copied into the image.

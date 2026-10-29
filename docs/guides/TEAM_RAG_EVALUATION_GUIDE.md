@@ -17,13 +17,17 @@ Every research question in our paper evaluates the exact same **4 RAG systems**:
 
 ---
 
-## 2. Quick Setup (3 Steps)
+## 2. Quick Setup (Docker-First)
 
-### Step 1: Install Dependencies
-Open your terminal in the project root and run:
+> [!IMPORTANT]
+> **Docker Standard:** Our team standard is Docker-only — **do not install packages locally on your host machine**. Docker ensures identical Python, PyTorch, and CUDA/CPU environments across all teammates (macOS, Linux, Windows) with zero version conflicts.
+
+### Step 1: Build the Docker Images (One-Time)
+Make sure Docker Desktop is running, then in the project root run:
 ```bash
-pip install "sentence-transformers==3.4.1" "transformers==4.57.6" tf-keras brotli openai pandas scipy psycopg2-binary python-dotenv
+docker compose build
 ```
+*(This automatically installs CPU PyTorch, LangGraph, Sentence-Transformers, ChromaDB, and all dependencies into a cached container layer).*
 
 ### Step 2: Configure Your `.env` File
 Create or update `.env` in the project root with the Supabase database connection and your preferred LLM provider:
@@ -116,12 +120,19 @@ This file contains 160 completed results with full answers, all retrieved chunks
 
 ## 6. How to Run Each Research Question
 
+All execution commands use Docker, mounting your local workspace so all outputs (`reports/`) persist directly to your machine.
+
+> [!NOTE]
+> `runner` (or `system-c`) in the Docker command is simply the name of the Docker execution container. Running `scripts/rq1/evaluate_rq1.py` evaluates **all 4 systems** (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) side-by-side, not just System C!
+
 ### Amanda & Kevin: RQ1 (Retrieval Completeness)
 * **What you are proving:** Does multi-hop retrieval find scattered evidence across different 10-K sections (e.g. Item 7 MD&A and Item 8 Footnotes) that single-pass RAG misses?
 * **Starter Skeleton Base Provided:** We wired up a working starter skeleton at `scripts/rq1/evaluate_rq1.py` so the plumbing to the 4 systems and Supabase `retrieved_contexts` is ready out of the box:
   ```bash
-  python scripts/rq1/evaluate_rq1.py
+  # Instant evaluation across ALL 4 SYSTEMS against pre-computed benchmark records (0 API cost, takes ~2s):
+  docker compose run --rm runner python scripts/rq1/evaluate_rq1.py
   ```
+  *(Note: You can use `runner` or `system-c` interchangeably as the container name).*  
   *Note: **You own RQ1 completely.** This script is purely a starter skeleton to verify that all 4 systems return real retrieved chunks from Supabase (`sec_chunks`). Feel free to modify the retrieval metrics, add your own statistical tests/visualizations, or replace the script entirely with your own RQ1 evaluation pipeline.*
 
 ---
@@ -130,14 +141,12 @@ This file contains 160 completed results with full answers, all retrieved chunks
 * **What you are proving:** Does evidence reflection stop the model from hallucinating numbers or fabricating financial figures?
 * **Starter Skeleton & Existing Pipeline:** Your RQ2 pipeline in `scripts/rq2/` is wired up to all 4 systems (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) and the 40-question `2015+` benchmark:
   ```bash
-  # Step 1: Generate across all 4 systems (or use pre-generated records in reports/rq3/records.jsonl)
-  python scripts/rq2/generate.py --run-id full
+  # Step 1: Generate answers across ALL 4 SYSTEMS (or use pre-generated records in reports/rq3/records.jsonl)
+  docker compose run --rm runner python scripts/rq2/generate.py --run-id full
 
-  # Step 2: Score faithfulness, citations, numeric accuracy, and grounding error rate
-  python scripts/rq2/score.py --run reports/rq2/full
-
-  # Step 3: Generate the report with bootstrap 95% CIs across all 4 categories
-  python scripts/rq2/report.py --run reports/rq2/full
+  # Step 2: Automated LLM Judge Scoring (RAGAS + Faithfulness + Citations)
+  # Uses the isolated rq2-eval container to prevent openai version conflicts
+  docker compose run --rm rq2-eval
   ```
   *Note: **You own RQ2 completely.** The adapter plumbing (`load_golden()` and `records.jsonl`) is pre-populated with `retrieved_contexts`, `contexts_meta`, `citations`, `guardrail_report`, `target_sections`, and `ground_truth_numbers` so you can run, customize, or extend your RQ2 evaluation immediately.*
 
@@ -147,8 +156,8 @@ This file contains 160 completed results with full answers, all retrieved chunks
 * **What is proved:** How much latency and cost does agentic reasoning add over single-pass RAG, and is it justified?
 * **Execution:**
   ```bash
-  python scripts/rq3/run_rq3_experiment.py --warmup 1 --max-budget-usd 5.0
-  python scripts/rq3/evaluate_rq3.py
+  docker compose run --rm runner python scripts/rq3/run_rq3_experiment.py --warmup 1 --max-budget-usd 5.0
+  docker compose run --rm runner python scripts/rq3/evaluate_rq3.py
   ```
 * **Findings:** Saved in `reports/rq3/RQ3_FINDINGS_REPORT.md` and `reports/figures/`.
 

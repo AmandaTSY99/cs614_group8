@@ -27,6 +27,7 @@ langchain-core
 pydantic
 pytest
 matplotlib
+scipy
 
 # --- Web UI & Microservice Gateway ---
 streamlit
