@@ -1,8 +1,7 @@
 # Milestone 1 Demo: System C (Adaptive Multi-Hop RAG) Showcase
 
 **Date:** 24-25 October 2026  
-**Authors:** Anish (System Architecture & RQ3 Lead) & Aryan (Synthesizer, Citations & RQ2 Lead)  
-**Target Milestone:** Milestone 1 — Team Sync & 3-System Comparative Demo  
+**Target Milestone:** Milestone 1 — Comparative Evaluation Showcase  
 
 ---
 

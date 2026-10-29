@@ -1,6 +1,6 @@
 # RQ3 Empirical Research Report: Inference Economics & Operational Trade-offs
 
-**Author:** Anish (System Architecture, LangGraph Orchestration & RQ3 Lead)  
+**Research Track:** System C Architecture & RQ3 (Inference Economics)  
 **Course:** CS614: Generative AI with Large Language Models  
 **Model:** OpenAI `gpt-5.4` (`$2.50` prompt / `$15.00` completion per 1M tokens)  
 **Corpus:** Supabase Cloud `sec_chunks` (95,044 chunks, 384-dim BGE-small embeddings)  

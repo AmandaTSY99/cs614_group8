@@ -1,18 +1,7 @@
----
-title: System C Financial RAG
-emoji: 🏛️
-colorFrom: blue
-colorTo: indigo
-sdk: streamlit
-sdk_version: 1.45.1
-app_file: app.py
-pinned: false
----
-
 # CS614 GenAI Project: Adaptive Multi-Hop RAG for SEC 10-K Financial Disclosures
 
-**Course:** CS614 Gen AI with LLMs (SMU)  
-**Integration Branch:** `dev` (System A + System B + System C Unified)  
+**Course:** CS614 Generative AI with LLMs (SMU)  
+**System Comparison:** System A (Vanilla Dense) vs. System B (Hybrid Rerank) vs. System C v1 (Adaptive Multi-Hop) vs. System C v2 (Agentic Multi-Hop)  
 
 ---
 
@@ -69,56 +58,64 @@ docker compose up jupyter
 
 ---
 
-## 3. System A — Vanilla Dense Baseline & RAG Variants
+## 3. The 4 Benchmark Architectures Under Evaluation
 
-Single-pass dense retrieval over persistent Chroma collections (`chroma_db/`) using `BAAI/bge-small-en-v1.5` embeddings, top-k retrieval, and single-pass answer generation (`openai/gpt-oss-120b` on Groq).
+Our research evaluates four distinct RAG architectures on complex SEC Form 10-K financial queries:
 
-### RAG Variants Summary
+| Architecture | Retrieval Paradigm | Chunking & Indexing | Hop Control | Financial Tools & Guardrails |
+| :--- | :--- | :--- | :---: | :--- |
+| **`system_a`** (Vanilla Dense Baseline) | Top-10 Dense Vector Search | Structure-Preserving + Filing Headers (`rag5`) | 1-Hop | Single-pass generation; direct citation tags |
+| **`system_b`** (Advanced Hybrid Single-Pass) | Okapi BM25 + BGE-Small Dense + Cross-Encoder Reranker | Structure-Preserving (`rag3`) | 1-Hop | Min-Max weighted score fusion ($\alpha=0.50$) |
+| **`system_c_v1`** (Adaptive Multi-Hop AMR) | Iterative Multi-Hop Hybrid Retrieval | Structure-Preserving + Deduplication | Dynamic (1 to 3 hops) | Evidence Sufficiency Critic reflection loop + Numerical Guardrail |
+| **`system_c_v2`** (Agentic Multi-Hop AAMR) | Autonomous Tool Routing + Multi-Hop Hybrid | Structure-Preserving + Deduplication | Dynamic (1 to 3 hops) | Pre-routes to SEC XBRL financial statements (`financials.csv`) + Numerical Guardrail |
 
-| Variant | Chunking | Embedding model | Chroma collection | `financials.csv` in context | LLM | Where |
-|---|---|---|---|---|---|---|
-| RAG 1 | Fixed word windows (150 words, 30 overlap) | `all-MiniLM-L6-v2` | `rag1_words_minilm` | No | `openai/gpt-oss-120b` (Groq) | notebook only |
-| RAG 2 | Fixed word windows (150 words, 30 overlap) | `BAAI/bge-small-en-v1.5` + query prefix | `rag2_words_bge` | No | `openai/gpt-oss-120b` (Groq) | notebook only |
-| RAG 3 | Document structure (Items, headings, tables) | `BAAI/bge-small-en-v1.5` + query prefix | `rag3_structure_bge` | No | `openai/gpt-oss-120b` (Groq) | notebook, System A (`rag3`) |
-| RAG 4 | Document structure (same index as RAG 3) | `BAAI/bge-small-en-v1.5` + query prefix | `rag3_structure_bge` | Yes | `openai/gpt-oss-120b` (Groq) | notebook, System A (`rag4`) |
-| RAG 5 | Document structure, with company and fiscal year embedded in every chunk | `BAAI/bge-small-en-v1.5` + query prefix | `rag5_structure_header_bge` | No | `openai/gpt-oss-120b` (Groq) | notebook, System A (`rag5`, **default**) |
-| RAG 6 | Document structure (same index as RAG 5) | `BAAI/bge-small-en-v1.5` + query prefix | `rag5_structure_header_bge` | Yes | `openai/gpt-oss-120b` (Groq) | System A (`rag6`) |
+<details>
+<summary><b>Note on Baseline Development Variants (RAG 1 to RAG 6)</b></summary>
 
-- **`financials.csv`**: reported annual figures from SEC XBRL data (FY2009 onwards: revenue, net income, operating income, total assets and liabilities, equity, cash, operating cash flow, diluted EPS).
-- **Defaults in System A**: top-k = 10. Answers cite chunks like `[2]` and may be partial.
-
-### Running System A
-
-```bash
-python -m src.system_a --query "What was NVIDIA's total revenue?" --tickers NVDA --years 2026   # RAG 5
-python -m src.system_a --query "..." --tickers NVDA --years 2026 --variant rag6                # another variant
-python -m src.system_a --benchmark --all-variants --limit 10                                   # compare all variants
-```
-
-`--tickers` and `--years` filter retrieval (and choose the `financials.csv` rows for RAG 4 and 6). See `python -m src.system_a --help` for all options.
+During early Phase 1 baseline development, six incremental chunking/embedding techniques were explored in `build_vdb_base_RAG.ipynb`:
+- **RAG 1:** Fixed word windows (150 words) with `all-MiniLM-L6-v2`.
+- **RAG 2:** Fixed word windows with `BAAI/bge-small-en-v1.5`.
+- **RAG 3:** Document structure-preserving chunking (`rag3_structure_bge`).
+- **RAG 4:** Structure chunking + inline XBRL summary injection.
+- **RAG 5:** Structure chunking with contextual filing headers (`rag5_structure_header_bge`) — *Selected as the official System A baseline*.
+- **RAG 6:** RAG 5 with inline XBRL summary injection.
+</details>
 
 ---
 
-## 4. System B — Hybrid Retrieval & Benchmark Runner
+## 4. Standalone System Execution (CLI)
 
-BM25 + RAG3 dense retrieval + weighted hybrid fusion + cross-encoder reranking, with a single-pass answer generator and benchmark runner. See [docs/SYSTEM_B.md](docs/SYSTEM_B.md) for setup, commands, experimental controls, and limitations.
+### System A (Vanilla Dense Baseline)
+```bash
+python -m src.system_a --query "What was NVIDIA's total revenue?" --tickers NVDA --years 2026
+```
 
-```sh
-python -m src.system_b --help
-python -m unittest discover -s tests -v
+### System B (Hybrid Sparse-Dense + Cross-Encoder Rerank)
+```bash
+python -m src.system_b --query "What was NVIDIA's total revenue?" --tickers NVDA --years 2026
+```
+
+### System C (Adaptive Multi-Hop State Machine)
+```bash
+# AMR (v1: Adaptive Multi-Hop)
+python -m src.system_c.graph --mode v1_amr --query "What was NVIDIA's revenue and gross margin in FY2026?"
+
+# AAMR (v2: Agentic Multi-Hop with XBRL Tabular Tool)
+python -m src.system_c.graph --mode v2_aamr --query "Compare NVIDIA and Apple total revenue in 2024."
 ```
 
 ---
 
-## 5. Local Python Execution & Unified Streamlit Terminal
+## 5. Unified Streamlit Terminal & Local API Gateway
 
+### Launch Interactive Streamlit UI
 ```bash
-# Launch Unified Streamlit App (System C + System B + System A)
 streamlit run app.py
-
-# Run unit tests across all systems
-pytest tests/ -v
-
-# Run Milestone 1 Demo Showcase
-python scripts/demo_milestone1_system_c.py --mock
 ```
+Provides side-by-side execution trace comparisons across System A, System B, and System C with full evidence inspection, citation graph mapping, and numerical guardrail reports.
+
+### Launch FastAPI Microservice Gateway
+```bash
+python run_api.py
+```
+Interactive Swagger documentation available at `http://localhost:8000/docs`.

@@ -1948,7 +1948,7 @@ header_title_map = {
         "Autonomous Sub-Query Decomposition • Deterministic XBRL + Hybrid 10-K Routing • Sufficiency Critic & Self-Healing Guardrail",
     ),
     "SYS.B": (
-        "SYS B: Single-Pass Hybrid + Cross-Encoder Rerank RAG (Kevin)",
+        "SYS B: Single-Pass Hybrid + Cross-Encoder Rerank Baseline",
         f"Okapi BM25 + BGE-Small Dense Retrieval • Min-Max Weighted Fusion (Alpha={sys_b_alpha:.2f}) • Cross-Encoder Reranker (No Critic Loop)",
     ),
     "SYS.A": (
@@ -2582,7 +2582,7 @@ if "last_system_c_result" in st.session_state:
     with res_tab_rq1:
         b_raw_info = result.get("system_b_raw")
         if b_raw_info:
-            st.markdown("#### System B (Kevin) — Single-Pass Hybrid Retrieval & Cross-Encoder Rerank Breakdown")
+            st.markdown("#### System B — Single-Pass Hybrid Retrieval & Cross-Encoder Rerank Breakdown")
             st.caption(
                 f"Mode: `{b_raw_info.get('mode')}` | Alpha (Dense Weight): `{b_raw_info.get('alpha', 0.5):.2f}` | "
                 f"Corpus Source: `{b_raw_info.get('corpus_source')}` (`{b_raw_info.get('corpus_chunks', 0):,}` chunks)"

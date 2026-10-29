@@ -1,7 +1,7 @@
 # System C Design Choices, Architecture Defense & Q&A Repository
 
 **Project:** Adaptive Multi-Hop RAG for SEC 10-K Financial Disclosures (CS614)  
-**System Leads:** Anish (System Architecture, LangGraph Orchestration & RQ3 Lead) & Aryan (Generation, Citations, Guardrails & RQ2 Lead)  
+**Focus:** Adaptive Multi-Hop RAG Architecture & Evaluation Defense  
 **Document Purpose:** Living repository of architectural design decisions, trade-offs, theoretical justifications, and defense Q&A for professor consultations, team syncs, and the final 10-page report.
 
 ---

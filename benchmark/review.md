@@ -6,9 +6,9 @@ they are still in git history (last commit before the cleanup), so every change 
 | File | QAs | What it is |
 |---|---|---|
 | `benchmark_qa_0.jsonl` | 100 | v0: generated from all filings (FY2004–FY2026), corrected after review |
-| `benchmark_qa_1.jsonl` | 97 | v1: FY2015+ only = `kept_fy2015.jsonl` + `parts/amanda.jsonl` |
+| `benchmark_qa_1.jsonl` | 97 | v1: FY2015+ only = `kept_fy2015.jsonl` + `parts/generated_pool_fy2015.jsonl` |
 | `kept_fy2015.jsonl` | 40 | v0 QAs whose evidence is all FY2015+, kept for v1 (same ids as in v0) |
-| `parts/amanda.jsonl` | 57 | QAs generated for v1 (`--min-year 2015`), corrected after review |
+| `parts/generated_pool_fy2015.jsonl` | 57 | QAs generated for v1 (`--min-year 2015`), corrected after review |
 
 **Ids.** `amanda-001` to `amanda-100` are v0 QAs; in v1 only the kept 40 remain, with their v0 ids. `amanda-101` to
 `amanda-160` are the QAs generated for v1 (generated as `amanda-001` to `amanda-060`, then renumbered `0xx` → `1xx` so
@@ -125,7 +125,7 @@ recipe and type mix and adding the cross-company recipes.
 
 ### Kept 40 (`kept_fy2015.jsonl`)
 
-Reviewed by Amanda. 19 of them had already been corrected in the v0 review (002, 005, 021, 024, 030, 034, 035, 044,
+Expert reviewer audit log. 19 of them had already been corrected in the v0 review (002, 005, 021, 024, 030, 034, 035, 044,
 053, 077, 081, 082, 084, 085, 087, 089, 091, 093, 094 — see the table above). Changed in the v1 review:
 
 | id | recipe | issue | change |
@@ -133,7 +133,7 @@ Reviewed by Amanda. 19 of them had already been corrected in the v0 review (002,
 | amanda-051 | text | Answer didn't say how the policy change affects expense recognition | Answer now explains straight-line recognition over the (mostly four-year) service period, reduced only when forfeitures occur |
 | amanda-086 | table_text | Second part was long and asked for consequences "related to such assets"; the answer gave only 2 of the 6 consequences in the risk factor | Question asks for the financial consequences of acquisitions the risk factors list (not linked to the patents); answer and key points list all six |
 
-### 60 generated (`parts/amanda.jsonl`)
+### 60 generated (`parts/generated_pool_fy2015.jsonl`)
 
 Each QA was checked against its sources: the full table (headers and columns) or the text around each quote, plus the
 rest of the source section for claims the quotes don't cover. The checks were: the question stands alone and makes

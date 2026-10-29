@@ -60,8 +60,6 @@ chroma_db*.zip
 .vscode/
 .idea/
 *.swp
-ANISH_PRIVATE_*.docx
-scripts/generate_private_*.py
 
 # --- OS ---
 .DS_Store
@@ -83,6 +81,3 @@ TAT-QA/
 
 # --- trash ---
 .Trash*/
-
-# --- archives ---
-amanda_archive/
