@@ -77,12 +77,24 @@ def sanitize_input_for_system(item: Dict[str, Any]) -> Dict[str, Any]:
             years.append(int(ev["year"]))
     years = sorted(years)
 
-    tickers = [item["ticker"]] if item.get("ticker") else []
+    raw_tickers = []
+    if isinstance(item.get("target_tickers"), list):
+        raw_tickers.extend(item["target_tickers"])
+    elif item.get("ticker"):
+        raw_tickers.append(item["ticker"])
+
+    tickers = []
+    for t in raw_tickers:
+        if isinstance(t, str) and "," in t:
+            tickers.extend([part.strip().upper() for part in t.split(",") if part.strip()])
+        elif t:
+            tickers.append(str(t).strip().upper())
     if item.get("comparison_tickers"):
-        tickers.extend([t for t in item["comparison_tickers"] if t not in tickers])
+        tickers.extend([t.upper() for t in item["comparison_tickers"] if t.upper() not in tickers])
     for ev in item.get("gold_evidence") or []:
-        if ev.get("ticker") and ev["ticker"] not in tickers:
-            tickers.append(ev["ticker"])
+        if ev.get("ticker") and ev["ticker"].upper() not in tickers:
+            tickers.append(ev["ticker"].upper())
+    tickers = sorted(list(dict.fromkeys(tickers)))
 
     qid = item.get("id") or item.get("query_id") or ""
     q_text = item.get("question") or item.get("query") or ""
@@ -98,7 +110,7 @@ def sanitize_input_for_system(item: Dict[str, Any]) -> Dict[str, Any]:
         "query_id": qid,
         "query": q_text,
         "question": q_text,
-        "ticker": item.get("ticker") or (tickers[0] if tickers else None),
+        "ticker": tickers[0] if tickers else None,
         "target_tickers": tickers,
         "fiscal_years": years,
         "target_pairs": pairs,

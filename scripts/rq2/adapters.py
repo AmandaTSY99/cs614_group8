@@ -51,14 +51,21 @@ class SystemCAdapter(SystemAdapter):
 
         t0 = time.perf_counter()
         query_text = question.get("query") or question.get("question") or ""
-        tickers = question.get("target_tickers") or ([question["ticker"]] if question.get("ticker") else None)
+        raw_tickers = question.get("target_tickers") or ([question["ticker"]] if question.get("ticker") else [])
+        tickers = []
+        for t in raw_tickers:
+            if isinstance(t, str) and "," in t:
+                tickers.extend([part.strip().upper() for part in t.split(",") if part.strip()])
+            elif t:
+                tickers.append(str(t).strip().upper())
+        tickers = sorted(list(dict.fromkeys(tickers)))
         years = question.get("fiscal_years") or ([int(question["year"])] if question.get("year") else None)
 
         state = run_system_c(
             query=query_text,
             max_hops=self.max_hops,
             mode=self.mode,
-            target_ticker=question.get("ticker") or (tickers[0] if tickers else None),
+            target_ticker=tickers[0] if tickers else None,
             target_tickers=tickers,
             fiscal_years=years,
             force_max_hops=self.force_max_hops,
@@ -153,7 +160,14 @@ class SystemAAdapter(SystemAdapter):
         from src.system_a.llm import get_last_telemetry
         t0 = time.perf_counter()
         query_text = question.get("query") or question.get("question") or ""
-        tickers = question.get("target_tickers") or ([question["ticker"]] if question.get("ticker") else ["NVDA"])
+        raw_tickers = question.get("target_tickers") or ([question["ticker"]] if question.get("ticker") else ["NVDA"])
+        tickers = []
+        for t in raw_tickers:
+            if isinstance(t, str) and "," in t:
+                tickers.extend([part.strip().upper() for part in t.split(",") if part.strip()])
+            elif t:
+                tickers.append(str(t).strip().upper())
+        tickers = sorted(list(dict.fromkeys(tickers)))
         years = question.get("fiscal_years") or ([int(question["year"])] if question.get("year") else [2026])
         raw_pairs = question.get("target_pairs") or question.get("scope")
         if isinstance(raw_pairs, list) and raw_pairs and isinstance(raw_pairs[0], (list, tuple)) and len(raw_pairs[0]) == 2:
@@ -267,7 +281,14 @@ class SystemBAdapter(SystemAdapter):
         from src.system_b.adapters import Reranker
         t0 = time.perf_counter()
         query_text = question.get("query") or question.get("question") or ""
-        tickers = question.get("target_tickers") or ([question["ticker"]] if question.get("ticker") else ["NVDA"])
+        raw_tickers = question.get("target_tickers") or ([question["ticker"]] if question.get("ticker") else ["NVDA"])
+        tickers = []
+        for t in raw_tickers:
+            if isinstance(t, str) and "," in t:
+                tickers.extend([part.strip().upper() for part in t.split(",") if part.strip()])
+            elif t:
+                tickers.append(str(t).strip().upper())
+        tickers = sorted(list(dict.fromkeys(tickers)))
         years = question.get("fiscal_years") or ([int(question["year"])] if question.get("year") else [2026])
         raw_pairs = question.get("target_pairs") or question.get("scope")
         if isinstance(raw_pairs, list) and raw_pairs and isinstance(raw_pairs[0], (list, tuple)) and len(raw_pairs[0]) == 2:

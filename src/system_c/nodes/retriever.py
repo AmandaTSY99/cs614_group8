@@ -85,6 +85,16 @@ def _fetch_chunks_from_supabase(
     is_mock = os.getenv("LLM_PROVIDER", "").strip().lower() == "mock"
     if not supabase_url:
         return []
+    clean_tickers = []
+    for t in (tickers or []):
+        if isinstance(t, str) and "," in t:
+            clean_tickers.extend([part.strip().upper() for part in t.split(",") if part.strip()])
+        elif t:
+            clean_tickers.append(str(t).strip().upper())
+    clean_tickers = sorted(list(dict.fromkeys(clean_tickers)))
+    if not clean_tickers:
+        clean_tickers = ["NVDA"]
+
     try:
         import json
         import psycopg
@@ -98,7 +108,7 @@ def _fetch_chunks_from_supabase(
                     WHERE ticker = ANY(%s) AND fiscal_year = ANY(%s)
                     ORDER BY chunk_id;
                     """,
-                    (tickers, [int(y) for y in fiscal_years]),
+                    (clean_tickers, [int(y) for y in fiscal_years]),
                 ).fetchall()
             else:
                 rows = conn.execute(
@@ -108,7 +118,7 @@ def _fetch_chunks_from_supabase(
                     WHERE ticker = ANY(%s)
                     ORDER BY fiscal_year DESC, chunk_id;
                     """,
-                    (tickers,),
+                    (clean_tickers,),
                 ).fetchall()
             if not rows:
                 return []
@@ -151,7 +161,17 @@ def _get_cached_chunks(
             "and does not fall back to local files or synthetic chunks."
         )
 
-    target_tickers = tickers or ([ticker] if ticker else ["NVDA"])
+    raw_tickers = tickers or ([ticker] if ticker else ["NVDA"])
+    target_tickers = []
+    for t in raw_tickers:
+        if isinstance(t, str) and "," in t:
+            target_tickers.extend([part.strip().upper() for part in t.split(",") if part.strip()])
+        elif t:
+            target_tickers.append(str(t).strip().upper())
+    target_tickers = sorted(list(dict.fromkeys(target_tickers)))
+    if not target_tickers:
+        target_tickers = ["NVDA"]
+
     tickers_key = ",".join(sorted(target_tickers))
     years_key = ",".join(str(y) for y in sorted(fiscal_years)) if fiscal_years else "LATEST"
     cache_key = f"{tickers_key}:{years_key}"
@@ -367,6 +387,7 @@ def retriever_node(
                 fiscal_years=years,
                 top_k=8,
                 hop=hop,
+                tickers=tickers,
             )
             for ch in wider_chunks:
                 if ch["chunk_id"] not in seen_ids:

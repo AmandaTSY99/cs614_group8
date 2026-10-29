@@ -114,12 +114,18 @@ class SupabaseIndex:
             if parts:
                 conditions.append(sql.SQL("(") + sql.SQL(" and ").join(parts) + sql.SQL(")"))
         where = sql.SQL("where ") + sql.SQL(" or ").join(conditions) if conditions else sql.SQL("")
-        rows = self.conn.execute(sql.SQL("""
+        query_sql = sql.SQL("""
             select chunk_id, 1 - (embedding <=> %(vec)s::vector) as score, content, ticker, fiscal_year, section, metadata
             from {} {}
             order by embedding <=> %(vec)s::vector
             limit %(k)s
-        """).format(self.table, where), params).fetchall()
+        """).format(self.table, where)
+        rows = self.conn.execute(query_sql, params).fetchall()
+        if not rows and conditions:
+            # Fallback if pgvector HNSW index scan skipped filtered candidates under complex OR
+            self.conn.execute("set enable_indexscan = off;")
+            rows = self.conn.execute(query_sql, params).fetchall()
+            self.conn.execute("set enable_indexscan = on;")
         results = []
         for id_, score, text, ticker, year, section, meta in rows:
             meta_dict = meta if isinstance(meta, dict) else (json.loads(meta) if meta else {})

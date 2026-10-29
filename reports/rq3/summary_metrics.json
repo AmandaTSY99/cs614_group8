@@ -1,101 +1,13 @@
 {
   "systems": {
-    "system_b": {
-      "n_queries": 40,
-      "latency": {
-        "mean_ms": 9355.9,
-        "std_ms": 1511.4,
-        "p50_ms": 9267.8,
-        "p90_ms": 10921.8,
-        "p99_ms": 13620.6,
-        "stages_mean_ms": {
-          "retrieval": 6710.9,
-          "rerank": 6544.9,
-          "agent_critic": 0.0,
-          "synthesis": 2359.0
-        }
-      },
-      "tokens": {
-        "mean_prompt": 1244.2,
-        "mean_completion": 79.1,
-        "mean_total": 1323.3
-      },
-      "economics": {
-        "mean_cost_per_query_usd": 0.000234,
-        "cost_per_1k_queries_usd": 0.234,
-        "cost_per_correct_answer_usd": 0.0005,
-        "robust_risk_adjusted_loss_per_query_usd": 0.5002
-      },
-      "hop_dynamics": {
-        "mean_hops": 1.0,
-        "hop_1_pct": 100.0,
-        "hop_1_clopper_pearson_95ci": [
-          91.19,
-          100.0
-        ],
-        "hop_counts": {
-          "h1": 40,
-          "h2": 0,
-          "h3": 0
-        }
-      },
-      "accuracy": {
-        "numeric_correct_pct": 55.56,
-        "verified_correct_count": 20
-      }
-    },
-    "system_a": {
-      "n_queries": 40,
-      "latency": {
-        "mean_ms": 3163.1,
-        "std_ms": 1348.5,
-        "p50_ms": 2934.9,
-        "p90_ms": 4866.6,
-        "p99_ms": 7174.5,
-        "stages_mean_ms": {
-          "retrieval": 291.6,
-          "rerank": 0.0,
-          "agent_critic": 0.0,
-          "synthesis": 2871.5
-        }
-      },
-      "tokens": {
-        "mean_prompt": 2097.4,
-        "mean_completion": 124.8,
-        "mean_total": 2222.2
-      },
-      "economics": {
-        "mean_cost_per_query_usd": 0.000389,
-        "cost_per_1k_queries_usd": 0.389,
-        "cost_per_correct_answer_usd": 0.0006,
-        "robust_risk_adjusted_loss_per_query_usd": 0.3754
-      },
-      "hop_dynamics": {
-        "mean_hops": 1.0,
-        "hop_1_pct": 100.0,
-        "hop_1_clopper_pearson_95ci": [
-          91.19,
-          100.0
-        ],
-        "hop_counts": {
-          "h1": 40,
-          "h2": 0,
-          "h3": 0
-        }
-      },
-      "accuracy": {
-        "numeric_correct_pct": 69.44,
-        "verified_correct_count": 25
-      }
-    },
     "system_c_v1": {
-      "n_queries": 40,
+      "n_queries": 97,
       "latency": {
-        "mean_ms": 23180.4,
-        "std_ms": 12888.3,
-        "p50_ms": 24465.2,
-        "p90_ms": 40398.0,
-        "p99_ms": 52415.6,
+        "mean_ms": 20929.9,
+        "std_ms": 11019.5,
+        "p50_ms": 21428.2,
+        "p90_ms": 36313.0,
+        "p99_ms": 45610.1,
         "stages_mean_ms": {
           "retrieval": 0.0,
           "rerank": 0.0,
@@ -104,42 +16,86 @@
         }
       },
       "tokens": {
-        "mean_prompt": 11063.5,
-        "mean_completion": 1120.2,
-        "mean_total": 12183.7
+        "mean_prompt": 11130.4,
+        "mean_completion": 1170.7,
+        "mean_total": 12301.1
       },
       "economics": {
-        "mean_cost_per_query_usd": 0.044461,
-        "cost_per_1k_queries_usd": 44.461,
-        "cost_per_correct_answer_usd": 0.0556,
-        "robust_risk_adjusted_loss_per_query_usd": 0.2445
+        "mean_cost_per_query_usd": 0.045387,
+        "cost_per_1k_queries_usd": 45.387,
+        "cost_per_correct_answer_usd": 0.0564,
+        "robust_risk_adjusted_loss_per_query_usd": 0.2413
       },
       "hop_dynamics": {
-        "mean_hops": 2.2,
-        "hop_1_pct": 32.5,
+        "mean_hops": 2.24,
+        "hop_1_pct": 28.87,
         "hop_1_clopper_pearson_95ci": [
-          18.57,
-          49.13
+          20.11,
+          38.95
         ],
         "hop_counts": {
-          "h1": 13,
-          "h2": 6,
-          "h3": 21
+          "h1": 28,
+          "h2": 18,
+          "h3": 51
         }
       },
       "accuracy": {
-        "numeric_correct_pct": 88.89,
-        "verified_correct_count": 32
+        "numeric_correct_pct": 89.66,
+        "verified_correct_count": 78
+      }
+    },
+    "system_b": {
+      "n_queries": 97,
+      "latency": {
+        "mean_ms": 6898.2,
+        "std_ms": 1373.2,
+        "p50_ms": 6608.2,
+        "p90_ms": 8436.1,
+        "p99_ms": 10984.9,
+        "stages_mean_ms": {
+          "retrieval": 4675.9,
+          "rerank": 4394.9,
+          "agent_critic": 0.0,
+          "synthesis": 1970.1
+        }
+      },
+      "tokens": {
+        "mean_prompt": 1251.5,
+        "mean_completion": 80.5,
+        "mean_total": 1332.1
+      },
+      "economics": {
+        "mean_cost_per_query_usd": 0.000236,
+        "cost_per_1k_queries_usd": 0.236,
+        "cost_per_correct_answer_usd": 0.0004,
+        "robust_risk_adjusted_loss_per_query_usd": 0.4745
+      },
+      "hop_dynamics": {
+        "mean_hops": 1.0,
+        "hop_1_pct": 100.0,
+        "hop_1_clopper_pearson_95ci": [
+          96.27,
+          100.0
+        ],
+        "hop_counts": {
+          "h1": 97,
+          "h2": 0,
+          "h3": 0
+        }
+      },
+      "accuracy": {
+        "numeric_correct_pct": 58.62,
+        "verified_correct_count": 51
       }
     },
     "system_c_v2": {
-      "n_queries": 40,
+      "n_queries": 97,
       "latency": {
-        "mean_ms": 19281.0,
-        "std_ms": 12285.5,
-        "p50_ms": 14642.4,
-        "p90_ms": 35521.9,
-        "p99_ms": 53098.6,
+        "mean_ms": 17410.6,
+        "std_ms": 10931.4,
+        "p50_ms": 13557.5,
+        "p90_ms": 32560.0,
+        "p99_ms": 50100.9,
         "stages_mean_ms": {
           "retrieval": 0.0,
           "rerank": 0.0,
@@ -148,32 +104,76 @@
         }
       },
       "tokens": {
-        "mean_prompt": 8934.4,
-        "mean_completion": 915.9,
-        "mean_total": 9850.3
+        "mean_prompt": 9656.4,
+        "mean_completion": 997.5,
+        "mean_total": 10653.9
       },
       "economics": {
-        "mean_cost_per_query_usd": 0.036075,
-        "cost_per_1k_queries_usd": 36.075,
-        "cost_per_correct_answer_usd": 0.0498,
-        "robust_risk_adjusted_loss_per_query_usd": 0.3111
+        "mean_cost_per_query_usd": 0.039103,
+        "cost_per_1k_queries_usd": 39.103,
+        "cost_per_correct_answer_usd": 0.0527,
+        "robust_risk_adjusted_loss_per_query_usd": 0.2968
       },
       "hop_dynamics": {
-        "mean_hops": 1.65,
-        "hop_1_pct": 62.5,
+        "mean_hops": 1.77,
+        "hop_1_pct": 54.64,
         "hop_1_clopper_pearson_95ci": [
-          45.8,
-          77.27
+          44.21,
+          64.78
         ],
         "hop_counts": {
-          "h1": 25,
-          "h2": 4,
-          "h3": 11
+          "h1": 53,
+          "h2": 13,
+          "h3": 31
         }
       },
       "accuracy": {
-        "numeric_correct_pct": 80.56,
-        "verified_correct_count": 29
+        "numeric_correct_pct": 82.76,
+        "verified_correct_count": 72
+      }
+    },
+    "system_a": {
+      "n_queries": 97,
+      "latency": {
+        "mean_ms": 2882.5,
+        "std_ms": 1543.9,
+        "p50_ms": 2429.0,
+        "p90_ms": 4513.5,
+        "p99_ms": 9877.6,
+        "stages_mean_ms": {
+          "retrieval": 335.9,
+          "rerank": 0.0,
+          "agent_critic": 0.0,
+          "synthesis": 2424.5
+        }
+      },
+      "tokens": {
+        "mean_prompt": 2063.6,
+        "mean_completion": 123.0,
+        "mean_total": 2186.6
+      },
+      "economics": {
+        "mean_cost_per_query_usd": 0.000383,
+        "cost_per_1k_queries_usd": 0.383,
+        "cost_per_correct_answer_usd": 0.0006,
+        "robust_risk_adjusted_loss_per_query_usd": 0.3612
+      },
+      "hop_dynamics": {
+        "mean_hops": 1.0,
+        "hop_1_pct": 100.0,
+        "hop_1_clopper_pearson_95ci": [
+          96.27,
+          100.0
+        ],
+        "hop_counts": {
+          "h1": 97,
+          "h2": 0,
+          "h3": 0
+        }
+      },
+      "accuracy": {
+        "numeric_correct_pct": 71.26,
+        "verified_correct_count": 62
       }
     }
   },
@@ -183,43 +183,43 @@
         "comparison": "system_c_v2 vs system_c_v1",
         "metric": "hops",
         "description": "H3c Hop Reduction (AAMR vs AMR)",
-        "statistic": 4.5,
-        "p_raw": 0.00073,
-        "p_adjusted_holm": 0.0036,
+        "statistic": 21.0,
+        "p_raw": 0.0,
+        "p_adjusted_holm": 0.0,
         "significant_at_05": true
       },
       {
         "comparison": "system_c_v2 vs system_c_v1",
         "metric": "latency_ms",
         "description": "AAMR Latency vs AMR",
-        "statistic": 189.0,
-        "p_raw": 0.00239,
-        "p_adjusted_holm": 0.0072,
+        "statistic": 1532.0,
+        "p_raw": 0.00238,
+        "p_adjusted_holm": 0.0048,
         "significant_at_05": true
       },
       {
         "comparison": "system_c_v1 vs system_b",
         "metric": "numeric_correct",
         "description": "H3b Accuracy vs System B Hybrid",
-        "statistic": 7.5,
-        "p_raw": 0.00134,
-        "p_adjusted_holm": 0.0054,
+        "statistic": 32.0,
+        "p_raw": 0.0,
+        "p_adjusted_holm": 0.0,
         "significant_at_05": true
       },
       {
         "comparison": "system_c_v2 vs system_b",
         "metric": "numeric_correct",
         "description": "AAMR Accuracy vs System B Hybrid",
-        "statistic": 6.0,
-        "p_raw": 0.00666,
-        "p_adjusted_holm": 0.0133,
+        "statistic": 26.0,
+        "p_raw": 3e-05,
+        "p_adjusted_holm": 0.0001,
         "significant_at_05": true
       },
       {
         "comparison": "system_b vs system_a",
         "metric": "latency_ms",
         "description": "System B Rerank Latency vs System A",
-        "statistic": 0.0,
+        "statistic": 98.0,
         "p_raw": 0.0,
         "p_adjusted_holm": 0.0,
         "significant_at_05": true
@@ -228,19 +228,19 @@
         "comparison": "system_b vs system_a",
         "metric": "numeric_correct",
         "description": "System B Accuracy vs System A",
-        "statistic": 18.0,
-        "p_raw": 0.13167,
-        "p_adjusted_holm": 0.1317,
-        "significant_at_05": false
+        "statistic": 135.0,
+        "p_raw": 0.04109,
+        "p_adjusted_holm": 0.0411,
+        "significant_at_05": true
       }
     ]
   },
   "routing_cascade_simulation": {
-    "n_queries": 40,
-    "cascade_accuracy_pct": 75.0,
-    "escalation_rate_pct": 50.0,
-    "mean_latency_ms": 19423.29,
-    "mean_cost_usd": 0.018615,
-    "cost_per_1k_queries_usd": 18.615
+    "n_queries": 97,
+    "cascade_accuracy_pct": 76.29,
+    "escalation_rate_pct": 47.42,
+    "mean_latency_ms": 15449.64,
+    "mean_cost_usd": 0.019909,
+    "cost_per_1k_queries_usd": 19.909
   }
 }
