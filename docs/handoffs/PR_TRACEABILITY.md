@@ -15,7 +15,7 @@ PR 1 `feat/system-c-aryan-citations` (base `feature/system-c-adaptive-rag` @ `71
 | 9 | Docker | PR 1: no changes needed · PR 2: `Dockerfile.eval` + `rq2-eval` service | — | Done (eval image untested) |
 | 10 | RQ2: RAGAS faithfulness, citation P/R/F1, numerical error rate | PR 2 `scripts/rq2/` | `tests/rq2/` | Done (smoke-tested) |
 
-## Changes to files Aryan doesn't own (commit `891f765`)
+## External Module Modifications (commit `891f765`)
 
 | File | Change | Why |
 | --- | --- | --- |

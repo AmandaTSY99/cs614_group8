@@ -1,8 +1,8 @@
-# Team Engineering Guide: Evaluating the 4 Financial RAG Systems
+# Comparative Engineering & Evaluation Guide: 4 Financial RAG Systems
 
-**Target Audience:** Amanda, Aryan, Kevin, Anish, and your AI coding assistants (Claude, Cursor, Copilot, ChatGPT).  
+**Scope:** Standardized evaluation protocol across System A, System B, System C v1, and System C v2.  
 **Branch:** `dev`  
-**Purpose:** Simple, plain-English instructions for connecting to the 4 RAG systems and running your evaluations for **RQ1 (Retrieval)**, **RQ2 (Grounding & Citations)**, and **RQ3 (Inference Economics)**.
+**Purpose:** Instructions for connecting to the 4 RAG systems and executing standardized evaluations for **RQ1 (Retrieval Completeness)**, **RQ2 (Grounding & Citations)**, and **RQ3 (Inference Economics)**.
 
 ---
 
@@ -125,41 +125,39 @@ All execution commands use Docker, mounting your local workspace so all outputs 
 > [!NOTE]
 > `runner` (or `system-c`) in the Docker command is simply the name of the Docker execution container. Running `scripts/rq1/evaluate_rq1.py` evaluates **all 4 systems** (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) side-by-side, not just System C!
 
-### Amanda & Kevin: RQ1 (Retrieval Completeness)
-* **What you are proving:** Does multi-hop retrieval find scattered evidence across different 10-K sections (e.g. Item 7 MD&A and Item 8 Footnotes) that single-pass RAG misses?
-* **Starter Skeleton Base Provided:** We wired up a working starter skeleton at `scripts/rq1/evaluate_rq1.py` so the plumbing to the 4 systems and Supabase `retrieved_contexts` is ready out of the box:
+### Research Question 1 (RQ1): Retrieval Completeness & Cross-Section Discovery
+* **Objective:** Determine whether adaptive multi-hop retrieval uncovers scattered evidence across non-adjacent 10-K sections (e.g., Item 7 MD&A and Item 8 Footnotes) that single-pass architectures omit.
+* **Evaluation Pipeline:** Executed via `scripts/rq1/evaluate_rq1.py` against all 4 systems and Supabase `retrieved_contexts`:
   ```bash
   # Instant evaluation across ALL 4 SYSTEMS against pre-computed benchmark records (0 API cost, takes ~2s):
   docker compose run --rm runner python scripts/rq1/evaluate_rq1.py
   ```
-  *(Note: You can use `runner` or `system-c` interchangeably as the container name).*  
-  *Note: **You own RQ1 completely.** This script is purely a starter skeleton to verify that all 4 systems return real retrieved chunks from Supabase (`sec_chunks`). Feel free to modify the retrieval metrics, add your own statistical tests/visualizations, or replace the script entirely with your own RQ1 evaluation pipeline.*
+  *(Note: `runner` or `system-c` can be used interchangeably as the container name).*
 
 ---
 
-### Aryan: RQ2 (Grounding, Citations & Hallucination)
-* **What you are proving:** Does evidence reflection stop the model from hallucinating numbers or fabricating financial figures?
-* **Starter Skeleton & Existing Pipeline:** Your RQ2 pipeline in `scripts/rq2/` is wired up to all 4 systems (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) and the 97-question `2015+` benchmark:
+### Research Question 2 (RQ2): Grounding, Citations & Hallucination Mitigation
+* **Objective:** Evaluate whether structured XBRL tool pre-routing and active evidence reflection reduce numerical hallucinations and improve factual citation attribution.
+* **Evaluation Pipeline:** Executed via `scripts/rq2/` across all 4 systems against the 97-question benchmark:
   ```bash
   # Step 1: Generate answers across ALL 4 SYSTEMS (or use pre-generated records in reports/rq3/records.jsonl)
   docker compose run --rm runner python scripts/rq2/generate.py --run-id full
 
   # Step 2: Automated LLM Judge Scoring (RAGAS + Faithfulness + Citations)
-  # Uses the isolated rq2-eval container to prevent openai version conflicts
   docker compose run --rm rq2-eval
   ```
-  *Note: **You own RQ2 completely.** The adapter plumbing (`load_golden()` and `records.jsonl`) is pre-populated with `retrieved_contexts`, `contexts_meta`, `citations`, `guardrail_report`, `target_sections`, and `ground_truth_numbers` so you can run, customize, or extend your RQ2 evaluation immediately.*
+  *Note: Evaluates `faithfulness`, `context_precision`, `claim_recall`, `numeric_exact_match`, and `citation_precision`.*
 
 ---
 
-### Anish: RQ3 (Inference Economics & Cost)
-* **What is proved:** How much latency and cost does agentic reasoning add over single-pass RAG, and is it justified?
-* **Execution:**
+### Research Question 3 (RQ3): Inference Economics & Cost Pareto Frontier
+* **Objective:** Quantify the marginal latency and monetary cost of adaptive multi-hop reasoning over single-pass baselines and analyze the cost Pareto frontier.
+* **Evaluation Pipeline:**
   ```bash
   docker compose run --rm runner python scripts/rq3/run_rq3_experiment.py --warmup 1 --max-budget-usd 5.0
   docker compose run --rm runner python scripts/rq3/evaluate_rq3.py
   ```
-* **Findings:** Saved in `reports/rq3/RQ3_FINDINGS_REPORT.md` and `reports/figures/`.
+* **Artifacts & Reports:** Saved in `reports/rq3/summary_metrics.csv` and visualization charts in `reports/figures/`.
 
 ---
 

@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """
-RQ1 Evaluation Script: Retrieval Completeness across Non-Adjacent Sections.
+Research Question 1 (RQ1) Evaluation Harness: Retrieval Completeness across Non-Adjacent Sections.
 
-Leads: Amanda & Kevin
-Course: CS614 Generative AI with LLMs
-
-Evaluates all 4 RAG systems (system_a, system_b, system_c_v1, system_c_v2) on:
+Evaluates all 4 RAG architectures (system_a, system_b, system_c_v1, system_c_v2) on:
 1. Evidence Recall@k: Proportion of gold evidence facts retrieved in the candidate context.
 2. Multi-Hop Evidence Completeness: % of multi-hop queries where ALL gold evidence items were found.
 3. Cross-Section Discovery Rate: % of questions with disparate 10-K sections (e.g. Item 7 + Item 8)

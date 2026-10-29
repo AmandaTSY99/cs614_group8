@@ -1,15 +1,13 @@
 """
 Evidence Sufficiency Critic Node (Self-RAG / Adaptive Reflection) for System C.
 
-Owned by: Anish (System Architect & Orchestration Lead)
-
-Responsibilities:
+Supports Research Question 3 (Early Stopping & Inference Economics):
 1. Evaluates whether `accumulated_evidence` contains sufficient factual and numerical premises
    to completely answer `original_query`.
 2. Computes quantitative evidence sufficiency score (0.0 to 1.0) and compares against
    `sufficiency_threshold` (default 0.85) to enable early stopping.
 3. Detects laser-focused missing entity gaps (`missing_entities`) and year gaps (`missing_years`)
-   to instruct Aryan's `generator.py` for focused follow-ups.
+   to instruct the downstream generator for focused follow-ups.
 4. Prevents redundant search loops when tabular XBRL or text chunks already provide complete
    factual coverage or when retrieval has saturated.
 5. Populates `is_sufficient`, `sufficiency_score`, `missing_premises`, `missing_entities`,
@@ -57,7 +55,7 @@ def _parse_critic_json(raw_text: str) -> Dict[str, Any]:
 def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     """
     LangGraph Node: Inspect `accumulated_evidence` at `current_hop` and decide whether
-    to stop early (`is_sufficient=True`) or trigger another hop via Aryan's `generator_node`.
+    to stop early (`is_sufficient=True`) or trigger another hop via `generator_node`.
     """
     hop = state.get("current_hop", 1)
     max_hops = state.get("max_hops", 3)

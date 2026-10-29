@@ -1,15 +1,12 @@
 """
 Query Decomposer & Complexity Planner Node for System C.
 
-Owned by: Anish (System Architect & Orchestration Lead)
-
-Responsibilities:
-1. Extracts `target_ticker`, `target_tickers`, and `fiscal_years` (and `target_pairs`) from `original_query`.
-2. Classifies `query_complexity` ("single_hop" vs "multi_hop") and determines tool routing
-   between structured XBRL (`tabular_tool`) and unstructured 10-K text chunks (`retriever`).
-3. Decomposes multi-ticker comparative queries (e.g. AAPL vs NVDA) into ordered, atomic,
-   ticker-specific sub-queries with tool destinations (`sub_query_plans`).
-4. Sets Hop 1's `current_sub_query` and initializes loop state.
+Supports Research Question 3 (Inference Economics & Early Stopping):
+1. Extracts `target_ticker`, `target_tickers`, and `fiscal_years` from `original_query`.
+2. Classifies `query_complexity` ("single_hop" vs "multi_hop") and routes between
+   deterministic XBRL (`tabular_tool`) and unstructured 10-K text chunks (`retriever`).
+3. Decomposes multi-entity or cross-year comparative queries into ordered sub-queries.
+4. Initializes Hop 1 state and sets `current_sub_query`.
 """
 
 import json

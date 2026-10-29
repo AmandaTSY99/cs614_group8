@@ -1,8 +1,10 @@
 """
 State Machine Schema for System C (Adaptive Multi-Hop RAG - AMR v1 & Agentic AAMR v2).
 
-Owned by: Anish (System Architect & Orchestration Lead)
-Shared Contract with: Aryan (Citations, Guardrails & Sub-Query Generator Lead)
+Defines the central LangGraph TypedDict state schemas supporting:
+- RQ1: Retrieval Evidence Accumulation & Cross-Section Discovery
+- RQ2: Grounding, Citation Records & Numerical Guardrail Audit
+- RQ3: Hop-by-Hop Telemetry, Cost Accounting & Early Stopping
 """
 
 from typing import Any, Dict, List, Optional
@@ -10,7 +12,7 @@ from typing_extensions import TypedDict
 
 
 class EvidenceChunk(TypedDict):
-    """Normalized chunk schema compatible with Amanda/Xavier's 10-K corpus & Aryan's Citation Mapper."""
+    """Normalized chunk schema compatible with SEC 10-K corpus & Citation Mapper."""
     chunk_id: str                # e.g. "NVDA_FY2026_2026-01-25:42" or "F-NVDA-2026"
     content: str                 # Markdown chunk text (including repeated table headers if table)
     metadata: Dict[str, Any]     # doc_id, ticker, filer, fiscal_year, section, chunk, source_type
@@ -41,32 +43,32 @@ class AdaptiveRAGState(TypedDict):
     target_pairs: List[ List[Any] ]            # List of [ticker, fiscal_year] pairs (compatible with build_vdb_base_RAG.ipynb)
     fiscal_years: List[int]
 
-    # --- 2. Planning & Decomposition (Anish: decomposer.py / Aryan: generator.py) ---
+    # --- 2. Planning & Decomposition (decomposer.py / generator.py) ---
     query_complexity: str                      # "single_hop", "multi_hop", or "tabular_quant" (used in v2 AAMR pre-router)
     sub_queries: List[str]                     # Planned sub-queries from decomposer + follow-ups
     sub_query_plans: List[Dict[str, Any]]      # Granular sub-query routing plans (query, target_tool, ticker, fiscal_year)
     current_sub_query: str                     # Active sub-query for the current retrieval hop
     needs_tabular_tool: bool                   # v2 AAMR flag: whether deterministic financials.csv tool should run
 
-    # --- 3. Retrieval Evidence Accumulator (Anish: retriever.py & tools/tabular_tool.py) ---
+    # --- 3. Retrieval Evidence Accumulator (retriever.py & tools/tabular_tool.py) ---
     accumulated_evidence: List[EvidenceChunk]
     tabular_evidence: List[str]                # Formatted [F-<ticker>-<year>] XBRL blocks from financials.csv (v2 AAMR)
     intermediate_answers: List[Dict[str, Any]] # Hop-by-hop reasoning trace
 
-    # --- 4. Loop Control & Sufficiency Reflection (Anish: critic.py) ---
+    # --- 4. Loop Control & Sufficiency Reflection (critic.py) ---
     current_hop: int                           # 1-indexed hop counter
     max_hops: int                              # Hard ceiling (default = 3)
     force_max_hops: bool                       # If True, disable early-stopping to benchmark Fixed Max-Hops in RQ3 ablation
     is_sufficient: bool                        # True if evidence covers all premises of original_query
     sufficiency_score: float                   # Quantitative evidence sufficiency score (0.0 to 1.0)
     sufficiency_threshold: float               # Early-stopping threshold (default = 0.85)
-    missing_premises: List[str]                # Explicit gaps identified by Critic (passed to Aryan's generator.py)
+    missing_premises: List[str]                # Explicit gaps identified by Critic (passed to generator.py)
     missing_entities: List[str]                # Laser-focused missing financial entities/metrics (e.g. ["2022 R&D spending"])
     missing_years: List[int]                   # Laser-focused missing fiscal years (e.g. [2022])
     redundant_search_prevented: bool           # True if loop halted early to prevent redundant duplicate retrieval
     critic_reasoning: str                      # Detailed explanation from Evidence Sufficiency Critic
 
-    # --- 5. Synthesis, Citations & Guardrails (Aryan: synthesizer.py & guardrails/verifier.py) ---
+    # --- 5. Synthesis, Citations & Guardrails (synthesizer.py & guardrails/verifier.py) ---
     draft_answer: Optional[str]                # Initial synthesized answer before guardrail audit
     final_answer: Optional[str]                # Verified, citation-grounded final response
     citations: List[CitationRecord]            # Structured list of citations extracted/mapped
@@ -76,7 +78,7 @@ class AdaptiveRAGState(TypedDict):
     max_repairs: int                           # Hard ceiling on self-correction repairs (default = 1)
     repair_history: List[Dict[str, Any]]       # Iteration-by-iteration repair diffs for RQ2 faithfulness ablation
 
-    # --- 6. Telemetry & Inference Economics (Anish: telemetry.py - RQ3 Lead) ---
+    # --- 6. Telemetry & Inference Economics (telemetry.py - RQ3 Evaluation) ---
     telemetry: Dict[str, Any]                  # Node latencies, prompt/completion tokens, USD cost, hop attribution
 
 

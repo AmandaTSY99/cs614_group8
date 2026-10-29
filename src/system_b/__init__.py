@@ -1,1 +1,1 @@
-"""Kevin's advanced single-pass RAG system."""
+"""System B: Advanced Single-Pass Hybrid RAG (BM25 + Dense + Cross-Encoder Reranking)."""

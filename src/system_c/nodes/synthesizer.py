@@ -1,15 +1,12 @@
 """
 Answer Synthesizer & Inline Table Citation Mapper Node for System C.
 
-Owned by: Aryan (Citations, Guardrails & RQ2 Lead)
-Integration Contract:
+Supports Research Question 2 (Factual Faithfulness & Citation Grounding):
 - Reads `original_query`, `accumulated_evidence`, and `tabular_evidence` from `AdaptiveRAGState`.
-- Labels each evidence block `[E1]`, `[E2]`, ... in the prompt; the model cites labels at the end of every
-  factual sentence and code expands them to handoff-format tags
-  (`[<TICKER> FY<YEAR>, <SHORT_SECTION>, <CHUNK_ID>]` or `[F-<TICKER>-<YEAR>]`).
-- Populates `draft_answer`, `final_answer` (expanded tags only), and `citations` (`List[CitationRecord]`,
-  one per (sentence, chunk) pair, via the shared resolver in `guardrails/citations.py`).
-- Uses `call_llm(state, "synthesizer", messages)` so RQ3 telemetry is captured automatically.
+- Labels each evidence block in prompt context and enforces bracketed citation tags on factual claims.
+- Expands citation labels to standardized citation tags (`[<TICKER> FY<YEAR>, <SECTION>, <CHUNK_ID>]` or `[F-<TICKER>-<YEAR>]`).
+- Populates `draft_answer`, `final_answer`, and structured `citations` (`List[CitationRecord]`).
+- Captures generation token and latency telemetry for RQ3 economics.
 """
 
 from typing import Any, Dict, List, Tuple
@@ -70,7 +67,7 @@ def _build_evidence_blocks(
 
 def synthesizer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     """
-    LangGraph Node (Aryan's Module):
+    LangGraph Node:
     Synthesizes the final citation-grounded response from `accumulated_evidence`.
     """
     evidence = state.get("accumulated_evidence", [])

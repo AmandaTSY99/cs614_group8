@@ -1,7 +1,7 @@
 # System C: AMH vs. AAMR Architectural Comparison & System Topology
 
 **Target Audience:** CS614 Group 8 Project Meeting & Milestone Sync  
-**Lead Authors:** Anish & Aryan (System C Leads)  
+**Module:** System C Architecture Comparison (Adaptive Multi-Hop vs. Agentic Adaptive Multi-Hop)  
 **Deployment:** Hugging Face Spaces (`app.py`)  
 
 ---

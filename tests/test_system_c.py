@@ -7,8 +7,8 @@ Verifies:
 3. Multi-hop conditioned loop (`Hop 1 -> Critic -> Generator -> Hop 2 -> Synthesizer`).
 4. Hard ceiling enforcement (`max_hops == 3` prevents infinite loops when `is_sufficient == False`).
 5. System C v2 (`v2_aamr`) autonomous tabular XBRL lookup (`[F-NVDA-2026]` from `data/financials.csv`).
-6. Aryan's Citation Mapper & Active Numerical Guardrail (flagging hallucinated numbers vs grounded numbers).
-7. Anish's RQ3 Inference Economics telemetry (latency, tokens, USD cost, and Hop Attribution).
+6. Citation Mapper & Active Numerical Guardrail (flagging hallucinated numbers vs grounded numbers).
+7. RQ3 Inference Economics telemetry (latency, tokens, USD cost, and Hop Attribution).
 """
 
 import os
@@ -42,7 +42,7 @@ def test_initial_state_schema():
 
 
 def test_single_hop_early_stopping():
-    """Simple single-hop query should stop at Hop 1 without invoking Aryan's follow-up generator."""
+    """Simple single-hop query should stop at Hop 1 without invoking follow-up generator."""
     res = run_system_c(
         query="What is NVDA primary business in 2026?",
         max_hops=3,
@@ -110,7 +110,7 @@ def test_v2_aamr_tabular_tool_integration():
 
 
 def test_guardrail_numerical_grounding_verifier():
-    """Verify Aryan's numerical guardrail accurately distinguishes grounded vs hallucinated numbers."""
+    """Verify numerical guardrail accurately distinguishes grounded vs hallucinated numbers."""
     evidence = [
         {
             "chunk_id": "NVDA_FY2026:10",
@@ -256,7 +256,7 @@ def test_critic_explicit_entity_and_year_gap_detection(monkeypatch):
     assert 2022 in out["missing_years"]
     assert len(out["missing_premises"]) >= 1
 
-    # Verify Aryan's generator receives the missing entity premise
+    # Verify generator receives the missing entity premise
     state.update(out)
     gen_out = generator_node(state)
     assert "2022 R&D spending" in gen_out["current_sub_query"] or "NVDA" in gen_out["current_sub_query"]
@@ -429,7 +429,7 @@ def test_financial_scale_normalizer_unit_matching():
     assert fuzzy_financial_match("75.0%", table_context) is True
     assert fuzzy_financial_match("999.9 billion", table_context) is False
 
-    # Test integration with Aryan's verifier
+    # Test integration with verifier
     evidence = [{"chunk_id": "NVDA:1", "content": table_context}]
     answer_with_scaled_units = "NVIDIA generated 115.18 billion in revenue with a 75.0% gross margin [NVDA:1]."
     report = verify_numerical_grounding(answer_with_scaled_units, evidence)

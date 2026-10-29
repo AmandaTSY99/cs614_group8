@@ -21,10 +21,9 @@ pinned: false
 * 📖 **[Team Engineering & Evaluation Guide](docs/guides/TEAM_RAG_EVALUATION_GUIDE.md)** — Step-by-step instructions for running RQ1, RQ2, and RQ3 evaluations across all 4 systems.
 * 🐳 **[Docker Quickstart Guide](DOCKER_QUICKSTART.md)** — One-line commands to run tests, demos, benchmarks, and Jupyter inside Docker.
 * 🏛️ **[System C Architecture & Mermaid State Graph](ARCHITECTURE.md)** — Complete LangGraph specification (AMR v1 & AAMR v2).
-* 🔎 **[System B Setup & Evaluation Guide (Kevin)](docs/SYSTEM_B.md)** — BM25 + RAG3 dense retrieval + weighted hybrid fusion + cross-encoder reranking.
-* 📈 **[System B Evaluation Report](reports/system_b/EVALUATION_REPORT.md)** — Compact benchmark summary and per-query results.
-* 🎤 **[Milestone 1 Demo Guide & Speaking Script](reports/MILESTONE1_DEMO_SCRIPT.md)** — Step-by-step presentation script and query traces.
-* 🤝 **[Aryan Handoff & Module Contracts](docs/handoffs/ARYAN_HANDOFF.md)** — Plug-and-play contracts for Citations, Guardrails, and RQ2.
+* 🔎 **[System B Architecture & Setup Guide](docs/SYSTEM_B.md)** — BM25 + dense retrieval + weighted hybrid fusion + cross-encoder reranking.
+* 📈 **[System B Evaluation Report](reports/system_b/EVALUATION_REPORT.md)** — Benchmark summary and per-query results.
+* 🎤 **[Milestone 1 Demo Guide](reports/MILESTONE1_DEMO_SCRIPT.md)** — Presentation walkthrough and query execution traces.
 * 📊 **[RQ3 Publication Figures](reports/figures/)** — Pareto frontier, latency distributions, and hop convergence charts.
 
 ---
@@ -43,13 +42,13 @@ docker compose build
 All 388 benchmark outputs across the 4 RAG systems are precomputed in `reports/rq3/records.jsonl`. Teammates can immediately evaluate their RQ metrics inside Docker:
 
 ```bash
-# Amanda & Kevin: RQ1 (Retrieval Completeness & Cross-Section Discovery)
+# RQ1 Evaluation: Retrieval Completeness & Cross-Section Discovery
 docker compose run --rm runner python scripts/rq1/evaluate_rq1.py
 
-# Aryan: RQ2 (Grounding, Citations & Hallucination Prevention)
+# RQ2 Evaluation: Grounding, Citations & Hallucination Prevention
 docker compose run --rm runner python scripts/rq2/report.py --run reports/rq2/full
 
-# Anish: RQ3 (Inference Economics & Cost Pareto Frontier)
+# RQ3 Evaluation: Inference Economics & Cost Pareto Frontier
 docker compose run --rm runner python scripts/rq3/evaluate_rq3.py
 ```
 
@@ -70,7 +69,7 @@ docker compose up jupyter
 
 ---
 
-## 3. System A (Amanda) — Vanilla Dense Baseline & RAG Variants
+## 3. System A — Vanilla Dense Baseline & RAG Variants
 
 Single-pass dense retrieval over persistent Chroma collections (`chroma_db/`) using `BAAI/bge-small-en-v1.5` embeddings, top-k retrieval, and single-pass answer generation (`openai/gpt-oss-120b` on Groq).
 
@@ -100,7 +99,7 @@ python -m src.system_a --benchmark --all-variants --limit 10                    
 
 ---
 
-## 4. System B (Kevin) — Hybrid Retrieval & Benchmark Runner
+## 4. System B — Hybrid Retrieval & Benchmark Runner
 
 BM25 + RAG3 dense retrieval + weighted hybrid fusion + cross-encoder reranking, with a single-pass answer generator and benchmark runner. See [docs/SYSTEM_B.md](docs/SYSTEM_B.md) for setup, commands, experimental controls, and limitations.
 

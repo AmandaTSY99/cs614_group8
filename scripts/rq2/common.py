@@ -69,7 +69,7 @@ def load_golden(path: Path = BENCHMARK_PATH) -> List[Dict[str, Any]]:
     records = json.loads(text) if path.suffix == ".json" else [json.loads(l) for l in text.splitlines() if l.strip()]
     questions = []
     for q in records:
-        # Normalize Amanda benchmark schema to adapter input conventions
+        # Normalize benchmark question schema to adapter input conventions
         if "query" not in q and "question" in q:
             q["query"] = q["question"]
         if "ground_truth_answer" not in q and "answer" in q:

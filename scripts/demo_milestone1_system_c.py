@@ -7,7 +7,7 @@ Curated SEC 10-K Benchmark Showcase for Sunday, 25 Oct Team Sync:
    instant Hop-1 early-stopping by the Evidence Sufficiency Critic (zero wasted hops).
 2. Query 2 (Multi-Hop MD&A + Footnotes): Tests cross-statement evidence accumulation where
    Hop 1 retrieves MD&A business drivers, the Critic detects missing footnote commitments,
-   Aryan's Generator creates a conditioned Hop-2 query, and Synthesizer unites both sections.
+   the Generator creates a conditioned Hop-2 query, and Synthesizer unites both sections.
 3. Query 3 (Quantitative Tabular: v1_amr vs v2_aamr): Side-by-side comparison demonstrating how
    System C v2's autonomous `tabular_tool` (XBRL financials.csv) eliminates numerical grounding
    errors and provides exact `[F-<ticker>-<year>]` citations.
@@ -145,7 +145,7 @@ def print_query_trace(idx: int, item: Dict[str, Any], state: AdaptiveRAGState) -
         print("     └──")
 
     # Step 4: Final Synthesized Answer & Inline Citations
-    print(f"\n  {BOLD}{BLUE}4. Final Synthesized Answer (Aryan's Synthesizer & Citation Mapper):{RESET}")
+    print(f"\n  {BOLD}{BLUE}4. Final Synthesized Answer (Synthesizer & Citation Mapper):{RESET}")
     answer = state.get("final_answer", "") or ""
     # Print indented answer
     for line in answer.strip().split("\n"):
@@ -163,7 +163,7 @@ def print_query_trace(idx: int, item: Dict[str, Any], state: AdaptiveRAGState) -
     print(f"     • Citations Formatted: {len(citations)} records mapped")
 
     # Step 6: RQ3 Telemetry
-    print(f"\n  {BOLD}{BLUE}6. RQ3 Inference Economics Metrics (Anish):{RESET}")
+    print(f"\n  {BOLD}{BLUE}6. RQ3 Inference Economics Metrics:{RESET}")
     lat_ms = summary.get("total_latency_ms", 0.0)
     tok = summary.get("total_tokens", 0)
     cost = summary.get("estimated_cost_usd", 0.0)
@@ -218,9 +218,8 @@ def export_markdown_report(results: List[Dict[str, Any]], detailed_states: List[
     lines = [
         "# Milestone 1 Demo: System C (Adaptive Multi-Hop RAG) Showcase",
         "",
-        "**Date:** 24-25 October 2026  ",
-        "**Authors:** Anish (System Architecture & RQ3 Lead) & Aryan (Synthesizer, Citations & RQ2 Lead)  ",
-        "**Target Milestone:** Milestone 1 — Team Sync & 3-System Comparative Demo  ",
+        "**Target:** Financial Multi-Hop QA & Cross-Section Synthesis  ",
+        "**Target Milestone:** Milestone 1 — Comparative Evaluation Showcase  ",
         "",
         "---",
         "",

@@ -1,17 +1,13 @@
 """
 Active Hallucination & Numerical Grounding Guardrail Node for System C.
 
-Owned by: Aryan (Citations, Guardrails & RQ2 Lead)
-Integration Contract:
+Supports Research Question 2 (Factual Faithfulness & Grounding Verification):
 - Inspects `draft_answer` (or `final_answer`) against `accumulated_evidence`.
 - Splits the answer into sentences and resolves each sentence's inline citation tags to chunk_ids.
-- Step B (deterministic): every dollar figure / percentage / bps / comma-or-decimal number is checked
-  against ONLY the chunks cited in its own sentence -> verified | derived | ungrounded | uncited.
-- Step C (LLM, switchable via `GUARDRAIL_SEMANTIC_CHECK`): one batched `call_llm` judging cited,
-  number-free factual sentences -> supported | partial | unsupported (| unchecked on parse failure).
-- Populates `guardrail_passed` and `guardrail_report` (legacy RQ2 keys plus sentence-level output).
-- Output keys are exactly the handoff contract: `final_answer`, `guardrail_passed`, `guardrail_report`,
-  `telemetry`. `citations` are rebuilt by `repair_node` when it rewrites the answer.
+- Deterministic numerical audit: every dollar figure, percentage, bps, and numerical claim is checked
+  against cited evidence chunks -> verified | derived | ungrounded | uncited.
+- Semantic sentence verification (optional): judges cited, number-free factual sentences.
+- Populates `guardrail_passed` and `guardrail_report` with verified and ungrounded claim details.
 """
 
 import json
@@ -500,7 +496,7 @@ def _finalize_report(report: Dict[str, Any]) -> bool:
 
 def guardrail_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     """
-    LangGraph Node (Aryan's Module):
+    LangGraph Node:
     Audits `draft_answer` (numbers, citations, and optionally sentence faithfulness) and produces
     `final_answer` + `guardrail_report`.
     """

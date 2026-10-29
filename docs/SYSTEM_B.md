@@ -1,4 +1,4 @@
-# System B — Kevin
+# System B: Advanced Single-Pass Hybrid Retrieval Architecture
 
 Published evaluation artifacts are limited to the report, manifest, summary JSON, and per-question CSV. Raw JSONL runs and intermediate outputs remain local and are ignored by Git. To reproduce results on another machine, obtain RAG3 and follow the setup below; local resume files are not included in a fresh clone.
 
@@ -6,7 +6,7 @@ Advanced single-pass RAG: RAG3 dense retrieval + Okapi BM25 + weighted score fus
 
 ## Setup
 
-### This Windows workspace
+### Local Workspace Setup
 
 The supplied `chroma_db.zip` has been extracted to `chroma_db/`. Its RAG3 collection contains 141,833 chunks. The original archives in Downloads are unchanged; the optional RAG5 merge has not been run. A local `.venv` has been installed with the baseline versions of Chroma (1.5.9), sentence-transformers (6.1.0), and OpenAI (3.31.0).
 
@@ -23,7 +23,7 @@ The first local retrieval check is saved in `reports/system_b/rag3_smoke.jsonl`.
 
 Use the baseline Docker environment (`docker compose build`), then run the commands below with `docker compose run --rm jupyter` prepended. Alternatively install the repository requirements into a Python virtual environment.
 
-Copy Amanda's complete Chroma database directory to `chroma_db/` (or pass `--chroma-dir`). It must contain `chroma.sqlite3` and the associated index directories. The collection is `rag3_structure_bge`; query embeddings use `BAAI/bge-small-en-v1.5`, normalized vectors, and the baseline BGE query prefix. Do not substitute BGE-m3 against these vectors. The notebook is the source of truth for how the database was built. This implementation opens an existing collection; it does not rebuild or silently replace it.
+Ensure the complete baseline Chroma database directory is present at `chroma_db/` (or pass `--chroma-dir`). It must contain `chroma.sqlite3` and the associated index directories. The collection is `rag3_structure_bge`; query embeddings use `BAAI/bge-small-en-v1.5`, normalized vectors, and the baseline BGE query prefix. Do not substitute BGE-m3 against these vectors. The notebook is the source of truth for how the database was built. This implementation opens an existing collection; it does not rebuild or silently replace it.
 
 First retrieval downloads the embedding and reranking models if not cached. Default reranker: `BAAI/bge-reranker-large`; `--reranker` allows an explicit alternative. Model loading errors fail the run. Benchmark results record the selected model.
 

@@ -32,13 +32,13 @@ docker compose build
 All 388 benchmark outputs across the 4 systems are precomputed in `reports/rq3/records.jsonl`. Teammates can immediately evaluate their metrics in Docker with zero API spend:
 
 ```bash
-# Amanda & Kevin: RQ1 (Retrieval Completeness & Cross-Section Discovery)
+# RQ1 Evaluation: Retrieval Completeness & Cross-Section Discovery
 docker compose run --rm runner python scripts/rq1/evaluate_rq1.py
 
-# Aryan: RQ2 (Grounding, Citations & Hallucination Prevention)
+# RQ2 Evaluation: Grounding, Citations & Hallucination Prevention
 docker compose run --rm runner python scripts/rq2/report.py --run reports/rq2/full
 
-# Anish: RQ3 (Inference Economics & Cost Pareto Frontier)
+# RQ3 Evaluation: Inference Economics & Cost Pareto Frontier
 docker compose run --rm runner python scripts/rq3/evaluate_rq3.py
 ```
 *(Note: `runner` and `system-c` point to the same container image and can be used interchangeably).*

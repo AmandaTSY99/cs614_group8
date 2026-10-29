@@ -2,8 +2,6 @@
 """
 Publication-Quality Visualization for RQ3 Inference Economics & Pareto Frontier.
 
-Owned by: Anish (RQ3 Lead: Latency, Token Consumption, Dollar Cost & Pareto Frontier)
-
 Generates:
 1. `reports/figures/rq3_pareto_frontier.png`: Cost vs. Latency vs. Token Consumption.
 2. `reports/figures/rq3_latency_breakdown.png`: p50 vs. p90 vs. Mean latency comparison.

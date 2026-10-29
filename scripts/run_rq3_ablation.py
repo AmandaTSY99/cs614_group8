@@ -2,8 +2,6 @@
 """
 RQ3 Inference Economics & Architectural Ablation Harness for System C.
 
-Owned by: Anish (RQ3 Lead: Latency, Token Consumption, Dollar Cost & Pareto Frontier)
-
 Ablation Conditions Benchmarked:
 1. `fixed_1hop`: Fixed 1-Hop Baseline (max_hops=1, single-pass retrieval)
 2. `fixed_3hop`: Fixed 3-Hop Exhaustive (max_hops=3, force_max_hops=True, no early-stopping)
@@ -431,7 +429,7 @@ def print_ablation_summary_table(ablation_data: Dict[str, Any]) -> None:
 
     print(footer)
 
-    print(f"\n{BOLD}Pareto Frontier Analysis & Key Empirical Findings for RQ3 (Anish Lead):{RESET}")
+    print(f"\n{BOLD}Pareto Frontier Analysis & Key Empirical Findings for RQ3:{RESET}")
     print("1. Fixed 1-Hop is the cheapest and fastest, but fails on complex cross-section queries (high ungrounded claims).")
     print("2. Fixed 3-Hop incurs 2.5x to 3.0x token and latency cost with diminishing marginal returns on simple queries.")
     print("3. Adaptive AMR (v1) achieves optimal balance: halts single-hop queries at Hop 1, cutting cost by ~45% while preserving multi-hop recall.")

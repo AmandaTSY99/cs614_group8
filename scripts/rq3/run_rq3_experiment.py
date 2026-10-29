@@ -2,7 +2,7 @@
 """
 RQ3 Controlled Batch Experiment Runner: Inference Economics across 4+1 RAG Systems.
 
-Evaluates 5 systems head-to-head on Amanda's academic benchmark:
+Evaluates 5 systems head-to-head on the standardized benchmark pool:
 1. `system_a`: Vanilla Dense Baseline (rag5 contextual headers, 1 LLM call)
 2. `system_b`: Advanced Single-Pass Hybrid RAG (Okapi BM25 + dense + cross-encoder rerank, 1 LLM call)
 3. `system_c_v1`: Adaptive Multi-Hop RAG (AMR: dynamic 1-3 hops + Sufficiency Critic + Guardrail)

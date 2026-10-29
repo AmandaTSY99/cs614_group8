@@ -1,8 +1,7 @@
 """
 Domain-Specific Financial Scale & Unit Normalization Engine for System C Guardrails.
 
-Owned by: Anish (System Architect) - Provided as a modular utility for Aryan's Verifier.
-
+Supports Research Question 2 (Numerical Accuracy & Precision):
 Solves the classic SEC 10-K RAG false-positive issue:
 - Filings report tables in millions (e.g. "$115,185" with header "(in millions)").
 - LLMs synthesize this as "$115.18 billion" or "$115.2B".

@@ -1,8 +1,8 @@
 """
 Agentic Tabular Financials Lookup Tool for System C v2 (AAMR).
 
-Adapts Amanda's `lookup_financials` (`build_vdb_base_RAG.ipynb` Section 3.5) into an
-autonomous LangGraph tool node so System C v2 only fetches structured XBRL figures
+Encapsulates structured XBRL financial statement lookup (`financials.csv`) into an
+autonomous LangGraph tool node so System C v2 fetches authoritative figures
 when the Query Decomposer / Planner detects quantitative or ratio requirements.
 """
 
@@ -126,7 +126,7 @@ def tabular_tool_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     LangGraph Node (System C v2 AAMR):
     Executes deterministic tabular lookup over `data/financials.csv` when `needs_tabular_tool` is True
     and appends both `tabular_evidence` and a structured `EvidenceChunk` (`[F-<ticker>-<year>]`)
-    so Aryan's Citation Mapper and Guardrail can cite and verify exact XBRL numbers.
+    so the Citation Mapper and Guardrail can cite and verify exact XBRL numbers.
     """
     telemetry = dict(state.get("telemetry", {}))
     with track_node_latency(telemetry, "tabular_tool"):

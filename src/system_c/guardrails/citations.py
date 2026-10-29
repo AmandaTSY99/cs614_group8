@@ -1,12 +1,11 @@
 """
-Shared Citation Utilities for System C (synthesizer, guardrail and repair).
+Shared Citation Utilities for System C (Synthesizer, Guardrail, and Repair).
 
-Owned by: Aryan (Citations, Guardrails & RQ2 Lead)
-- Tag-aware sentence splitting and the ONE strict tag -> chunk_id resolver (no section-name fallback;
-  unresolved tags are reported as invalid, never dropped).
-- Handoff-format tag building: `[<TICKER> FY<YEAR>, <SHORT_SECTION>, <CHUNK_ID>]` / `[F-<TICKER>-<YEAR>]`.
-- `[E<n>]` evidence-label expansion for the synthesizer prompt.
-- `CitationRecord` building: one record per (sentence, chunk) pair.
+Supports Research Question 2 (Citation Grounding, Attribution & Precision):
+- Tag-aware sentence splitting and strict tag -> chunk_id resolution.
+- Standardized citation tag formatting: `[<TICKER> FY<YEAR>, <SECTION>, <CHUNK_ID>]` / `[F-<TICKER>-<YEAR>]`.
+- Evidence-label expansion for the synthesizer prompt.
+- Structured `CitationRecord` generation per (sentence, chunk) pair.
 """
 
 import re

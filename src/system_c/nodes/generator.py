@@ -1,16 +1,13 @@
 """
 Conditioned Follow-Up Sub-Query Generator Node for System C.
 
-Owned by: Aryan (Citations, Guardrails & Conditioned Sub-Query Lead)
-Integration Contract with Anish's Critic & Retriever:
+Supports Research Question 1 (Cross-Section Clue Chaining & Multi-Hop Retrieval):
 - Reads `original_query`, `accumulated_evidence`, `missing_entities`, `missing_years`, `missing_premises`
-  and `critic_reasoning` from `AdaptiveRAGState`; sentinel values ("None", "N/A", ...) count as empty.
-- Shows the LLM a compact one-line-per-chunk summary of ALL accumulated evidence (capped at 40 lines).
-- The LLM still chooses the Hop N+1 search query (`current_sub_query`); a near-duplicate of an earlier
-  sub-query (word overlap >= 0.8 after removing section words and stopwords), or an unparseable reply,
-  is replaced by a short fallback: `<ticker> <first missing entity or premise>` (at most 15 words).
-- Increments `current_hop`.
-- Uses `call_llm(state, "generator", messages)` so RQ3 token & latency telemetry are recorded automatically.
+  and `critic_reasoning` from `AdaptiveRAGState`.
+- Synthesizes a compact summary of accumulated evidence across preceding hops.
+- Formulates a targeted Hop N+1 search query (`current_sub_query`) to retrieve missing premises.
+- Prevents query stagnation by detecting semantic duplicates and enforcing fallback progress.
+- Increments `current_hop` and records token & latency telemetry for RQ3.
 """
 
 import json
@@ -131,7 +128,7 @@ def _fallback_query(state: AdaptiveRAGState, entities: List[str], premises: List
 
 def generator_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     """
-    LangGraph Node (Aryan's Module):
+    LangGraph Node:
     Generates the next conditioned sub-query when `critic_node` determines `is_sufficient == False`.
     """
     next_hop = state.get("current_hop", 1) + 1

@@ -1,5 +1,5 @@
 """
-Streamlit & Cloud Integration Bridge for System B (Kevin's Hybrid BM25 + Dense + Cross-Encoder Rerank).
+Streamlit & Cloud Integration Bridge for System B (Hybrid BM25 + Dense + Cross-Encoder Reranking).
 
 Preserves 100% of `src/system_b/` core files (`retrieval.py`, `pipeline.py`, `adapters.py`, `__main__.py`)
 untouched while enabling:
@@ -30,7 +30,7 @@ from src.system_c.telemetry import summarize_rq3_metrics
 
 
 def load_system_b_eval_summary() -> Dict[str, Any]:
-    """Load Kevin's published System B benchmark summary (`reports/system_b/full_eval_summary/summary.json`)."""
+    """Load published System B benchmark summary (`reports/system_b/full_eval_summary/summary.json`)."""
     summary_path = Path(__file__).resolve().parents[2] / "reports" / "system_b" / "full_eval_summary" / "summary.json"
     if summary_path.is_file():
         try:

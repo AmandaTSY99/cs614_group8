@@ -2,7 +2,7 @@
 """
 Sync and filter benchmark QA dataset from upstream branch (origin/feature/benchmark_set).
 
-This script isolates Amanda's benchmark dataset and extracts a verified pool
+This script isolates the benchmark QA dataset and extracts a verified pool
 strictly for filings from 2015 onwards, ensuring our production and UI pipelines
 remain reproducible and immune to upstream branch mutation.
 

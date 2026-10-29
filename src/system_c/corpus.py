@@ -1,7 +1,7 @@
 """
 SEC 10-K Corpus Loader, Contextual Structure Chunker, and Tabular Financials Lookup.
 
-100% compatible with Amanda's `build_vdb_base_RAG.ipynb` (RAG 3, RAG 4 `lookup_financials`, and RAG 5 `doc_header`).
+Standardized against baseline RAG corpus specifications (`build_vdb_base_RAG.ipynb` RAG 1–5).
 """
 
 import re

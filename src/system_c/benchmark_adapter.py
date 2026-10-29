@@ -1,8 +1,8 @@
 """
 System C Benchmark Adapter & FinQA Grounding Engine.
 
-Loads, translates, and programmatically evaluates Amanda's academic benchmark QA pool
-(benchmark_qa_pool_2015.json) for System C RAG and the Streamlit frontend.
+Loads, translates, and programmatically evaluates the standardized benchmark QA pool
+(benchmark_qa_pool_2015.json) for System C RAG and the evaluation harness.
 """
 
 import json
@@ -129,7 +129,7 @@ def run_finqa_program(program: str) -> Optional[float]:
 
 def benchmark_to_system_c_query(item: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Translate an Amanda benchmark item into a unified System C query payload.
+    Translate a standardized benchmark item into a unified System C query payload.
     Ensures seamless compatibility with System C's multi-hop state graph.
     """
     all_years = item.get("applicable_years") or []

@@ -1,7 +1,8 @@
 """
 FastAPI Enterprise Gateway & Streaming Microservice for System C.
 
-Owned by: Anish (System Architect & Orchestration Lead)
+Provides REST and Server-Sent Events (SSE) interfaces to execute queries through
+the adaptive multi-hop LangGraph state machine with full RQ1/RQ2/RQ3 telemetry.
 
 Endpoints:
 1. `GET /`: Health check, active LLM provider, database connection status, and API routes.

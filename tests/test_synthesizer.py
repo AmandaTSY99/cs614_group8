@@ -1,5 +1,5 @@
 """
-Unit tests for Aryan's Synthesizer & Citations hardening (workplan §4.2), run in mock mode.
+Unit tests for Answer Synthesizer & Citation Mapper (RQ2 Citation Attribution), run in mock mode.
 
 Covers: `[E<n>]` label expansion to handoff-format tags, the shared strict resolver, one CitationRecord
 per (sentence, chunk), and final `citations` matching the final answer through the

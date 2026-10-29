@@ -9,7 +9,7 @@ BGE_PREFIX = 'Represent this sentence for searching relevant passages: '
 class ChromaSource:
     def __init__(self, path='chroma_db', collection='rag3_structure_bge'):
         if not (Path(path) / 'chroma.sqlite3').is_file():
-            raise FileNotFoundError(f'RAG3 database missing at {path}. Copy Amanda\'s Chroma folder here first.')
+            raise FileNotFoundError(f'RAG3 database missing at {path}. Please provide the baseline Chroma vector store directory.')
         import chromadb
         self.client = chromadb.PersistentClient(path=str(path))
         self.collection = self.client.get_collection(collection, embedding_function=None)

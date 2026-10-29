@@ -79,4 +79,3 @@ Judge: none (custom metrics only). Cells: mean [bootstrap 95% CI] (n scored; na 
 - Citation precision/recall/F1 are section-level (top-level 10-K item, `financials.csv` = any `[F-…]` citation), because the golden set has no gold chunk IDs. Answers with no citations are N/A, not 0; `citation_coverage` is the share of answers with at least one citation.
 - Section aliases (a limitation of section-level matching): a cited `Item 15` chunk that is financial statements or notes counts as `Item 8`, and a cover-page chunk (no Item heading; registrant name, address, file number) counts as `Item 1`, matching how the golden set labels those facts.
 - RAGAS metrics see the answer with citation tags stripped.
-

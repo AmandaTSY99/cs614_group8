@@ -1,7 +1,10 @@
 """
 LangGraph State Machine Compiler & CLI Runner for System C.
 
-Owned by: Anish (System Architect & Orchestration Lead)
+Implements the adaptive multi-hop state graph:
+- Planning, Decomposition & Sufficiency Reflection (RQ3 Early Stopping)
+- Hybrid Retrieval & Clue Chaining (RQ1 Cross-Section Discovery)
+- Answer Synthesis, Citation Grounding & Guardrail Audit (RQ2 Faithfulness)
 
 Supports both architectural evolutions:
 1. `mode="v1_amr"`  (Adaptive Multi-Hop RAG):
@@ -46,9 +49,9 @@ def route_after_critic(
     state: AdaptiveRAGState,
 ) -> Literal["generator", "synthesizer"]:
     """
-    Conditional Reflection Edge (Anish's Core Loop Control):
-    - If `is_sufficient == True` OR `current_hop >= max_hops`, route to Aryan's `synthesizer`.
-    - Otherwise (`is_sufficient == False` and `current_hop < max_hops`), route to Aryan's
+    Conditional Reflection Edge:
+    - If `is_sufficient == True` OR `current_hop >= max_hops`, route to `synthesizer`.
+    - Otherwise (`is_sufficient == False` and `current_hop < max_hops`), route to
       `generator` to formulate a conditioned Hop N+1 sub-query.
     """
     hop = state.get("current_hop", 1)
@@ -62,7 +65,7 @@ def route_after_guardrail(
     state: AdaptiveRAGState,
 ) -> Literal["repair", "__end__"]:
     """
-    Active Closed-Loop Self-Healing Edge (Anish):
+    Active Closed-Loop Self-Healing Edge:
     - If guardrail flagged ungrounded numbers AND repair_count < max_repairs,
       route to repair_node to excise or ground the hallucinated figures.
     - Otherwise, terminate execution.
@@ -76,7 +79,7 @@ def build_system_c_graph(checkpointer: Optional[Any] = None):
     """Compile and return the executable LangGraph state machine for System C."""
     workflow = StateGraph(AdaptiveRAGState)
 
-    # Register nodes (Anish's Orchestration + Aryan's Generation/Citations/Guardrails + v2 Tooling + Self-Healing)
+    # Register nodes (Orchestration + Generation/Citations/Guardrails + v2 Tooling + Self-Healing)
     workflow.add_node("decomposer", decomposer_node)
     workflow.add_node("tabular_tool", tabular_tool_node)
     workflow.add_node("retriever", retriever_node)
@@ -209,7 +212,7 @@ def main() -> None:
     print("GUARDRAIL REPORT (RQ2):")
     print(json.dumps(result["guardrail_report"], indent=2))
     print("-" * 80)
-    print("RQ3 INFERENCE ECONOMICS SUMMARY (Anish):")
+    print("RQ3 INFERENCE ECONOMICS SUMMARY:")
     print(json.dumps(result["telemetry"].get("rq3_summary", {}), indent=2))
 
 

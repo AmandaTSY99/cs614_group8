@@ -1,5 +1,5 @@
 """
-Unit tests for Aryan's Guardrail + Repair hardening (workplan §4.1), run in mock mode.
+Unit tests for Numerical Guardrail & Self-Correction Repair (RQ2 Grounding Verification), run in mock mode.
 
 Covers: number extraction, per-sentence cited-chunk matching, scale normalisation, derived figures,
 uncited numbers, invalid citations, the switchable semantic check, repair inputs, and the guardrail and

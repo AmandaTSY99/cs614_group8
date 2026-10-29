@@ -1,12 +1,10 @@
 """
 Hybrid Retriever + Cross-Encoder Reranker Node for System C.
 
-Owned by: Anish (System Architect & Orchestration Lead)
-
-Supports:
-1. Live Hybrid Retrieval (BM25 lexical + Dense embeddings + Cross-Encoder Reranking) over the 10-K filings in `data/`.
-2. Plug-and-play connection to Amanda/Xavier's Chroma index (`chroma_db/`) if already built on disk.
-3. Fast in-memory lexical + structure-chunked fallback on `data/<TICKER>/10-K/` so tests and demos work out-of-the-box without waiting 20 minutes to embed 130k chunks.
+Supports Research Question 1 (Retrieval Recall & Non-Adjacent Section Discovery):
+1. Hybrid Retrieval (BM25 lexical + Dense embeddings + Cross-Encoder Reranking) over 10-K filings.
+2. Connection to Supabase pgvector `sec_chunks` and local Chroma index (`chroma_db/`).
+3. Multi-hop evidence accumulation with chunk deduplication and hop attribution tags.
 """
 
 import os

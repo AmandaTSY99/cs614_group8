@@ -2,8 +2,6 @@
 """
 Supabase Enterprise Sync Tool for System C.
 
-Owned by: Anish (System Architect & Orchestration Lead)
-
 Syncs:
 1. Structured XBRL financial line items from `data/financials.csv` into `sec_financials` table.
 2. Structure-chunked 10-K sections into `sec_chunks` table for SQL-partitioned retrieval.
@@ -101,7 +99,7 @@ def sync_financials():
 
 
 def sync_chunks(min_year: int = 2023):
-    """Sync pre-computed structure chunks (matching Amanda & Xavier's chunk_by_structure) into `sec_chunks`."""
+    """Sync pre-computed structure chunks (matching baseline chunk_by_structure) into `sec_chunks`."""
     import json
     from src.system_c.corpus import load_filings, chunk_corpus
 

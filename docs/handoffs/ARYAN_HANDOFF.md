@@ -1,31 +1,26 @@
-# Aryan Handoff: System C Integration, Contracts & Git Workflow
+# System C Engineering Handoff: Module Contracts & Integration Guidelines
 
-**To:** Aryan (Citations, Guardrails & RQ2 Lead)  
-**From:** Anish (System Architect, Orchestration & RQ3 Lead)  
-**Shared Integration Branch:** `feature/system-c-adaptive-rag` (aliased as `feat/system-c-core`)  
-**Your Working Branch:** `feat/system-c-aryan-citations`  
-**Target Milestones:** Milestone 1 Demo (Sun, 25 Oct) & Checkpoint 2 Empirical Runs (Thu, 29 Oct)
+**Module:** Citations, Numerical Guardrails & Research Question 2 (RQ2) Specification  
+**Architecture:** Adaptive Multi-Hop LangGraph State Machine (`v1_amr` & `v2_aamr`)  
 
 ---
 
-## 1. What Is Already Built & Working Out-of-the-Box
+## 1. System C Baseline Capabilities
 
-I have built and verified the complete LangGraph state machine (`v1_amr` and `v2_aamr`) under [`src/system_c/`](file:///Users/anishdobz/projects/cs614_group8/src/system_c) and synced our branch with Amanda's latest `origin/feature/rag-baseline` (`build_vdb_base_RAG.ipynb` RAG 1–5):
+The complete LangGraph state machine (`v1_amr` and `v2_aamr`) is implemented under [`src/system_c/`](file:///Users/anishdobz/projects/cs614_group8/src/system_c):
 
 1. **[`src/system_c/state.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/state.py)**: Defines `AdaptiveRAGState`, `EvidenceChunk`, and `CitationRecord`.
 2. **[`src/system_c/llm.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/llm.py)**: Unified LLM wrapper (`call_llm(state, node_name, messages)`).
-   * Supports **local Ollama (`qwen2.5:7b`) with zero API key**, **Groq (`openai/gpt-oss-120b`)**, **OpenAI (`gpt-4o-mini`)**, and **Mock mode (`LLM_PROVIDER=mock`)** for instant unit tests.
-   * **CRITICAL RULE:** Always use `call_llm(state, node_name, messages)` inside your nodes! It automatically records prompt/completion tokens, latency (`ms`), and USD cost into `state["telemetry"]` for our **RQ3 Inference Economics** benchmark.
+   * Supports local Ollama (`qwen2.5:7b`), Groq, OpenAI (`gpt-4o-mini`, `gpt-5.4`), and Mock mode (`LLM_PROVIDER=mock`) for rapid deterministic unit tests.
+   * Automatically records prompt/completion tokens, latency (`ms`), and USD cost into `state["telemetry"]` for **RQ3 Inference Economics**.
 3. **[`src/system_c/corpus.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/corpus.py) & [`src/system_c/tools/tabular_tool.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/tools/tabular_tool.py)**:
-   * Uses the exact same structure-preserving chunker (`chunk_by_structure`), contextual headers (`doc_header`), and XBRL `financials.csv` citation tags (`[F-<ticker>-<year>]`) as Amanda's `build_vdb_base_RAG.ipynb`.
+   * Uses structure-preserving chunking (`chunk_by_structure`), contextual headers (`doc_header`), and XBRL `financials.csv` citation tags (`[F-<ticker>-<year>]`).
 4. **[`src/system_c/nodes/decomposer.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/decomposer.py), [`retriever.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/retriever.py), [`critic.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/critic.py), & [`graph.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/graph.py)**:
-   * Implements Anish's Query Decomposer, Hybrid Retriever + Cross-Encoder Reranker, Evidence Sufficiency Critic, and conditional loop (`max_hops = 3`).
+   * Implements Query Decomposer, Hybrid Retriever + Cross-Encoder Reranker, Evidence Sufficiency Critic, and conditional reflection loop (`max_hops = 3`).
 
 ---
 
-## 2. Your 3 Plug-and-Play Files (Aryan's Module Ownership)
-
-I have put functional baseline implementations in your 3 files so the full pipeline passes all tests today. You own refining, stress-testing, and benchmarking these 3 modules + **RQ2 (Faithfulness & Citation Grounding)**:
+## 2. RQ2 Module Specifications & Contracts
 
 ### Deliverable A: Conditioned Sub-Query Generator ([`src/system_c/nodes/generator.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/generator.py))
 * **When it runs:** Triggered when `critic_node` sets `is_sufficient = False` and `current_hop < max_hops`.
@@ -71,7 +66,7 @@ I have put functional baseline implementations in your 3 files so the full pipel
   * `ungrounded_numbers` includes uncited numbers (for `app.py` compatibility) and `verified_numbers` includes derived figures (also listed in `derived_numbers`); the error rate is (ungrounded + uncited) / checked numbers excluding derived.
 * If the guardrail fails and repairs remain, the graph routes to `repair_node` (below); if it still fails afterwards, a warning is appended to `final_answer`.
 
-### Repair ([`src/system_c/nodes/repair.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/repair.py)) — now Aryan's
+### Repair ([`src/system_c/nodes/repair.py`](file:///Users/anishdobz/projects/cs614_group8/src/system_c/nodes/repair.py))
 * **When it runs:** `route_after_guardrail` sends a failed answer to `repair_node` while `repair_count < max_repairs` (default `max_repairs=1`, set via `run_system_c(..., max_repairs=N)`); the repaired answer always goes back through `guardrail_node`.
 * **What it fixes:** flagged numbers (ungrounded or uncited), unverified sentences (sent with the text of the chunks they cite), invalid citation tags, and uncited sentences (it is shown the exact tag of the block that holds the figure). Computed figures get a hint naming both input blocks. Each claim is fixed from the evidence or the sentence is removed; valid tags are kept.
 * **One LLM call:** `call_llm(state, "repair", ...)`.

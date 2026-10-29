@@ -125,7 +125,7 @@ recipe and type mix and adding the cross-company recipes.
 
 ### Kept 40 (`kept_fy2015.jsonl`)
 
-Reviewed by Amanda. 19 of them had already been corrected in the v0 review (002, 005, 021, 024, 030, 034, 035, 044,
+Expert reviewer audit log. 19 of them had already been corrected in the v0 review (002, 005, 021, 024, 030, 034, 035, 044,
 053, 077, 081, 082, 084, 085, 087, 089, 091, 093, 094 — see the table above). Changed in the v1 review:
 
 | id | recipe | issue | change |

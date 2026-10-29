@@ -1,7 +1,8 @@
 """
 RQ3 Inference Economics & Telemetry Module for System C.
 
-Owned by: Anish (RQ3 Lead - Latency, Token Consumption, Monetary Cost & Pareto Frontier)
+Tracks execution latency, prompt/completion token consumption, monetary cost (USD),
+and hop attribution to compute Pareto efficiency frontiers across RAG architectures.
 """
 
 import time

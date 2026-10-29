@@ -1,16 +1,11 @@
 """
 Active Hallucination Repair & Self-Correction Node for System C.
 
-Owned by: Aryan (Citations, Guardrails & RQ2 Lead)
-
-Responsibilities:
+Supports Research Question 2 (Active Grounding Error Reduction & Safety):
 1. Triggered when `guardrail_passed == False` and `repair_count < max_repairs`.
-2. Inspects `guardrail_report["ungrounded_numbers"]` (ungrounded + uncited figures), the
-   `unverified_sentences` (each with the chunks it cites) and `invalid_citations`, alongside `accumulated_evidence`.
-3. Prompts the LLM with surgical instructions to fix each flagged claim from the evidence or remove
-   the sentence, keeping valid citation tags.
-4. Updates `draft_answer`, rebuilds `citations` from the repaired text (so they match what users read),
-   logs `repair_history`, and loops back to `guardrail_node` for re-audit.
+2. Inspects `guardrail_report["ungrounded_numbers"]`, unverified sentences, and invalid citations.
+3. Prompts the LLM with surgical instructions to excise or ground unverified figures.
+4. Updates `draft_answer`, rebuilds `citations`, logs `repair_history`, and loops to `guardrail_node`.
 """
 
 from typing import Any, Dict, List
