@@ -1,10 +1,43 @@
-# Claude Code review of benchmark/parts/amanda.jsonl
+# Benchmark QA review log
 
-Reviewed all 100 QAs against their source filings. 48 were modified; the corrected versions are in `benchmark/claude_code.jsonl` (same ids and format). The other 52 were checked and left unchanged.
+How each version of the benchmark was built and reviewed. The files the reviews refer to were removed after merging;
+they are still in git history (last commit before the cleanup), so every change below can be traced back.
 
-Every quote in the corrected QAs was found word for word in its filing, and every numeric answer was re-checked against its program. This was an LLM review, so a human spot-check of about 10 corrected QAs is still recommended.
+| File | QAs | What it is |
+|---|---|---|
+| `benchmark_qa_0.jsonl` | 100 | v0: generated from all filings (FY2004–FY2026), corrected after review |
+| `benchmark_qa_1.jsonl` | 97 | v1: FY2015+ only = `kept_fy2015.jsonl` + `parts/amanda.jsonl` |
+| `kept_fy2015.jsonl` | 40 | v0 QAs whose evidence is all FY2015+, kept for v1 (same ids as in v0) |
+| `parts/amanda.jsonl` | 57 | QAs generated for v1 (`--min-year 2015`), corrected after review |
 
-## Problems found
+**Ids.** `amanda-001` to `amanda-100` are v0 QAs; in v1 only the kept 40 remain, with their v0 ids. `amanda-101` to
+`amanda-160` are the QAs generated for v1 (generated as `amanda-001` to `amanda-060`, then renumbered `0xx` → `1xx` so
+they don't clash with v0 ids). Gaps (138, 146, 153) are dropped QAs.
+
+**v1 composition** (97 QAs; the 3 dropped QAs were not regenerated):
+
+| Recipe | Target | v1 | Kept from v0 | New |
+|---|---|---|---|---|
+| table | 20 | 20 | 10 | 10 |
+| text | 15 | 15 | 8 | 7 |
+| table_text | 20 | 20 | 12 | 8 |
+| cross_year_table | 20 | 19 | 6 | 13 |
+| cross_year_text | 15 | 14 | 4 | 10 |
+| cross_company_table | 5 | 4 | 0 | 4 |
+| cross_company_text | 5 | 5 | 0 | 5 |
+| **Total** | **100** | **97** | **40** | **57** |
+
+Types: 43 numeric, 34 qualitative, 20 mixed. Hops: 78 multi, 19 single.
+
+---
+
+## v0: `benchmark_qa_0.jsonl`
+
+All 100 generated QAs were checked against their source filings. 48 were corrected; the other 52 were left unchanged.
+Every quote in the corrected QAs was found word for word in its filing, and every numeric answer was re-checked
+against its program.
+
+### Problems found
 
 | Problem | Count | Examples |
 |---|---|---|
@@ -15,23 +48,21 @@ Every quote in the corrected QAs was found word for word in its filing, and ever
 | Trivial or forced question | 6 | 066 and 075 only "found" a punctuation change or a reordered list. 074 and 079 compare unrelated passages |
 | Rounding, units, incomplete answers, missing evidence | 14 | "13.00%" should be "13 percentage points". Mixed answers that gave only the number |
 
-Corrected QAs keep their id and topic, with evidence quotes updated to match. Wherever possible a QA was fixed rather than replaced.
+Corrected QAs kept their id and topic, with evidence quotes updated to match. Wherever possible a QA was fixed rather
+than replaced.
 
-## Script bug (fixed)
+### Generator fixes made after the v0 review
 
-`validate()` in `build_benchmark_qa.py` accepted an answer within **1%** of the program's result. All 15 arithmetic errors got past this check. The tolerance is now tightened to allow only rounding differences (`0.0001 * stated + 0.006`). Re-checking all 100 original QAs with the tighter test, the only failures were QAs already corrected here.
+1. `validate()` accepted an answer within **1%** of the program's result, which let all 15 arithmetic errors through.
+   The tolerance now allows only rounding differences (`0.0001 * stated + 0.006`).
+2. Cross-year (and later cross-company) sections are no longer matched on generic headings such as "Part I" or
+   "Table of Contents", which had paired unrelated passages (074, 079).
+3. `SYSTEM_PROMPT` now forbids putting the figures needed for the answer in the question (031, 036, 098).
 
-## Causes worth fixing before generating more QAs (not yet fixed)
+Not fixed: the parser keeps only the last heading above a table, so a parent heading such as "SAM'S CLUB SEGMENT" can
+be lost (011).
 
-1. **The parser keeps only the last heading above a table.** When several headings are stacked, the parent heading is lost and the writer sees no context. That's how 011 lost "SAM'S CLUB SEGMENT" and was asked about all Walmart stores. Fix: keep consecutive headings together (e.g. "SAM'S CLUB SEGMENT > CLUB COUNT AND SQUARE FOOTAGE > ...").
-2. **Cross-year text sections are matched on generic headings** such as "Part I", "PART II" or "Table of Contents". This paired unrelated passages and produced forced comparisons (074, 079). Fix: skip generic headings when matching sections across years.
-3. **The prompt doesn't forbid putting the figures in the question** (031, 036, 098). Fix: add a rule to `SYSTEM_PROMPT` that the question must not state the numbers needed to answer it.
-
-## Using these files
-
-`claude_code.jsonl` is in `benchmark/`, not `benchmark/parts/`. If it were in `parts/`, `--merge` would see two versions of the same 48 questions and keep the old, wrong ones from `amanda.jsonl`. To build the final set, the 48 corrected QAs should replace the originals by id.
-
-## Corrected QAs
+### Corrected QAs
 
 | id | recipe | issue | what was wrong | old answer | new answer |
 |---|---|---|---|---|---|
@@ -83,3 +114,105 @@ Corrected QAs keep their id and topic, with evidence quotes updated to match. Wh
 | amanda-097 | table_text | rounding + overclaim | 173.643% rounds to 173.64%; the answer claimed a link between Asia-Pacific growth and the store plans that the filing doesn't make. | The Asia-Pacific segment's net sales grew by approximately 173.63% from 2010 to … | 173.64% (from $8,256 million to $22,592 million). Apple expected to open about 4… |
 | amanda-098 | table_text | answer leaked | Question stated both deferred tax figures. | The magnitude of the swing in the net deferred tax position is $843 million. The… | $843 million, from a net deferred tax asset of $153 million to a net deferred ta… |
 | amanda-099 | table_text | incomplete answer | Answer gave only the number; question asked for 'specific text', which is awkward for a benchmark. | 247.63% | 247.63%. Apple says it designs, develops, and markets a line of portable digital… |
+
+---
+
+## v1: `benchmark_qa_1.jsonl`
+
+v1 uses only FY2015+ filings. 48% of v0 QAs cited pre-2015 filings, so v1 keeps the 40 v0 QAs whose evidence is all
+FY2015+ and generates the rest with `python build_benchmark_qa.py --name amanda --min-year 2015`, keeping v0's
+recipe and type mix and adding the cross-company recipes.
+
+### Kept 40 (`kept_fy2015.jsonl`)
+
+Reviewed by Amanda. 19 of them had already been corrected in the v0 review (002, 005, 021, 024, 030, 034, 035, 044,
+053, 077, 081, 082, 084, 085, 087, 089, 091, 093, 094 — see the table above). Changed in the v1 review:
+
+| id | recipe | issue | change |
+|---|---|---|---|
+| amanda-051 | text | Answer didn't say how the policy change affects expense recognition | Answer now explains straight-line recognition over the (mostly four-year) service period, reduced only when forfeitures occur |
+| amanda-086 | table_text | Second part was long and asked for consequences "related to such assets"; the answer gave only 2 of the 6 consequences in the risk factor | Question asks for the financial consequences of acquisitions the risk factors list (not linked to the patents); answer and key points list all six |
+
+### 60 generated (`parts/amanda.jsonl`)
+
+Each QA was checked against its sources: the full table (headers and columns) or the text around each quote, plus the
+rest of the source section for claims the quotes don't cover. The checks were: the question stands alone and makes
+sense, the answer is right and complete, the evidence supports it, and the question does not give the answer away.
+Ids below are the v1 ids (generated as `amanda-0xx`).
+
+- **29 QAs were fine as they were.**
+- **28 QAs were corrected.** Every corrected QA passes the generator's checks: quotes are verbatim in the source, the
+  program matches the answer within rounding, and every program number is in the quoted evidence.
+- **3 QAs were dropped** (138, 146, 153) and not regenerated: one cross_year_table, one cross_year_text and one
+  cross_company_table.
+
+#### Problems found
+
+| Problem | QAs | Count |
+|---|---|---|
+| Question gives the answer's figures away | 129, 136, 151, 155 | 4 |
+| Calculation compares things that don't belong together | 101, 104, 110, 127, 152, 153 | 6 |
+| Wrong or misleading answer | 130 (% change of a sign-flipping rate), 134 (says "higher" but it fell), 137 (rounding), 160 (Tesla claim not in the filing), 143 ("13 countries" not in the filing) | 5 |
+| Answer incomplete, or claims not in the evidence | 118 (units), 120, 121, 122, 123, 147 | 6 |
+| Question unclear or not standalone | 105, 107 ("the table"), 117 (no year, "which currency" for three), 125, 154, 157 | 6 |
+| Unusable | 138 (ratio of two unrelated metrics, refers to "S1"/"S2"), 146 (only true of one Overview paragraph), 153 (ratio of unrelated metrics) | 3 |
+| Asks for inference the filings don't support | 149 | 1 |
+| Formatting only | 108 (no units) | 1 |
+
+The generator's checks caught arithmetic and quoting errors well: no wrong arithmetic got through, unlike v0. What they
+can't catch is whether a calculation is meaningful, which was the main problem: 6 forced comparisons (e.g. "Apple's
+total dividends in $ minus J&J's dividend per share"). Cross-company table QAs were the weakest (3 of 5 needed a
+rewrite, 1 dropped), because two companies' tables rarely share a comparable line item.
+
+#### Corrected and dropped QAs
+
+| id | recipe | issue | old | new |
+|---|---|---|---|---|
+| 101 | table | Compared White share of *all employees* with Black share of the *Board* | 25 pp (43 − 18) | White share: Board 82% vs all employees 43% = **39 pp** (single hop) |
+| 104 | table | "Sales minus net earnings" is not a meaningful figure | $66,284 million | Net earnings as % of sales: **18.75%** |
+| 105 | table | Mixed "fiscal 2015" with options "as of December 31, 2014" | — | Question reworded: options outstanding at Dec 31, 2014, as reported in the FY2015 10-K (55.95%) |
+| 107 | table | Referred to "the table" | — | Question reworded to stand alone (-20.00%) |
+| 108 | table | Answer had no units | -6.0 | **-6.0 percentage points** |
+| 110 | table | R&D as % of cost of products sold is not a standard ratio | 41.94% | R&D as % of sales: **12.65%** (evidence: sales row added) |
+| 117 | text | No fiscal year (same sentence is in FY2016–FY2019); asked for one currency, answer lists three; "materially less" not in the evidence | — | Question names FY2019 and asks for the currencies; second sentence added to evidence |
+| 118 | table_text | Square feet are in thousands | "increased by 4,571" | **4,571 thousand square feet**; key points updated |
+| 120 | table_text | Table evidence (debt maturities) was not used | — | Unused evidence removed; answer written in full |
+| 121 | table_text | Answer only gave the number; question also asks two explanations | 13.51% | Full answer: 13.51% + net-basis accounting + competitive pressures |
+| 122 | table_text | Capex range $4.50–6.00 billion was not in the evidence | — | Capex sentence added to evidence |
+| 123 | table_text | Answer had no units; 38.3% vs 37.3% not in the evidence | "1176, ..." | **$1,176 million** + full explanation; Pharmaceutical sentence added to evidence |
+| 125 | table_text | Asked for the "driver of changes" in the returns reserve; the source gives its estimation basis | — | Question asks how the reserve is estimated; answer in full |
+| 127 | cross_year_table | Compared FY2024 R&D with FY2018 *total* operating expenses | $6,063 million | R&D growth FY2018→FY2024: **382.75%** (FY2018 R&D row added) |
+| 129 | cross_year_table | Question stated both figures | — | Figures removed (22.76%) |
+| 130 | cross_year_table | % change of a rate that flips sign (−18.6 → 0.9) is meaningless | 104.84% | **19.5 percentage points** |
+| 134 | cross_year_table | Asked how much *higher* 2024 was; 2024 was lower | "higher by $1,746 million" | Asks how much **lower** ($1,746 million) |
+| 136 | cross_year_table | Question stated both figures | — | Figures removed (19.38%) |
+| 137 | cross_year_table | Rounding error (validator's tolerance let it through); ratio as "%" is awkward | 823.02% | Revenue growth FY2017→FY2023: **722.99%** |
+| 138 | cross_year_table | Ratio of 2019 PPE additions to 2016 segment assets; question refers to "S1"/"S2" | — | **Dropped** |
+| 143 | cross_year_text | "13 countries" not in the filing; Mexico missing from FY2021 list | — | Answer rewritten from the filings |
+| 146 | cross_year_text | Says product names were dropped, but only from one Overview paragraph (the FY2024 10-K still names Megapack/Powerwall elsewhere) | — | **Dropped** |
+| 147 | cross_year_text | Password spray attack and supply chain claims not in the evidence; "source code repositories" not in the source | — | Answer rewritten; 2 FY2025 sentences added to evidence |
+| 149 | cross_year_text | Second part asked what the shift "indicates" about portfolio age; the filings don't say, so it tested inference, not retrieval | — | Second part removed; answer and key points cover only the two ranges |
+| 151 | cross_company_table | Question stated both figures | — | Figures removed ($72,904 million) |
+| 152 | cross_company_table | Subtracted J&J's dividend *per share* from Apple's *total* dividends | 99.97% | J&J dividend per share vs Apple's: **38.33%** higher |
+| 153 | cross_company_table | Ratio of J&J contractual obligations to Meta's amortization expense; figures in question | — | **Dropped** |
+| 154 | cross_company_table | Program negated a negative result; direction unclear | 207 million | Asks how much more Amazon repays in 2020: **$207 million** |
+| 155 | cross_company_table | Question stated both figures | — | Figures removed (59.74%) |
+| 157 | cross_company_text | Called MD&A income tax sections "risk disclosures" | — | Question reworded |
+| 160 | cross_company_text | Said both companies' leases are typically ≤10 years; Tesla's filing doesn't say this | — | Answer and key points rewritten |
+
+#### Weak but kept
+
+- 113: the answer restates the one quoted sentence. Valid, but easy.
+- 106, 108: ratios that an analyst might compute, though not common.
+- 116, 119, 121: combine unrelated sub-questions in one QA (allowed by the table_text recipe).
+
+### Known limitations of v1
+
+- **Evidence split across chunks.** In the rag5 collection, 147's password-spray sentence and 156's "principal
+  competitive factors" sentence are cut by a chunk boundary, so `evidence_in_hit` (80% word overlap) may score them as
+  missed even when the right chunk is retrieved.
+- **Figures that appear in several places.** Gold evidence names one location (e.g. 137 uses the segment note, but
+  Tesla's revenue is also in the income statement). Retrieval metrics count the other locations as misses, so they are
+  a lower bound.
+- **Far-apart evidence.** 19 of the 20 table_text QAs pair a table with text from another section of the same filing, usually
+  30–360 chunks apart, which makes them the hardest for single-pass retrieval.

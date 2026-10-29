@@ -11,8 +11,10 @@ Each person writes their own file, benchmark/parts/<name>.jsonl, so teammates ca
 without conflicts. Questions made by anyone (every file in benchmark/parts/) are never repeated: their sources
 are not reused, and near-duplicate questions are rejected.
 
-Recipe targets count every part file, so QAs already in benchmark/parts/ (e.g. kept_fy2015.jsonl) are not
-made again: a run only fills the gaps.
+Recipe targets count every part file, so QAs already in benchmark/parts/ are not made again: a run only fills
+the gaps. v1 (benchmark_qa_1.jsonl) is final and was merged by hand from benchmark/kept_fy2015.jsonl and
+benchmark/parts/amanda.jsonl (see benchmark/review.md). kept_fy2015.jsonl is outside parts/, so put it back there
+before generating or merging again, or --merge will overwrite benchmark_qa_1.jsonl without the kept 40.
 
 Usage (from the repo root; git pull first so teammates' parts are counted):
     python build_benchmark_qa.py --name amanda --min-year 2015          # all recipes; resumes where it stopped
