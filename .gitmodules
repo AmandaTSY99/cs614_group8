@@ -1,0 +1,6 @@
+[submodule "FinQA"]
+	path = FinQA
+	url = https://github.com/czyssrs/FinQA.git
+[submodule "TAT-QA"]
+	path = TAT-QA
+	url = https://github.com/NExTplusplus/TAT-QA.git

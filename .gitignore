@@ -61,6 +61,6 @@ chroma_db_nvda/
 Thumbs.db
 desktop.ini
 
-# --- QA sets ---
-FinQA/
-TAT-QA/
+# # --- QA sets ---
+# FinQA/
+# TAT-QA/
