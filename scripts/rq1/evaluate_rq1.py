@@ -86,7 +86,11 @@ def evidence_in_contexts(gold_ev: Dict[str, Any], contexts: List[str]) -> bool:
 def evaluate_records(benchmark_path: Path, records_path: Path) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Evaluate retrieval completeness across all systems recorded in records.jsonl."""
     raw_bench = json.loads(benchmark_path.read_text(encoding="utf-8"))
-    gold_by_id = {q["id"]: q for q in raw_bench}
+    gold_by_id = {}
+    for q in raw_bench:
+        gold_by_id[q["id"]] = q
+        if q.get("legacy_id"):
+            gold_by_id[q["legacy_id"]] = q
 
     lines = [json.loads(l) for l in records_path.read_text(encoding="utf-8").splitlines() if l.strip()]
 

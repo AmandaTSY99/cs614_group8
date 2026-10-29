@@ -109,7 +109,7 @@ def test_holm_bonferroni_correction():
 def test_load_benchmark_records():
     """Verify canonical benchmark is loaded and filtered to >= 2015."""
     records = load_benchmark_records(DEFAULT_BENCHMARK_2015, min_year=2015)
-    assert len(records) == 40
+    assert len(records) == 97
     for r in records:
         if r.get("year"):
             assert int(r["year"]) >= 2015

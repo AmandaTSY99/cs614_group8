@@ -18,10 +18,10 @@ DEFAULT_POOL_FILE = DATA_DIR / "benchmark_qa_pool_2015.json"
 # MODULAR FEATURED BENCHMARK PRESETS (SWAP ANY ID HERE DURING TESTING)
 # ---------------------------------------------------------------------------
 FEATURED_BENCHMARK_IDS: List[str] = [
-    "amanda-002",  # 1-Hop Table Math: META Restructuring R&D share (57.76%)
-    "amanda-032",  # 2-Hop Cross-Year Table: NVDA FY18 vs FY21 Diluted EPS (+43.15%)
-    "amanda-091",  # Table + Footnotes Mixed: NVDA Tegra Revenue ($975M) & Robotics
-    "amanda-085",  # Table + Footnotes: MSFT FY23 Datacenter/GPU Leases (+16.82%)
+    "gold-002",  # 1-Hop Table Math: META Restructuring R&D share (57.76%) [legacy: amanda-002]
+    "gold-013",  # 2-Hop Cross-Year Table: NVDA FY18 vs FY21 Diluted EPS (+43.15%) [legacy: amanda-032]
+    "gold-037",  # Table + Footnotes Mixed: NVDA Tegra Revenue ($975M) & Robotics [legacy: amanda-091]
+    "gold-032",  # Table + Footnotes: MSFT FY23 Datacenter/GPU Leases (+16.82%) [legacy: amanda-085]
 ]
 
 # FinQA mathematical operations DSL
@@ -71,10 +71,10 @@ def load_benchmark_pool(path: Path = DEFAULT_POOL_FILE) -> List[Dict[str, Any]]:
 
 
 def get_benchmark_by_id(question_id: str) -> Optional[Dict[str, Any]]:
-    """Look up a specific benchmark QA item by its unique ID (e.g. 'amanda-002')."""
+    """Look up a specific benchmark QA item by its unique ID (e.g. 'gold-002') or legacy ID ('amanda-002')."""
     pool = load_benchmark_pool()
     for item in pool:
-        if item.get("id") == question_id:
+        if item.get("id") == question_id or item.get("legacy_id") == question_id:
             return item
     return None
 
