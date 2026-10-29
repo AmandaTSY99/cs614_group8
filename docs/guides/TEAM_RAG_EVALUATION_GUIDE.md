@@ -95,10 +95,10 @@ print("Latency:", output["latency_ms"], "ms")
 
 ---
 
-## 4. The 40-Question Academic Benchmark
+## 4. The 97-Question Academic Benchmark (Benchmark v1)
 
 * **File Location:** `data/benchmark_qa_pool_2015.json`
-* **Contents:** 40 canonical financial questions covering Apple, Microsoft, Amazon, Tesla, J&J, Nvidia, etc.
+* **Contents:** 97 canonical financial questions covering Apple, Microsoft, Amazon, Tesla, J&J, Nvidia, Meta, Alphabet, JPMorgan, and Walmart (all strictly FY2015+), including 9 cross-company multi-hop questions.
 * **Anti-Leakage Rule (Crucial for Academic Rigor):**
   Never pass the ground-truth answer or gold evidence chunks to the RAG systems! Use the built-in sanitizer:
   ```python
@@ -111,10 +111,10 @@ print("Latency:", output["latency_ms"], "ms")
 
 ## 5. Precomputed Outputs (Save Time & Budget)
 
-To save you from spending API money or waiting 10 minutes every time you test your metrics, the complete run of all 40 questions across all 4 systems is **already saved** in:
-👉 `reports/rq3/records.jsonl`
+To save you from spending API money or waiting 30 minutes every time you test your metrics, the complete run of all 97 questions across all 4 systems (388 responses total) is **already saved** in:
+👉 `reports/rq3/records.jsonl` (and `reports/rq2/full/records.jsonl`)
 
-This file contains 160 completed results with full answers, all retrieved chunks, and token metrics. You can write and test your evaluation scripts directly against this file in **2 seconds for $0.00**.
+This file contains 388 completed results with full answers, all retrieved chunks, citations, and token metrics. You can write and test your evaluation scripts directly against this file in **2 seconds for $0.00**.
 
 ---
 
@@ -139,7 +139,7 @@ All execution commands use Docker, mounting your local workspace so all outputs 
 
 ### Aryan: RQ2 (Grounding, Citations & Hallucination)
 * **What you are proving:** Does evidence reflection stop the model from hallucinating numbers or fabricating financial figures?
-* **Starter Skeleton & Existing Pipeline:** Your RQ2 pipeline in `scripts/rq2/` is wired up to all 4 systems (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) and the 40-question `2015+` benchmark:
+* **Starter Skeleton & Existing Pipeline:** Your RQ2 pipeline in `scripts/rq2/` is wired up to all 4 systems (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) and the 97-question `2015+` benchmark:
   ```bash
   # Step 1: Generate answers across ALL 4 SYSTEMS (or use pre-generated records in reports/rq3/records.jsonl)
   docker compose run --rm runner python scripts/rq2/generate.py --run-id full
@@ -168,6 +168,6 @@ All execution commands use Docker, mounting your local workspace so all outputs 
 When your AI assistants (Claude, Cursor, Copilot) write or modify evaluation code, they must strictly follow these 4 rules:
 
 1. **Firewall Integrity:** Do not leak ground-truth answers or evidence into the prompt. The RAG systems must answer blind.
-2. **Benchmark Uniformity:** Only evaluate against `data/benchmark_qa_pool_2015.json` (40 questions). Never swap in a synthetic or unapproved test set.
+2. **Benchmark Uniformity:** Only evaluate against `data/benchmark_qa_pool_2015.json` (97 questions). Never swap in a synthetic or unapproved test set.
 3. **No UI Edits:** `app.py` is locked for the Streamlit demo. All evaluation work must remain strictly in `scripts/` and CLI.
 4. **Fail-Fast / Loud Stops:** Do not write silent `try...except: pass` blocks that hide failures. If a query fails, dump the stack trace and fail loudly so data is never silently corrupted.
