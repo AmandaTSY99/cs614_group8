@@ -7,7 +7,7 @@ Defines the central LangGraph TypedDict state schemas supporting:
 - RQ3: Hop-by-Hop Telemetry, Cost Accounting & Early Stopping
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 from typing_extensions import TypedDict
 
 
@@ -37,11 +37,13 @@ class AdaptiveRAGState(TypedDict):
     """
     # --- 1. Input & Extracted Metadata ---
     original_query: str
-    mode: str                                  # "v1_amr" (Adaptive Multi-Hop) or "v2_aamr" (Agentic with Tabular Tool + Auditor)
+    mode: Literal["v1_amr", "v2_aamr", "v3_aamr_sg"]  # "v1_amr" (Adaptive Multi-Hop), "v2_aamr" (Agentic AAMR), or "v3_aamr_sg" (AAMR with Semantic Grounding)
     target_ticker: Optional[str]               # Primary ticker (e.g. "NVDA")
     target_tickers: List[str]                  # All tickers mentioned (e.g. ["AAPL", "MSFT"] for comparative queries)
     target_pairs: List[ List[Any] ]            # List of [ticker, fiscal_year] pairs (compatible with build_vdb_base_RAG.ipynb)
     fiscal_years: List[int]
+    target_metric_type: Optional[str]          # "xbrl_headline", "footnote_disclosure", "hybrid" (v3 AAMR-SG)
+    last_action: Optional[str]                 # "tabular_tool", "retriever", "none" (v3 AAMR-SG)
 
     # --- 2. Planning & Decomposition (decomposer.py / generator.py) ---
     query_complexity: str                      # "single_hop", "multi_hop", or "tabular_quant" (used in v2 AAMR pre-router)
@@ -85,7 +87,7 @@ class AdaptiveRAGState(TypedDict):
 def create_initial_state(
     query: str,
     max_hops: int = 3,
-    mode: str = "v1_amr",
+    mode: Literal["v1_amr", "v2_aamr", "v3_aamr_sg"] = "v1_amr",
     target_ticker: Optional[str] = None,
     fiscal_years: Optional[List[int]] = None,
     force_max_hops: bool = False,
@@ -114,6 +116,8 @@ def create_initial_state(
         target_tickers=all_tickers,
         target_pairs=pairs,
         fiscal_years=f_years,
+        target_metric_type=None,
+        last_action=None,
         query_complexity="multi_hop",
         sub_queries=[],
         sub_query_plans=[],

@@ -553,3 +553,81 @@ def test_fastapi_gateway_endpoints():
     assert "NVDA" in data["final_answer"]
     assert data["guardrail_passed"] is True
     assert "telemetry" in data
+
+
+def test_v3_aamr_sg_schema_aware_decomposer():
+    """Verify System C v3 (AAMR-SG) Query Decomposer distinguishes headline metrics from footnotes."""
+    from src.system_c.nodes.decomposer import decomposer_node, is_xbrl_headline_target
+
+    # 1. Headline macro metric -> needs_tabular_tool = True
+    state_macro = create_initial_state(
+        query="By how many million dollars did Tesla's total assets increase from fiscal year 2021 to fiscal year 2025?",
+        mode="v3_aamr_sg",
+    )
+    out_macro = decomposer_node(state_macro)
+    assert out_macro["needs_tabular_tool"] is True
+    assert out_macro["target_metric_type"] == "xbrl_headline"
+
+    # 2. Footnote / Gross margin -> needs_tabular_tool = False
+    state_margin = create_initial_state(
+        query="By how many percentage points did NVIDIA's gross margin increase from fiscal year 2016 to fiscal year 2022?",
+        mode="v3_aamr_sg",
+    )
+    out_margin = decomposer_node(state_margin)
+    assert out_margin["needs_tabular_tool"] is False
+    assert out_margin["target_metric_type"] == "footnote_disclosure"
+    assert all(p["target_tool"] == "retriever" for p in out_margin["sub_query_plans"])
+
+    # 3. Footnote / Segment revenue -> needs_tabular_tool = False
+    state_segment = create_initial_state(
+        query="What was the absolute increase in NVIDIA's Tegra Processor revenue, in millions of dollars, from fiscal year 2016 to fiscal year 2018?",
+        mode="v3_aamr_sg",
+    )
+    out_segment = decomposer_node(state_segment)
+    assert out_segment["needs_tabular_tool"] is False
+    assert out_segment["target_metric_type"] == "footnote_disclosure"
+
+    # 4. Footnote / Debt maturity schedule -> needs_tabular_tool = False
+    state_debt = create_initial_state(
+        query="What is the percentage of Amazon.com's total future principal payments due after 2021 relative to the total future principal payments due in 2017?",
+        mode="v3_aamr_sg",
+    )
+    out_debt = decomposer_node(state_debt)
+    assert out_debt["needs_tabular_tool"] is False
+
+
+def test_v3_aamr_sg_critic_allows_continuation_for_footnotes():
+    """Verify Critic in mode='v3_aamr_sg' does NOT force premature Hop 1 stopping when tabular schema lacks metric."""
+    from src.system_c.nodes.critic import critic_node
+
+    state = create_initial_state(
+        query="By how many percentage points did NVIDIA's gross margin increase from fiscal year 2016 to fiscal year 2022?",
+        max_hops=3,
+        mode="v3_aamr_sg",
+        target_ticker="NVDA",
+        fiscal_years=[2016, 2022],
+    )
+    state["needs_tabular_tool"] = True  # Even if tabular tool was invoked
+    state["tabular_evidence"] = [
+        "[F-NVDA-2016] (NVDA reported financials)\nRevenue: 5010000000\nNetIncome: 614000000",
+        "[F-NVDA-2022] (NVDA reported financials)\nRevenue: 26914000000\nNetIncome: 9752000000",
+    ]
+    state["current_hop"] = 1
+    # Mock LLM indicates partial sufficiency for footnote inquiry
+    state["telemetry"]["mock_sufficiency_score"] = 0.50
+
+    out = critic_node(state)
+    # Critic must NOT force early stopping at Hop 1!
+    assert out["is_sufficient"] is False
+    assert out["sufficiency_score"] <= 0.65
+
+
+def test_system_c_v3_adapter_registration():
+    """Verify System C v3 adapter registers under standardized name and schema contracts."""
+    from scripts.rq2.adapters import get_adapters, ADAPTER_KEYS
+
+    adapters = get_adapters(["system_c_v3"])
+    adapter = adapters["system_c_v3"]
+    assert adapter.name == "system_c_v3"
+    assert adapter.mode == "v3_aamr_sg"
+

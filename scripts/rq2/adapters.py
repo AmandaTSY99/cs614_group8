@@ -43,7 +43,11 @@ class SystemCAdapter(SystemAdapter):
         if force_max_hops:
             self.name = f"system_c_{mode}_fixed_3hop"
         else:
-            self.name = {"v1_amr": "system_c_v1", "v2_aamr": "system_c_v2"}.get(mode, f"system_c_{mode}")
+            self.name = {
+                "v1_amr": "system_c_v1",
+                "v2_aamr": "system_c_v2",
+                "v3_aamr_sg": "system_c_v3",
+            }.get(mode, f"system_c_{mode}")
 
     def answer(self, question: Dict[str, Any]) -> Dict[str, Any]:
         from src.system_c.graph import run_system_c
@@ -410,6 +414,7 @@ class SystemBAdapter(SystemAdapter):
 REGISTRY: Dict[str, Callable[[], SystemAdapter]] = {
     "system_c_v1": lambda: SystemCAdapter("v1_amr"),
     "system_c_v2": lambda: SystemCAdapter("v2_aamr"),
+    "system_c_v3": lambda: SystemCAdapter("v3_aamr_sg"),
     "system_c_fixed_3hop": lambda: SystemCAdapter("v1_amr", force_max_hops=True),
     "system_a": SystemAAdapter,
     "system_b": SystemBAdapter,

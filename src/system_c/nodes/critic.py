@@ -20,17 +20,18 @@ import re
 from typing import Any, Dict, List, Set
 
 from src.system_c.llm import call_llm, clean_and_parse_json
+from src.system_c.nodes.decomposer import is_xbrl_headline_target
 from src.system_c.state import AdaptiveRAGState
 
 CRITIC_SYSTEM_PROMPT = """You are an Evidence Sufficiency Critic for an SEC 10-K Financial RAG system.
 Evaluate whether the Accumulated Evidence (including any tabular XBRL blocks) contains ALL required facts, numbers, segment breakdowns, and footnote disclosures to thoroughly answer the Original Query.
 
-STRICT RULE 1 (ZERO-TOLERANCE MULTI-COMPANY & SEGMENT COVERAGE):
-If the Original Query asks to compare multiple companies (e.g. Microsoft, Amazon, Alphabet) or specific business segments (e.g. AWS, Intelligent Cloud, Google Cloud, Compute & Networking) or footnote percentages (e.g. customer concentration, senior notes), ALL of them must be present in the evidence.
-If even ONE company, segment, or footnote is missing:
+STRICT RULE 1 (ZERO-TOLERANCE MULTI-COMPANY, SEGMENT & FOOTNOTE COVERAGE):
+If the Original Query asks to compare multiple companies (e.g. Microsoft, Amazon, Alphabet), specific business segments (e.g. AWS, Tegra, Intelligent Cloud), granular footnotes (e.g. debt maturity schedules, foreign exchange derivatives, geographic asset splits), or metrics not reported on the face of the financial statements (e.g. gross margin, R&D expense as a share of sales), ALL of them must be present in the evidence.
+Note: High-level financial statements [F-...] do NOT contain Gross Margin, Segment Revenue, Debt Maturity Schedules, or Footnote disclosures. If the question asks for these granular items and only macro balance sheet/income statement tables are present:
 - "is_sufficient" MUST be false.
 - "sufficiency_score" MUST be strictly < 0.70 (e.g. 0.40 - 0.60).
-- "missing_premises" MUST list the exact missing company, segment, or footnote disclosures.
+- "missing_premises" MUST list the exact missing footnote, segment, or margin disclosures.
 
 STRICT RULE 2 (CONSISTENCY REQUIREMENT):
 If your "critic_reasoning" states that any data point, segment, or footnote is missing, lacking, or not provided, you CANNOT set "is_sufficient": true. You MUST set "is_sufficient": false and "sufficiency_score" < 0.70.
@@ -183,27 +184,45 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
 
         # Detection B: Tabular XBRL complete coverage for quantitative queries
         # If query needs tabular tool and tabular_evidence exists covering all target tickers
+        mode = state.get("mode")
         if state.get("needs_tabular_tool") and tabular:
             covered_tickers = {t for t in target_tickers if any(f"F-{t}" in blk for blk in tabular)}
             if target_tickers and covered_tickers == set(target_tickers):
-                # Check if query actually requires narrative text (footnotes, segments, risks, drivers)
-                q_lower = state.get("original_query", "").lower()
-                has_narrative_need = any(
-                    w in q_lower for w in (
-                        "risk", "footnote", "note", "notes", "segment", "segments",
-                        "cloud", "aws", "compute", "intelligent cloud", "concentration",
-                        "customer", "impact", "legal", "covenant", "contingenc",
-                        "why", "driver", "strategy", "cause", "item 7", "item 8", "item 1"
+                if mode == "v3_aamr_sg":
+                    # System C v3 (AAMR-SG): Granularity-aware sufficiency reflection.
+                    # Verify target metric is truly in standard continuous XBRL headline schema.
+                    # If the query asks for Gross Margin, Segment Revenue, Debt Schedules, or Footnotes,
+                    # DO NOT force score = 0.95. Let the LLM Critic's organic score govern early-stopping.
+                    q_text = state.get("original_query", "")
+                    if is_xbrl_headline_target(q_text):
+                        score = max(score, 0.95)
+                        missing_entities = []
+                        missing_years = []
+                        missing_premises = []
+                        redundant_prevented = True
+                        reasoning += " [Complete factual coverage: Tabular XBRL tool provided exact reported headline financials]."
+                    else:
+                        # Allow LLM Critic's organic sufficiency score to govern continuation to Hops 2 and 3
+                        pass
+                else:
+                    # Legacy v2 heuristic
+                    q_lower = state.get("original_query", "").lower()
+                    has_narrative_need = any(
+                        w in q_lower for w in (
+                            "risk", "footnote", "note", "notes", "segment", "segments",
+                            "cloud", "aws", "compute", "intelligent cloud", "concentration",
+                            "customer", "impact", "legal", "covenant", "contingenc",
+                            "why", "driver", "strategy", "cause", "item 7", "item 8", "item 1"
+                        )
                     )
-                )
-                # Tabular tool satisfies simple single-hop headline financial lookup when NO narrative/footnote/segment is requested
-                if not has_narrative_need:
-                    score = max(score, 0.95)
-                    missing_entities = []
-                    missing_years = []
-                    missing_premises = []
-                    redundant_prevented = True
-                    reasoning += " [Complete factual coverage: Tabular XBRL tool provided exact reported financials]."
+                    # Tabular tool satisfies simple single-hop headline financial lookup when NO narrative/footnote/segment is requested
+                    if not has_narrative_need:
+                        score = max(score, 0.95)
+                        missing_entities = []
+                        missing_years = []
+                        missing_premises = []
+                        redundant_prevented = True
+                        reasoning += " [Complete factual coverage: Tabular XBRL tool provided exact reported financials]."
 
         # Detection C: Multi-company comparative query coverage check
         # For queries with multiple target tickers (e.g. GOLD-51: MSFT, AMZN, GOOGL),

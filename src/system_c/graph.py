@@ -36,11 +36,11 @@ def route_after_decomposer(
     state: AdaptiveRAGState,
 ) -> Literal["tabular_tool", "retriever"]:
     """
-    In `v2_aamr` mode, if the planner detects a quantitative financial metric query
+    In `v2_aamr` and `v3_aamr_sg` modes, if the planner detects a quantitative financial metric query
     (`needs_tabular_tool == True`), first invoke `tabular_tool` to inject deterministic
     `[F-<ticker>-<year>]` XBRL figures before running text/table chunk retrieval.
     """
-    if state.get("mode") == "v2_aamr" and state.get("needs_tabular_tool"):
+    if state.get("mode") in ("v2_aamr", "v3_aamr_sg") and state.get("needs_tabular_tool"):
         return "tabular_tool"
     return "retriever"
 
@@ -148,10 +148,15 @@ def run_system_c(
     Execute a query end-to-end through System C and return the final `AdaptiveRAGState`.
     Supports optional persistent checkpointer (e.g. Supabase PostgresSaver) and thread_id.
     """
+    resolved_mode = {
+        "system_c_v1": "v1_amr",
+        "system_c_v2": "v2_aamr",
+        "system_c_v3": "v3_aamr_sg",
+    }.get(mode, mode)
     initial_state = create_initial_state(
         query=query,
         max_hops=max_hops,
-        mode=mode,
+        mode=resolved_mode,
         target_ticker=target_ticker,
         fiscal_years=fiscal_years,
         force_max_hops=force_max_hops,
@@ -186,9 +191,9 @@ def main() -> None:
     parser.add_argument(
         "--mode",
         type=str,
-        default="v1_amr",
-        choices=["v1_amr", "v2_aamr"],
-        help="System C version: v1_amr (Adaptive Multi-Hop) or v2_aamr (Agentic AMR with Tabular XBRL tool).",
+        default="v3_aamr_sg",
+        choices=["v1_amr", "v2_aamr", "v3_aamr_sg", "system_c_v1", "system_c_v2", "system_c_v3"],
+        help="System C version: v1_amr (AMR), v2_aamr (AAMR), or v3_aamr_sg (AAMR with Semantic Grounding).",
     )
     parser.add_argument("--max-hops", type=int, default=3, help="Maximum retrieval hops (default: 3).")
     args = parser.parse_args()

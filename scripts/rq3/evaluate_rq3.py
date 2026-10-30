@@ -402,7 +402,7 @@ def evaluate_experiment(
 def main():
     parser = argparse.ArgumentParser(description="Evaluate RQ3 Experiment Telemetry.")
     parser.add_argument("--records", type=Path, default=DEFAULT_RECORDS, help="Path to input records JSONL.")
-    parser.add_argument("--out-json", type=Path, default=DEFAULT_SUMMARY_JSON, help="Path to output summary JSON.")
+    parser.add_argument("--out-json", "--output", type=Path, default=DEFAULT_SUMMARY_JSON, help="Path to output summary JSON.")
     parser.add_argument("--out-csv", type=Path, default=DEFAULT_SUMMARY_CSV, help="Path to output summary CSV.")
     parser.add_argument("--figures-dir", type=Path, default=FIGURES_DIR, help="Directory to save publication PNGs.")
     parser.add_argument("--no-plots", action="store_true", help="Skip figure generation.")

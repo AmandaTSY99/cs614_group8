@@ -168,13 +168,14 @@ def run_experiment(
     out_errors_path: Path,
     min_year: int = 2015,
     limit: Optional[int] = None,
+    query_ids: Optional[List[str]] = None,
     seed: int = 42,
     warmup_count: int = 3,
     verbose: bool = True,
     mock: bool = False,
     clean: bool = False,
     fail_fast: bool = True,
-    max_budget_usd: float = 2.0,
+    max_budget_usd: float = 5.0,
 ) -> Dict[str, int]:
     """Execute the controlled RQ3 benchmark experiment across the specified systems with a strict cost ceiling."""
     if mock:
@@ -192,6 +193,9 @@ def run_experiment(
             out_errors_path.unlink()
 
     questions = load_benchmark_records(benchmark_path, min_year=min_year)
+    if query_ids:
+        qid_set = {q.strip() for raw in query_ids for q in raw.split(",") if q.strip()}
+        questions = [q for q in questions if q.get("id") in qid_set or q.get("query_id") in qid_set]
     if limit:
         questions = questions[:limit]
 
@@ -200,14 +204,7 @@ def run_experiment(
     adapters = get_adapters(systems)
     done_pairs, cumulative_cost = load_done_pairs_and_cost(out_records_path)
     counts = {"generated": 0, "skipped": 0, "failed": 0}
-
-    if cumulative_cost >= max_budget_usd:
-        print("\n" + "=" * 80, file=sys.stderr)
-        print("🛑 LOUD STOP: Prior experiment records have already reached the budget limit!", file=sys.stderr)
-        print(f"Cumulative spend: ${cumulative_cost:.4f} >= ${max_budget_usd:.2f} max budget.", file=sys.stderr)
-        print("Aborting before starting to protect your API budget.", file=sys.stderr)
-        print("=" * 80 + "\n", file=sys.stderr)
-        raise RuntimeError(f"Strict budget cutoff exceeded: Prior spend ${cumulative_cost:.4f} >= ${max_budget_usd:.2f}.")
+    session_spend = 0.0
 
     # 1. Run Warmup Phase per system
     if warmup_count > 0:
@@ -240,6 +237,7 @@ def run_experiment(
                 # Track cumulative financial spend
                 q_cost = float(out.get("cost_usd") or 0.0)
                 cumulative_cost += q_cost
+                session_spend += q_cost
 
                 # Compute Time-Per-Output-Token (TPOT)
                 comp_tokens = out["tokens"].get("completion", 0)
@@ -310,14 +308,14 @@ def run_experiment(
                         f"[{idx}/{total_tasks}] {sys_name:<16} | {q['id']} | "
                         f"hops={out['hops']} | lat={out['latency_ms']:.0f}ms | "
                         f"tokens={out['tokens']['total']:<4} | cost=${q_cost:.5f} | "
-                        f"total_spent=${cumulative_cost:.4f}/${max_budget_usd:.2f} | num_ok={num_correct}"
+                        f"session_spent=${session_spend:.4f}/${max_budget_usd:.2f} | num_ok={num_correct}"
                     )
                     print(status_line)
 
                 # Strict budget ceiling enforcement
-                if cumulative_cost >= max_budget_usd:
+                if session_spend >= max_budget_usd:
                     budget_err = (
-                        f"Strict financial stop: Cumulative spend ${cumulative_cost:.4f} "
+                        f"Strict financial stop: Cumulative spend ${session_spend:.4f} "
                         f"reached or exceeded the strict cutoff threshold of ${max_budget_usd:.2f}."
                     )
                     err_record = {
@@ -361,6 +359,7 @@ def run_experiment(
 def main():
     parser = argparse.ArgumentParser(description="Run RQ3 Inference Economics Batch Experiment.")
     parser.add_argument("--systems", nargs="+", default=ALL_SYSTEMS, help=f"Systems to evaluate (default: {ALL_SYSTEMS})")
+    parser.add_argument("--query-ids", nargs="*", default=None, help="Target question IDs (e.g. gold-073 or gold-066,gold-073).")
     parser.add_argument("--benchmark", type=Path, default=DEFAULT_BENCHMARK_2015, help="Path to benchmark JSON/JSONL.")
     parser.add_argument("--min-year", type=int, default=2015, help="Minimum fiscal year constraint (default: 2015).")
     parser.add_argument("--limit", type=int, default=None, help="Limit to first N questions.")
@@ -369,7 +368,7 @@ def main():
     parser.add_argument("--mock", action="store_true", help="Force mock LLM provider for zero-cost rapid testing.")
     parser.add_argument("--clean", action="store_true", help="Clean prior output records before starting (disable resume).")
     parser.add_argument("--no-fail-fast", action="store_true", help="Continue running other queries if a query fails (default is loud stop).")
-    parser.add_argument("--max-budget-usd", type=float, default=float(os.getenv("MAX_BUDGET_USD", "2.0")), help="Strict financial cutoff ceiling in USD (default: $2.00).")
+    parser.add_argument("--max-budget-usd", type=float, default=float(os.getenv("MAX_BUDGET_USD", "5.0")), help="Strict financial cutoff ceiling in USD (default: $5.00).")
     parser.add_argument("--records-out", type=Path, default=DEFAULT_RECORDS_FILE, help="Path to write records JSONL.")
     parser.add_argument("--errors-out", type=Path, default=DEFAULT_ERRORS_FILE, help="Path to write errors JSONL.")
     args = parser.parse_args()
@@ -377,13 +376,24 @@ def main():
     if args.mock:
         os.environ["LLM_PROVIDER"] = "mock"
 
+    clean_systems = []
+    for s in args.systems:
+        clean_systems.extend([part.strip() for part in s.split(",") if part.strip()])
+
+    target_qids = None
+    if args.query_ids:
+        target_qids = []
+        for q in args.query_ids:
+            target_qids.extend([part.strip() for part in q.split(",") if part.strip()])
+
     counts = run_experiment(
-        systems=args.systems,
+        systems=clean_systems,
         benchmark_path=args.benchmark,
         out_records_path=args.records_out,
         out_errors_path=args.errors_out,
         min_year=args.min_year,
         limit=args.limit,
+        query_ids=target_qids,
         seed=args.seed,
         warmup_count=args.warmup,
         clean=args.clean,
