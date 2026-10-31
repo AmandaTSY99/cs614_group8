@@ -88,8 +88,18 @@ def test_fc_reference_variants_keep_decrease_wording():
     record = {"question": "Q?", "answer": "A decrease of 30.36%.", "ragas_reference": ref}
     assert S.metric_inputs("factual_correctness", record, "answer")["reference"] == ref["answer"]
     assert S.metric_inputs("factual_correctness", record, "answer_keypoints")["reference"] == ref["answer_keypoints"]
-    for variant in ("answer", "answer_keypoints"):
+    for variant in ("answer", "answer_keypoints", "question_answer_keypoints"):
         assert "(a decrease of 30.36%)" in S.metric_inputs("factual_correctness", record, variant)["reference"]
+
+
+def test_question_answer_keypoints_reference_is_a_full_statement():
+    q = {**BENCH_Q, "key_points": ["Amortization fell from $10,106 million to $7,038 million"]}
+    ref = ragas_reference(q)["question_answer_keypoints"]
+    assert ref == (f"Question: {BENCH_Q['question']} Answer: -30.36% (a decrease of 30.36%) "
+                   "Amortization fell from $10,106 million to $7,038 million.")
+    no_kp = ragas_reference({**BENCH_Q, "question": "Who is the general counsel?", "answer": "Mr. Smith.",
+                             "key_points": []})["question_answer_keypoints"]
+    assert no_kp == "Question: Who is the general counsel? Answer: Mr. Smith."
 
 
 def test_fc_mode_passed_to_ragas_metric(monkeypatch):
@@ -97,11 +107,15 @@ def test_fc_mode_passed_to_ragas_metric(monkeypatch):
     llm = J.build_judge("groq", J.DEFAULT_JUDGE_MODEL, J.JudgeMeter())
     assert S.make_metric("factual_correctness", llm).mode == "f1"
     assert S.make_metric("factual_correctness", llm, fc_mode="recall").mode == "recall"
+    assert S.make_metric("factual_correctness", llm).atomicity == "low"
+    assert S.make_metric("factual_correctness", llm, fc_atomicity="high").atomicity == "high"
 
 
-@pytest.mark.parametrize("fc_mode, fc_reference", [("f1", "answer_keypoints"), ("recall", "answer"),
-                                                   ("recall", "answer_keypoints")])
-def test_fc_variant_recorded_in_detail(tmp_path, fc_mode, fc_reference):
+@pytest.mark.parametrize("fc_mode, fc_reference, fc_atomicity", [
+    ("f1", "answer_keypoints", "low"), ("recall", "answer", "low"), ("recall", "answer_keypoints", "low"),
+    ("recall", "question_answer_keypoints", "high"),
+])
+def test_fc_variant_recorded_in_detail(tmp_path, fc_mode, fc_reference, fc_atomicity):
     q = {**BENCH_Q, "key_points": ["Amortization fell"]}
     append_jsonl(tmp_path / RECORDS_FILE, _record("system_c_v3", "A decrease of 30.36%."))
     append_jsonl(tmp_path / RECORDS_FILE, _record("system_a", "Not found in the provided context."))
@@ -109,10 +123,10 @@ def test_fc_variant_recorded_in_detail(tmp_path, fc_mode, fc_reference):
     asyncio.run(S.score_run(
         tmp_path, ["factual_correctness"], metric_factory=lambda name, llm, emb: fake, llm=object(),
         embeddings=object(), meter=J.JudgeMeter(), sleep=_no_sleep, benchmark={"gold-011": q},
-        fc_mode=fc_mode, fc_reference=fc_reference,
+        fc_mode=fc_mode, fc_reference=fc_reference, fc_atomicity=fc_atomicity,
     ))
     rows = {r["system"]: r for r in read_jsonl(tmp_path / SCORES_FILE)}
-    tag = f"fc_mode={fc_mode}; fc_reference={fc_reference}"
+    tag = f"fc_mode={fc_mode}; fc_reference={fc_reference}; fc_atomicity={fc_atomicity}"
     assert rows["system_c_v3"]["detail"] == tag and rows["system_c_v3"]["value"] == 0.9
     assert rows["system_a"]["detail"].startswith(tag) and rows["system_a"]["value"] == 0.0
     expected_ref = ragas_reference(q)[fc_reference]
@@ -120,9 +134,11 @@ def test_fc_variant_recorded_in_detail(tmp_path, fc_mode, fc_reference):
 
 
 def test_score_run_defaults_are_current_behaviour():
-    assert (S.DEFAULT_FC_MODE, S.DEFAULT_FC_REFERENCE) == ("f1", "answer_keypoints")
+    assert (S.DEFAULT_FC_MODE, S.DEFAULT_FC_REFERENCE, S.DEFAULT_FC_ATOMICITY) == ("f1", "answer_keypoints", "low")
     with pytest.raises(ValueError):
         asyncio.run(S.score_run(None, [], fc_mode="precision"))
+    with pytest.raises(ValueError):
+        asyncio.run(S.score_run(None, [], fc_atomicity="medium"))
 
 
 def test_refusals_and_references_in_scoring(tmp_path):

@@ -38,18 +38,22 @@ ALL_METRICS = LLM_METRICS + CUSTOM_METRICS
 NO_JUDGE = "none"
 CIRCUIT_BREAKER_FAILURES = 5
 # Factual correctness: `f1` also penalises correct extra statements (e.g. intermediate figures); `recall` only
-# asks whether the answer contains the reference's claims. Reference: gold answer, or gold answer + key points.
+# asks whether the answer contains the reference's claims. Reference: gold answer, gold answer + key points, or
+# "Question: … Answer: …" + key points. Atomicity `high` splits the reference into one claim per fact.
 FC_MODES = ("f1", "recall")
-FC_REFERENCES = ("answer", "answer_keypoints")
+FC_REFERENCES = ("answer", "answer_keypoints", "question_answer_keypoints")
+FC_ATOMICITIES = ("low", "high")
 DEFAULT_FC_MODE = "f1"
 DEFAULT_FC_REFERENCE = "answer_keypoints"
+DEFAULT_FC_ATOMICITY = "low"
 
 
-def fc_tag(fc_mode: str, fc_reference: str) -> str:
-    return f"fc_mode={fc_mode}; fc_reference={fc_reference}"
+def fc_tag(fc_mode: str, fc_reference: str, fc_atomicity: str = DEFAULT_FC_ATOMICITY) -> str:
+    return f"fc_mode={fc_mode}; fc_reference={fc_reference}; fc_atomicity={fc_atomicity}"
 
 
-def make_metric(name: str, llm: Any, embeddings: Any = None, fc_mode: str = DEFAULT_FC_MODE) -> Any:
+def make_metric(name: str, llm: Any, embeddings: Any = None, fc_mode: str = DEFAULT_FC_MODE,
+                fc_atomicity: str = DEFAULT_FC_ATOMICITY) -> Any:
     """ragas 0.4.3 collections metric for `name`."""
     from ragas.metrics import collections as m
 
@@ -62,7 +66,7 @@ def make_metric(name: str, llm: Any, embeddings: Any = None, fc_mode: str = DEFA
     if name == "context_precision":
         return m.ContextPrecision(llm=llm)
     if name == "factual_correctness":
-        return m.FactualCorrectness(llm=llm, mode=fc_mode, atomicity="low", coverage="low")
+        return m.FactualCorrectness(llm=llm, mode=fc_mode, atomicity=fc_atomicity, coverage="low")
     raise ValueError(f"unknown RAGAS metric {name}")
 
 
@@ -139,9 +143,10 @@ async def score_llm_metric(
     sleep: Callable[[float], Any] = asyncio.sleep,
     fc_mode: str = DEFAULT_FC_MODE,
     fc_reference: str = DEFAULT_FC_REFERENCE,
+    fc_atomicity: str = DEFAULT_FC_ATOMICITY,
 ) -> Dict[str, Any]:
-    # Factual-correctness rows carry their mode and reference variant, so scores files stay traceable.
-    tag = fc_tag(fc_mode, fc_reference) if metric == "factual_correctness" else ""
+    # Factual-correctness rows carry their mode, reference and atomicity, so scores files stay traceable.
+    tag = fc_tag(fc_mode, fc_reference, fc_atomicity) if metric == "factual_correctness" else ""
 
     def detail(text: str = "") -> str:
         return "; ".join(t for t in (tag, text) if t)
@@ -186,10 +191,13 @@ async def score_run(
     benchmark: Optional[Dict[str, Dict[str, Any]]] = None,
     fc_mode: str = DEFAULT_FC_MODE,
     fc_reference: str = DEFAULT_FC_REFERENCE,
+    fc_atomicity: str = DEFAULT_FC_ATOMICITY,
 ) -> Dict[str, int]:
-    if fc_mode not in FC_MODES or fc_reference not in FC_REFERENCES:
-        raise ValueError(f"fc_mode must be one of {FC_MODES} and fc_reference one of {FC_REFERENCES}")
-    metric_factory = metric_factory or (lambda name, llm_, emb: make_metric(name, llm_, emb, fc_mode=fc_mode))
+    if fc_mode not in FC_MODES or fc_reference not in FC_REFERENCES or fc_atomicity not in FC_ATOMICITIES:
+        raise ValueError(f"fc_mode must be one of {FC_MODES}, fc_reference one of {FC_REFERENCES} and "
+                         f"fc_atomicity one of {FC_ATOMICITIES}")
+    metric_factory = metric_factory or (
+        lambda name, llm_, emb: make_metric(name, llm_, emb, fc_mode=fc_mode, fc_atomicity=fc_atomicity))
     benchmark = benchmark_index() if benchmark is None else benchmark
     records = [enrich_record(r, benchmark) for r in read_jsonl(run_path / RECORDS_FILE)]
     scores_path = run_path / scores_file
@@ -232,7 +240,8 @@ async def score_run(
         async with semaphore:
             if breaker["stopped"]:
                 return  # not written, so a later run picks it up
-            row = await score_llm_metric(rec, metric, metric_objs[metric], judge, meter, sleep, fc_mode, fc_reference)
+            row = await score_llm_metric(rec, metric, metric_objs[metric], judge, meter, sleep, fc_mode, fc_reference,
+                                         fc_atomicity)
             append_jsonl(scores_path, row)
             counts["scored"] += 1
             print(f"  {rec['system']} {rec['question_id']} {metric}: {row['status']} {row['value']} "
@@ -266,7 +275,10 @@ def main() -> None:
     p.add_argument("--fc-mode", choices=FC_MODES, default=DEFAULT_FC_MODE,
                    help="Factual correctness: f1 (also penalises extra claims) or recall (answer covers the reference).")
     p.add_argument("--fc-reference", choices=FC_REFERENCES, default=DEFAULT_FC_REFERENCE,
-                   help="Factual correctness reference: gold answer only, or gold answer + key points.")
+                   help="Factual correctness reference: gold answer only, gold answer + key points, or "
+                        "'Question: … Answer: …' + key points.")
+    p.add_argument("--fc-atomicity", choices=FC_ATOMICITIES, default=DEFAULT_FC_ATOMICITY,
+                   help="Factual correctness claim decomposition: low (few compound claims) or high (one per fact).")
     args = p.parse_args()
 
     from dotenv import load_dotenv
@@ -279,8 +291,10 @@ def main() -> None:
     if unknown:
         raise SystemExit(f"Unknown metrics {unknown}; known: {ALL_METRICS}")
     counts = asyncio.run(score_run(Path(args.run), metrics, provider, model, args.concurrency, args.scores_file,
-                                   fc_mode=args.fc_mode, fc_reference=args.fc_reference))
-    print(f"Done: {counts} (judge {J.judge_label(provider, model)}; {fc_tag(args.fc_mode, args.fc_reference)})")
+                                   fc_mode=args.fc_mode, fc_reference=args.fc_reference,
+                                   fc_atomicity=args.fc_atomicity))
+    print(f"Done: {counts} (judge {J.judge_label(provider, model)}; "
+          f"{fc_tag(args.fc_mode, args.fc_reference, args.fc_atomicity)})")
     if counts.get("stopped"):
         sys.exit(2)
 

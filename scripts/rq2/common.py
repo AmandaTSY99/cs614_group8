@@ -63,16 +63,22 @@ def ragas_reference(q: Dict[str, Any]) -> Dict[str, str]:
     References for RAGAS. A bare computed answer ("-30.36%") cannot be found in any filing, so:
     - `answer`: the gold answer only; a bare negative number also states it as a decrease.
     - `answer_keypoints`: `answer` plus the question's key points.
+    - `question_answer_keypoints`: "Question: … Answer: …" plus key points, so a bare number or a name has a
+      subject (factual correctness never sees the question).
     - `evidence`: the gold evidence quotes plus the gold answer, for context recall / precision.
     """
     answer = str(q.get("answer") or q.get("ground_truth_answer") or "").strip()
     if re.fullmatch(r"-\$?\d[\d,]*(?:\.\d+)?\s*(?:%|percent|million|billion)?", answer):
         answer = f"{answer} (a decrease of {answer[1:]})"
     key_points = [str(k).strip() for k in (q.get("key_points") or []) if str(k).strip()]
-    full_answer = " ".join([answer] + [k if k.endswith(".") else k + "." for k in key_points]).strip()
+    kp_sentences = [k if k.endswith(".") else k + "." for k in key_points]
+    full_answer = " ".join([answer] + kp_sentences).strip()
+    question = str(q.get("question") or q.get("query") or "").strip()
+    qa = " ".join([f"Question: {question}", f"Answer: {answer}"] + kp_sentences).strip()
     quotes = [str(e.get("quote") or "").strip() for e in (q.get("gold_evidence") or []) if e.get("quote")]
     evidence = "\n".join(quotes + ([f"Answer: {answer}"] if answer else [])).strip()
-    return {"answer": answer, "answer_keypoints": full_answer, "evidence": evidence or full_answer}
+    return {"answer": answer, "answer_keypoints": full_answer, "question_answer_keypoints": qa,
+            "evidence": evidence or full_answer}
 
 
 def benchmark_index(path: Path = BENCHMARK_PATH) -> Dict[str, Dict[str, Any]]:

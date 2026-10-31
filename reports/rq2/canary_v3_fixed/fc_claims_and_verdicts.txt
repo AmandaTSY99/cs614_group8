@@ -1,0 +1,80 @@
+﻿
+=== system_a gold-001  score 0.25 vs expected 1.00
+REFERENCE: Question: For Johnson & Johnson's fiscal year 2022, calculate the year-over-year percentage decrease in the accumulated benefit obligation for plans with accumulated benefit obligations in excess of plan assets. Answer: -25.64% (a decrease of 25.64%)
+ANSWER: For plans with accumulated benefit obligations in excess of plan assets, the accumulated benefit obligation was **$3.9 billion in 2021** and **$2.9 billion in 2022** [1].  Year-over-year percentage decrease:  \[ \frac{3.9 - 2.9}{3.9} \times 100 \approx 25.6\% \]  So, the accumulated benefit obligation **decreased by approximately 25.6%** from 2021 to 2022 [1].
+-- reference claims checked against the answer (a miss lowers recall):
+   [OK ] For Johnson & Johnson's fiscal year 2022, the accumulated benefit obligation for plans with accumulated benefit obligations in excess of plan assets decreased. | The context states that the accumulated benefit obligation decreased by approximately 25.6% from 2021 to 2022, which implies a decrease for the plans mentioned.
+   [MISS] The year-over-year percentage decrease in the accumulated benefit obligation for Johnson & Johnson in fiscal year 2022 is -25.64%. | The context provides a percentage decrease of approximately 25.6%, but does not specify it as -25.64%, which is a misrepresentation of the information.
+   [MISS] The decrease in the accumulated benefit obligation for Johnson & Johnson in fiscal year 2022 is 25.64%. | The context states a decrease of approximately 25.6%, but does not confirm the exact figure as 25.64%, making this statement not directly inferable.
+-- answer claims checked against the reference (supported ones count as hits):
+   [NO  ] The accumulated benefit obligation was $3.9 billion in 2021. | The context does not provide any specific dollar amounts for the accumulated benefit obligation in 2021.
+   [NO  ] The accumulated benefit obligation was $2.9 billion in 2022. | The context does not specify the dollar amount for the accumulated benefit obligation in 2022, only the percentage decrease.
+   [OK ] The accumulated benefit obligation decreased by approximately 25.6% from 2021 to 2022. | The context states a year-over-year percentage decrease of 25.64%, which supports this statement.
+
+=== system_b gold-001  score 0.33 vs expected 1.00
+REFERENCE: Question: For Johnson & Johnson's fiscal year 2022, calculate the year-over-year percentage decrease in the accumulated benefit obligation for plans with accumulated benefit obligations in excess of plan assets. Answer: -25.64% (a decrease of 25.64%)
+ANSWER: The accumulated benefit obligation decreased from $3.9 billion in 2021 to $2.9 billion in 2022 [1].  Percentage decrease = \(\frac{3.9 - 2.9}{3.9} \times 100\) = approximately **25.6%** [1]
+-- reference claims checked against the answer (a miss lowers recall):
+   [MISS] For Johnson & Johnson's fiscal year 2022, the accumulated benefit obligation for plans with accumulated benefit obligations in excess of plan assets decreased. | The context provides information about the accumulated benefit obligation decreasing but does not specify that it is for Johnson & Johnson or that it pertains t
+   [MISS] The year-over-year percentage decrease in the accumulated benefit obligation for Johnson & Johnson's fiscal year 2022 is -25.64%. | The context states the percentage decrease is approximately 25.6%, not -25.64%. The negative sign indicates an incorrect interpretation of the decrease.
+   [OK ] The decrease in the accumulated benefit obligation for Johnson & Johnson's fiscal year 2022 is 25.64%. | The context mentions a decrease of approximately 25.6%, which can be rounded to 25.64%, making this statement a reasonable inference.
+-- answer claims checked against the reference (supported ones count as hits):
+   [NO  ] The accumulated benefit obligation was $3.9 billion in 2021. | The context does not provide any information about the accumulated benefit obligation for 2021.
+   [NO  ] The accumulated benefit obligation was $2.9 billion in 2022. | The context states the percentage decrease but does not specify the actual amount for 2022.
+   [NO  ] The accumulated benefit obligation decreased from $3.9 billion to $2.9 billion. | The context implies a decrease but does not confirm the specific amounts for 2021 and 2022.
+   [OK ] The percentage decrease in the accumulated benefit obligation is approximately 25.6%. | The context explicitly states the percentage decrease as -25.64%, which is approximately 25.6%.
+
+=== system_c_v1 gold-001  score 0.33 vs expected 1.00
+REFERENCE: Question: For Johnson & Johnson's fiscal year 2022, calculate the year-over-year percentage decrease in the accumulated benefit obligation for plans with accumulated benefit obligations in excess of plan assets. Answer: -25.64% (a decrease of 25.64%)
+ANSWER: For plans with accumulated benefit obligations in excess of plan assets, the accumulated benefit obligation was $2.9 billion at the end of 2022 and $3.9 billion at the end of 2021 .  The year-over-year percentage decrease was approximately 25.6%, calculated as (($3.9 billion - $2.9 billion) / $3.9 billion) × 100 .
+-- reference claims checked against the answer (a miss lowers recall):
+   [OK ] For Johnson & Johnson's fiscal year 2022, the accumulated benefit obligation for plans with accumulated benefit obligations in excess of plan assets decreased. | The context states that the accumulated benefit obligation was $2.9 billion at the end of 2022, indicating a decrease from $3.9 billion at the end of 2021.
+   [MISS] The year-over-year percentage decrease in the accumulated benefit obligation for Johnson & Johnson in fiscal year 2022 is -25.64%. | The context calculates the year-over-year percentage decrease as approximately 25.6%, not -25.64%. The negative sign is incorrect.
+   [MISS] A decrease of 25.64% occurred in the accumulated benefit obligation for Johnson & Johnson's fiscal year 2022. | The context states a decrease of approximately 25.6%, but does not confirm the exact figure of 25.64%.
+-- answer claims checked against the reference (supported ones count as hits):
+   [NO  ] The accumulated benefit obligation was $2.9 billion at the end of 2022. | The context does not provide the specific dollar amount for the accumulated benefit obligation at the end of 2022, only the percentage decrease.
+   [NO  ] The accumulated benefit obligation was $3.9 billion at the end of 2021. | The context does not specify the dollar amount for the accumulated benefit obligation at the end of 2021, only the percentage decrease.
+   [OK ] The year-over-year percentage decrease was approximately 25.6%. | The context explicitly states that the year-over-year percentage decrease is -25.64%, which is approximately 25.6%.
+   [NO  ] The year-over-year percentage decrease was calculated as (($3.9 billion - $2.9 billion) / $3.9 billion) × 100. | The context does not provide the calculation method for the percentage decrease, only the result.
+
+=== system_c_v3 gold-001  score 0.50 vs expected 1.00
+REFERENCE: Question: For Johnson & Johnson's fiscal year 2022, calculate the year-over-year percentage decrease in the accumulated benefit obligation for plans with accumulated benefit obligations in excess of plan assets. Answer: -25.64% (a decrease of 25.64%)
+ANSWER: For plans with accumulated benefit obligations in excess of plan assets, the accumulated benefit obligation was $2.9 billion at the end of 2022 and $3.9 billion at the end of 2021 .  The year-over-year percentage decrease was 25.64%, calculated as (($3.9 billion - $2.9 billion) / $3.9 billion) × 100 .
+-- reference claims checked against the answer (a miss lowers recall):
+   [OK ] For Johnson & Johnson's fiscal year 2022, the accumulated benefit obligation for plans with accumulated benefit obligations in excess of plan assets decreased. | The context states that the accumulated benefit obligation was $2.9 billion at the end of 2022, which indicates a decrease from $3.9 billion at the end of 2021.
+   [MISS] The year-over-year percentage decrease in the accumulated benefit obligation for Johnson & Johnson's fiscal year 2022 is -25.64%. | The context provides a percentage decrease of 25.64%, but it is incorrectly stated as negative in the statement.
+   [OK ] The decrease in the accumulated benefit obligation for Johnson & Johnson's fiscal year 2022 is 25.64%. | The context confirms that the year-over-year percentage decrease is 25.64%, which is correctly stated in the statement.
+-- answer claims checked against the reference (supported ones count as hits):
+   [NO  ] The accumulated benefit obligation was $2.9 billion at the end of 2022. | The context does not provide the specific dollar amount for the accumulated benefit obligation at the end of 2022, only the percentage decrease.
+   [NO  ] The accumulated benefit obligation was $3.9 billion at the end of 2021. | The context does not specify the dollar amount for the accumulated benefit obligation at the end of 2021, only the percentage decrease.
+   [OK ] The year-over-year percentage decrease was 25.64%. | The context explicitly states that the year-over-year percentage decrease is -25.64%, which indicates a decrease of 25.64%.
+   [NO  ] The year-over-year percentage decrease was calculated as (($3.9 billion - $2.9 billion) / $3.9 billion) × 100. | The context does not provide the calculation method for the percentage decrease, only the result, so this statement cannot be directly inferred.
+
+=== system_c_v3 gold-011  score 0.00 vs expected 1.00
+REFERENCE: Question: What is the percentage decrease in Microsoft's total estimated future amortization expense for intangible assets from June 30, 2017, to June 30, 2020? Answer: -30.36% (a decrease of 30.36%)
+ANSWER: Microsoft’s total estimated future amortization expense for intangible assets decreased from $10,106 million as of June 30, 2017 to $7,038 million as of June 30, 2020, a decrease of $3,068 million, which equals 30.36% of the 2017 amount .
+-- reference claims checked against the answer (a miss lowers recall):
+   [OK ] Microsoft's total estimated future amortization expense for intangible assets decreased from June 30, 2017, to June 30, 2020. | The context explicitly states that the amortization expense decreased from $10,106 million as of June 30, 2017 to $7,038 million as of June 30, 2020.
+   [MISS] The percentage decrease in Microsoft's total estimated future amortization expense for intangible assets from June 30, 2017, to June 30, 2020, is -30.36%. | The context states a decrease of 30.36%, but it should be expressed as a positive percentage decrease, not negative.
+   [OK ] The decrease in Microsoft's total estimated future amortization expense for intangible assets is 30.36%. | The context confirms that the decrease is indeed 30.36% of the 2017 amount.
+-- answer claims checked against the reference (supported ones count as hits):
+   [NO  ] Microsoft's total estimated future amortization expense for intangible assets was $10,106 million as of June 30, 2017. | The context does not provide the specific dollar amount for Microsoft's total estimated future amortization expense as of June 30, 2017.
+   [NO  ] Microsoft's total estimated future amortization expense for intangible assets was $7,038 million as of June 30, 2020. | The context does not provide the specific dollar amount for Microsoft's total estimated future amortization expense as of June 30, 2020.
+   [NO  ] The decrease in Microsoft's total estimated future amortization expense for intangible assets from 2017 to 2020 was $3,068 million. | The context provides the percentage decrease but does not specify the dollar amount of the decrease.
+   [NO  ] The decrease of $3,068 million equals 30.36% of the 2017 amount. | The context provides the percentage decrease but does not confirm the dollar amount of the decrease or its relation to the 2017 amount.
+
+=== system_c_v1 gold-017  score 0.50 vs expected 1.00
+REFERENCE: Question: According to Meta Platforms, Inc.'s 2024 10-K, under what specific conditions does the company accrue a liability for legal and regulatory contingencies? Answer: Meta accrues a liability when it believes that it is both probable that a loss has been incurred and the amount of the loss can be reasonably estimated. The loss must be probable. The amount of the loss must be reasonably estimable. This applies to both asserted and unasserted matters.
+ANSWER: Meta Platforms, Inc. states that it accrues a liability for legal and regulatory contingencies when it believes that it is both probable that a loss has been incurred and the amount can be reasonably estimated.   The company says it evaluates asserted and unasserted matters on a regular basis in making that determination.
+-- reference claims checked against the answer (a miss lowers recall):
+   [OK ] Meta Platforms, Inc. accrues a liability for legal and regulatory contingencies when it believes that a loss has been incurred. | The context states that a liability is accrued when it is probable that a loss has been incurred and the amount can be reasonably estimated, which includes the 
+   [MISS] Meta Platforms, Inc. accrues a liability when it believes that the loss is probable. | The context specifies that a liability is accrued when it is probable that a loss has been incurred, but it also requires that the amount can be reasonably esti
+   [MISS] Meta Platforms, Inc. accrues a liability when the amount of the loss can be reasonably estimated. | The context indicates that accruing a liability requires both the probability of a loss and the ability to reasonably estimate the amount, so this statement is 
+   [OK ] The loss must be probable for Meta Platforms, Inc. to accrue a liability. | The context confirms that it is necessary for the loss to be probable in order to accrue a liability, aligning with the provided information.
+   [OK ] The amount of the loss must be reasonably estimable for Meta Platforms, Inc. to accrue a liability. | The context states that the amount must be reasonably estimated as part of the criteria for accruing a liability, confirming the accuracy of this statement.
+   [OK ] The accrual of liability applies to both asserted and unasserted matters. | The context mentions that the company evaluates both asserted and unasserted matters in making the determination to accrue a liability, supporting this statemen
+-- answer claims checked against the reference (supported ones count as hits):
+   [NO  ] Meta Platforms, Inc. accrues a liability for legal and regulatory contingencies when it believes that a loss has been incurred. | The context states that Meta accrues a liability when it believes that it is probable that a loss has been incurred, but does not specify that it accrues solely
+   [NO  ] Meta Platforms, Inc. accrues a liability for legal and regulatory contingencies when the amount can be reasonably estimated. | The context specifies that both conditions must be met: it must be probable that a loss has been incurred and the amount must be reasonably estimable, not just 
+   [NO  ] Meta Platforms, Inc. evaluates asserted matters on a regular basis. | The context does not provide any information regarding the evaluation of asserted matters, so this statement cannot be inferred.
+   [NO  ] Meta Platforms, Inc. evaluates unasserted matters on a regular basis. | The context mentions that the accrual applies to both asserted and unasserted matters, but does not specify that they are evaluated on a regular basis.
