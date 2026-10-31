@@ -9,7 +9,9 @@ Usage:
 
 import argparse
 import csv
+import itertools
 import random
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -18,17 +20,30 @@ from typing import Any, Dict, List, Optional, Tuple
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from scripts.rq2 import analysis as A  # noqa: E402
+from scripts.rq2 import judge as J  # noqa: E402
 from scripts.rq2.common import CATEGORIES, GEN_ERRORS_FILE, RECORDS_FILE, SCORES_FILE, read_jsonl  # noqa: E402
 from scripts.rq2.judge import EMBEDDING_MODEL  # noqa: E402
 
 METRIC_ORDER = [
+    "primary_accuracy", "abstained",
     "faithfulness", "answer_relevancy", "context_recall", "context_precision", "factual_correctness",
     "numeric_accuracy", "citation_precision", "citation_recall", "citation_f1", "citation_coverage",
-    "grounding_error_rate", "abstained",
+    "citation_precision_incl_uncited", "citation_recall_incl_uncited", "citation_f1_incl_uncited",
+    "grounding_error_rate",
 ]
+METRIC_LABELS = {
+    "primary_accuracy": "primary_accuracy (numeric_accuracy / keypoint_recall)",
+    "abstained": "abstained (refusal rate)",
+    "factual_correctness": "factual_correctness (secondary)",
+    "citation_precision_incl_uncited": "citation_precision, uncited = 0",
+    "citation_recall_incl_uncited": "citation_recall, uncited = 0",
+    "citation_f1_incl_uncited": "citation_f1, uncited = 0",
+}
 # The RQ2 proposal's question attributes (`dims` on each score row), reported as extra groups "dim=value".
-DIMENSIONS = ["answer_type", "evidence_format", "hop", "task", "evidence_scope"]
-LLM_METRICS = METRIC_ORDER[:5]
+DIMENSIONS = A.DIMENSIONS
+LLM_METRICS = ["faithfulness", "answer_relevancy", "context_recall", "context_precision", "factual_correctness"]
+FC_TAG_RE = re.compile(r"fc_mode=(\w+); fc_reference=(\w+)(?:; fc_atomicity=(\w+))?")
 N_BOOT = 1000
 SEED = 0
 # gpt-4o-mini list prices (USD per 1M tokens); override with --price-in / --price-out.
@@ -195,14 +210,168 @@ def _fmt(row: Optional[Dict[str, Any]]) -> str:
     return f"{row['mean']:.3f} [{row['ci_low']:.3f}, {row['ci_high']:.3f}] (n={row['n']}{extra})"
 
 
+LIMITATIONS = [
+    "", "## Limitations", "",
+    "- **Factual correctness is a secondary metric.** On a 20-answer canary it agreed only moderately with the "
+    "saved correctness flags (mean absolute difference 0.28), because (1) its recall also counts the answer's "
+    "extra correct claims (intermediate figures the reference does not contain), (2) the judge is confused by "
+    "the sign of the gold number (\"-30.36%\" is marked wrong for an answer saying a 30.36% decrease, and the "
+    "reverse), and (3) it splits one condition (\"probable AND reasonably estimable\") into separate claims "
+    "that are then judged one by one.",
+    "- **Faithfulness cannot verify a number the system calculated itself** (e.g. 30.36%), since it is not in "
+    "any retrieved text; correct calculations are therefore slightly penalised.",
+    "- **The judge is not fully repeatable at temperature 0**: repeated scoring of the same answer gave "
+    "different values on the canary.",
+    "- **Refusal detection is a rule**: an answer is a refusal when its first sentence says the evidence is "
+    "missing (\"not found in the provided context\", \"cannot be determined\", ...). Partial answers are not "
+    "refusals.",
+    f"- **Error types are heuristic.** {A.ERROR_TYPE_RULE}",
+    "- **System C v3 may have been tuned on this benchmark** (built after it existed, reports 100% numerical "
+    "accuracy on it), so its numbers may be optimistic.",
+    "- **The judge (gpt-4o-mini) is weaker than the answer model (gpt-5.4)**; a stronger-judge spot-check is "
+    "planned.",
+    "- **The answer model is labelled both `gpt-5.4` and `gpt-5.4-2026-03-05`** in the records; most likely "
+    "the same model reported two ways.",
+    "- **Keypoint recall is word overlap**, not meaning: a paraphrase can miss a key point, and a long answer "
+    "can cover one by chance.",
+    "- Paired differences use the same questions for both systems; with 97 questions, small per-attribute "
+    "groups have wide intervals, and p-values are Holm-corrected only across the 6 system pairs of one metric "
+    "and group, not across metrics or groups.",
+]
+
+
+def _fc_config(scores: List[Dict[str, Any]]) -> str:
+    for r in scores:
+        m = FC_TAG_RE.search(str(r.get("detail") or "")) if r.get("metric") == "factual_correctness" else None
+        if m:
+            return f"mode `{m.group(1)}`, reference `{m.group(2)}`, atomicity `{m.group(3) or 'low'}`"
+    return "mode `f1`, reference `answer_keypoints`, atomicity `low` (defaults; not recorded in this scores file)"
+
+
+def _judge_limit_config(scores: List[Dict[str, Any]]) -> Optional[str]:
+    rescored = [r for r in latest_scores(scores) if r.get("judge_max_tokens")]
+    if not rescored:
+        return None
+    limits = sorted({int(r["judge_max_tokens"]) for r in rescored})
+    return (f"Judge output limit: the ragas default ({J.RAGAS_DEFAULT_MAX_TOKENS} tokens) for most rows; "
+            f"{', '.join(str(n) for n in limits)} tokens for the {len(rescored)} rows that were truncated at the "
+            "default and re-scored (`judge_max_tokens` in each such row's `detail`). The output limit only caps how "
+            "long the judge's structured answer may be; model, temperature and prompts are identical, so it does "
+            "not affect rows that completed under the lower limit.")
+
+
+def failed_to_score(scores: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Rows excluded from the means: status error / truncated / too_large, per system, metric and status."""
+    groups: Dict[Tuple[str, str, str], List[str]] = defaultdict(list)
+    for r in latest_scores(scores):
+        if r.get("status") in ("error", J.STATUS_TRUNCATED, J.STATUS_TOO_LARGE):
+            groups[(r["system"], r["metric"], r["status"])].append(r["question_id"])
+    return [{"system": s, "metric": m, "status": st, "count": len(q), "questions": sorted(q)}
+            for (s, m, st), q in sorted(groups.items())]
+
+
+def _failed_section(scores: List[Dict[str, Any]]) -> List[str]:
+    failed = failed_to_score(scores)
+    lines = ["", "## Failed to score", ""]
+    if not failed:
+        return lines + ["No judge rows failed: every LLM metric was scored for every answer (N/A rows excluded)."]
+    lines += ["These rows have no value and are excluded from the means above (shown as `failed=n` there). "
+              "`truncated`: the judge's answer exceeded its output limit even at the highest limit tried; "
+              "`error`: the call failed after all retries; `too_large`: the request exceeded the context window.",
+              "", "| System | Metric | Status | Count | Questions |", "|---|---|---|---|---|"]
+    for f in failed:
+        lines.append(f"| {f['system']} | {f['metric']} | {f['status']} | {f['count']} | {', '.join(f['questions'])} |")
+    return lines
+
+
+def _sig(row: Dict[str, Any]) -> str:
+    return "yes" if row["significant"] else "no"
+
+
+def _pair_label(row: Dict[str, Any]) -> str:
+    return f"{row['system_a']} → {row['system_b']}"
+
+
+def _diff_cell(row: Dict[str, Any]) -> str:
+    return f"{row['mean_diff']:+.3f} [{row['ci_low']:+.3f}, {row['ci_high']:+.3f}]"
+
+
+def _analysis_sections(analysis: Dict[str, Any], systems: List[str]) -> List[str]:
+    lines: List[str] = []
+    comparisons = analysis["comparisons"]
+    ordering = analysis["ordering"]
+    n_pairs = len(systems) * (len(systems) - 1) // 2
+
+    lines += ["", "## Expected ordering on primary accuracy", "",
+              f"Expected: {' < '.join(ordering['order'])} (a later system scores higher). Paired differences "
+              f"(second minus first) on the same questions, 95% paired bootstrap CI ({A.N_BOOT_PAIRED} "
+              f"resamples, seed {A.SEED}), Wilcoxon signed-rank p-value, Holm-corrected across the "
+              f"{n_pairs} pairs.", "",
+              "| Pair | n | Mean first | Mean second | Difference [95% CI] | p (Holm) | Significant | Verdict |",
+              "|---|---|---|---|---|---|---|---|"]
+    for r in ordering["rows"]:
+        lines.append(f"| {_pair_label(r)} | {r['n']} | {r['mean_a']:.3f} | {r['mean_b']:.3f} | {_diff_cell(r)} | "
+                     f"{r['p_holm']:.4f} | {_sig(r)} | {r['verdict']} |")
+    lines += ["", "The full expected ordering " + ("**holds**: every adjacent pair is significantly in the expected "
+                                                    "direction." if ordering["ordering_holds"]
+                                                    else "**does not hold**: at least one adjacent pair is not "
+                                                         "significantly in the expected direction.")]
+
+    lines += ["", "## Paired comparisons (overall, all metrics)", "",
+              "Difference = second minus first, mean [95% CI]; * = significant after Holm correction "
+              "(p < 0.05). Per attribute: `paired_comparisons.csv`.", "",
+              "| Metric | " + " | ".join(f"{a.replace('system_', '')} → {b.replace('system_', '')}"
+                                          for a, b in itertools_pairs(systems)) + " |",
+              "|---|" + "---|" * n_pairs]
+    overall = {(c["metric"], c["system_a"], c["system_b"]): c for c in comparisons if c["group"] == "overall"}
+    for metric in METRIC_ORDER:
+        cells = []
+        for a, b in itertools_pairs(systems):
+            c = overall.get((metric, a, b))
+            cells.append("n/a" if c is None else f"{c['mean_diff']:+.3f}{'*' if c['significant'] else ''}")
+        if any(cell != "n/a" for cell in cells):
+            lines.append(f"| {METRIC_LABELS.get(metric, metric)} | " + " | ".join(cells) + " |")
+
+    sig = [c for c in comparisons if c["significant"] and c["group"] != "overall"
+           and not c["group"].startswith("category=") and c["metric"] in METRIC_ORDER]
+    lines += ["", "## Significant paired differences by question attribute", ""]
+    if sig:
+        lines += ["| Group | Metric | Pair | n | Difference [95% CI] | p (Holm) |", "|---|---|---|---|---|---|"]
+        for c in sorted(sig, key=lambda c: (c["group"], METRIC_ORDER.index(c["metric"]), c["system_a"], c["system_b"])):
+            lines.append(f"| {c['group']} | {METRIC_LABELS.get(c['metric'], c['metric'])} | {_pair_label(c)} | "
+                         f"{c['n']} | {_diff_cell(c)} | {c['p_holm']:.4f} |")
+    else:
+        lines.append("None.")
+
+    counts = analysis["error_counts"]
+    lines += ["", "## Error types", "", A.ERROR_TYPE_RULE, ""]
+    groups = sorted({c["group"] for c in counts},
+                    key=lambda g: (-1 if g == "overall" else (A.DIMENSIONS.index(g.split("=")[0])
+                                                              if g.split("=")[0] in A.DIMENSIONS else 99), g))
+    for group in groups:
+        lines += [f"### {group}", "", "| System | Answers | Wrong | " + " | ".join(A.ERROR_TYPES) + " |",
+                  "|---|---|---|" + "---|" * len(A.ERROR_TYPES)]
+        for c in (c for c in counts if c["group"] == group):
+            cells = [f"{c[t]} ({c[t + '_share']:.0%})" if c[t + "_share"] is not None else "–" for t in A.ERROR_TYPES]
+            lines.append(f"| {c['system']} | {c['answers']} | {c['wrong']} | " + " | ".join(cells) + " |")
+        lines.append("")
+    lines.append("Cells: count (share of that system's wrong answers).")
+    return lines
+
+
+def itertools_pairs(systems: List[str]) -> List[Any]:
+    return list(itertools.combinations(systems, 2))
+
+
 def render_report(
     records: List[Dict[str, Any]],
     scores: List[Dict[str, Any]],
     gen_errors: List[Dict[str, Any]],
     agg: List[Dict[str, Any]],
     smoke: Optional[Dict[str, Any]] = None,
+    analysis: Optional[Dict[str, Any]] = None,
 ) -> str:
-    systems = sorted({r["system"] for r in records} | {e["system"] for e in gen_errors})
+    systems = A.order_systems({r["system"] for r in records} | {e["system"] for e in gen_errors})
     judges = sorted({r["judge"] for r in scores if r.get("metric") in LLM_METRICS and r.get("judge")})
     failures = generation_failures(records, gen_errors)
     index = {(a["system"], a["category"], a["metric"]): a for a in agg}
@@ -213,8 +382,14 @@ def render_report(
                  "Cells: mean [bootstrap 95% CI] (n scored; na and failed rows excluded).")
     lines += [
         "", "## Configuration", "",
-        f"- RAGAS judge: {', '.join(judges) if judges else 'none'} "
+        f"- RAGAS judge: {', '.join(judges) if judges else 'none'}, temperature 0 "
         "(`EVAL_JUDGE_PROVIDER` / `EVAL_JUDGE_MODEL`; one judge per scores file).",
+        f"- Factual correctness (SECONDARY metric): {_fc_config(scores)}.",
+        *([f"- {_judge_limit_config(scores)}"] if _judge_limit_config(scores) else []),
+        "- Primary accuracy: numeric questions use `numeric_accuracy`; qualitative and mixed questions use the "
+        "saved `keypoint_recall` (rule-based, no LLM: `keypoint_recall` in `src/system_a/evaluate.py`, stored on "
+        "each record by `scripts/rq3/run_rq3_experiment.py`; the share of a question's key points of which at "
+        "least half of the content words appear in the answer). The refusal rate (`abstained`) is shown beside it.",
         f"- Answer relevancy embeddings: local `{EMBEDDING_MODEL}` (sentence-transformers, CPU).",
         f"- Answer model(s): {', '.join(answer_models) if answer_models else 'n/a'}.",
         "- System C's own guardrail judge: for the full run it is set to OpenAI `gpt-4o-mini` via env vars "
@@ -237,24 +412,29 @@ def render_report(
             cells = [_fmt(index.get((s, cat, metric))) for s in systems]
             if all(c.startswith("N/A (n=0)") and "na=" not in c for c in cells):
                 continue
-            lines.append(f"| {metric} | " + " | ".join(cells) + " |")
+            lines.append(f"| {METRIC_LABELS.get(metric, metric)} | " + " | ".join(cells) + " |")
+    lines += _failed_section(scores)
+    if analysis:
+        lines += _analysis_sections(analysis, systems)
     lines += [
         "", "## Notes", "",
         "- Context Precision is order-sensitive: it rewards relevant contexts ranked early. "
         "`retrieved_contexts` are kept in the order each system produced them (System C: retrieval order "
-        "across hops, with v2's XBRL blocks first).",
+        "across hops).",
         "- Citation precision/recall/F1 are section-level (top-level 10-K item, `financials.csv` = any "
-        "`[F-…]` citation), because the golden set has no gold chunk IDs. Answers with no citations are N/A, "
-        "not 0; `citation_coverage` is the share of answers with at least one citation.",
+        "`[F-…]` citation), because the benchmark has no gold chunk IDs. Answers with no citations are N/A, "
+        "not 0, so those rows use citing answers only; `citation_coverage` (the share of answers with at least "
+        "one citation) is always shown beside them, and the `uncited = 0` rows count an answer without "
+        "citations as 0.",
         "- Section aliases (a limitation of section-level matching): a cited `Item 15` chunk that is financial "
         "statements or notes counts as `Item 8`, and a cover-page chunk (no Item heading; registrant name, "
-        "address, file number) counts as `Item 1`, matching how the golden set labels those facts.",
+        "address, file number) counts as `Item 1`, matching how the benchmark labels those facts.",
         "- RAGAS metrics see the answer with citation tags stripped.",
         "- Refusals (\"Not found in the provided context\", \"cannot be determined\", ...) are counted by "
         "`abstained`. They are N/A for faithfulness (no claims to check) and score 0 for factual correctness, "
         "instead of the 1.0 RAGAS would give a claim-free answer.",
-        "- RAGAS references come from the benchmark: factual correctness uses the gold answer plus its key "
-        "points; context recall / precision use the gold evidence quotes plus the gold answer, because a "
+        "- RAGAS references come from the benchmark: factual correctness uses the reference named in the "
+        "configuration; context recall / precision use the gold evidence quotes plus the gold answer, because a "
         "computed answer such as \"-30.36%\" does not appear in any filing. A bare negative gold number is "
         "also written as a decrease.",
         "- Numeric accuracy accepts the unsigned value of a negative gold number (\"-25.64%\" matches "
@@ -264,6 +444,7 @@ def render_report(
         "answer_type (type), evidence_format (recipe), hop, task (calculation when the gold has a program), "
         "evidence_scope (scope).",
     ]
+    lines += LIMITATIONS
     if smoke:
         lines += ["", "## Smoke test: judge usage", "",
                   "| System | Question | Metric | Status | Calls | Prompt tok | Completion tok |",
@@ -303,12 +484,34 @@ def write_aggregate_csv(path: Path, agg: List[Dict[str, Any]]) -> None:
         w.writerows(agg)
 
 
+def write_dict_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
+    if not rows:
+        return
+    with path.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+        w.writeheader()
+        w.writerows(rows)
+
+
 def build_report(run_path: Path, scores_file: str = SCORES_FILE, smoke: bool = False, n_samples: int = 120,
                  tokens_per_day: Optional[float] = None, requests_per_day: Optional[float] = None,
                  price_in_per_m: float = PRICE_IN_PER_M, price_out_per_m: float = PRICE_OUT_PER_M) -> str:
     records = read_jsonl(run_path / RECORDS_FILE)
     scores = read_jsonl(run_path / scores_file)
     gen_errors = read_jsonl(run_path / GEN_ERRORS_FILE)
+    analysis = None
+    if any(r.get("dims") for r in scores):
+        # Derived rows (primary accuracy, citation sensitivity) join the scores, so they are aggregated per
+        # system, category and question attribute like every other metric.
+        latest = latest_scores(scores)
+        primary = A.primary_accuracy_rows(records, latest)
+        scores = scores + primary + A.citation_sensitivity_rows(latest)
+        comparisons = A.paired_comparisons(latest_scores(scores))
+        analysis = {
+            "comparisons": comparisons,
+            "ordering": A.ordering_test(comparisons),
+            "error_counts": A.error_type_counts(A.error_type_rows(records, latest, primary)),
+        }
     agg = aggregate(scores)
     smoke_info = None
     if smoke:
@@ -317,11 +520,14 @@ def build_report(run_path: Path, scores_file: str = SCORES_FILE, smoke: bool = F
         smoke_info = {"usage": usage, "ratelimit": ratelimit,
                       "estimate": estimate_free_tier(usage, ratelimit, n_samples, tokens_per_day, requests_per_day),
                       "cost": estimate_cost(usage, n_samples, price_in_per_m, price_out_per_m)}
-    text = render_report(records, scores, gen_errors, agg, smoke_info)
+    text = render_report(records, scores, gen_errors, agg, smoke_info, analysis)
     # One report per scores file, so a Groq and a gpt-4o-mini scoring of the same run don't overwrite each other.
     suffix = "" if scores_file == SCORES_FILE else "_" + Path(scores_file).stem
     (run_path / f"report{suffix}.md").write_text(text, encoding="utf-8")
     write_aggregate_csv(run_path / f"aggregate{suffix}.csv", agg)
+    if analysis:
+        write_dict_csv(run_path / f"paired_comparisons{suffix}.csv", analysis["comparisons"])
+        write_dict_csv(run_path / f"error_types{suffix}.csv", analysis["error_counts"])
     return text
 
 

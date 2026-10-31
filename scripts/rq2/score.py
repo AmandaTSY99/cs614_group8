@@ -104,9 +104,10 @@ def enrich_record(record: Dict[str, Any], benchmark: Dict[str, Dict[str, Any]]) 
 
 
 def _row(record: Dict[str, Any], metric: str, value: Optional[float], status: str, judge: str,
-         detail: str = "", attempts: int = 0, usage: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+         detail: str = "", attempts: int = 0, usage: Optional[Dict[str, Any]] = None,
+         judge_max_tokens: Optional[int] = None) -> Dict[str, Any]:
     usage = usage or {}
-    return {
+    row = {
         "system": record["system"],
         "question_id": record["question_id"],
         "category": record.get("category"),
@@ -123,6 +124,22 @@ def _row(record: Dict[str, Any], metric: str, value: Optional[float], status: st
         "detail": detail[:500],
         "timestamp": now_iso(),
     }
+    if judge_max_tokens is not None:
+        row["judge_max_tokens"] = judge_max_tokens
+    return row
+
+
+def is_done(row: Dict[str, Any], judge_max_tokens: Optional[int]) -> bool:
+    """
+    A finished score row is not re-scored. `error` rows are always retried; a `truncated` row (the judge's answer
+    hit its output limit) is retried only with a larger limit than the one it was scored under.
+    """
+    if row.get("status") == J.STATUS_ERROR:
+        return False
+    if row.get("status") == J.STATUS_TRUNCATED:
+        return ((row.get("judge_max_tokens") or J.RAGAS_DEFAULT_MAX_TOKENS)
+                >= (judge_max_tokens or J.RAGAS_DEFAULT_MAX_TOKENS))
+    return True
 
 
 def check_single_judge(existing: List[Dict[str, Any]], judge: str) -> None:
@@ -144,12 +161,16 @@ async def score_llm_metric(
     fc_mode: str = DEFAULT_FC_MODE,
     fc_reference: str = DEFAULT_FC_REFERENCE,
     fc_atomicity: str = DEFAULT_FC_ATOMICITY,
+    judge_max_tokens: Optional[int] = None,
 ) -> Dict[str, Any]:
-    # Factual-correctness rows carry their mode, reference and atomicity, so scores files stay traceable.
-    tag = fc_tag(fc_mode, fc_reference, fc_atomicity) if metric == "factual_correctness" else ""
+    # Factual-correctness rows carry their mode, reference and atomicity, and every row scored under a raised
+    # judge output limit carries that limit, so scores files stay traceable.
+    tags = [fc_tag(fc_mode, fc_reference, fc_atomicity)] if metric == "factual_correctness" else []
+    if judge_max_tokens is not None:
+        tags.append(f"judge_max_tokens={judge_max_tokens}")
 
     def detail(text: str = "") -> str:
-        return "; ".join(t for t in (tag, text) if t)
+        return "; ".join(t for t in (*tags, text) if t)
 
     # A refusal ("Not found in the provided context") has no claims, so RAGAS would score it as fully faithful
     # and fully correct. It is counted by the `abstained` metric instead: not faithful-or-unfaithful, and wrong.
@@ -165,15 +186,16 @@ async def score_llm_metric(
     try:
         result, attempts = await J.call_with_retry(lambda: metric_obj.ascore(**inputs), sleep=sleep)
     except J.JudgeCallError as exc:
-        status = J.STATUS_TOO_LARGE if exc.kind == J.ERROR_TOO_LARGE else J.STATUS_ERROR
-        return _row(record, metric, None, status, judge, detail(str(exc)), exc.attempts, meter.snapshot(key))
+        status = {J.ERROR_TOO_LARGE: J.STATUS_TOO_LARGE, J.ERROR_TRUNCATED: J.STATUS_TRUNCATED}.get(exc.kind, J.STATUS_ERROR)
+        return _row(record, metric, None, status, judge, detail(str(exc)), exc.attempts, meter.snapshot(key),
+                    judge_max_tokens)
     value = getattr(result, "value", result)
     try:
         value = float(value)
     except (TypeError, ValueError):
         return _row(record, metric, None, J.STATUS_ERROR, judge, detail(f"non-numeric result {value!r}"), attempts,
-                    meter.snapshot(key))
-    return _row(record, metric, value, J.STATUS_OK, judge, detail(), attempts, meter.snapshot(key))
+                    meter.snapshot(key), judge_max_tokens)
+    return _row(record, metric, value, J.STATUS_OK, judge, detail(), attempts, meter.snapshot(key), judge_max_tokens)
 
 
 async def score_run(
@@ -192,6 +214,7 @@ async def score_run(
     fc_mode: str = DEFAULT_FC_MODE,
     fc_reference: str = DEFAULT_FC_REFERENCE,
     fc_atomicity: str = DEFAULT_FC_ATOMICITY,
+    judge_max_tokens: Optional[int] = None,
 ) -> Dict[str, int]:
     if fc_mode not in FC_MODES or fc_reference not in FC_REFERENCES or fc_atomicity not in FC_ATOMICITIES:
         raise ValueError(f"fc_mode must be one of {FC_MODES}, fc_reference one of {FC_REFERENCES} and "
@@ -203,7 +226,7 @@ async def score_run(
     scores_path = run_path / scores_file
     existing = read_jsonl(scores_path)
     judge = J.judge_label(judge_provider, judge_model)
-    done = {(r["system"], r["question_id"], r["metric"]) for r in existing if r.get("status") != J.STATUS_ERROR}
+    done = {(r["system"], r["question_id"], r["metric"]) for r in existing if is_done(r, judge_max_tokens)}
     counts = {"scored": 0, "skipped": 0}
 
     # 1. Free custom metrics
@@ -229,7 +252,7 @@ async def score_run(
     check_single_judge(existing, judge)
     meter = meter or J.JudgeMeter()
     if llm is None:
-        llm = J.build_judge(judge_provider, judge_model, meter)
+        llm = J.build_judge(judge_provider, judge_model, meter, max_tokens=judge_max_tokens)
     if embeddings is None and any(m == "answer_relevancy" for _, m in llm_todo):
         embeddings = J.build_embeddings()
     metric_objs = {m: metric_factory(m, llm, embeddings) for m in {m for _, m in llm_todo}}
@@ -241,13 +264,14 @@ async def score_run(
             if breaker["stopped"]:
                 return  # not written, so a later run picks it up
             row = await score_llm_metric(rec, metric, metric_objs[metric], judge, meter, sleep, fc_mode, fc_reference,
-                                         fc_atomicity)
+                                         fc_atomicity, judge_max_tokens)
             append_jsonl(scores_path, row)
             counts["scored"] += 1
             print(f"  {rec['system']} {rec['question_id']} {metric}: {row['status']} {row['value']} "
                   f"(calls={row['judge_calls']}, tokens={row['judge_prompt_tokens'] + row['judge_completion_tokens']})",
                   flush=True)
-            # Circuit breaker: consecutive calls that still failed after all retries (too_large is neutral).
+            # Circuit breaker: consecutive calls that still failed after all retries (too_large and truncated are
+            # neutral: they fail for that one answer only, so one bad row cannot stop the run).
             if row["status"] == J.STATUS_ERROR:
                 breaker["consecutive"] += 1
                 if breaker["consecutive"] >= CIRCUIT_BREAKER_FAILURES and not breaker["stopped"]:
@@ -279,6 +303,10 @@ def main() -> None:
                         "'Question: … Answer: …' + key points.")
     p.add_argument("--fc-atomicity", choices=FC_ATOMICITIES, default=DEFAULT_FC_ATOMICITY,
                    help="Factual correctness claim decomposition: low (few compound claims) or high (one per fact).")
+    p.add_argument("--judge-max-tokens", type=int, default=None,
+                   help=f"Judge output limit (default: the ragas default, {J.RAGAS_DEFAULT_MAX_TOKENS}; at most "
+                        f"{J.MAX_JUDGE_MAX_TOKENS}). Raising it re-scores rows that were `truncated` at a lower limit; "
+                        "rows that completed are not re-scored.")
     args = p.parse_args()
 
     from dotenv import load_dotenv
@@ -292,9 +320,10 @@ def main() -> None:
         raise SystemExit(f"Unknown metrics {unknown}; known: {ALL_METRICS}")
     counts = asyncio.run(score_run(Path(args.run), metrics, provider, model, args.concurrency, args.scores_file,
                                    fc_mode=args.fc_mode, fc_reference=args.fc_reference,
-                                   fc_atomicity=args.fc_atomicity))
+                                   fc_atomicity=args.fc_atomicity, judge_max_tokens=args.judge_max_tokens))
     print(f"Done: {counts} (judge {J.judge_label(provider, model)}; "
-          f"{fc_tag(args.fc_mode, args.fc_reference, args.fc_atomicity)})")
+          f"{fc_tag(args.fc_mode, args.fc_reference, args.fc_atomicity)}; "
+          f"judge_max_tokens={args.judge_max_tokens or J.RAGAS_DEFAULT_MAX_TOKENS})")
     if counts.get("stopped"):
         sys.exit(2)
 
