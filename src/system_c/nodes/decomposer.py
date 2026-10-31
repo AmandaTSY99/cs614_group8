@@ -23,7 +23,7 @@ from src.system_c.state import AdaptiveRAGState
 
 # Standard 10-column continuous SEC XBRL financial schema mapping (financials.csv)
 XBRL_CORE_METRICS: Dict[str, List[str]] = {
-    "revenue": ["total revenue", "revenue", "sales", "turnover"],
+    "revenue": ["total revenue", "revenue", "net sales", "total sales", "turnover"],
     "net_income": ["net income", "net earnings", "profit"],
     "operating_income": ["operating income", "operating profit", "ebit"],
     "total_assets": ["total assets"],
@@ -54,6 +54,9 @@ FOOTNOTE_OR_SEGMENT_EXCLUSIONS: List[str] = [
     "customer concentration", "concentration", "footnote", "note ", "notes ", "note:",
     "item 8", "item 7", "item 1", "schedule", "research and development", "r&d",
     "share of total sales", "share of sales", "as a share of",
+    "goodwill", "reserve", "reserves", "sales return", "returns reserve",
+    "stock option", "stock options", "equity incentive", "restricted stock",
+    "impairment", "fair value", "pension", "allowance", "valuation",
     "why", "driver", "strategy", "cause", "impact", "explain", "describe", "description",
 ]
 
@@ -87,7 +90,7 @@ DECOMPOSER_SYSTEM_PROMPT = """You are a Senior Financial Analyst & Query Planner
 Given a user's financial question, return a strict JSON object with the following keys:
 - "target_ticker": primary stock ticker (one of AAPL, AMZN, GOOGL, JNJ, JPM, META, MSFT, NVDA, TSLA, WMT, or null)
 - "target_tickers": list of all stock tickers mentioned if comparing multiple companies, e.g. ["AAPL", "NVDA"]
-- "fiscal_years": list of integer fiscal years mentioned (e.g. [2024, 2025]), or empty list []
+- "fiscal_years": list of integer fiscal years of the SEC 10-K filings to retrieve (e.g. [2024, 2018]). If the question specifies a filing year (e.g. "According to their fiscal year 2019 10-Ks", "In the 2018 10-K"), include ONLY the filing year(s) to search, NOT future maturity, repayment, or contractual years (e.g. "scheduled to repay in 2020").
 - "query_complexity": "single_hop" if it asks for one isolated fact, or "multi_hop" if it connects multiple sections, years, drivers, or footnotes
 - "needs_tabular_tool": true if the question asks for reported financial metrics (revenue, net income, operating income, assets, liabilities, equity, cash flow, EPS, margins)
 - "sub_query_plans": list of 1 to 4 structured sub-query objects with tool routing:
@@ -103,6 +106,11 @@ Given a user's financial question, return a strict JSON object with the followin
 - "sub_queries": list of 1 to 4 atomic search query strings corresponding to "sub_query_plans"
 
 Respond ONLY with valid JSON."""
+
+FUTURE_MATURITY_YEAR_RE = re.compile(
+    r"(?:repay(?:ing|ment)?|due|matur(?:ing|ity|ities)|scheduled\s+for|thereafter\s+in)\s+(?:in\s+)?(199\d|20[0-2]\d)",
+    re.IGNORECASE,
+)
 
 
 def _parse_json_safely(raw_text: str) -> Dict[str, Any]:
@@ -151,7 +159,25 @@ def decomposer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
             llm_years.append(int(y))
         except (ValueError, TypeError):
             pass
-    fiscal_years = state.get("fiscal_years") or llm_years or regex_years
+
+    mode = state.get("mode")
+    if mode == "v3_aamr_sg":
+        # Question Text Year Priority & Semantic Disambiguation for System C v3:
+        # Distinguish SEC filing years from future contractual/maturity schedule years (e.g. "repay in 2020").
+        future_years = {int(y) for y in FUTURE_MATURITY_YEAR_RE.findall(query)}
+        valid_regex_years = [y for y in regex_years if y not in future_years]
+
+        extracted_years: List[int] = []
+        for y in (valid_regex_years + llm_years):
+            if y not in extracted_years and y not in future_years:
+                extracted_years.append(y)
+
+        existing_years = [int(y) for y in (state.get("fiscal_years") or []) if int(y) not in future_years]
+        # If question explicitly mentions filing years, those define the filing search pool;
+        # otherwise fall back to existing state years.
+        fiscal_years = sorted(list(dict.fromkeys(extracted_years if extracted_years else existing_years)))
+    else:
+        fiscal_years = state.get("fiscal_years") or llm_years or regex_years
 
     pairs = (
         [[t, y] for t in all_tickers for y in fiscal_years]

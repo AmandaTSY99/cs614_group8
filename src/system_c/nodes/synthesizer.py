@@ -15,7 +15,7 @@ from src.system_c.guardrails.citations import build_citation_records, expand_lab
 from src.system_c.llm import call_llm
 from src.system_c.state import AdaptiveRAGState, CitationRecord
 
-SYNTHESIZER_SYSTEM_PROMPT = """You are a Senior SEC 10-K Financial Analyst.
+SYNTHESIZER_SYSTEM_PROMPT_BASE = """You are a Senior SEC 10-K Financial Analyst.
 Answer the user's question using ONLY the Evidence Blocks provided. Each block starts with a label such as [E1], followed by the company ticker, fiscal year, filing section and chunk id.
 
 CITATION RULES (strict):
@@ -28,6 +28,15 @@ CITATION RULES (strict):
 7. Do not add a sources list, footnotes or headings; citations go inline at the end of each sentence.
 8. Cite the block where that specific fact is stated, not a nearby block on the same topic. If you can't point to the block that states it, don't make the claim.
 9. A figure you compute yourself (a difference, ratio or growth rate) must cite every block its inputs come from."""
+
+# Upgraded prompt for System C v3 ("v3_aamr_sg") with strict arithmetic precision & dual-metric reporting
+SYNTHESIZER_SYSTEM_PROMPT_V3 = SYNTHESIZER_SYSTEM_PROMPT_BASE + """
+10. ARITHMETIC PRECISION: When computing percentage differences, growth rates, margins, or ratios, do NOT round aggressively to the nearest whole integer (e.g. do not round 3.895% to 4.0% or 4%). State computed percentages to 1 to 2 decimal places (e.g. 3.9% or 3.90%) to preserve financial accuracy.
+11. DUAL-METRIC DISAMBIGUATION: If the question asks for a general operational or physical metric (e.g. square footage, headcount, facilities) and the evidence provides multiple definitions (e.g. Total Square Footage vs Retail/Selling Square Footage, or gross vs net), clearly state BOTH figures and identify what each number represents, citing each respective block.
+12. DEBT PRINCIPAL VS CONTRACTUAL COMMITMENTS: When a question specifically asks for "future principal payments", "principal payments", or "principal payments on long-term debt", prioritize and use the pure principal maturity schedule disclosed in Note (Long-Term Debt) which lists scheduled principal repayments excluding interest. Do NOT use contractual obligations or commitments tables that combine debt principal and interest payments unless the question explicitly asks for contractual obligations or commitments including interest.
+13. MULTI-YEAR RESTATED OR REVISED FIGURES: When comparing metrics across fiscal years (such as FY2011 to FY2015), if the later filing provides a multi-year comparative table (e.g. 5-year table in Item 1 or Item 6) that adjusts or restates the earlier year's figure, compute and report BOTH percentage changes: (1) the growth rate using the consistent multi-year table from the later filing, and (2) the growth rate using the figure originally reported in the earlier filing, clearly presenting both computed percentages and citing each respective block."""
+
+SYNTHESIZER_SYSTEM_PROMPT = SYNTHESIZER_SYSTEM_PROMPT_V3
 
 
 def extract_citations_from_answer(
@@ -75,11 +84,14 @@ def synthesizer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     context_str, label_map = _build_evidence_blocks(evidence, default_ticker)
     user_prompt = f"Evidence Blocks:\n{context_str}\n\nQuestion: {state['original_query']}"
 
+    mode = state.get("mode")
+    sys_prompt = SYNTHESIZER_SYSTEM_PROMPT_V3 if mode == "v3_aamr_sg" else SYNTHESIZER_SYSTEM_PROMPT_BASE
+
     raw_answer, updated_telemetry = call_llm(
         state=state,
         node_name="synthesizer",
         messages=[
-            {"role": "system", "content": SYNTHESIZER_SYSTEM_PROMPT},
+            {"role": "system", "content": sys_prompt},
             {"role": "user", "content": user_prompt},
         ],
         temperature=0.0,

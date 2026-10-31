@@ -22,7 +22,7 @@ POOL_FILE = REPO_ROOT / "data" / "benchmark_qa_pool_2015.json"
 def test_pool_file_exists_and_count():
     assert POOL_FILE.exists(), f"Pool file does not exist: {POOL_FILE}"
     data = json.loads(POOL_FILE.read_text(encoding="utf-8"))
-    assert len(data) == 97, f"Expected 97 questions in 2015+ pool, found {len(data)}"
+    assert len(data) == 97, f"Expected 97 questions in audited 2015+ pool, found {len(data)}"
 
 
 def test_pool_strict_2015_constraint():

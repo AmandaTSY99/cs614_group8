@@ -23,7 +23,7 @@ from src.system_c.llm import call_llm, clean_and_parse_json
 from src.system_c.nodes.decomposer import is_xbrl_headline_target
 from src.system_c.state import AdaptiveRAGState
 
-CRITIC_SYSTEM_PROMPT = """You are an Evidence Sufficiency Critic for an SEC 10-K Financial RAG system.
+CRITIC_SYSTEM_PROMPT_BASE = """You are an Evidence Sufficiency Critic for an SEC 10-K Financial RAG system.
 Evaluate whether the Accumulated Evidence (including any tabular XBRL blocks) contains ALL required facts, numbers, segment breakdowns, and footnote disclosures to thoroughly answer the Original Query.
 
 STRICT RULE 1 (ZERO-TOLERANCE MULTI-COMPANY, SEGMENT & FOOTNOTE COVERAGE):
@@ -47,6 +47,14 @@ Return ONLY a valid JSON object with keys:
 - "missing_years": list of integer fiscal years missing data (e.g. [2022]). Empty list [] if all requested years are represented.
 - "missing_premises": list of specific missing facts or targeted questions for the next retrieval hop (empty list [] if is_sufficient is true)
 - "critic_reasoning": concise 1-2 sentence justification explaining what is covered and what remains missing."""
+
+# Upgraded prompt for System C v3 ("v3_aamr_sg") with Strict Rule 3 for lead-in chunks & Rule 4 for debt principal disambiguation
+CRITIC_SYSTEM_PROMPT_V3 = CRITIC_SYSTEM_PROMPT_BASE.replace(
+    "STRICT RULE 2 (CONSISTENCY REQUIREMENT):\nIf your \"critic_reasoning\" states that any data point, segment, or footnote is missing, lacking, or not provided, you CANNOT set \"is_sufficient\": true. You MUST set \"is_sufficient\": false and \"sufficiency_score\" < 0.70.",
+    "STRICT RULE 2 (CONSISTENCY REQUIREMENT):\nIf your \"critic_reasoning\" states that any data point, segment, or footnote is missing, lacking, or not provided, you CANNOT set \"is_sufficient\": true. You MUST set \"is_sufficient\": false and \"sufficiency_score\" < 0.70.\n\nSTRICT RULE 3 (UNRESOLVED LEAD-IN SENTENCES & MISSING TABLES):\nIf an evidence chunk contains a forward reference, lead-in sentence, or placeholder such as \"is summarized below:\", \"as follows:\", \"refer to Note X\", or introduces an upcoming table (e.g. stock option activity, contractual obligations, fair value hierarchy), but the ACTUAL NUMERICAL ROWS AND COLUMNS of that table are absent from the evidence, the evidence is INCOMPLETE. You CANNOT set \"is_sufficient\": true. You MUST set \"is_sufficient\": false, set \"sufficiency_score\" < 0.70, and explicitly list the missing table or metric in \"missing_premises\".\n\nSTRICT RULE 4 (DEBT PRINCIPAL VS CONTRACTUAL COMMITMENTS DISAMBIGUATION):\nWhen the user query asks specifically for future principal payments on debt (or principal payments on long-term debt), do NOT accept a Contractual Obligations / Commitments table that combines debt principal and interest. The evidence must include the pure principal repayment/maturity schedule from the Long-Term Debt footnote disclosures."
+)
+
+CRITIC_SYSTEM_PROMPT = CRITIC_SYSTEM_PROMPT_V3
 
 
 def _parse_critic_json(raw_text: str) -> Dict[str, Any]:
@@ -87,11 +95,14 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
         f"Accumulated Evidence ({len(evidence)} chunks):\n{evidence_digest}"
     )
 
+    mode = state.get("mode")
+    sys_prompt = CRITIC_SYSTEM_PROMPT_V3 if mode == "v3_aamr_sg" else CRITIC_SYSTEM_PROMPT_BASE
+
     raw_resp, updated_telemetry = call_llm(
         state=state,
         node_name="critic",
         messages=[
-            {"role": "system", "content": CRITIC_SYSTEM_PROMPT},
+            {"role": "system", "content": sys_prompt},
             {"role": "user", "content": user_prompt},
         ],
         temperature=0.0,
@@ -243,12 +254,39 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
             if missing_tickers and hop < max_hops:
                 score = min(score, 0.60)
                 is_sufficient = False
-                for mt in missing_tickers:
-                    lbl = f"{mt} financial disclosures"
-                    if lbl not in missing_entities:
-                        missing_entities.append(lbl)
+                if mode == "v3_aamr_sg":
+                    for mt in missing_tickers:
+                        if mt not in missing_entities:
+                            missing_entities.append(mt)
+                else:
+                    for mt in missing_tickers:
+                        lbl = f"{mt} financial disclosures"
+                        if lbl not in missing_entities:
+                            missing_entities.append(lbl)
                 missing_premises.append(f"Disclosures, line items, and segment performance for {', '.join(missing_tickers)}")
                 reasoning += f" [Multi-company coverage incomplete: missing evidence for {', '.join(missing_tickers)}]."
+
+        # Detection D: Unresolved forward reference / lead-in chunk check (System C v3 only)
+        if mode == "v3_aamr_sg" and hop < max_hops:
+            q_lower = state.get("original_query", "").lower()
+            unresolved_lead_in = False
+            for c in evidence:
+                content = c.get("content", "")
+                if re.search(r"(?:summarized below|as follows|the following table)\s*:", content, re.IGNORECASE):
+                    if any(term in q_lower for term in ("option", "exercisable", "maturity", "schedule", "contractual", "obligation")):
+                        has_exercisable_count = any(
+                            "exercisable" in oc.get("content", "").lower()
+                            and any(char.isdigit() for char in oc.get("content", ""))
+                            and "|" in oc.get("content", "")
+                            for oc in evidence
+                        )
+                        if not has_exercisable_count:
+                            unresolved_lead_in = True
+                            break
+            if unresolved_lead_in:
+                score = min(score, 0.65)
+                missing_premises.append("Detailed tabular rows for summarized disclosure/schedule")
+                reasoning += " [Unresolved lead-in detected: Text references an upcoming disclosure table missing from current evidence]."
 
         # 4. Apply quantitative early-stopping threshold (>= threshold triggers early stop)
         has_gaps = bool(missing_entities or missing_years or missing_premises)

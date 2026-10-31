@@ -180,9 +180,23 @@ def generator_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     if follow_up_query not in planned_sub_queries:
         planned_sub_queries.append(follow_up_query)
 
-    return {
+    ret = {
         "current_hop": next_hop,
         "current_sub_query": follow_up_query,
         "sub_queries": planned_sub_queries,
         "telemetry": updated_telemetry,
     }
+
+    mode = state.get("mode")
+    if mode == "v3_aamr_sg" and years:
+        expanded_fiscal_years = list(state.get("fiscal_years") or [])
+        for y in years:
+            if y not in expanded_fiscal_years:
+                expanded_fiscal_years.append(y)
+        expanded_fiscal_years = sorted(expanded_fiscal_years)
+        ret["fiscal_years"] = expanded_fiscal_years
+        tickers = state.get("target_tickers") or ([state.get("target_ticker")] if state.get("target_ticker") else [])
+        if tickers and expanded_fiscal_years:
+            ret["target_pairs"] = [[t, y] for t in tickers for y in expanded_fiscal_years]
+
+    return ret

@@ -631,3 +631,221 @@ def test_system_c_v3_adapter_registration():
     assert adapter.name == "system_c_v3"
     assert adapter.mode == "v3_aamr_sg"
 
+
+def test_v3_aamr_sg_query_text_year_priority():
+    """Verify that mode='v3_aamr_sg' prioritizes and unions question years into fiscal_years, while v1 preserves state."""
+    from src.system_c.nodes.decomposer import decomposer_node
+
+    query = "By how many millions of dollars was Alphabet Inc.'s net gain on equity securities in fiscal year 2024 lower than in fiscal year 2018?"
+
+    # In v3_aamr_sg, 2018 parsed from question must be unioned into fiscal_years
+    state_v3 = create_initial_state(
+        query=query,
+        mode="v3_aamr_sg",
+        target_ticker="GOOGL",
+        fiscal_years=[2020, 2024],
+    )
+    out_v3 = decomposer_node(state_v3)
+    assert 2018 in out_v3["fiscal_years"]
+    assert 2024 in out_v3["fiscal_years"]
+
+    # In v1_amr, pre-existing state fiscal_years is retained untouched
+    state_v1 = create_initial_state(
+        query=query,
+        mode="v1_amr",
+        target_ticker="GOOGL",
+        fiscal_years=[2020, 2024],
+    )
+    out_v1 = decomposer_node(state_v1)
+    assert out_v1["fiscal_years"] == [2020, 2024]
+    assert 2018 not in out_v1["fiscal_years"]
+
+
+def test_v3_aamr_sg_dynamic_year_expansion_in_follow_up_hops():
+    """Verify that mode='v3_aamr_sg' dynamically expands fiscal_years on follow-up hops when Critic flags missing_years."""
+    from src.system_c.nodes.generator import generator_node
+    from src.system_c.nodes.retriever import retriever_node
+
+    # 1. Test generator_node dynamic year expansion in v3
+    state_v3 = create_initial_state(
+        query="Alphabet net gain on equity securities",
+        mode="v3_aamr_sg",
+        target_ticker="GOOGL",
+        fiscal_years=[2020, 2024],
+    )
+    state_v3["current_hop"] = 1
+    state_v3["missing_years"] = [2018]
+    state_v3["missing_premises"] = ["FY2018 equity securities gain"]
+
+    gen_out_v3 = generator_node(state_v3)
+    assert "fiscal_years" in gen_out_v3
+    assert 2018 in gen_out_v3["fiscal_years"]
+    assert 2024 in gen_out_v3["fiscal_years"]
+
+    # 2. Test retriever_node dynamic year expansion in v3
+    calls = []
+    def mock_retriever(query, ticker=None, fiscal_years=None, top_k=6, hop=1, tickers=None):
+        calls.append({"query": query, "years": fiscal_years, "hop": hop})
+        return []
+
+    ret_out_v3 = retriever_node(state_v3, custom_retriever_fn=mock_retriever)
+    assert "fiscal_years" in ret_out_v3
+    assert 2018 in ret_out_v3["fiscal_years"]
+    assert calls[0]["years"] == [2018, 2020, 2024]
+
+    # 3. Test v1_amr leaves fiscal_years untouched
+    state_v1 = create_initial_state(
+        query="Alphabet net gain on equity securities",
+        mode="v1_amr",
+        target_ticker="GOOGL",
+        fiscal_years=[2020, 2024],
+    )
+    state_v1["current_hop"] = 1
+    state_v1["missing_years"] = [2018]
+    gen_out_v1 = generator_node(state_v1)
+    assert "fiscal_years" not in gen_out_v1
+
+    calls_v1 = []
+    def mock_retriever_v1(query, ticker=None, fiscal_years=None, top_k=6, hop=1, tickers=None):
+        calls_v1.append({"query": query, "years": fiscal_years, "hop": hop})
+        return []
+
+    ret_out_v1 = retriever_node(state_v1, custom_retriever_fn=mock_retriever_v1)
+    assert "fiscal_years" not in ret_out_v1
+    assert calls_v1[0]["years"] == [2020, 2024]
+
+
+def test_v3_aamr_sg_adjacent_table_chunk_stitching():
+    """Verify that mode='v3_aamr_sg' stitches adjacent chunk_id + 1 when a forward table lead-in is detected."""
+    from src.system_c.nodes.retriever import retriever_node
+
+    lead_in_text = (
+        "Item 8 > PART II\n"
+        "The following table outlines the estimated future amortization expense related to intangible assets held as of June 30, 2017:"
+    )
+    mock_lead_in_chunk = {
+        "chunk_id": "MSFT_FY2017_2017-06-30:379",
+        "content": lead_in_text,
+        "metadata": {"ticker": "MSFT", "fiscal_year": 2017, "section": "Item 8"},
+        "relevance_score": 0.95,
+        "hop_retrieved": 1,
+    }
+
+    # 1. In mode='v3_aamr_sg', stitching should fetch chunk 380
+    state_v3 = create_initial_state(
+        query="Microsoft future amortization expense",
+        mode="v3_aamr_sg",
+        target_ticker="MSFT",
+        fiscal_years=[2017],
+    )
+    def mock_retriever_lead_in(query, ticker=None, fiscal_years=None, top_k=6, hop=1, tickers=None):
+        return [dict(mock_lead_in_chunk)]
+
+    out_v3 = retriever_node(state_v3, custom_retriever_fn=mock_retriever_lead_in)
+    accumulated_v3 = out_v3["accumulated_evidence"]
+    chunk_ids_v3 = [c["chunk_id"] for c in accumulated_v3]
+    assert "MSFT_FY2017_2017-06-30:379" in chunk_ids_v3
+    assert "MSFT_FY2017_2017-06-30:380" in chunk_ids_v3
+
+    # 2. In mode='v1_amr', stitching must NOT occur
+    state_v1 = create_initial_state(
+        query="Microsoft future amortization expense",
+        mode="v1_amr",
+        target_ticker="MSFT",
+        fiscal_years=[2017],
+    )
+    out_v1 = retriever_node(state_v1, custom_retriever_fn=mock_retriever_lead_in)
+    chunk_ids_v1 = [c["chunk_id"] for c in out_v1["accumulated_evidence"]]
+    assert "MSFT_FY2017_2017-06-30:379" in chunk_ids_v1
+    assert "MSFT_FY2017_2017-06-30:380" not in chunk_ids_v1
+
+
+def test_v3_aamr_sg_debt_principal_vs_commitments_rules():
+    """Verify Rule 12 in synthesizer and Rule 4 in critic exist strictly in System C v3."""
+    from src.system_c.nodes.synthesizer import SYNTHESIZER_SYSTEM_PROMPT_BASE, SYNTHESIZER_SYSTEM_PROMPT_V3
+    from src.system_c.nodes.critic import CRITIC_SYSTEM_PROMPT_BASE, CRITIC_SYSTEM_PROMPT_V3
+
+    # Synthesizer prompt rules
+    assert "12. DEBT PRINCIPAL VS CONTRACTUAL COMMITMENTS" in SYNTHESIZER_SYSTEM_PROMPT_V3
+    assert "12. DEBT PRINCIPAL VS CONTRACTUAL COMMITMENTS" not in SYNTHESIZER_SYSTEM_PROMPT_BASE
+
+    # Critic prompt rules
+    assert "STRICT RULE 4 (DEBT PRINCIPAL VS CONTRACTUAL COMMITMENTS DISAMBIGUATION)" in CRITIC_SYSTEM_PROMPT_V3
+    assert "STRICT RULE 4" not in CRITIC_SYSTEM_PROMPT_BASE
+
+
+def test_v3_aamr_sg_cross_company_critic_ticker_gap_detection():
+    """Verify Critic forces is_sufficient=False and appends missing ticker to missing_entities in v3."""
+    from src.system_c.nodes.critic import critic_node
+
+    state_v3 = create_initial_state(
+        query="Compare debt principal of Amazon vs Johnson & Johnson in 2019",
+        mode="v3_aamr_sg",
+        target_ticker="AMZN",
+        target_tickers=["AMZN", "JNJ"],
+        fiscal_years=[2019],
+    )
+    state_v3["current_hop"] = 1
+    state_v3["accumulated_evidence"] = [
+        {
+            "chunk_id": "AMZN_FY2019_2019-12-31:100",
+            "content": "Amazon debt principal schedule for 2019.",
+            "metadata": {"ticker": "AMZN", "fiscal_year": 2019, "section": "Item 8"},
+            "relevance_score": 0.90,
+            "hop_retrieved": 1,
+        }
+    ]
+
+    out_v3 = critic_node(state_v3)
+    assert out_v3["is_sufficient"] is False
+    assert "JNJ" in out_v3["missing_entities"]
+
+
+def test_v3_aamr_sg_follow_up_hop_ticker_isolation():
+    """Verify retriever_node isolates search to targeted single ticker on hop >= 2 in v3."""
+    from src.system_c.nodes.retriever import retriever_node
+
+    # 1. In v3_aamr_sg, follow-up hop with single-ticker query isolates that ticker
+    state_v3 = create_initial_state(
+        query="Compare debt principal of Amazon vs Johnson & Johnson in 2019",
+        mode="v3_aamr_sg",
+        target_ticker="AMZN",
+        target_tickers=["AMZN", "JNJ"],
+        fiscal_years=[2019],
+    )
+    state_v3["current_hop"] = 2
+    state_v3["current_sub_query"] = "Johnson & Johnson FY19 debt principal scheduled to repay in 2020"
+
+    calls_v3 = []
+    def mock_retriever_v3(query, ticker=None, fiscal_years=None, top_k=6, hop=1, tickers=None):
+        calls_v3.append({"query": query, "ticker": ticker, "tickers": tickers, "hop": hop})
+        return []
+
+    retriever_node(state_v3, custom_retriever_fn=mock_retriever_v3)
+    assert len(calls_v3) == 1
+    assert calls_v3[0]["ticker"] == "JNJ"
+    assert calls_v3[0]["tickers"] == ["JNJ"]
+
+    # 2. In v1_amr, tickers are NOT isolated on follow-up hop
+    state_v1 = create_initial_state(
+        query="Compare debt principal of Amazon vs Johnson & Johnson in 2019",
+        mode="v1_amr",
+        target_ticker="AMZN",
+        target_tickers=["AMZN", "JNJ"],
+        fiscal_years=[2019],
+    )
+    state_v1["current_hop"] = 2
+    state_v1["current_sub_query"] = "Johnson & Johnson FY19 debt principal scheduled to repay in 2020"
+
+    calls_v1 = []
+    def mock_retriever_v1(query, ticker=None, fiscal_years=None, top_k=6, hop=1, tickers=None):
+        calls_v1.append({"query": query, "ticker": ticker, "tickers": tickers, "hop": hop})
+        return []
+
+    retriever_node(state_v1, custom_retriever_fn=mock_retriever_v1)
+    assert len(calls_v1) == 1
+    assert calls_v1[0]["tickers"] == ["AMZN", "JNJ"]
+
+
+
+

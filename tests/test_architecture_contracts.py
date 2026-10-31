@@ -192,7 +192,7 @@ def test_no_groq_provider_hijacking_when_openai_selected(monkeypatch):
 
 
 def test_rq2_load_golden_populates_all_required_fields():
-    """Invariant 8: load_golden() must populate category, target_sections, ground_truth_numbers, and target_pairs on the 97-question 2015+ benchmark."""
+    """Invariant 8: load_golden() must populate category, target_sections, ground_truth_numbers, and target_pairs on the 97-question audited 2015+ benchmark."""
     from scripts.rq2.common import CATEGORIES, load_golden
 
     questions = load_golden(BENCHMARK_2015_PATH)
