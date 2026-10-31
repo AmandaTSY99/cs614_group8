@@ -129,11 +129,70 @@ def strip_citation_tags(answer: str) -> str:
     return re.sub(r"[ \t]+", " ", text).strip()
 
 
+RATIO_TOLERANCE = 0.005  # same relative tolerance as `fuzzy_financial_match`
+MIN_SIGNIFICANT_DIGITS = 3
+ACCOUNTING_NEGATIVE_RE = re.compile(r"\$?\(\s*\$?(\d[\d,]*(?:\.\d+)?)\s*\)")
+GOLD_MAGNITUDE_RE = re.compile(r"^-?\$?\s*(\d[\d,]*(?:\.\d+)?)\s*(thousand|million|billion|trillion)\b", re.IGNORECASE)
+GOLD_PERCENT_RE = re.compile(r"^-?\$?\s*(\d+(?:\.\d+)?)\s*(%|percent)$", re.IGNORECASE)
+GOLD_DECIMAL_RE = re.compile(r"^-?(\d*\.\d+)$")
+BARE_NUMBER_RE = re.compile(r"(?<![\d.,])(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(?![\d])")
+PERCENT_RE = re.compile(r"(?<![\d.,])(\d+(?:\.\d+)?)\s*(?:%|percent\b)", re.IGNORECASE)
+MAGNITUDE_OR_PERCENT_AFTER_RE = re.compile(r"^\s*(?:(?:thousand|million|billion|trillion|percent)\b|%)", re.IGNORECASE)
+
+
+def _significant_digits(number: str) -> int:
+    digits = number.replace(",", "")
+    if "." in digits:
+        digits = digits.rstrip("0").rstrip(".")
+    return len(digits.replace(".", "").lstrip("0"))
+
+
+def _unit_bare_match(gold: str, text: str) -> bool:
+    """
+    A table in thousands / millions gives a bare figure: "$316" matches the gold "$316 million" when the number is
+    exactly the gold's and has at least 3 significant digits. A figure that names another magnitude or a percent
+    ("$316 billion", "316%") does not count.
+    """
+    m = GOLD_MAGNITUDE_RE.match(gold)
+    if not m or _significant_digits(m.group(1)) < MIN_SIGNIFICANT_DIGITS:
+        return False
+    value = float(m.group(1).replace(",", ""))
+    for hit in BARE_NUMBER_RE.finditer(text):
+        if abs(float(hit.group(1).replace(",", "")) - value) < 1e-9 \
+                and not MAGNITUDE_OR_PERCENT_AFTER_RE.match(text[hit.end():]):
+            return True
+    return False
+
+
+def _within(value: float, target: float, tolerance: float = RATIO_TOLERANCE) -> bool:
+    return target != 0 and abs(value - target) <= tolerance * abs(target)
+
+
+def _ratio_percent_match(gold: str, text: str) -> bool:
+    """A ratio and its percentage are equivalent: the gold "0.72" matches "72.08%", and "72%" matches "0.72"."""
+    g = CURRENCY_RE.sub("", gold).strip()
+    percent = GOLD_PERCENT_RE.match(g)
+    decimal = GOLD_DECIMAL_RE.match(g)
+    if decimal and 0 < float(decimal.group(1)) <= 1:
+        ratio = float(decimal.group(1))
+        return any(_within(float(p.group(1)) / 100.0, ratio) for p in PERCENT_RE.finditer(text))
+    if percent:
+        ratio = float(percent.group(1)) / 100.0
+        return any("." in b.group(1) and _within(float(b.group(1).replace(",", "")), ratio)
+                   and not MAGNITUDE_OR_PERCENT_AFTER_RE.match(text[b.end():])
+                   for b in BARE_NUMBER_RE.finditer(text))
+    return False
+
+
 def _number_found(gold: str, text: str) -> bool:
     g = CURRENCY_RE.sub("", gold).strip()
+    # Accounting negatives: "(6.0)" and "$(316)" are -6.0 and -316.
+    text = ACCOUNTING_NEGATIVE_RE.sub(r"-\1", text)
     # The benchmark writes decreases as "-25.64%" while answers say "decreased by 25.6%", so the unsigned
     # value also counts (a sign error is then not caught; documented in report.md).
-    return fuzzy_financial_match(g, text) or (g.startswith("-") and fuzzy_financial_match(g[1:].strip(), text))
+    candidates = [g] + ([g[1:].strip()] if g.startswith("-") else [])
+    return (any(fuzzy_financial_match(c, text) for c in candidates)
+            or _unit_bare_match(g, text) or _ratio_percent_match(g, text))
 
 
 def numeric_accuracy(answer: str, ground_truth_numbers: List[Any]) -> Optional[float]:

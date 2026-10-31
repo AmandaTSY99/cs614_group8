@@ -22,7 +22,10 @@ if __package__ in (None, ""):
 
 from scripts.rq2 import analysis as A  # noqa: E402
 from scripts.rq2 import judge as J  # noqa: E402
-from scripts.rq2.common import CATEGORIES, GEN_ERRORS_FILE, RECORDS_FILE, SCORES_FILE, read_jsonl  # noqa: E402
+from scripts.rq2 import retrieval_stats as RS  # noqa: E402
+from scripts.rq2.common import (  # noqa: E402
+    CATEGORIES, GEN_ERRORS_FILE, RECORDS_FILE, SCORES_FILE, benchmark_index, read_jsonl,
+)
 from scripts.rq2.judge import EMBEDDING_MODEL  # noqa: E402
 
 METRIC_ORDER = [
@@ -224,7 +227,14 @@ LIMITATIONS = [
     "different values on the canary.",
     "- **Refusal detection is a rule**: an answer is a refusal when its first sentence says the evidence is "
     "missing (\"not found in the provided context\", \"cannot be determined\", ...). Partial answers are not "
-    "refusals.",
+    "refusals. The rule treats some partial \"I can only answer part of this\" replies inconsistently (e.g. A "
+    "gold-045 is flagged, A gold-071 is not), so refusal counts may be off by a few for A.",
+    "- **Numeric matching is a rule**: it accepts accounting negatives (\"(6.0)\", \"$(316)\"), a bare table figure "
+    "against a gold value with a unit (\"$316\" for \"$316 million\", exact digits, at least 3 significant digits), "
+    "the unsigned value of a negative gold number, and ratio / percentage equivalents (\"72.08%\" for \"0.72\") "
+    "within a 0.5% relative tolerance. A wrong sign or a wrong unit is therefore not caught. The remaining "
+    "disagreements with the saved `numeric_correct` flags are listed under \"Numeric accuracy vs the saved "
+    "correctness flags\".",
     f"- **Error types are heuristic.** {A.ERROR_TYPE_RULE}",
     "- **System C v3 may have been tuned on this benchmark** (built after it existed, reports 100% numerical "
     "accuracy on it), so its numbers may be optimistic.",
@@ -296,6 +306,71 @@ def _diff_cell(row: Dict[str, Any]) -> str:
     return f"{row['mean_diff']:+.3f} [{row['ci_low']:+.3f}, {row['ci_high']:+.3f}]"
 
 
+def _retrieval_sections(analysis: Dict[str, Any]) -> List[str]:
+    lines: List[str] = []
+    refusals = analysis.get("refusal_retrieval") or []
+    if refusals:
+        lines += ["", "## Refusals and retrieval", "",
+                  "For every answer the gold evidence quotes of its question (benchmark `gold_evidence`) are checked "
+                  "against the retrieved contexts of that system: *all* = every quote is in a retrieved chunk of the "
+                  "gold filing (normalised substring, or at least 80% of the words of a quote of 15+ words); *some* = "
+                  "at least one but not all; *none*. *Lenient* additionally accepts any quote of which 60% of the words "
+                  "are in a chunk of that filing.", "",
+                  "| System | Refusals | Evidence all | some | none | All, lenient | Answered | Evidence all | some | none | All, lenient |",
+                  "|---|---|---|---|---|---|---|---|---|---|---|"]
+        for r in refusals:
+            lines.append(f"| {r['system']} | {r['refusals']} | {r['refusals_full_evidence']} | "
+                         f"{r['refusals_partial_evidence']} | {r['refusals_no_evidence']} | "
+                         f"{r['refusals_full_evidence_lenient']} | {r['answered']} | {r['answered_full_evidence']} | "
+                         f"{r['answered_partial_evidence']} | {r['answered_no_evidence']} | "
+                         f"{r['answered_full_evidence_lenient']} |")
+        a, b = (next((r for r in refusals if r["system"] == s), None) for s in ("system_a", "system_b"))
+        if a and b:
+            lines += ["", f"Refusals mostly follow incomplete retrieval: the gold evidence was fully present for only "
+                          f"{b['refusals_full_evidence']} of B's {b['refusals']} refusals and "
+                          f"{a['refusals_full_evidence']} of A's {a['refusals']} (lenient matching: "
+                          f"{b['refusals_full_evidence_lenient']} and {a['refusals_full_evidence_lenient']}); "
+                          f"it was fully present for {b['answered_full_evidence']} of B's {b['answered']} and "
+                          f"{a['answered_full_evidence']} of A's {a['answered']} answered questions."]
+    context = analysis.get("retrieval_context") or []
+    if context:
+        lines += ["", "## Retrieval context per system", "",
+                  "| System | Answers | Mean chunks | Mean characters | Mean hops | 1 hop | 2 hops | 3 hops |",
+                  "|---|---|---|---|---|---|---|---|"]
+        for c in context:
+            lines.append(f"| {c['system']} | {c['answers']} | {c['mean_chunks']:.1f} | {c['mean_context_chars']:,.0f} | "
+                         f"{c['mean_hops']:.2f} | {c['hops_1']} | {c['hops_2']} | {c['hops_3']} |")
+        by = {c["system"]: c for c in context}
+        comps = {(c["metric"], c["system_a"], c["system_b"]): c for c in analysis["comparisons"] if c["group"] == "overall"}
+        if "system_c_v1" in by and "system_c_v3" in by:
+            def cell(metric: str) -> str:
+                c = comps.get((metric, "system_c_v1", "system_c_v3"))
+                return "n/a" if c is None else (f"{c['mean_diff']:+.3f}, "
+                                                f"{'significant' if c['significant'] else 'not significant'}")
+
+            v1, v3 = by["system_c_v1"], by["system_c_v3"]
+            lines += ["", "**C v1 vs C v3** (paired differences, C v3 minus C v1): "
+                          f"answer relevancy {cell('answer_relevancy')}; faithfulness {cell('faithfulness')}; "
+                          f"context recall {cell('context_recall')}; context precision {cell('context_precision')}. "
+                          f"C v3 stops after one hop in {v3['hops_1']} of {v3['answers']} answers (C v1: "
+                          f"{v1['hops_1']}) and passes more chunks to the answer model "
+                          f"({v3['mean_chunks']:.1f} vs {v1['mean_chunks']:.1f} on average)."]
+    agreement = analysis.get("numeric_agreement")
+    if agreement:
+        lines += ["", "## Numeric accuracy vs the saved correctness flags", "",
+                  f"`numeric_accuracy` agrees with the RQ3 harness flag `numeric_correct` on {agreement['agree']} of "
+                  f"{agreement['total']} answers with a gold number "
+                  f"({', '.join(f'{s}: {a}/{t}' for s, (a, t) in sorted(agreement['per_system'].items()))})."]
+        if agreement["disagreements"]:
+            lines += ["", "| Question | System | Gold | numeric_accuracy | Saved flag | Answer excerpt |",
+                      "|---|---|---|---|---|---|"]
+            for d in agreement["disagreements"]:
+                excerpt = d["answer"].replace("\n", " ").replace("|", "/")[:160]
+                lines.append(f"| {d['question_id']} | {d['system']} | {', '.join(map(str, d['gold'] or []))} | "
+                             f"{d['numeric_accuracy']:.0f} | {d['numeric_correct']} | {excerpt} |")
+    return lines
+
+
 def _analysis_sections(analysis: Dict[str, Any], systems: List[str]) -> List[str]:
     lines: List[str] = []
     comparisons = analysis["comparisons"]
@@ -356,6 +431,7 @@ def _analysis_sections(analysis: Dict[str, Any], systems: List[str]) -> List[str
             lines.append(f"| {c['system']} | {c['answers']} | {c['wrong']} | " + " | ".join(cells) + " |")
         lines.append("")
     lines.append("Cells: count (share of that system's wrong answers).")
+    lines += _retrieval_sections(analysis)
     return lines
 
 
@@ -507,10 +583,14 @@ def build_report(run_path: Path, scores_file: str = SCORES_FILE, smoke: bool = F
         primary = A.primary_accuracy_rows(records, latest)
         scores = scores + primary + A.citation_sensitivity_rows(latest)
         comparisons = A.paired_comparisons(latest_scores(scores))
+        benchmark = benchmark_index()
         analysis = {
             "comparisons": comparisons,
             "ordering": A.ordering_test(comparisons),
             "error_counts": A.error_type_counts(A.error_type_rows(records, latest, primary)),
+            "numeric_agreement": A.numeric_agreement(records, latest),
+            "refusal_retrieval": RS.refusal_retrieval(records, benchmark),
+            "retrieval_context": RS.retrieval_context_stats(records),
         }
     agg = aggregate(scores)
     smoke_info = None

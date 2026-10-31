@@ -25,14 +25,14 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 
 | Metric | system_a | system_b | system_c_v1 | system_c_v3 |
 |---|---|---|---|---|
-| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.662 [0.579, 0.747] (n=97) | 0.580 [0.494, 0.676] (n=97) | 0.850 [0.785, 0.908] (n=97) | 0.882 [0.835, 0.928] (n=97) |
+| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.662 [0.579, 0.747] (n=97) | 0.590 [0.502, 0.686] (n=97) | 0.861 [0.797, 0.912] (n=97) | 0.903 [0.863, 0.939] (n=97) |
 | abstained (refusal rate) | 0.206 [0.134, 0.289] (n=97) | 0.320 [0.227, 0.423] (n=97) | 0.041 [0.010, 0.082] (n=97) | 0.000 [0.000, 0.000] (n=97) |
 | faithfulness | 0.796 [0.739, 0.854] (n=77) | 0.721 [0.644, 0.793] (n=66) | 0.742 [0.694, 0.794] (n=93) | 0.770 [0.715, 0.820] (n=97) |
 | answer_relevancy | 0.599 [0.515, 0.682] (n=97) | 0.566 [0.487, 0.652] (n=97) | 0.771 [0.706, 0.829] (n=97) | 0.847 [0.803, 0.885] (n=97) |
 | context_recall | 0.656 [0.599, 0.717] (n=97) | 0.652 [0.592, 0.713] (n=97) | 0.739 [0.693, 0.782] (n=97) | 0.716 [0.666, 0.763] (n=97) |
 | context_precision | 0.638 [0.567, 0.710] (n=97) | 0.702 [0.629, 0.775] (n=97) | 0.711 [0.648, 0.770] (n=97) | 0.673 [0.606, 0.734] (n=97) |
 | factual_correctness (secondary) | 0.430 [0.349, 0.514] (n=97) | 0.368 [0.279, 0.453] (n=97) | 0.489 [0.395, 0.574] (n=97) | 0.525 [0.441, 0.604] (n=97) |
-| numeric_accuracy | 0.667 [0.556, 0.794] (n=63) | 0.492 [0.365, 0.603] (n=63) | 0.825 [0.730, 0.921] (n=63) | 0.952 [0.889, 1.000] (n=63) |
+| numeric_accuracy | 0.683 [0.571, 0.810] (n=63) | 0.508 [0.381, 0.619] (n=63) | 0.857 [0.762, 0.937] (n=63) | 1.000 [1.000, 1.000] (n=63) |
 | citation_precision | 0.890 [0.838, 0.938] (n=80) | 0.893 [0.841, 0.945] (n=67) | 0.854 [0.796, 0.905] (n=95) | 0.854 [0.797, 0.905] (n=96) |
 | citation_recall | 0.912 [0.863, 0.956] (n=80) | 0.970 [0.940, 0.993] (n=67) | 0.905 [0.853, 0.953] (n=95) | 0.891 [0.833, 0.943] (n=96) |
 | citation_f1 | 0.879 [0.833, 0.923] (n=80) | 0.907 [0.872, 0.945] (n=67) | 0.855 [0.800, 0.901] (n=95) | 0.853 [0.798, 0.901] (n=96) |
@@ -67,14 +67,14 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 
 | Metric | system_a | system_b | system_c_v1 | system_c_v3 |
 |---|---|---|---|---|
-| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.850 [0.700, 1.000] (n=20) | 0.700 [0.500, 0.900] (n=20) | 0.950 [0.850, 1.000] (n=20) | 0.900 [0.750, 1.000] (n=20) |
+| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.850 [0.700, 1.000] (n=20) | 0.750 [0.550, 0.900] (n=20) | 1.000 [1.000, 1.000] (n=20) | 1.000 [1.000, 1.000] (n=20) |
 | abstained (refusal rate) | 0.100 [0.000, 0.250] (n=20) | 0.250 [0.100, 0.450] (n=20) | 0.000 [0.000, 0.000] (n=20) | 0.000 [0.000, 0.000] (n=20) |
 | faithfulness | 0.600 [0.455, 0.746] (n=18) | 0.683 [0.517, 0.839] (n=15) | 0.622 [0.524, 0.738] (n=20) | 0.662 [0.554, 0.783] (n=20) |
 | answer_relevancy | 0.810 [0.670, 0.919] (n=20) | 0.672 [0.497, 0.835] (n=20) | 0.887 [0.850, 0.922] (n=20) | 0.860 [0.752, 0.927] (n=20) |
 | context_recall | 0.583 [0.483, 0.683] (n=20) | 0.558 [0.450, 0.658] (n=20) | 0.592 [0.492, 0.692] (n=20) | 0.608 [0.525, 0.692] (n=20) |
 | context_precision | 0.689 [0.579, 0.786] (n=20) | 0.619 [0.464, 0.781] (n=20) | 0.723 [0.618, 0.826] (n=20) | 0.715 [0.610, 0.815] (n=20) |
 | factual_correctness (secondary) | 0.300 [0.100, 0.500] (n=20) | 0.259 [0.100, 0.442] (n=20) | 0.392 [0.200, 0.592] (n=20) | 0.375 [0.200, 0.575] (n=20) |
-| numeric_accuracy | 0.850 [0.700, 1.000] (n=20) | 0.700 [0.500, 0.900] (n=20) | 0.950 [0.850, 1.000] (n=20) | 0.900 [0.750, 1.000] (n=20) |
+| numeric_accuracy | 0.850 [0.700, 1.000] (n=20) | 0.750 [0.550, 0.900] (n=20) | 1.000 [1.000, 1.000] (n=20) | 1.000 [1.000, 1.000] (n=20) |
 | citation_precision | 0.895 [0.763, 1.000] (n=19) | 0.933 [0.833, 1.000] (n=15) | 0.900 [0.775, 1.000] (n=20) | 0.925 [0.800, 1.000] (n=20) |
 | citation_recall | 0.947 [0.842, 1.000] (n=19) | 1.000 [1.000, 1.000] (n=15) | 0.950 [0.850, 1.000] (n=20) | 0.950 [0.850, 1.000] (n=20) |
 | citation_f1 | 0.912 [0.789, 1.000] (n=19) | 0.956 [0.889, 1.000] (n=15) | 0.917 [0.800, 1.000] (n=20) | 0.933 [0.817, 1.000] (n=20) |
@@ -95,7 +95,7 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 | context_recall | 0.693 [0.624, 0.768] (n=60) | 0.644 [0.561, 0.719] (n=60) | 0.756 [0.700, 0.811] (n=60) | 0.713 [0.639, 0.780] (n=60) |
 | context_precision | 0.639 [0.543, 0.731] (n=60) | 0.725 [0.635, 0.810] (n=60) | 0.718 [0.637, 0.794] (n=60) | 0.665 [0.582, 0.748] (n=60) |
 | factual_correctness (secondary) | 0.442 [0.340, 0.543] (n=60) | 0.347 [0.252, 0.448] (n=60) | 0.477 [0.377, 0.589] (n=60) | 0.533 [0.428, 0.633] (n=60) |
-| numeric_accuracy | 0.641 [0.487, 0.795] (n=39) | 0.385 [0.231, 0.538] (n=39) | 0.744 [0.590, 0.872] (n=39) | 0.974 [0.923, 1.000] (n=39) |
+| numeric_accuracy | 0.667 [0.538, 0.821] (n=39) | 0.385 [0.231, 0.538] (n=39) | 0.769 [0.641, 0.872] (n=39) | 1.000 [1.000, 1.000] (n=39) |
 | citation_precision | 0.910 [0.851, 0.965] (n=48) | 0.907 [0.838, 0.972] (n=36) | 0.853 [0.784, 0.922] (n=58) | 0.831 [0.749, 0.901] (n=59) |
 | citation_recall | 0.906 [0.854, 0.958] (n=48) | 0.944 [0.889, 0.986] (n=36) | 0.871 [0.802, 0.940] (n=58) | 0.847 [0.763, 0.915] (n=59) |
 | citation_f1 | 0.882 [0.830, 0.934] (n=48) | 0.898 [0.843, 0.949] (n=36) | 0.836 [0.770, 0.897] (n=58) | 0.817 [0.738, 0.880] (n=59) |
@@ -137,7 +137,7 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 | context_recall | 0.768 [0.682, 0.844] (n=20) | 0.642 [0.537, 0.736] (n=20) | 0.776 [0.693, 0.857] (n=20) | 0.762 [0.676, 0.847] (n=20) |
 | context_precision | 0.848 [0.792, 0.902] (n=20) | 0.863 [0.750, 0.953] (n=20) | 0.821 [0.745, 0.890] (n=20) | 0.759 [0.645, 0.864] (n=20) |
 | factual_correctness (secondary) | 0.486 [0.344, 0.629] (n=20) | 0.212 [0.083, 0.361] (n=20) | 0.499 [0.348, 0.662] (n=20) | 0.565 [0.418, 0.717] (n=20) |
-| numeric_accuracy | 0.800 [0.650, 0.950] (n=20) | 0.350 [0.150, 0.550] (n=20) | 0.750 [0.550, 0.900] (n=20) | 0.950 [0.850, 1.000] (n=20) |
+| numeric_accuracy | 0.850 [0.700, 1.000] (n=20) | 0.350 [0.150, 0.550] (n=20) | 0.800 [0.600, 0.950] (n=20) | 1.000 [1.000, 1.000] (n=20) |
 | citation_precision | 0.912 [0.816, 1.000] (n=19) | 1.000 [1.000, 1.000] (n=9) | 0.883 [0.775, 0.983] (n=20) | 0.875 [0.783, 0.967] (n=20) |
 | citation_recall | 0.789 [0.684, 0.895] (n=19) | 0.833 [0.667, 1.000] (n=9) | 0.750 [0.625, 0.875] (n=20) | 0.775 [0.675, 0.875] (n=20) |
 | citation_f1 | 0.816 [0.719, 0.904] (n=19) | 0.889 [0.778, 1.000] (n=9) | 0.782 [0.665, 0.883] (n=20) | 0.793 [0.707, 0.882] (n=20) |
@@ -172,14 +172,14 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 
 | Metric | system_a | system_b | system_c_v1 | system_c_v3 |
 |---|---|---|---|---|
-| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.605 [0.442, 0.744] (n=43) | 0.558 [0.419, 0.721] (n=43) | 0.860 [0.744, 0.953] (n=43) | 0.953 [0.884, 1.000] (n=43) |
+| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.605 [0.442, 0.744] (n=43) | 0.581 [0.442, 0.744] (n=43) | 0.884 [0.791, 0.977] (n=43) | 1.000 [1.000, 1.000] (n=43) |
 | abstained (refusal rate) | 0.279 [0.140, 0.419] (n=43) | 0.349 [0.209, 0.488] (n=43) | 0.093 [0.023, 0.186] (n=43) | 0.000 [0.000, 0.000] (n=43) |
 | faithfulness | 0.701 [0.593, 0.816] (n=31) | 0.625 [0.512, 0.735] (n=28) | 0.627 [0.547, 0.712] (n=39) | 0.663 [0.574, 0.747] (n=43) |
 | answer_relevancy | 0.593 [0.455, 0.724] (n=43) | 0.563 [0.437, 0.702] (n=43) | 0.807 [0.710, 0.890] (n=43) | 0.908 [0.857, 0.940] (n=43) |
 | context_recall | 0.499 [0.425, 0.577] (n=43) | 0.480 [0.399, 0.566] (n=43) | 0.584 [0.518, 0.648] (n=43) | 0.578 [0.512, 0.647] (n=43) |
 | context_precision | 0.505 [0.403, 0.612] (n=43) | 0.494 [0.381, 0.616] (n=43) | 0.544 [0.439, 0.650] (n=43) | 0.499 [0.397, 0.606] (n=43) |
 | factual_correctness (secondary) | 0.273 [0.140, 0.401] (n=43) | 0.202 [0.093, 0.322] (n=43) | 0.205 [0.108, 0.322] (n=43) | 0.273 [0.157, 0.401] (n=43) |
-| numeric_accuracy | 0.605 [0.442, 0.744] (n=43) | 0.558 [0.419, 0.721] (n=43) | 0.860 [0.744, 0.953] (n=43) | 0.953 [0.884, 1.000] (n=43) |
+| numeric_accuracy | 0.605 [0.442, 0.744] (n=43) | 0.581 [0.442, 0.744] (n=43) | 0.884 [0.791, 0.977] (n=43) | 1.000 [1.000, 1.000] (n=43) |
 | citation_precision | 0.912 [0.824, 0.971] (n=34) | 0.964 [0.911, 1.000] (n=28) | 0.890 [0.793, 0.963] (n=41) | 0.872 [0.779, 0.965] (n=43) |
 | citation_recall | 0.941 [0.868, 1.000] (n=34) | 0.982 [0.946, 1.000] (n=28) | 0.902 [0.805, 0.976] (n=41) | 0.860 [0.756, 0.953] (n=43) |
 | citation_f1 | 0.912 [0.833, 0.971] (n=34) | 0.964 [0.929, 1.000] (n=28) | 0.886 [0.789, 0.959] (n=41) | 0.860 [0.760, 0.953] (n=43) |
@@ -193,14 +193,14 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 
 | Metric | system_a | system_b | system_c_v1 | system_c_v3 |
 |---|---|---|---|---|
-| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.605 [0.442, 0.744] (n=43) | 0.558 [0.419, 0.721] (n=43) | 0.860 [0.744, 0.953] (n=43) | 0.953 [0.884, 1.000] (n=43) |
+| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.605 [0.442, 0.744] (n=43) | 0.581 [0.442, 0.744] (n=43) | 0.884 [0.791, 0.977] (n=43) | 1.000 [1.000, 1.000] (n=43) |
 | abstained (refusal rate) | 0.279 [0.140, 0.419] (n=43) | 0.349 [0.209, 0.488] (n=43) | 0.093 [0.023, 0.186] (n=43) | 0.000 [0.000, 0.000] (n=43) |
 | faithfulness | 0.701 [0.593, 0.816] (n=31) | 0.625 [0.512, 0.735] (n=28) | 0.627 [0.547, 0.712] (n=39) | 0.663 [0.574, 0.747] (n=43) |
 | answer_relevancy | 0.593 [0.455, 0.724] (n=43) | 0.563 [0.437, 0.702] (n=43) | 0.807 [0.710, 0.890] (n=43) | 0.908 [0.857, 0.940] (n=43) |
 | context_recall | 0.499 [0.425, 0.577] (n=43) | 0.480 [0.399, 0.566] (n=43) | 0.584 [0.518, 0.648] (n=43) | 0.578 [0.512, 0.647] (n=43) |
 | context_precision | 0.505 [0.403, 0.612] (n=43) | 0.494 [0.381, 0.616] (n=43) | 0.544 [0.439, 0.650] (n=43) | 0.499 [0.397, 0.606] (n=43) |
 | factual_correctness (secondary) | 0.273 [0.140, 0.401] (n=43) | 0.202 [0.093, 0.322] (n=43) | 0.205 [0.108, 0.322] (n=43) | 0.273 [0.157, 0.401] (n=43) |
-| numeric_accuracy | 0.605 [0.442, 0.744] (n=43) | 0.558 [0.419, 0.721] (n=43) | 0.860 [0.744, 0.953] (n=43) | 0.953 [0.884, 1.000] (n=43) |
+| numeric_accuracy | 0.605 [0.442, 0.744] (n=43) | 0.581 [0.442, 0.744] (n=43) | 0.884 [0.791, 0.977] (n=43) | 1.000 [1.000, 1.000] (n=43) |
 | citation_precision | 0.912 [0.824, 0.971] (n=34) | 0.964 [0.911, 1.000] (n=28) | 0.890 [0.793, 0.963] (n=41) | 0.872 [0.779, 0.965] (n=43) |
 | citation_recall | 0.941 [0.868, 1.000] (n=34) | 0.982 [0.946, 1.000] (n=28) | 0.902 [0.805, 0.976] (n=41) | 0.860 [0.756, 0.953] (n=43) |
 | citation_f1 | 0.912 [0.833, 0.971] (n=34) | 0.964 [0.929, 1.000] (n=28) | 0.886 [0.789, 0.959] (n=41) | 0.860 [0.760, 0.953] (n=43) |
@@ -221,7 +221,7 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 | context_recall | 0.768 [0.682, 0.844] (n=20) | 0.642 [0.537, 0.736] (n=20) | 0.776 [0.693, 0.857] (n=20) | 0.762 [0.676, 0.847] (n=20) |
 | context_precision | 0.848 [0.792, 0.902] (n=20) | 0.863 [0.750, 0.953] (n=20) | 0.821 [0.745, 0.890] (n=20) | 0.759 [0.645, 0.864] (n=20) |
 | factual_correctness (secondary) | 0.486 [0.344, 0.629] (n=20) | 0.212 [0.083, 0.361] (n=20) | 0.499 [0.348, 0.662] (n=20) | 0.565 [0.418, 0.717] (n=20) |
-| numeric_accuracy | 0.800 [0.650, 0.950] (n=20) | 0.350 [0.150, 0.550] (n=20) | 0.750 [0.550, 0.900] (n=20) | 0.950 [0.850, 1.000] (n=20) |
+| numeric_accuracy | 0.850 [0.700, 1.000] (n=20) | 0.350 [0.150, 0.550] (n=20) | 0.800 [0.600, 0.950] (n=20) | 1.000 [1.000, 1.000] (n=20) |
 | citation_precision | 0.912 [0.816, 1.000] (n=19) | 1.000 [1.000, 1.000] (n=9) | 0.883 [0.775, 0.983] (n=20) | 0.875 [0.783, 0.967] (n=20) |
 | citation_recall | 0.789 [0.684, 0.895] (n=19) | 0.833 [0.667, 1.000] (n=9) | 0.750 [0.625, 0.875] (n=20) | 0.775 [0.675, 0.875] (n=20) |
 | citation_f1 | 0.816 [0.719, 0.904] (n=19) | 0.889 [0.778, 1.000] (n=9) | 0.782 [0.665, 0.883] (n=20) | 0.793 [0.707, 0.882] (n=20) |
@@ -256,14 +256,14 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 
 | Metric | system_a | system_b | system_c_v1 | system_c_v3 |
 |---|---|---|---|---|
-| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.626 [0.529, 0.724] (n=78) | 0.525 [0.427, 0.621] (n=78) | 0.818 [0.740, 0.884] (n=78) | 0.862 [0.805, 0.913] (n=78) |
+| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.626 [0.529, 0.724] (n=78) | 0.537 [0.443, 0.636] (n=78) | 0.831 [0.757, 0.892] (n=78) | 0.887 [0.842, 0.931] (n=78) |
 | abstained (refusal rate) | 0.218 [0.128, 0.308] (n=78) | 0.359 [0.256, 0.474] (n=78) | 0.051 [0.013, 0.103] (n=78) | 0.000 [0.000, 0.000] (n=78) |
 | faithfulness | 0.797 [0.737, 0.861] (n=61) | 0.696 [0.603, 0.782] (n=50) | 0.745 [0.689, 0.800] (n=74) | 0.766 [0.704, 0.823] (n=78) |
 | answer_relevancy | 0.562 [0.467, 0.652] (n=78) | 0.547 [0.449, 0.636] (n=78) | 0.755 [0.682, 0.821] (n=78) | 0.859 [0.810, 0.895] (n=78) |
 | context_recall | 0.653 [0.594, 0.717] (n=78) | 0.629 [0.569, 0.696] (n=78) | 0.742 [0.696, 0.792] (n=78) | 0.707 [0.651, 0.764] (n=78) |
 | context_precision | 0.607 [0.528, 0.694] (n=78) | 0.676 [0.599, 0.757] (n=78) | 0.690 [0.621, 0.764] (n=78) | 0.641 [0.568, 0.713] (n=78) |
 | factual_correctness (secondary) | 0.418 [0.325, 0.511] (n=78) | 0.330 [0.244, 0.424] (n=78) | 0.443 [0.349, 0.537] (n=78) | 0.511 [0.420, 0.602] (n=78) |
-| numeric_accuracy | 0.635 [0.500, 0.769] (n=52) | 0.442 [0.327, 0.596] (n=52) | 0.788 [0.673, 0.904] (n=52) | 0.942 [0.865, 1.000] (n=52) |
+| numeric_accuracy | 0.654 [0.519, 0.788] (n=52) | 0.462 [0.327, 0.615] (n=52) | 0.827 [0.712, 0.923] (n=52) | 1.000 [1.000, 1.000] (n=52) |
 | citation_precision | 0.892 [0.831, 0.944] (n=63) | 0.899 [0.837, 0.951] (n=51) | 0.840 [0.770, 0.897] (n=76) | 0.838 [0.773, 0.900] (n=77) |
 | citation_recall | 0.905 [0.849, 0.952] (n=63) | 0.961 [0.922, 0.990] (n=51) | 0.882 [0.822, 0.941] (n=76) | 0.864 [0.792, 0.922] (n=77) |
 | citation_f1 | 0.873 [0.820, 0.918] (n=63) | 0.905 [0.858, 0.948] (n=51) | 0.834 [0.773, 0.886] (n=76) | 0.830 [0.765, 0.889] (n=77) |
@@ -298,14 +298,14 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 
 | Metric | system_a | system_b | system_c_v1 | system_c_v3 |
 |---|---|---|---|---|
-| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.638 [0.529, 0.757] (n=63) | 0.483 [0.361, 0.599] (n=63) | 0.809 [0.724, 0.888] (n=63) | 0.879 [0.811, 0.939] (n=63) |
+| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.638 [0.529, 0.757] (n=63) | 0.499 [0.378, 0.616] (n=63) | 0.825 [0.743, 0.902] (n=63) | 0.911 [0.860, 0.956] (n=63) |
 | abstained (refusal rate) | 0.222 [0.127, 0.317] (n=63) | 0.429 [0.317, 0.556] (n=63) | 0.063 [0.016, 0.127] (n=63) | 0.000 [0.000, 0.000] (n=63) |
 | faithfulness | 0.733 [0.652, 0.805] (n=49) | 0.645 [0.547, 0.745] (n=36) | 0.668 [0.605, 0.737] (n=59) | 0.691 [0.621, 0.763] (n=63) |
 | answer_relevancy | 0.595 [0.494, 0.701] (n=63) | 0.492 [0.384, 0.595] (n=63) | 0.735 [0.651, 0.819] (n=63) | 0.851 [0.787, 0.902] (n=63) |
 | context_recall | 0.585 [0.517, 0.652] (n=63) | 0.531 [0.462, 0.598] (n=63) | 0.645 [0.588, 0.700] (n=63) | 0.636 [0.579, 0.692] (n=63) |
 | context_precision | 0.614 [0.534, 0.691] (n=63) | 0.611 [0.505, 0.703] (n=63) | 0.632 [0.545, 0.714] (n=63) | 0.582 [0.488, 0.659] (n=63) |
 | factual_correctness (secondary) | 0.341 [0.241, 0.439] (n=63) | 0.205 [0.122, 0.295] (n=63) | 0.299 [0.205, 0.399] (n=63) | 0.366 [0.259, 0.463] (n=63) |
-| numeric_accuracy | 0.667 [0.556, 0.794] (n=63) | 0.492 [0.365, 0.603] (n=63) | 0.825 [0.730, 0.921] (n=63) | 0.952 [0.889, 1.000] (n=63) |
+| numeric_accuracy | 0.683 [0.571, 0.810] (n=63) | 0.508 [0.381, 0.619] (n=63) | 0.857 [0.762, 0.937] (n=63) | 1.000 [1.000, 1.000] (n=63) |
 | citation_precision | 0.912 [0.849, 0.962] (n=53) | 0.973 [0.932, 1.000] (n=37) | 0.888 [0.811, 0.951] (n=61) | 0.873 [0.796, 0.942] (n=63) |
 | citation_recall | 0.887 [0.821, 0.943] (n=53) | 0.946 [0.892, 0.986] (n=37) | 0.852 [0.779, 0.918] (n=61) | 0.833 [0.754, 0.905] (n=63) |
 | citation_f1 | 0.877 [0.818, 0.931] (n=53) | 0.946 [0.901, 0.982] (n=37) | 0.852 [0.781, 0.907] (n=61) | 0.839 [0.763, 0.907] (n=63) |
@@ -382,14 +382,14 @@ Judge: openai/gpt-4o-mini. Cells: mean [bootstrap 95% CI] (n scored; na and fail
 
 | Metric | system_a | system_b | system_c_v1 | system_c_v3 |
 |---|---|---|---|---|
-| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.809 [0.718, 0.891] (n=55) | 0.620 [0.503, 0.738] (n=55) | 0.860 [0.794, 0.920] (n=55) | 0.843 [0.771, 0.907] (n=55) |
+| primary_accuracy (numeric_accuracy / keypoint_recall) | 0.809 [0.718, 0.891] (n=55) | 0.638 [0.521, 0.752] (n=55) | 0.878 [0.815, 0.931] (n=55) | 0.880 [0.820, 0.930] (n=55) |
 | abstained (refusal rate) | 0.091 [0.018, 0.182] (n=55) | 0.309 [0.200, 0.436] (n=55) | 0.000 [0.000, 0.000] (n=55) | 0.000 [0.000, 0.000] (n=55) |
 | faithfulness | 0.767 [0.691, 0.837] (n=50) | 0.815 [0.721, 0.895] (n=38) | 0.750 [0.684, 0.815] (n=55) | 0.776 [0.707, 0.845] (n=55) |
 | answer_relevancy | 0.717 [0.615, 0.805] (n=55) | 0.571 [0.462, 0.683] (n=55) | 0.753 [0.671, 0.832] (n=55) | 0.796 [0.721, 0.862] (n=55) |
 | context_recall | 0.730 [0.657, 0.799] (n=55) | 0.700 [0.631, 0.769] (n=55) | 0.756 [0.695, 0.820] (n=55) | 0.762 [0.703, 0.819] (n=55) |
 | context_precision | 0.797 [0.737, 0.848] (n=55) | 0.806 [0.724, 0.881] (n=55) | 0.799 [0.740, 0.860] (n=55) | 0.763 [0.700, 0.830] (n=55) |
 | factual_correctness (secondary) | 0.489 [0.377, 0.602] (n=55) | 0.386 [0.276, 0.500] (n=55) | 0.563 [0.454, 0.674] (n=55) | 0.573 [0.458, 0.684] (n=55) |
-| numeric_accuracy | 0.825 [0.700, 0.925] (n=40) | 0.525 [0.375, 0.700] (n=40) | 0.850 [0.725, 0.950] (n=40) | 0.925 [0.825, 1.000] (n=40) |
+| numeric_accuracy | 0.850 [0.725, 0.950] (n=40) | 0.550 [0.375, 0.725] (n=40) | 0.900 [0.800, 0.975] (n=40) | 1.000 [1.000, 1.000] (n=40) |
 | citation_precision | 0.869 [0.797, 0.941] (n=51) | 0.893 [0.825, 0.957] (n=39) | 0.864 [0.788, 0.930] (n=55) | 0.880 [0.812, 0.941] (n=54) |
 | citation_recall | 0.882 [0.804, 0.941] (n=51) | 0.962 [0.910, 1.000] (n=39) | 0.891 [0.818, 0.955] (n=55) | 0.898 [0.833, 0.954] (n=54) |
 | citation_f1 | 0.853 [0.781, 0.912] (n=51) | 0.902 [0.850, 0.949] (n=39) | 0.851 [0.780, 0.909] (n=55) | 0.868 [0.806, 0.922] (n=54) |
@@ -409,12 +409,12 @@ Expected: system_a < system_b < system_c_v1 < system_c_v3 (a later system scores
 
 | Pair | n | Mean first | Mean second | Difference [95% CI] | p (Holm) | Significant | Verdict |
 |---|---|---|---|---|---|---|---|
-| system_a → system_b | 97 | 0.662 | 0.580 | -0.082 [-0.182, +0.017] | 0.3929 | no | not significant |
-| system_a → system_c_v1 | 97 | 0.662 | 0.850 | +0.189 [+0.094, +0.287] | 0.0009 | yes | as expected (significant) |
-| system_a → system_c_v3 | 97 | 0.662 | 0.882 | +0.221 [+0.129, +0.316] | 0.0001 | yes | as expected (significant) |
-| system_b → system_c_v1 | 97 | 0.580 | 0.850 | +0.270 [+0.176, +0.366] | 0.0000 | yes | as expected (significant) |
-| system_b → system_c_v3 | 97 | 0.580 | 0.882 | +0.302 [+0.212, +0.395] | 0.0000 | yes | as expected (significant) |
-| system_c_v1 → system_c_v3 | 97 | 0.850 | 0.882 | +0.032 [-0.022, +0.089] | 0.4596 | no | not significant |
+| system_a → system_b | 97 | 0.662 | 0.590 | -0.071 [-0.171, +0.025] | 0.5267 | no | not significant |
+| system_a → system_c_v1 | 97 | 0.662 | 0.861 | +0.199 [+0.106, +0.294] | 0.0003 | yes | as expected (significant) |
+| system_a → system_c_v3 | 97 | 0.662 | 0.903 | +0.241 [+0.155, +0.334] | 0.0000 | yes | as expected (significant) |
+| system_b → system_c_v1 | 97 | 0.590 | 0.861 | +0.270 [+0.176, +0.366] | 0.0000 | yes | as expected (significant) |
+| system_b → system_c_v3 | 97 | 0.590 | 0.903 | +0.312 [+0.228, +0.403] | 0.0000 | yes | as expected (significant) |
+| system_c_v1 → system_c_v3 | 97 | 0.861 | 0.903 | +0.042 [-0.006, +0.096] | 0.5267 | no | not significant |
 
 The full expected ordering **does not hold**: at least one adjacent pair is not significantly in the expected direction.
 
@@ -424,14 +424,14 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 
 | Metric | a → b | a → c_v1 | a → c_v3 | b → c_v1 | b → c_v3 | c_v1 → c_v3 |
 |---|---|---|---|---|---|---|
-| primary_accuracy (numeric_accuracy / keypoint_recall) | -0.082 | +0.189* | +0.221* | +0.270* | +0.302* | +0.032 |
+| primary_accuracy (numeric_accuracy / keypoint_recall) | -0.071 | +0.199* | +0.241* | +0.270* | +0.312* | +0.042 |
 | abstained (refusal rate) | +0.113 | -0.165* | -0.206* | -0.278* | -0.320* | -0.041 |
 | faithfulness | -0.021 | -0.012 | +0.001 | +0.047 | +0.063 | +0.027 |
 | answer_relevancy | -0.033 | +0.171* | +0.248* | +0.204* | +0.281* | +0.077* |
 | context_recall | -0.004 | +0.083* | +0.060 | +0.087* | +0.064 | -0.023 |
 | context_precision | +0.064 | +0.073 | +0.035 | +0.009 | -0.029 | -0.038 |
 | factual_correctness (secondary) | -0.063 | +0.058 | +0.095 | +0.121* | +0.157* | +0.036 |
-| numeric_accuracy | -0.175* | +0.159* | +0.286* | +0.333* | +0.460* | +0.127* |
+| numeric_accuracy | -0.175* | +0.175* | +0.317* | +0.349* | +0.492* | +0.143* |
 | citation_precision | +0.014 | -0.036 | -0.029 | -0.050 | -0.028 | +0.009 |
 | citation_recall | +0.043 | -0.019 | -0.019 | -0.037 | -0.038 | -0.005 |
 | citation_f1 | +0.026 | -0.030 | -0.021 | -0.046 | -0.029 | +0.008 |
@@ -455,9 +455,9 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | answer_type=mixed | factual_correctness (secondary) | system_a → system_b | 20 | -0.275 [-0.427, -0.127] | 0.0154 |
 | answer_type=mixed | factual_correctness (secondary) | system_b → system_c_v1 | 20 | +0.287 [+0.089, +0.476] | 0.0318 |
 | answer_type=mixed | factual_correctness (secondary) | system_b → system_c_v3 | 20 | +0.353 [+0.167, +0.537] | 0.0174 |
-| answer_type=mixed | numeric_accuracy | system_a → system_b | 20 | -0.450 [-0.650, -0.250] | 0.0135 |
-| answer_type=mixed | numeric_accuracy | system_b → system_c_v1 | 20 | +0.400 [+0.200, +0.600] | 0.0187 |
-| answer_type=mixed | numeric_accuracy | system_b → system_c_v3 | 20 | +0.600 [+0.400, +0.800] | 0.0032 |
+| answer_type=mixed | numeric_accuracy | system_a → system_b | 20 | -0.500 [-0.700, -0.300] | 0.0078 |
+| answer_type=mixed | numeric_accuracy | system_b → system_c_v1 | 20 | +0.450 [+0.250, +0.650] | 0.0108 |
+| answer_type=mixed | numeric_accuracy | system_b → system_c_v3 | 20 | +0.650 [+0.450, +0.850] | 0.0019 |
 | answer_type=mixed | citation_coverage | system_a → system_b | 20 | -0.500 [-0.700, -0.300] | 0.0063 |
 | answer_type=mixed | citation_coverage | system_b → system_c_v1 | 20 | +0.550 [+0.350, +0.750] | 0.0055 |
 | answer_type=mixed | citation_coverage | system_b → system_c_v3 | 20 | +0.550 [+0.350, +0.750] | 0.0055 |
@@ -478,10 +478,10 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | answer_type=narrative | factual_correctness (secondary) | system_b → system_c_v1 | 34 | +0.171 [+0.069, +0.279] | 0.0140 |
 | answer_type=narrative | citation_recall, uncited = 0 | system_a → system_c_v1 | 34 | +0.235 [+0.088, +0.382] | 0.0281 |
 | answer_type=narrative | citation_recall, uncited = 0 | system_a → system_c_v3 | 34 | +0.206 [+0.088, +0.353] | 0.0408 |
-| answer_type=numerical | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v1 | 43 | +0.256 [+0.093, +0.419] | 0.0229 |
-| answer_type=numerical | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v3 | 43 | +0.349 [+0.185, +0.512] | 0.0029 |
+| answer_type=numerical | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v1 | 43 | +0.279 [+0.116, +0.442] | 0.0081 |
+| answer_type=numerical | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v3 | 43 | +0.395 [+0.256, +0.535] | 0.0002 |
 | answer_type=numerical | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v1 | 43 | +0.302 [+0.140, +0.465] | 0.0065 |
-| answer_type=numerical | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 43 | +0.395 [+0.233, +0.558] | 0.0006 |
+| answer_type=numerical | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 43 | +0.419 [+0.279, +0.581] | 0.0001 |
 | answer_type=numerical | abstained (refusal rate) | system_a → system_c_v1 | 43 | -0.186 [-0.326, -0.070] | 0.0342 |
 | answer_type=numerical | abstained (refusal rate) | system_a → system_c_v3 | 43 | -0.279 [-0.419, -0.163] | 0.0027 |
 | answer_type=numerical | abstained (refusal rate) | system_b → system_c_v1 | 43 | -0.256 [-0.395, -0.116] | 0.0091 |
@@ -490,10 +490,10 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | answer_type=numerical | answer_relevancy | system_b → system_c_v1 | 43 | +0.244 [+0.121, +0.373] | 0.0437 |
 | answer_type=numerical | answer_relevancy | system_b → system_c_v3 | 43 | +0.345 [+0.199, +0.494] | 0.0005 |
 | answer_type=numerical | answer_relevancy | system_c_v1 → system_c_v3 | 43 | +0.101 [+0.004, +0.208] | 0.0437 |
-| answer_type=numerical | numeric_accuracy | system_a → system_c_v1 | 43 | +0.256 [+0.093, +0.419] | 0.0229 |
-| answer_type=numerical | numeric_accuracy | system_a → system_c_v3 | 43 | +0.349 [+0.185, +0.512] | 0.0029 |
+| answer_type=numerical | numeric_accuracy | system_a → system_c_v1 | 43 | +0.279 [+0.116, +0.442] | 0.0081 |
+| answer_type=numerical | numeric_accuracy | system_a → system_c_v3 | 43 | +0.395 [+0.256, +0.535] | 0.0002 |
 | answer_type=numerical | numeric_accuracy | system_b → system_c_v1 | 43 | +0.302 [+0.140, +0.465] | 0.0065 |
-| answer_type=numerical | numeric_accuracy | system_b → system_c_v3 | 43 | +0.395 [+0.233, +0.558] | 0.0006 |
+| answer_type=numerical | numeric_accuracy | system_b → system_c_v3 | 43 | +0.419 [+0.279, +0.581] | 0.0001 |
 | answer_type=numerical | citation_coverage | system_a → system_c_v3 | 43 | +0.209 [+0.093, +0.326] | 0.0108 |
 | answer_type=numerical | citation_coverage | system_b → system_c_v1 | 43 | +0.302 [+0.163, +0.442] | 0.0016 |
 | answer_type=numerical | citation_coverage | system_b → system_c_v3 | 43 | +0.349 [+0.209, +0.488] | 0.0006 |
@@ -501,10 +501,10 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | answer_type=numerical | citation_precision, uncited = 0 | system_b → system_c_v3 | 43 | +0.244 [+0.093, +0.395] | 0.0344 |
 | answer_type=numerical | citation_f1, uncited = 0 | system_b → system_c_v1 | 43 | +0.217 [+0.070, +0.364] | 0.0369 |
 | answer_type=numerical | citation_f1, uncited = 0 | system_b → system_c_v3 | 43 | +0.233 [+0.085, +0.380] | 0.0490 |
-| evidence_format=table | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v1 | 43 | +0.256 [+0.093, +0.419] | 0.0229 |
-| evidence_format=table | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v3 | 43 | +0.349 [+0.185, +0.512] | 0.0029 |
+| evidence_format=table | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v1 | 43 | +0.279 [+0.116, +0.442] | 0.0081 |
+| evidence_format=table | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v3 | 43 | +0.395 [+0.256, +0.535] | 0.0002 |
 | evidence_format=table | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v1 | 43 | +0.302 [+0.140, +0.465] | 0.0065 |
-| evidence_format=table | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 43 | +0.395 [+0.233, +0.558] | 0.0006 |
+| evidence_format=table | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 43 | +0.419 [+0.279, +0.581] | 0.0001 |
 | evidence_format=table | abstained (refusal rate) | system_a → system_c_v1 | 43 | -0.186 [-0.326, -0.070] | 0.0342 |
 | evidence_format=table | abstained (refusal rate) | system_a → system_c_v3 | 43 | -0.279 [-0.419, -0.163] | 0.0027 |
 | evidence_format=table | abstained (refusal rate) | system_b → system_c_v1 | 43 | -0.256 [-0.395, -0.116] | 0.0091 |
@@ -513,10 +513,10 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | evidence_format=table | answer_relevancy | system_b → system_c_v1 | 43 | +0.244 [+0.121, +0.373] | 0.0437 |
 | evidence_format=table | answer_relevancy | system_b → system_c_v3 | 43 | +0.345 [+0.199, +0.494] | 0.0005 |
 | evidence_format=table | answer_relevancy | system_c_v1 → system_c_v3 | 43 | +0.101 [+0.004, +0.208] | 0.0437 |
-| evidence_format=table | numeric_accuracy | system_a → system_c_v1 | 43 | +0.256 [+0.093, +0.419] | 0.0229 |
-| evidence_format=table | numeric_accuracy | system_a → system_c_v3 | 43 | +0.349 [+0.185, +0.512] | 0.0029 |
+| evidence_format=table | numeric_accuracy | system_a → system_c_v1 | 43 | +0.279 [+0.116, +0.442] | 0.0081 |
+| evidence_format=table | numeric_accuracy | system_a → system_c_v3 | 43 | +0.395 [+0.256, +0.535] | 0.0002 |
 | evidence_format=table | numeric_accuracy | system_b → system_c_v1 | 43 | +0.302 [+0.140, +0.465] | 0.0065 |
-| evidence_format=table | numeric_accuracy | system_b → system_c_v3 | 43 | +0.395 [+0.233, +0.558] | 0.0006 |
+| evidence_format=table | numeric_accuracy | system_b → system_c_v3 | 43 | +0.419 [+0.279, +0.581] | 0.0001 |
 | evidence_format=table | citation_coverage | system_a → system_c_v3 | 43 | +0.209 [+0.093, +0.326] | 0.0108 |
 | evidence_format=table | citation_coverage | system_b → system_c_v1 | 43 | +0.302 [+0.163, +0.442] | 0.0016 |
 | evidence_format=table | citation_coverage | system_b → system_c_v3 | 43 | +0.349 [+0.209, +0.488] | 0.0006 |
@@ -534,9 +534,9 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | evidence_format=table_text | factual_correctness (secondary) | system_a → system_b | 20 | -0.275 [-0.427, -0.127] | 0.0154 |
 | evidence_format=table_text | factual_correctness (secondary) | system_b → system_c_v1 | 20 | +0.287 [+0.089, +0.476] | 0.0318 |
 | evidence_format=table_text | factual_correctness (secondary) | system_b → system_c_v3 | 20 | +0.353 [+0.167, +0.537] | 0.0174 |
-| evidence_format=table_text | numeric_accuracy | system_a → system_b | 20 | -0.450 [-0.650, -0.250] | 0.0135 |
-| evidence_format=table_text | numeric_accuracy | system_b → system_c_v1 | 20 | +0.400 [+0.200, +0.600] | 0.0187 |
-| evidence_format=table_text | numeric_accuracy | system_b → system_c_v3 | 20 | +0.600 [+0.400, +0.800] | 0.0032 |
+| evidence_format=table_text | numeric_accuracy | system_a → system_b | 20 | -0.500 [-0.700, -0.300] | 0.0078 |
+| evidence_format=table_text | numeric_accuracy | system_b → system_c_v1 | 20 | +0.450 [+0.250, +0.650] | 0.0108 |
+| evidence_format=table_text | numeric_accuracy | system_b → system_c_v3 | 20 | +0.650 [+0.450, +0.850] | 0.0019 |
 | evidence_format=table_text | citation_coverage | system_a → system_b | 20 | -0.500 [-0.700, -0.300] | 0.0063 |
 | evidence_format=table_text | citation_coverage | system_b → system_c_v1 | 20 | +0.550 [+0.350, +0.750] | 0.0055 |
 | evidence_format=table_text | citation_coverage | system_b → system_c_v3 | 20 | +0.550 [+0.350, +0.750] | 0.0055 |
@@ -583,17 +583,18 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | evidence_scope=cross_year | citation_recall, uncited = 0 | system_b → system_c_v3 | 33 | +0.273 [+0.091, +0.455] | 0.0399 |
 | evidence_scope=cross_year | citation_f1, uncited = 0 | system_b → system_c_v1 | 33 | +0.263 [+0.086, +0.429] | 0.0460 |
 | evidence_scope=cross_year | citation_f1, uncited = 0 | system_b → system_c_v3 | 33 | +0.268 [+0.086, +0.440] | 0.0460 |
-| evidence_scope=single_doc | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_b | 55 | -0.189 [-0.297, -0.085] | 0.0095 |
-| evidence_scope=single_doc | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v1 | 55 | +0.240 [+0.127, +0.359] | 0.0021 |
-| evidence_scope=single_doc | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 55 | +0.224 [+0.099, +0.348] | 0.0077 |
+| evidence_scope=single_doc | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_b | 55 | -0.171 [-0.279, -0.070] | 0.0156 |
+| evidence_scope=single_doc | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v1 | 55 | +0.240 [+0.127, +0.359] | 0.0019 |
+| evidence_scope=single_doc | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 55 | +0.242 [+0.136, +0.358] | 0.0019 |
 | evidence_scope=single_doc | abstained (refusal rate) | system_a → system_b | 55 | +0.218 [+0.109, +0.345] | 0.0054 |
 | evidence_scope=single_doc | abstained (refusal rate) | system_b → system_c_v1 | 55 | -0.309 [-0.436, -0.182] | 0.0002 |
 | evidence_scope=single_doc | abstained (refusal rate) | system_b → system_c_v3 | 55 | -0.309 [-0.436, -0.182] | 0.0002 |
 | evidence_scope=single_doc | factual_correctness (secondary) | system_b → system_c_v1 | 55 | +0.177 [+0.083, +0.273] | 0.0029 |
 | evidence_scope=single_doc | factual_correctness (secondary) | system_b → system_c_v3 | 55 | +0.187 [+0.082, +0.289] | 0.0089 |
-| evidence_scope=single_doc | numeric_accuracy | system_a → system_b | 40 | -0.300 [-0.450, -0.150] | 0.0021 |
-| evidence_scope=single_doc | numeric_accuracy | system_b → system_c_v1 | 40 | +0.325 [+0.175, +0.475] | 0.0016 |
-| evidence_scope=single_doc | numeric_accuracy | system_b → system_c_v3 | 40 | +0.400 [+0.225, +0.551] | 0.0010 |
+| evidence_scope=single_doc | numeric_accuracy | system_a → system_b | 40 | -0.300 [-0.450, -0.175] | 0.0021 |
+| evidence_scope=single_doc | numeric_accuracy | system_a → system_c_v3 | 40 | +0.150 [+0.050, +0.275] | 0.0429 |
+| evidence_scope=single_doc | numeric_accuracy | system_b → system_c_v1 | 40 | +0.350 [+0.200, +0.500] | 0.0009 |
+| evidence_scope=single_doc | numeric_accuracy | system_b → system_c_v3 | 40 | +0.450 [+0.300, +0.600] | 0.0001 |
 | evidence_scope=single_doc | citation_coverage | system_a → system_b | 55 | -0.236 [-0.364, -0.109] | 0.0032 |
 | evidence_scope=single_doc | citation_coverage | system_b → system_c_v1 | 55 | +0.291 [+0.164, +0.418] | 0.0004 |
 | evidence_scope=single_doc | citation_coverage | system_b → system_c_v3 | 55 | +0.291 [+0.164, +0.418] | 0.0004 |
@@ -604,10 +605,10 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | evidence_scope=single_doc | citation_recall, uncited = 0 | system_b → system_c_v3 | 55 | +0.200 [+0.073, +0.336] | 0.0295 |
 | evidence_scope=single_doc | citation_f1, uncited = 0 | system_b → system_c_v1 | 55 | +0.212 [+0.094, +0.330] | 0.0061 |
 | evidence_scope=single_doc | citation_f1, uncited = 0 | system_b → system_c_v3 | 55 | +0.213 [+0.091, +0.340] | 0.0126 |
-| hop=multi | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v1 | 78 | +0.192 [+0.077, +0.308] | 0.0049 |
-| hop=multi | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v3 | 78 | +0.236 [+0.126, +0.352] | 0.0006 |
+| hop=multi | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v1 | 78 | +0.205 [+0.096, +0.318] | 0.0018 |
+| hop=multi | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v3 | 78 | +0.261 [+0.159, +0.371] | 0.0001 |
 | hop=multi | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v1 | 78 | +0.293 [+0.181, +0.401] | 0.0001 |
-| hop=multi | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 78 | +0.337 [+0.229, +0.444] | 0.0000 |
+| hop=multi | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 78 | +0.350 [+0.247, +0.453] | 0.0000 |
 | hop=multi | abstained (refusal rate) | system_a → system_c_v1 | 78 | -0.167 [-0.256, -0.077] | 0.0024 |
 | hop=multi | abstained (refusal rate) | system_a → system_c_v3 | 78 | -0.218 [-0.321, -0.128] | 0.0001 |
 | hop=multi | abstained (refusal rate) | system_b → system_c_v1 | 78 | -0.308 [-0.410, -0.205] | 0.0000 |
@@ -622,10 +623,10 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | hop=multi | context_recall | system_b → system_c_v3 | 78 | +0.078 [+0.017, +0.138] | 0.0340 |
 | hop=multi | factual_correctness (secondary) | system_b → system_c_v1 | 78 | +0.114 [+0.022, +0.204] | 0.0445 |
 | hop=multi | factual_correctness (secondary) | system_b → system_c_v3 | 78 | +0.181 [+0.087, +0.278] | 0.0028 |
-| hop=multi | numeric_accuracy | system_a → system_c_v3 | 52 | +0.308 [+0.154, +0.462] | 0.0026 |
-| hop=multi | numeric_accuracy | system_b → system_c_v1 | 52 | +0.346 [+0.192, +0.500] | 0.0006 |
-| hop=multi | numeric_accuracy | system_b → system_c_v3 | 52 | +0.500 [+0.346, +0.635] | 0.0000 |
-| hop=multi | numeric_accuracy | system_c_v1 → system_c_v3 | 52 | +0.154 [+0.058, +0.269] | 0.0342 |
+| hop=multi | numeric_accuracy | system_a → system_c_v3 | 52 | +0.346 [+0.212, +0.481] | 0.0001 |
+| hop=multi | numeric_accuracy | system_b → system_c_v1 | 52 | +0.365 [+0.212, +0.500] | 0.0003 |
+| hop=multi | numeric_accuracy | system_b → system_c_v3 | 52 | +0.538 [+0.404, +0.673] | 0.0000 |
+| hop=multi | numeric_accuracy | system_c_v1 → system_c_v3 | 52 | +0.173 [+0.077, +0.288] | 0.0081 |
 | hop=multi | citation_coverage | system_a → system_b | 78 | -0.167 [-0.295, -0.038] | 0.0247 |
 | hop=multi | citation_coverage | system_a → system_c_v1 | 78 | +0.154 [+0.064, +0.244] | 0.0040 |
 | hop=multi | citation_coverage | system_a → system_c_v3 | 78 | +0.179 [+0.103, +0.269] | 0.0007 |
@@ -637,10 +638,10 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | hop=multi | citation_recall, uncited = 0 | system_b → system_c_v3 | 78 | +0.224 [+0.115, +0.333] | 0.0023 |
 | hop=multi | citation_f1, uncited = 0 | system_b → system_c_v1 | 78 | +0.221 [+0.119, +0.328] | 0.0010 |
 | hop=multi | citation_f1, uncited = 0 | system_b → system_c_v3 | 78 | +0.228 [+0.118, +0.336] | 0.0014 |
-| task=calculation | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v1 | 63 | +0.172 [+0.038, +0.299] | 0.0275 |
-| task=calculation | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v3 | 63 | +0.242 [+0.112, +0.373] | 0.0022 |
-| task=calculation | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v1 | 63 | +0.326 [+0.197, +0.459] | 0.0003 |
-| task=calculation | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 63 | +0.396 [+0.275, +0.521] | 0.0000 |
+| task=calculation | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v1 | 63 | +0.187 [+0.062, +0.310] | 0.0109 |
+| task=calculation | primary_accuracy (numeric_accuracy / keypoint_recall) | system_a → system_c_v3 | 63 | +0.273 [+0.159, +0.393] | 0.0002 |
+| task=calculation | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v1 | 63 | +0.326 [+0.197, +0.459] | 0.0002 |
+| task=calculation | primary_accuracy (numeric_accuracy / keypoint_recall) | system_b → system_c_v3 | 63 | +0.412 [+0.299, +0.531] | 0.0000 |
 | task=calculation | abstained (refusal rate) | system_a → system_b | 63 | +0.206 [+0.079, +0.333] | 0.0086 |
 | task=calculation | abstained (refusal rate) | system_a → system_c_v1 | 63 | -0.159 [-0.270, -0.063] | 0.0086 |
 | task=calculation | abstained (refusal rate) | system_a → system_c_v3 | 63 | -0.222 [-0.333, -0.127] | 0.0007 |
@@ -654,12 +655,12 @@ Difference = second minus first, mean [95% CI]; * = significant after Holm corre
 | task=calculation | context_recall | system_b → system_c_v1 | 63 | +0.113 [+0.049, +0.178] | 0.0138 |
 | task=calculation | context_recall | system_b → system_c_v3 | 63 | +0.104 [+0.039, +0.169] | 0.0390 |
 | task=calculation | factual_correctness (secondary) | system_b → system_c_v3 | 63 | +0.161 [+0.055, +0.264] | 0.0225 |
-| task=calculation | numeric_accuracy | system_a → system_b | 63 | -0.175 [-0.302, -0.048] | 0.0342 |
-| task=calculation | numeric_accuracy | system_a → system_c_v1 | 63 | +0.159 [+0.016, +0.302] | 0.0342 |
-| task=calculation | numeric_accuracy | system_a → system_c_v3 | 63 | +0.286 [+0.159, +0.413] | 0.0010 |
-| task=calculation | numeric_accuracy | system_b → system_c_v1 | 63 | +0.333 [+0.206, +0.476] | 0.0001 |
-| task=calculation | numeric_accuracy | system_b → system_c_v3 | 63 | +0.460 [+0.333, +0.587] | 0.0000 |
-| task=calculation | numeric_accuracy | system_c_v1 → system_c_v3 | 63 | +0.127 [+0.032, +0.222] | 0.0342 |
+| task=calculation | numeric_accuracy | system_a → system_b | 63 | -0.175 [-0.302, -0.047] | 0.0328 |
+| task=calculation | numeric_accuracy | system_a → system_c_v1 | 63 | +0.175 [+0.032, +0.317] | 0.0328 |
+| task=calculation | numeric_accuracy | system_a → system_c_v3 | 63 | +0.317 [+0.206, +0.429] | 0.0000 |
+| task=calculation | numeric_accuracy | system_b → system_c_v1 | 63 | +0.349 [+0.222, +0.476] | 0.0001 |
+| task=calculation | numeric_accuracy | system_b → system_c_v3 | 63 | +0.492 [+0.381, +0.603] | 0.0000 |
+| task=calculation | numeric_accuracy | system_c_v1 → system_c_v3 | 63 | +0.143 [+0.063, +0.238] | 0.0081 |
 | task=calculation | citation_coverage | system_a → system_b | 63 | -0.254 [-0.381, -0.127] | 0.0026 |
 | task=calculation | citation_coverage | system_a → system_c_v1 | 63 | +0.127 [+0.032, +0.222] | 0.0228 |
 | task=calculation | citation_coverage | system_a → system_c_v3 | 63 | +0.159 [+0.079, +0.254] | 0.0047 |
@@ -693,9 +694,9 @@ A wrong answer is a numeric question whose number is not in the answer (numeric_
 | System | Answers | Wrong | refusal | retrieval_miss | wrong_number | unsupported_claim | incomplete |
 |---|---|---|---|---|---|---|---|
 | system_a | 97 | 29 | 20 (69%) | 3 (10%) | 2 (7%) | 0 (0%) | 4 (14%) |
-| system_b | 97 | 39 | 31 (79%) | 3 (8%) | 2 (5%) | 0 (0%) | 3 (8%) |
-| system_c_v1 | 97 | 12 | 4 (33%) | 1 (8%) | 4 (33%) | 1 (8%) | 2 (17%) |
-| system_c_v3 | 97 | 6 | 0 (0%) | 1 (17%) | 2 (33%) | 1 (17%) | 2 (33%) |
+| system_b | 97 | 38 | 31 (82%) | 3 (8%) | 1 (3%) | 0 (0%) | 3 (8%) |
+| system_c_v1 | 97 | 11 | 4 (36%) | 1 (9%) | 3 (27%) | 1 (9%) | 2 (18%) |
+| system_c_v3 | 97 | 4 | 0 (0%) | 1 (25%) | 0 (0%) | 1 (25%) | 2 (50%) |
 
 ### answer_type=mixed
 
@@ -720,18 +721,18 @@ A wrong answer is a numeric question whose number is not in the answer (numeric_
 | System | Answers | Wrong | refusal | retrieval_miss | wrong_number | unsupported_claim | incomplete |
 |---|---|---|---|---|---|---|---|
 | system_a | 43 | 17 | 12 (71%) | 3 (18%) | 2 (12%) | 0 (0%) | 0 (0%) |
-| system_b | 43 | 19 | 15 (79%) | 3 (16%) | 1 (5%) | 0 (0%) | 0 (0%) |
-| system_c_v1 | 43 | 6 | 4 (67%) | 0 (0%) | 2 (33%) | 0 (0%) | 0 (0%) |
-| system_c_v3 | 43 | 2 | 0 (0%) | 0 (0%) | 2 (100%) | 0 (0%) | 0 (0%) |
+| system_b | 43 | 18 | 15 (83%) | 3 (17%) | 0 (0%) | 0 (0%) | 0 (0%) |
+| system_c_v1 | 43 | 5 | 4 (80%) | 0 (0%) | 1 (20%) | 0 (0%) | 0 (0%) |
+| system_c_v3 | 43 | 0 | – | – | – | – | – |
 
 ### evidence_format=table
 
 | System | Answers | Wrong | refusal | retrieval_miss | wrong_number | unsupported_claim | incomplete |
 |---|---|---|---|---|---|---|---|
 | system_a | 43 | 17 | 12 (71%) | 3 (18%) | 2 (12%) | 0 (0%) | 0 (0%) |
-| system_b | 43 | 19 | 15 (79%) | 3 (16%) | 1 (5%) | 0 (0%) | 0 (0%) |
-| system_c_v1 | 43 | 6 | 4 (67%) | 0 (0%) | 2 (33%) | 0 (0%) | 0 (0%) |
-| system_c_v3 | 43 | 2 | 0 (0%) | 0 (0%) | 2 (100%) | 0 (0%) | 0 (0%) |
+| system_b | 43 | 18 | 15 (83%) | 3 (17%) | 0 (0%) | 0 (0%) | 0 (0%) |
+| system_c_v1 | 43 | 5 | 4 (80%) | 0 (0%) | 1 (20%) | 0 (0%) | 0 (0%) |
+| system_c_v3 | 43 | 0 | – | – | – | – | – |
 
 ### evidence_format=table_text
 
@@ -756,9 +757,9 @@ A wrong answer is a numeric question whose number is not in the answer (numeric_
 | System | Answers | Wrong | refusal | retrieval_miss | wrong_number | unsupported_claim | incomplete |
 |---|---|---|---|---|---|---|---|
 | system_a | 78 | 26 | 17 (65%) | 3 (12%) | 2 (8%) | 0 (0%) | 4 (15%) |
-| system_b | 78 | 36 | 28 (78%) | 3 (8%) | 2 (6%) | 0 (0%) | 3 (8%) |
-| system_c_v1 | 78 | 12 | 4 (33%) | 1 (8%) | 4 (33%) | 1 (8%) | 2 (17%) |
-| system_c_v3 | 78 | 6 | 0 (0%) | 1 (17%) | 2 (33%) | 1 (17%) | 2 (33%) |
+| system_b | 78 | 35 | 28 (80%) | 3 (9%) | 1 (3%) | 0 (0%) | 3 (9%) |
+| system_c_v1 | 78 | 11 | 4 (36%) | 1 (9%) | 3 (27%) | 1 (9%) | 2 (18%) |
+| system_c_v3 | 78 | 4 | 0 (0%) | 1 (25%) | 0 (0%) | 1 (25%) | 2 (50%) |
 
 ### hop=single
 
@@ -774,9 +775,9 @@ A wrong answer is a numeric question whose number is not in the answer (numeric_
 | System | Answers | Wrong | refusal | retrieval_miss | wrong_number | unsupported_claim | incomplete |
 |---|---|---|---|---|---|---|---|
 | system_a | 63 | 22 | 14 (64%) | 3 (14%) | 2 (9%) | 0 (0%) | 3 (14%) |
-| system_b | 63 | 33 | 27 (82%) | 3 (9%) | 2 (6%) | 0 (0%) | 1 (3%) |
-| system_c_v1 | 63 | 11 | 4 (36%) | 1 (9%) | 4 (36%) | 1 (9%) | 1 (9%) |
-| system_c_v3 | 63 | 5 | 0 (0%) | 1 (20%) | 2 (40%) | 1 (20%) | 1 (20%) |
+| system_b | 63 | 32 | 27 (84%) | 3 (9%) | 1 (3%) | 0 (0%) | 1 (3%) |
+| system_c_v1 | 63 | 10 | 4 (40%) | 1 (10%) | 3 (30%) | 1 (10%) | 1 (10%) |
+| system_c_v3 | 63 | 3 | 0 (0%) | 1 (33%) | 0 (0%) | 1 (33%) | 1 (33%) |
 
 ### task=lookup
 
@@ -810,11 +811,43 @@ A wrong answer is a numeric question whose number is not in the answer (numeric_
 | System | Answers | Wrong | refusal | retrieval_miss | wrong_number | unsupported_claim | incomplete |
 |---|---|---|---|---|---|---|---|
 | system_a | 55 | 9 | 5 (56%) | 0 (0%) | 1 (11%) | 0 (0%) | 3 (33%) |
-| system_b | 55 | 20 | 17 (85%) | 0 (0%) | 2 (10%) | 0 (0%) | 1 (5%) |
-| system_c_v1 | 55 | 6 | 0 (0%) | 1 (17%) | 3 (50%) | 1 (17%) | 1 (17%) |
-| system_c_v3 | 55 | 5 | 0 (0%) | 1 (20%) | 2 (40%) | 1 (20%) | 1 (20%) |
+| system_b | 55 | 19 | 17 (89%) | 0 (0%) | 1 (5%) | 0 (0%) | 1 (5%) |
+| system_c_v1 | 55 | 5 | 0 (0%) | 1 (20%) | 2 (40%) | 1 (20%) | 1 (20%) |
+| system_c_v3 | 55 | 3 | 0 (0%) | 1 (33%) | 0 (0%) | 1 (33%) | 1 (33%) |
 
 Cells: count (share of that system's wrong answers).
+
+## Refusals and retrieval
+
+For every answer the gold evidence quotes of its question (benchmark `gold_evidence`) are checked against the retrieved contexts of that system: *all* = every quote is in a retrieved chunk of the gold filing (normalised substring, or at least 80% of the words of a quote of 15+ words); *some* = at least one but not all; *none*. *Lenient* additionally accepts any quote of which 60% of the words are in a chunk of that filing.
+
+| System | Refusals | Evidence all | some | none | All, lenient | Answered | Evidence all | some | none | All, lenient |
+|---|---|---|---|---|---|---|---|---|---|---|
+| system_a | 20 | 0 | 4 | 16 | 1 | 77 | 50 | 22 | 5 | 52 |
+| system_b | 31 | 0 | 15 | 16 | 1 | 66 | 52 | 10 | 4 | 54 |
+| system_c_v1 | 4 | 0 | 2 | 2 | 1 | 93 | 71 | 18 | 4 | 79 |
+| system_c_v3 | 0 | 0 | 0 | 0 | 0 | 97 | 72 | 19 | 6 | 79 |
+
+Refusals mostly follow incomplete retrieval: the gold evidence was fully present for only 0 of B's 31 refusals and 0 of A's 20 (lenient matching: 1 and 1); it was fully present for 52 of B's 66 and 50 of A's 77 answered questions.
+
+## Retrieval context per system
+
+| System | Answers | Mean chunks | Mean characters | Mean hops | 1 hop | 2 hops | 3 hops |
+|---|---|---|---|---|---|---|---|
+| system_a | 97 | 9.6 | 6,931 | 1.00 | 97 | 0 | 0 |
+| system_b | 97 | 5.0 | 4,829 | 1.00 | 97 | 0 | 0 |
+| system_c_v1 | 97 | 9.9 | 7,926 | 2.24 | 28 | 18 | 51 |
+| system_c_v3 | 97 | 11.1 | 8,546 | 2.12 | 38 | 9 | 50 |
+
+**C v1 vs C v3** (paired differences, C v3 minus C v1): answer relevancy +0.077, significant; faithfulness +0.027, not significant; context recall -0.023, not significant; context precision -0.038, not significant. C v3 stops after one hop in 38 of 97 answers (C v1: 28) and passes more chunks to the answer model (11.1 vs 9.9 on average).
+
+## Numeric accuracy vs the saved correctness flags
+
+`numeric_accuracy` agrees with the RQ3 harness flag `numeric_correct` on 251 of 252 answers with a gold number (system_a: 62/63, system_b: 63/63, system_c_v1: 63/63, system_c_v3: 63/63).
+
+| Question | System | Gold | numeric_accuracy | Saved flag | Answer excerpt |
+|---|---|---|---|---|---|
+| gold-037 | system_a | $975 million | 0 | True | The context only provides Tegra Processor revenue for fiscal year 2018 ($1.53 billion) and growth rates versus fiscal 2017 and fiscal 2016, but not the explicit |
 
 ## Notes
 
@@ -832,7 +865,8 @@ Cells: count (share of that system's wrong answers).
 - **Factual correctness is a secondary metric.** On a 20-answer canary it agreed only moderately with the saved correctness flags (mean absolute difference 0.28), because (1) its recall also counts the answer's extra correct claims (intermediate figures the reference does not contain), (2) the judge is confused by the sign of the gold number ("-30.36%" is marked wrong for an answer saying a 30.36% decrease, and the reverse), and (3) it splits one condition ("probable AND reasonably estimable") into separate claims that are then judged one by one.
 - **Faithfulness cannot verify a number the system calculated itself** (e.g. 30.36%), since it is not in any retrieved text; correct calculations are therefore slightly penalised.
 - **The judge is not fully repeatable at temperature 0**: repeated scoring of the same answer gave different values on the canary.
-- **Refusal detection is a rule**: an answer is a refusal when its first sentence says the evidence is missing ("not found in the provided context", "cannot be determined", ...). Partial answers are not refusals.
+- **Refusal detection is a rule**: an answer is a refusal when its first sentence says the evidence is missing ("not found in the provided context", "cannot be determined", ...). Partial answers are not refusals. The rule treats some partial "I can only answer part of this" replies inconsistently (e.g. A gold-045 is flagged, A gold-071 is not), so refusal counts may be off by a few for A.
+- **Numeric matching is a rule**: it accepts accounting negatives ("(6.0)", "$(316)"), a bare table figure against a gold value with a unit ("$316" for "$316 million", exact digits, at least 3 significant digits), the unsigned value of a negative gold number, and ratio / percentage equivalents ("72.08%" for "0.72") within a 0.5% relative tolerance. A wrong sign or a wrong unit is therefore not caught. The remaining disagreements with the saved `numeric_correct` flags are listed under "Numeric accuracy vs the saved correctness flags".
 - **Error types are heuristic.** A wrong answer is a numeric question whose number is not in the answer (numeric_accuracy < 1), or any other question with keypoint_recall < 0.5, or a refusal. Each gets ONE primary type, first match wins: 1 `refusal` = abstained; 2 `retrieval_miss` = RAGAS context recall < 0.5 (the gold evidence was not retrieved); 3 `wrong_number` = the question has a gold number and numeric_accuracy < 1 although evidence was retrieved; 4 `unsupported_claim` = faithfulness < 0.5; 5 `incomplete` = everything else, e.g. key points missed.
 - **System C v3 may have been tuned on this benchmark** (built after it existed, reports 100% numerical accuracy on it), so its numbers may be optimistic.
 - **The judge (gpt-4o-mini) is weaker than the answer model (gpt-5.4)**; a stronger-judge spot-check is planned.

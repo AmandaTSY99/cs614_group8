@@ -155,6 +155,30 @@ def error_type_counts(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return out
 
 
+def numeric_agreement(records: List[Dict[str, Any]], scores: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    `numeric_accuracy` (correct = 1) against the saved `numeric_correct` flag of the RQ3 harness, on the answers that
+    have a gold number: agreement counts per system and every disagreement.
+    """
+    index = _index(scores)
+    per_system: Dict[str, List[int]] = defaultdict(lambda: [0, 0])
+    disagreements = []
+    for rec in records:
+        value = _value(index, rec["system"], rec["question_id"], "numeric_accuracy")
+        if value is None:
+            continue
+        ours, saved = value >= NUMERIC_CORRECT_MIN, bool(rec.get("numeric_correct"))
+        per_system[rec["system"]][1] += 1
+        if ours == saved:
+            per_system[rec["system"]][0] += 1
+        else:
+            disagreements.append({"system": rec["system"], "question_id": rec["question_id"],
+                                  "gold": rec.get("ground_truth_numbers"), "numeric_accuracy": value,
+                                  "numeric_correct": saved, "answer": (rec.get("answer") or "")[:200]})
+    return {"agree": sum(v[0] for v in per_system.values()), "total": sum(v[1] for v in per_system.values()),
+            "per_system": {s: tuple(v) for s, v in per_system.items()}, "disagreements": disagreements}
+
+
 def citation_sensitivity_rows(scores: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Citation precision / recall / F1 are N/A for an answer with no citations. These rows repeat them with such
