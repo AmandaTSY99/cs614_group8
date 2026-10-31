@@ -30,9 +30,16 @@ TOO_LARGE_MARKERS = (
 )
 RATELIMIT_HEADER_PREFIXES = ("x-ratelimit-", "retry-after")
 
+# The judge's output limit (ragas `llm_factory` default). A structured answer that does not fit raises
+# `IncompleteOutputException`; a larger limit (`--judge-max-tokens`) only lets such answers finish.
+RAGAS_DEFAULT_MAX_TOKENS = 1024
+MAX_JUDGE_MAX_TOKENS = 16384  # gpt-4o-mini's maximum output
+
 # Status values written to scores.jsonl
 STATUS_OK, STATUS_NA, STATUS_ERROR, STATUS_TOO_LARGE = "ok", "na", "error", "too_large"
+STATUS_TRUNCATED = "truncated"
 ERROR_TOO_LARGE, ERROR_RETRYABLE, ERROR_FATAL = "too_large", "retryable", "fatal"
+ERROR_TRUNCATED = "truncated"
 
 
 def judge_label(provider: str, model: str) -> str:
@@ -51,13 +58,16 @@ def _exception_chain(exc: BaseException):
 
 def classify_error(exc: BaseException) -> str:
     """
-    `too_large` (request / context too large: never retried), `retryable` (rate limit, timeout, connection,
-    5xx) or `fatal` (anything else: not retried).
+    `too_large` (request / context too large: never retried), `truncated` (the judge's structured answer hit
+    its output limit: never retried, the same call truncates again), `retryable` (rate limit, timeout,
+    connection, 5xx) or `fatal` (anything else: not retried).
     """
     import httpx
     import openai
 
     chain = list(_exception_chain(exc))
+    if any("IncompleteOutputException" in type(e).__name__ for e in chain):
+        return ERROR_TRUNCATED
     for e in chain:
         status = getattr(e, "status_code", None)
         text = f"{type(e).__name__} {e}".lower()
@@ -142,8 +152,13 @@ class JudgeMeter:
         entry["completion_tokens"] += int(usage.get("completion_tokens") or 0)
 
 
-def build_judge(provider: str, model: str, meter: Optional[JudgeMeter] = None) -> Any:
-    """ragas 0.4.3 `InstructorBaseRagasLLM` over an OpenAI-compatible async client (no client-side retries)."""
+def build_judge(provider: str, model: str, meter: Optional[JudgeMeter] = None,
+                max_tokens: Optional[int] = None) -> Any:
+    """
+    ragas 0.4.3 `InstructorBaseRagasLLM` over an OpenAI-compatible async client (no client-side retries).
+    `max_tokens` raises the judge's output limit (default: the ragas default, 1024); model, temperature and
+    prompts are unchanged.
+    """
     import httpx
     from openai import AsyncOpenAI
     from ragas.llms import llm_factory
@@ -158,7 +173,10 @@ def build_judge(provider: str, model: str, meter: Optional[JudgeMeter] = None) -
     http_client = httpx.AsyncClient(timeout=JUDGE_TIMEOUT_S, event_hooks=hooks)
     client = AsyncOpenAI(api_key=api_key, base_url=base_url, max_retries=0, timeout=JUDGE_TIMEOUT_S,
                          http_client=http_client)
-    return llm_factory(model, provider="openai", client=client, temperature=0.0)
+    if max_tokens is not None and not 1 <= max_tokens <= MAX_JUDGE_MAX_TOKENS:
+        raise ValueError(f"max_tokens must be between 1 and {MAX_JUDGE_MAX_TOKENS}")
+    extra = {} if max_tokens is None else {"max_tokens": max_tokens}
+    return llm_factory(model, provider="openai", client=client, temperature=0.0, **extra)
 
 
 def build_embeddings() -> Any:
