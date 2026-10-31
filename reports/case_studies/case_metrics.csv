@@ -1,0 +1,389 @@
+question_id,question_type,recipe,hop,answer_type,system,selected,n_contexts,recall@5,recall@all,complete@all,average_precision,evidence_ranks,numeric_correct,keypoint_recall,numeric_accuracy,citation_precision,citation_recall,citation_f1,citation_coverage,grounding_error_rate,hops,tokens_total,cost_usd,latency_ms,answer_score,n_cited
+gold-001,Single-hop table,table,single,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,,1,2407,0.000411,2389.1,1.0,1
+gold-001,Single-hop table,table,single,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,,1,1063,0.00019,8008.0,1.0,1
+gold-001,Single-hop table,table,single,numeric,system_c_v1,,6.0,1.0,1.0,1.0,1.0,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,0.0,1,4822,0.0167175,7140.3,1.0,1
+gold-001,Single-hop table,table,single,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.5,#1: 2,True,,0.0,1.0,1.0,1.0,1.0,0.0,1,5172,0.01753,7870.4,1.0,1
+gold-002,Multi-hop table (one filing),table,multi,numeric,system_a,,10.0,0.0,1.0,1.0,0.1736111111111111,"#1: 8, #2: 9",True,,1.0,1.0,1.0,1.0,1.0,,1,1735,0.000301,2031.9,1.0,1
+gold-002,Multi-hop table (one filing),table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.3333333333333333,"#1: 3, #2: 3",True,,1.0,1.0,1.0,1.0,1.0,,1,895,0.00017,6608.2,1.0,1
+gold-002,Multi-hop table (one filing),table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.325,"#1: 4, #2: 5",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,3783,0.0131575,6771.8,1.0,1
+gold-002,Multi-hop table (one filing),table,multi,numeric,system_c_v2,,6.0,1.0,1.0,1.0,0.325,"#1: 4, #2: 5",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,3767,0.0129175,6367.5,1.0,1
+gold-003,Single-hop table,table,single,numeric,system_a,contrast,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,2145,0.000326,1080.5,0.0,0
+gold-003,Single-hop table,table,single,numeric,system_b,contrast,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,1362,0.000209,6210.7,0.0,0
+gold-003,Single-hop table,table,single,numeric,system_c_v1,contrast,10.0,0.5,1.0,1.0,0.2611111111111111,"#1: 8, #2: 5",True,,0.0,1.0,1.0,1.0,1.0,0.0,2,8385,0.0298375,13504.1,1.0,1
+gold-003,Single-hop table,table,single,numeric,system_c_v2,contrast,7.0,0.0,0.5,0.0,0.16666666666666666,"#1: –, #2: 6",False,,0.0,,,,0.0,0.0,1,9314,0.0302475,10805.6,0.0,0
+gold-004,Multi-hop table (one filing),table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,0.0,0.0,0.0,1.0,,1,2560,0.00042,2111.3,1.0,1
+gold-004,Multi-hop table (one filing),table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.5,"#1: 2, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,,1,978,0.000182,7433.0,1.0,1
+gold-004,Multi-hop table (one filing),table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,0.5,1.0,0.6666666666666666,1.0,0.3333,1,6395,0.0213125,7561.3,1.0,2
+gold-004,Multi-hop table (one filing),table,multi,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.5833333333333333,"#1: 2, #2: 2",True,,1.0,0.0,0.0,0.0,1.0,0.3333,1,6754,0.02151,7008.1,1.0,1
+gold-005,Single-hop table,table,single,numeric,system_a,,10.0,1.0,1.0,1.0,0.6428571428571428,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,,1,2461,0.000416,2643.8,1.0,1
+gold-005,Single-hop table,table,single,numeric,system_b,,5.0,1.0,1.0,1.0,0.75,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,,1,1228,0.00023,6580.8,1.0,1
+gold-005,Single-hop table,table,single,numeric,system_c_v1,,10.0,1.0,1.0,1.0,0.7,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,0.0,3,12305,0.0462375,21615.7,1.0,1
+gold-005,Single-hop table,table,single,numeric,system_c_v2,,11.0,1.0,1.0,1.0,0.7,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,0.0,3,11740,0.0437375,20123.9,1.0,1
+gold-006,Multi-hop table (one filing),table,multi,numeric,system_a,contrast,10.0,0.5,1.0,1.0,0.41666666666666663,"#1: 6, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,,1,2650,0.000448,2298.7,1.0,1
+gold-006,Multi-hop table (one filing),table,multi,numeric,system_b,contrast,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,1355,0.000208,5851.7,0.0,0
+gold-006,Multi-hop table (one filing),table,multi,numeric,system_c_v1,contrast,6.0,0.5,1.0,1.0,0.29166666666666663,"#1: 6, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4717,0.016405,7294.7,1.0,1
+gold-006,Multi-hop table (one filing),table,multi,numeric,system_c_v2,contrast,7.0,0.0,0.5,0.0,0.16666666666666666,"#1: –, #2: 6",False,,0.0,1.0,1.0,1.0,1.0,0.0,1,5146,0.017415,7612.3,0.0,1
+gold-007,Single-hop table,table,single,numeric,system_a,,10.0,1.0,1.0,1.0,0.8333333333333333,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,,1,2692,0.000425,1942.3,1.0,1
+gold-007,Single-hop table,table,single,numeric,system_b,,5.0,0.0,0.0,0.0,0.0,#1: –,False,,0.0,,,,0.0,,1,1095,0.000169,5864.1,0.0,0
+gold-007,Single-hop table,table,single,numeric,system_c_v1,,9.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,0.0,2,8753,0.03137,15370.0,1.0,1
+gold-007,Single-hop table,table,single,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.7345238095238096,#1: 2,True,,1.0,1.0,1.0,1.0,1.0,0.0,1,5062,0.01808,7436.8,1.0,1
+gold-008,Single-hop table,table,single,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,,1,2396,0.000377,1920.5,1.0,1
+gold-008,Single-hop table,table,single,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,,1,1338,0.000217,6446.7,1.0,1
+gold-008,Single-hop table,table,single,numeric,system_c_v1,,6.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4539,0.015585,6820.8,1.0,1
+gold-008,Single-hop table,table,single,numeric,system_c_v2,,6.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4262,0.0144675,7176.5,1.0,1
+gold-009,Single-hop table,table,single,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,,1,2259,0.000389,2252.8,1.0,1
+gold-009,Single-hop table,table,single,numeric,system_b,,5.0,1.0,1.0,1.0,0.5833333333333333,#1: 2,True,,0.0,1.0,1.0,1.0,1.0,,1,1712,0.000299,6776.5,1.0,1
+gold-009,Single-hop table,table,single,numeric,system_c_v1,,6.0,1.0,1.0,1.0,1.0,#1: 1,True,,0.0,1.0,1.0,1.0,1.0,0.0,1,5117,0.01743,7118.3,1.0,1
+gold-009,Single-hop table,table,single,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.5833333333333333,#1: 2,True,,0.0,1.0,1.0,1.0,1.0,0.0,1,5374,0.01821,7554.8,1.0,2
+gold-010,Multi-hop table (one filing),table,multi,numeric,system_a,hardest,10.0,0.5,0.5,0.0,0.25,"#1: 4, #2: –",False,,0.0,1.0,1.0,1.0,1.0,,1,2696,0.000452,2506.3,0.0,1
+gold-010,Multi-hop table (one filing),table,multi,numeric,system_b,hardest,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,1304,0.0002,5550.2,0.0,0
+gold-010,Multi-hop table (one filing),table,multi,numeric,system_c_v1,hardest,11.0,0.0,1.0,1.0,0.14646464646464646,"#1: 9, #2: 11",True,,1.0,1.0,1.0,1.0,1.0,0.0,3,13159,0.0480725,21568.8,1.0,2
+gold-010,Multi-hop table (one filing),table,multi,numeric,system_c_v2,hardest,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,1.0,1.0,1.0,1.0,1.0,3,18845,0.0628875,23617.0,0.0,1
+gold-011,Cross-year table,cross_year_table,multi,numeric,system_a,hardest,10.0,0.5,0.5,0.0,0.3333333333333333,"#1: 3, #2: –",False,,0.0,,,,0.0,,1,2868,0.000435,1603.6,0.0,0
+gold-011,Cross-year table,cross_year_table,multi,numeric,system_b,hardest,5.0,0.5,0.5,0.0,0.2,"#1: 5, #2: –",False,,0.0,,,,0.0,,1,1186,0.000182,5525.5,0.0,0
+gold-011,Cross-year table,cross_year_table,multi,numeric,system_c_v1,hardest,13.0,0.0,0.5,0.0,0.16666666666666666,"#1: 6, #2: –",False,,0.0,1.0,1.0,1.0,1.0,0.0,3,12460,0.0498375,23757.3,0.0,2
+gold-011,Cross-year table,cross_year_table,multi,numeric,system_c_v2,hardest,8.0,0.0,0.5,0.0,0.125,"#1: 8, #2: –",False,,0.0,,,,0.0,0.0,1,6306,0.0230275,9703.9,0.0,0
+gold-012,Cross-year table,cross_year_table,multi,numeric,system_a,,8.0,1.0,1.0,1.0,0.8666666666666667,"#1: 1, #2: 1, #3: 1, #4: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1451,0.00028,3316.1,1.0,2
+gold-012,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1, #3: 1, #4: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1394,0.000267,6932.0,1.0,2
+gold-012,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.95,"#1: 1, #2: 3, #3: 1, #4: 3",False,,0.0,1.0,1.0,1.0,1.0,0.5,1,6282,0.02448,10927.3,0.0,2
+gold-012,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,1.0,1.0,1.0,0.5249999999999999,"#1: 3, #2: 5, #3: 3, #4: 5",True,,0.0,1.0,1.0,1.0,1.0,0.8,1,7614,0.028185,10921.0,1.0,2
+gold-013,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,0.6944444444444444,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1961,0.000346,2239.9,1.0,2
+gold-013,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.95,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1480,0.000265,6956.1,1.0,2
+gold-013,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,9.0,0.5,1.0,1.0,0.6428571428571428,"#1: 1, #2: 7",True,,1.0,0.0,0.0,0.0,1.0,0.0,3,10565,0.0411625,22504.0,1.0,2
+gold-013,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.5,0.5,0.0,0.3333333333333333,"#1: 3, #2: –",True,,1.0,0.0,0.0,0.0,1.0,0.0,1,4404,0.0159725,7672.5,1.0,2
+gold-014,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,0.5,0.5,0.0,0.625,"#1: 1, #2: –",False,,0.0,1.0,1.0,1.0,1.0,,1,2012,0.000358,2821.4,0.0,1
+gold-014,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,,1,1213,0.000206,5785.0,1.0,2
+gold-014,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,10.0,0.5,1.0,1.0,0.5277777777777778,"#1: 1, #2: 9",True,,1.0,1.0,1.0,1.0,1.0,0.0,2,9084,0.03261,14281.2,1.0,2
+gold-014,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.5,0.5,0.0,0.3333333333333333,"#1: 3, #2: –",False,,0.0,1.0,1.0,1.0,1.0,0.0,1,6718,0.0253575,9989.9,0.0,1
+gold-015,Cross-year table,cross_year_table,multi,numeric,system_a,contrast,10.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",False,,0.0,,,,0.0,,1,1859,0.000283,1535.6,0.0,0
+gold-015,Cross-year table,cross_year_table,multi,numeric,system_b,contrast,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,866,0.000134,6041.6,0.0,0
+gold-015,Cross-year table,cross_year_table,multi,numeric,system_c_v1,contrast,6.0,0.5,1.0,1.0,0.41666666666666663,"#1: 2, #2: 6",True,,0.0,1.0,1.0,1.0,1.0,0.0,1,3902,0.01488,7265.9,1.0,2
+gold-015,Cross-year table,cross_year_table,multi,numeric,system_c_v2,contrast,8.0,0.5,1.0,1.0,0.25,"#1: 4, #2: 8",True,,0.0,1.0,1.0,1.0,1.0,0.0,1,4672,0.01718,7310.1,1.0,2
+gold-016,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,2155,0.000328,1789.6,0.0,0
+gold-016,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.4777777777777777,"#1: 3, #2: 3",True,,1.0,1.0,1.0,1.0,1.0,,1,1282,0.000229,7268.4,1.0,2
+gold-016,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.2,1,6742,0.0232675,9043.1,1.0,2
+gold-016,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,1.0,1.0,1.0,0.4777777777777777,"#1: 3, #2: 3",True,,1.0,1.0,1.0,1.0,1.0,0.5,1,7718,0.0254325,10630.8,1.0,2
+gold-017,Single-hop text,text,single,qualitative,system_a,,10.0,0.0,1.0,1.0,0.1111111111111111,#1: 9,,0.6666666666666666,,0.0,0.0,0.0,1.0,,1,1605,0.000258,1588.8,0.6666666666666666,1
+gold-017,Single-hop text,text,single,qualitative,system_b,,5.0,1.0,1.0,1.0,0.9166666666666666,#1: 1,,0.6666666666666666,,0.5,1.0,0.6666666666666666,1.0,,1,1411,0.000231,9527.6,0.6666666666666666,2
+gold-017,Single-hop text,text,single,qualitative,system_c_v1,,6.0,1.0,1.0,1.0,0.5888888888888889,#1: 2,,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,1,5155,0.0179125,7855.4,1.0,2
+gold-017,Single-hop text,text,single,qualitative,system_c_v2,,7.0,1.0,1.0,1.0,0.4444444444444444,#1: 3,,0.6666666666666666,,0.5,1.0,0.6666666666666666,1.0,0.0,1,5891,0.02084,9292.9,0.6666666666666666,2
+gold-018,Single-hop text,text,single,qualitative,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,0.5,1.0,0.6666666666666666,1.0,,1,2044,0.000357,2628.3,1.0,2
+gold-018,Single-hop text,text,single,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,0.5,1.0,0.6666666666666666,1.0,,1,1566,0.000272,6041.6,1.0,2
+gold-018,Single-hop text,text,single,qualitative,system_c_v1,,9.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,0.3333333333333333,1.0,0.5,1.0,0.0,2,10630,0.0401625,18914.4,1.0,4
+gold-018,Single-hop text,text,single,qualitative,system_c_v2,,7.0,1.0,1.0,1.0,0.5,"#1: 2, #2: 2",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,1,6898,0.0263575,12160.0,1.0,2
+gold-019,Multi-hop text (one filing),text,multi,qualitative,system_a,contrast,10.0,0.5,1.0,1.0,0.7996031746031745,"#1: 1, #2: 7",True,1.0,,0.5,1.0,0.6666666666666666,1.0,,1,2387,0.000433,3432.1,1.0,3
+gold-019,Multi-hop text (one filing),text,multi,qualitative,system_b,contrast,5.0,0.5,0.5,0.0,0.8666666666666667,"#1: 1, #2: –",True,0.6666666666666666,,0.5,1.0,0.6666666666666666,1.0,,1,1391,0.000274,7172.0,0.6666666666666666,2
+gold-019,Multi-hop text (one filing),text,multi,qualitative,system_c_v1,contrast,12.0,0.5,1.0,1.0,0.8541666666666666,"#1: 1, #2: 8",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,3,23733,0.0889825,36000.2,1.0,6
+gold-019,Multi-hop text (one filing),text,multi,qualitative,system_c_v2,contrast,13.0,0.5,1.0,1.0,0.8477564102564102,"#1: 1, #2: 8",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,3,14877,0.0577675,29219.6,1.0,3
+gold-020,Multi-hop text (one filing),text,multi,qualitative,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1, #3: 1",False,1.0,,1.0,1.0,1.0,1.0,,1,2140,0.000347,1717.7,1.0,2
+gold-020,Multi-hop text (one filing),text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,0.8666666666666667,"#1: 1, #2: 1, #3: 1",False,0.6666666666666666,,1.0,1.0,1.0,1.0,,1,930,0.000154,5767.0,0.6666666666666666,1
+gold-020,Multi-hop text (one filing),text,multi,qualitative,system_c_v1,,10.0,1.0,1.0,1.0,0.6428571428571428,"#1: 1, #2: 1, #3: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,11898,0.043295,21451.4,1.0,2
+gold-020,Multi-hop text (one filing),text,multi,qualitative,system_c_v2,,14.0,1.0,1.0,1.0,0.6388888888888888,"#1: 1, #2: 1, #3: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,14410,0.04925,26212.4,1.0,2
+gold-021,Single-hop text,text,single,qualitative,system_a,,10.0,1.0,1.0,1.0,1.0,#1: 1,,1.0,,1.0,1.0,1.0,1.0,,1,2361,0.000385,1380.8,1.0,2
+gold-021,Single-hop text,text,single,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,#1: 1,,1.0,,1.0,1.0,1.0,1.0,,1,1520,0.000259,6371.4,1.0,2
+gold-021,Single-hop text,text,single,qualitative,system_c_v1,,9.0,1.0,1.0,1.0,0.9166666666666666,#1: 1,,1.0,,1.0,1.0,1.0,1.0,0.0,2,8524,0.0329475,15350.6,1.0,2
+gold-021,Single-hop text,text,single,qualitative,system_c_v2,,7.0,1.0,1.0,1.0,0.95,#1: 1,,1.0,,1.0,1.0,1.0,1.0,0.0,2,7809,0.03021,15532.9,1.0,2
+gold-022,Single-hop text,text,single,qualitative,system_a,contrast,10.0,0.0,0.0,0.0,0.0,#1: –,False,0.0,,,,,0.0,,1,2711,0.000411,1427.2,0.0,0
+gold-022,Single-hop text,text,single,qualitative,system_b,contrast,5.0,1.0,1.0,1.0,1.0,#1: 1,True,1.0,,0.5,1.0,0.6666666666666666,1.0,,1,1311,0.000219,6038.5,1.0,2
+gold-022,Single-hop text,text,single,qualitative,system_c_v1,contrast,6.0,1.0,1.0,1.0,1.0,#1: 1,True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,1,5453,0.02037,9029.2,1.0,2
+gold-022,Single-hop text,text,single,qualitative,system_c_v2,contrast,6.0,1.0,1.0,1.0,1.0,#1: 1,True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,1,5895,0.0213375,9703.4,1.0,2
+gold-023,Multi-hop text (one filing),text,multi,qualitative,system_a,hardest,10.0,1.0,1.0,1.0,0.4583333333333333,"#1: 2, #2: 4",,1.0,,1.0,1.0,1.0,1.0,,1,2456,0.000532,5381.9,1.0,5
+gold-023,Multi-hop text (one filing),text,multi,qualitative,system_b,hardest,5.0,1.0,1.0,1.0,0.41666666666666663,"#1: 3, #2: 4",,1.0,,1.0,1.0,1.0,1.0,,1,1460,0.000359,8896.1,1.0,4
+gold-023,Multi-hop text (one filing),text,multi,qualitative,system_c_v1,hardest,8.0,0.5,1.0,1.0,0.39285714285714285,"#1: 2, #2: 7",,0.6666666666666666,,1.0,1.0,1.0,1.0,0.0,3,13865,0.0579125,31729.6,0.6666666666666666,4
+gold-023,Multi-hop text (one filing),text,multi,qualitative,system_c_v2,hardest,9.0,0.5,0.5,0.0,0.5,"#1: 2, #2: –",,0.6666666666666666,,1.0,1.0,1.0,1.0,0.0,3,13853,0.058595,35238.6,0.6666666666666666,3
+gold-024,Multi-hop text (one filing),text,multi,qualitative,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2",,1.0,,1.0,1.0,1.0,1.0,,1,2318,0.000406,2678.4,1.0,2
+gold-024,Multi-hop text (one filing),text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2",,1.0,,1.0,1.0,1.0,1.0,,1,1222,0.000223,14946.6,1.0,2
+gold-024,Multi-hop text (one filing),text,multi,qualitative,system_c_v1,,11.0,0.5,1.0,1.0,0.26666666666666666,"#1: 3, #2: 10",,1.0,,1.0,1.0,1.0,1.0,0.0,3,23929,0.081985,39884.0,1.0,2
+gold-024,Multi-hop text (one filing),text,multi,qualitative,system_c_v2,,13.0,0.5,1.0,1.0,0.25757575757575757,"#1: 3, #2: 11",,1.0,,1.0,1.0,1.0,1.0,0.0,3,25511,0.086665,31612.4,1.0,2
+gold-025,Cross-year text,cross_year_text,multi,qualitative,system_a,,4.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1, #3: 1, #4: 1",True,1.0,,1.0,1.0,1.0,1.0,,1,1063,0.000296,4758.6,1.0,2
+gold-025,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1, #3: 1, #4: 1",True,1.0,,1.0,1.0,1.0,1.0,,1,1475,0.000333,8036.3,1.0,2
+gold-025,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,14.0,1.0,1.0,1.0,0.8666666666666667,"#1: 1, #2: 2, #3: 1, #4: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,15012,0.0602425,30282.8,1.0,2
+gold-025,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,12.0,1.0,1.0,1.0,0.8666666666666667,"#1: 1, #2: 2, #3: 1, #4: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,15018,0.06077,33384.6,1.0,2
+gold-026,Cross-year text,cross_year_text,multi,qualitative,system_a,,9.0,1.0,1.0,1.0,0.75,"#1: 1, #2: 1",True,0.6666666666666666,,1.0,1.0,1.0,1.0,,1,2262,0.000424,3447.5,0.6666666666666666,2
+gold-026,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,0.8333333333333333,"#1: 1, #2: 1",True,0.6666666666666666,,1.0,1.0,1.0,1.0,,1,1166,0.000241,9251.5,0.6666666666666666,2
+gold-026,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,8.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,19013,0.077195,40779.6,1.0,2
+gold-026,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,17.0,0.0,1.0,1.0,0.10833333333333334,"#1: 12, #2: 12",True,0.6666666666666666,,1.0,1.0,1.0,1.0,0.0,3,17601,0.0661275,32327.5,0.6666666666666666,2
+gold-027,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,0.5,0.5,0.0,0.625,"#1: –, #2: 1",True,0.75,,0.3333333333333333,1.0,0.5,1.0,,1,1940,0.000396,4373.9,0.75,4
+gold-027,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,0.5,0.5,0.0,0.8333333333333333,"#1: –, #2: 1",True,0.75,,0.3333333333333333,1.0,0.5,1.0,,1,1490,0.000282,6540.0,0.75,3
+gold-027,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,9.0,1.0,1.0,1.0,1.0,"#1: 3, #2: 1",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,3,24206,0.0876275,35417.7,1.0,4
+gold-027,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,10.0,1.0,1.0,1.0,1.0,"#1: 3, #2: 1",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,2,11883,0.04362,18220.2,1.0,4
+gold-028,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,0.0,1.0,1.0,0.1,"#1: 10, #2: 10",True,0.75,,1.0,1.0,1.0,1.0,,1,1964,0.000379,4801.9,0.75,2
+gold-028,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,0.325,"#1: 4, #2: 4",False,0.0,,,,,0.0,,1,1299,0.000199,5702.1,0.0,0
+gold-028,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,13.0,1.0,1.0,1.0,0.8875,"#1: 5, #2: 1",True,0.5,,1.0,1.0,1.0,1.0,0.0,3,19871,0.08554,45425.6,0.5,4
+gold-028,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,13.0,1.0,1.0,1.0,0.8009090909090908,"#1: 5, #2: 1",True,0.5,,1.0,1.0,1.0,1.0,0.0,3,19562,0.0835175,49646.9,0.5,4
+gold-029,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",True,0.3333333333333333,1.0,1.0,0.5,0.6666666666666666,1.0,,1,2683,0.00048,3369.6,0.6666666666666666,2
+gold-029,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",False,0.3333333333333333,0.0,1.0,0.5,0.6666666666666666,1.0,,1,1544,0.000297,10819.8,0.16666666666666666,2
+gold-029,Table + text (one filing),table_text,multi,mixed,system_c_v1,,9.0,0.5,0.5,0.0,0.5,"#1: 2, #2: –",False,0.3333333333333333,0.0,1.0,0.5,0.6666666666666666,1.0,0.0,3,21484,0.0783475,34976.3,0.16666666666666666,3
+gold-029,Table + text (one filing),table_text,multi,mixed,system_c_v2,,7.0,0.5,0.5,0.0,0.3333333333333333,"#1: 3, #2: –",False,0.3333333333333333,0.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,8364,0.0292975,12361.7,0.16666666666666666,1
+gold-030,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.5,0.5,0.0,0.5,"#1: 2, #2: –",True,0.6666666666666666,1.0,1.0,0.5,0.6666666666666666,1.0,,1,2312,0.000404,2357.3,0.8333333333333333,1
+gold-030,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 2, #2: 1",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,1333,0.000267,7602.3,1.0,2
+gold-030,Table + text (one filing),table_text,multi,mixed,system_c_v1,,9.0,1.0,1.0,1.0,0.425,"#1: 2, #2: 5",True,0.6666666666666666,1.0,1.0,1.0,1.0,1.0,1.0,3,15615,0.0597,30634.0,0.8333333333333333,2
+gold-030,Table + text (one filing),table_text,multi,mixed,system_c_v2,,7.0,0.5,1.0,1.0,0.3333333333333333,"#1: 3, #2: 6",True,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1,8960,0.0346875,16449.4,1.0,2
+gold-031,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.6666666666666666,1.0,1.0,0.6192857142857143,"#1: 8, #2: 1, #3: 1",True,1.0,1.0,1.0,0.5,0.6666666666666666,1.0,,1,2480,0.00042,2115.1,1.0,2
+gold-031,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.6666666666666666,0.6666666666666666,0.0,0.6388888888888888,"#1: –, #2: 2, #3: 2",False,0.0,0.0,,,,0.0,,1,1252,0.000192,5685.4,0.0,0
+gold-031,Table + text (one filing),table_text,multi,mixed,system_c_v1,,13.0,0.6666666666666666,1.0,1.0,0.75,"#1: 10, #2: 1, #3: 1",True,1.0,1.0,1.0,0.5,0.6666666666666666,1.0,1.0,3,18594,0.0663725,27381.0,1.0,2
+gold-031,Table + text (one filing),table_text,multi,mixed,system_c_v2,,7.0,0.6666666666666666,0.6666666666666666,0.0,0.5555555555555555,"#1: –, #2: 2, #3: 2",False,0.6,0.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,11788,0.04277,16461.8,0.3,3
+gold-032,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.5,0.5,0.0,0.3333333333333333,"#1: 3, #2: –",True,0.3333333333333333,1.0,0.5,0.5,0.5,1.0,,1,1831,0.000349,3333.4,0.6666666666666666,4
+gold-032,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,0.0,0.0,,,,0.0,,1,1286,0.000197,5530.7,0.0,0
+gold-032,Table + text (one filing),table_text,multi,mixed,system_c_v1,,6.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",True,0.3333333333333333,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,6042,0.0209925,8553.1,0.6666666666666666,1
+gold-032,Table + text (one filing),table_text,multi,mixed,system_c_v2,,7.0,0.5,0.5,0.0,0.5,"#1: 2, #2: –",True,0.3333333333333333,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,6553,0.02227,9624.4,0.6666666666666666,1
+gold-033,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.6666666666666666,0.6666666666666666,0.0,1.0,"#1: 2, #2: 1, #3: –",True,0.3333333333333333,1.0,1.0,0.5,0.6666666666666666,1.0,,1,2593,0.000427,1916.8,0.6666666666666666,2
+gold-033,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.6666666666666666,0.6666666666666666,0.0,0.45,"#1: –, #2: 5, #3: 2",False,0.0,0.0,,,,0.0,,1,1381,0.000212,6125.5,0.0,0
+gold-033,Table + text (one filing),table_text,multi,mixed,system_c_v1,,12.0,0.6666666666666666,1.0,1.0,0.6984126984126983,"#1: 3, #2: 1, #3: 7",True,0.8888888888888888,0.0,1.0,1.0,1.0,1.0,0.0,2,10502,0.0373675,16884.6,0.9444444444444444,3
+gold-033,Table + text (one filing),table_text,multi,mixed,system_c_v2,,17.0,0.6666666666666666,0.6666666666666666,0.0,0.5833333333333333,"#1: 3, #2: 2, #3: –",True,0.2222222222222222,0.0,1.0,1.0,1.0,1.0,0.0,3,14796,0.05569,24564.5,0.6111111111111112,3
+gold-034,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",True,0.6666666666666666,1.0,1.0,0.5,0.6666666666666666,1.0,,1,2110,0.000402,3239.2,0.8333333333333333,2
+gold-034,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.5,0.5,0.0,1.0,"#1: –, #2: 1",False,0.0,0.0,,,,0.0,,1,1360,0.000208,5988.3,0.0,0
+gold-034,Table + text (one filing),table_text,multi,mixed,system_c_v1,,12.0,0.5,1.0,1.0,0.6,"#1: 1, #2: 10",True,1.0,1.0,1.0,1.0,1.0,1.0,0.0,2,10606,0.040515,19685.5,1.0,4
+gold-034,Table + text (one filing),table_text,multi,mixed,system_c_v2,,13.0,0.5,0.5,0.0,0.5,"#1: 2, #2: –",True,0.6666666666666666,1.0,1.0,1.0,1.0,1.0,0.0,2,10954,0.0415475,19886.1,0.8333333333333333,4
+gold-035,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.0,1.0,1.0,0.23095238095238094,"#1: 7, #2: 8",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,2021,0.000381,3271.3,1.0,2
+gold-035,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.5,0.5,0.0,0.8333333333333333,"#1: –, #2: 1",False,0.0,0.0,,,,0.0,,1,1299,0.000199,5741.4,0.0,0
+gold-035,Table + text (one filing),table_text,multi,mixed,system_c_v1,,17.0,0.5,1.0,1.0,0.29914529914529914,"#1: 2, #2: 12",True,1.0,1.0,1.0,1.0,1.0,1.0,0.0,3,14617,0.05293,25533.3,1.0,2
+gold-035,Table + text (one filing),table_text,multi,mixed,system_c_v2,,16.0,0.5,1.0,1.0,0.3055555555555555,"#1: 3, #2: 8",True,1.0,1.0,1.0,1.0,1.0,1.0,0.0,3,14252,0.04988,23423.4,1.0,2
+gold-036,Table + text (one filing),table_text,multi,mixed,system_a,contrast,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,0.0,0.0,,,,0.0,,1,1492,0.000228,1326.0,0.0,0
+gold-036,Table + text (one filing),table_text,multi,mixed,system_b,contrast,5.0,0.5,0.5,0.0,1.0,"#1: –, #2: 1",False,0.0,0.0,,,,0.0,,1,1538,0.000235,5419.7,0.0,0
+gold-036,Table + text (one filing),table_text,multi,mixed,system_c_v1,contrast,13.0,0.0,1.0,1.0,0.23722943722943723,"#1: 7, #2: 10",True,1.0,1.0,0.6666666666666666,1.0,0.8,1.0,0.0,3,13465,0.048475,22572.7,1.0,4
+gold-036,Table + text (one filing),table_text,multi,mixed,system_c_v2,contrast,10.0,0.0,0.5,0.0,0.14285714285714285,"#1: 7, #2: –",True,0.6666666666666666,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,2,10330,0.03615,16481.0,0.8333333333333333,1
+gold-037,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.0,0.5,0.0,0.24206349206349206,"#1: –, #2: 7",True,1.0,0.0,0.3333333333333333,1.0,0.5,1.0,,1,2602,0.000551,5728.1,1.0,6
+gold-037,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,0.0,0.0,,,,0.0,,1,1322,0.000203,5266.7,0.0,0
+gold-037,Table + text (one filing),table_text,multi,mixed,system_c_v1,,8.0,0.0,0.5,0.0,0.14285714285714285,"#1: 7, #2: –",True,0.25,1.0,0.0,0.0,0.0,1.0,0.0,3,16750,0.0670625,37686.4,0.625,3
+gold-037,Table + text (one filing),table_text,multi,mixed,system_c_v2,,7.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,0.0,0.0,0.5,1.0,0.6666666666666666,1.0,0.0,1,7623,0.03197,15117.2,0.0,4
+gold-038,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.0,0.3333333333333333,0.0,0.125,"#1: 8, #2: –, #3: –",True,0.5,1.0,1.0,0.5,0.6666666666666666,1.0,,1,1821,0.000333,2337.4,0.75,4
+gold-038,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –, #3: –",True,0.25,1.0,1.0,0.5,0.6666666666666666,1.0,,1,1153,0.00021,6328.0,0.625,2
+gold-038,Table + text (one filing),table_text,multi,mixed,system_c_v1,,6.0,0.0,0.0,0.0,0.0,"#1: –, #2: –, #3: –",True,0.25,1.0,0.5,0.5,0.5,1.0,0.0,1,4645,0.018375,10265.8,0.625,4
+gold-038,Table + text (one filing),table_text,multi,mixed,system_c_v2,,7.0,0.0,0.0,0.0,0.0,"#1: –, #2: –, #3: –",True,0.25,1.0,0.5,0.5,0.5,1.0,0.0,1,4713,0.019495,11000.1,0.625,4
+gold-039,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.3333333333333333,1.0,1.0,0.6845238095238095,"#1: 6, #2: 7, #3: 1",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,2914,0.000507,3272.1,1.0,3
+gold-039,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 2, #2: 3, #3: 1",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,1652,0.0003,6762.2,1.0,3
+gold-039,Table + text (one filing),table_text,multi,mixed,system_c_v1,,10.0,1.0,1.0,1.0,0.5791666666666666,"#1: 2, #2: 3, #3: 4",True,0.6666666666666666,1.0,1.0,1.0,1.0,1.0,0.0,3,20403,0.0715575,25760.7,0.8333333333333333,3
+gold-039,Table + text (one filing),table_text,multi,mixed,system_c_v2,,13.0,1.0,1.0,1.0,0.45833333333333326,"#1: 3, #2: 4, #3: 5",True,0.6666666666666666,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,3,17106,0.0610025,26702.7,0.8333333333333333,2
+gold-040,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.3333333333333333,0.3333333333333333,0.0,0.45,"#1: 2, #2: –, #3: –",True,0.6666666666666666,1.0,1.0,1.0,1.0,1.0,,1,2031,0.000366,2397.0,0.8333333333333333,3
+gold-040,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.6666666666666666,0.6666666666666666,0.0,1.0,"#1: –, #2: 1, #3: 1",True,0.6666666666666666,1.0,1.0,1.0,1.0,1.0,,1,1472,0.000259,6847.7,0.8333333333333333,2
+gold-040,Table + text (one filing),table_text,multi,mixed,system_c_v1,,12.0,0.3333333333333333,1.0,1.0,0.30357142857142855,"#1: 4, #2: 7, #3: 7",True,0.6666666666666666,1.0,1.0,1.0,1.0,1.0,0.0,2,9018,0.031895,17754.3,0.8333333333333333,3
+gold-040,Table + text (one filing),table_text,multi,mixed,system_c_v2,,13.0,0.3333333333333333,1.0,1.0,0.2611111111111111,"#1: 5, #2: 8, #3: 8",True,0.6666666666666666,1.0,1.0,1.0,1.0,1.0,0.0,2,9144,0.0327475,14899.5,0.8333333333333333,2
+gold-041,Single-hop table,table,single,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,,1,2227,0.00035,1806.3,1.0,1
+gold-041,Single-hop table,table,single,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,,1,1331,0.000214,6550.0,1.0,1
+gold-041,Single-hop table,table,single,numeric,system_c_v1,,6.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4294,0.015585,7373.6,1.0,1
+gold-041,Single-hop table,table,single,numeric,system_c_v2,,6.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4294,0.0155975,7332.9,1.0,1
+gold-042,Multi-hop table (one filing),table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,2342,0.000393,1909.5,1.0,1
+gold-042,Multi-hop table (one filing),table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1376,0.000237,6854.6,1.0,1
+gold-042,Multi-hop table (one filing),table,multi,numeric,system_c_v1,,8.0,1.0,1.0,1.0,0.5,"#1: 2, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,0.0,3,10338,0.03912,20146.2,1.0,1
+gold-042,Multi-hop table (one filing),table,multi,numeric,system_c_v2,,8.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,3,10292,0.03888,21041.9,1.0,1
+gold-043,Single-hop table,table,single,numeric,system_a,,10.0,1.0,1.0,1.0,0.9111111111111111,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,,1,1890,0.000326,2151.9,1.0,2
+gold-043,Single-hop table,table,single,numeric,system_b,,5.0,1.0,1.0,1.0,0.8333333333333333,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,,1,1166,0.000208,6898.7,1.0,2
+gold-043,Single-hop table,table,single,numeric,system_c_v1,,6.0,1.0,1.0,1.0,1.0,#1: 1,True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4345,0.015075,5713.8,1.0,2
+gold-043,Single-hop table,table,single,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.7100000000000001,#1: 2,True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4708,0.015745,6452.7,1.0,1
+gold-044,Multi-hop table (one filing),table,multi,numeric,system_a,,10.0,0.0,0.5,0.0,0.16666666666666666,"#1: –, #2: 6",True,,1.0,0.5,1.0,0.6666666666666666,1.0,,1,2522,0.000422,2670.6,1.0,2
+gold-044,Multi-hop table (one filing),table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.41666666666666663,"#1: 4, #2: 3",True,,1.0,0.5,1.0,0.6666666666666666,1.0,,1,1923,0.00033,6758.0,1.0,2
+gold-044,Multi-hop table (one filing),table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.5,"#1: 4, #2: 2",True,,1.0,0.5,1.0,0.6666666666666666,1.0,0.0,1,4904,0.0163225,7161.2,1.0,2
+gold-044,Multi-hop table (one filing),table,multi,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.3666666666666667,"#1: 5, #2: 3",True,,1.0,0.5,1.0,0.6666666666666666,1.0,0.0,1,5253,0.01712,5609.5,1.0,2
+gold-045,Single-hop table,table,single,numeric,system_a,hardest,10.0,0.0,0.0,0.0,0.0,#1: –,False,,0.0,1.0,1.0,1.0,1.0,,1,2858,0.000486,2902.3,0.0,1
+gold-045,Single-hop table,table,single,numeric,system_b,hardest,5.0,0.0,0.0,0.0,0.0,#1: –,False,,0.0,,,,0.0,,1,1364,0.000209,5933.0,0.0,0
+gold-045,Single-hop table,table,single,numeric,system_c_v1,hardest,9.0,0.0,1.0,1.0,0.14285714285714285,#1: 7,True,,1.0,1.0,1.0,1.0,1.0,0.0,3,12674,0.045585,26615.2,1.0,1
+gold-045,Single-hop table,table,single,numeric,system_c_v2,hardest,9.0,0.0,1.0,1.0,0.1111111111111111,#1: 9,True,,1.0,1.0,1.0,1.0,1.0,0.0,3,12481,0.0454025,18125.6,1.0,2
+gold-046,Multi-hop table (one filing),table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,0.9166666666666666,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,3397,0.000564,2245.6,1.0,1
+gold-046,Multi-hop table (one filing),table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.6791666666666667,"#1: 2, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,,1,1703,0.000308,7460.8,1.0,1
+gold-046,Multi-hop table (one filing),table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.8875,"#1: 2, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,1.0,1,8149,0.0260475,12596.3,1.0,2
+gold-046,Multi-hop table (one filing),table,multi,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.6083333333333333,"#1: 3, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,5379,0.0176725,6932.8,1.0,1
+gold-047,Single-hop table,table,single,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,0.0,1.0,1.0,1.0,1.0,,1,2600,0.000429,1970.8,1.0,1
+gold-047,Single-hop table,table,single,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,0.0,1.0,1.0,1.0,1.0,,1,981,0.000181,6858.2,1.0,1
+gold-047,Single-hop table,table,single,numeric,system_c_v1,,8.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,0.0,1.0,1.0,1.0,1.0,0.0,3,10782,0.0408175,19518.5,1.0,1
+gold-047,Single-hop table,table,single,numeric,system_c_v2,,8.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,0.0,1.0,1.0,1.0,1.0,0.0,3,11084,0.0416475,21248.8,1.0,1
+gold-048,Multi-hop table (one filing),table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,0.5833333333333333,"#1: 3, #2: 2",True,,0.0,1.0,1.0,1.0,1.0,,1,2293,0.000373,1945.5,1.0,1
+gold-048,Multi-hop table (one filing),table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.5,"#1: 2, #2: 2",True,,0.0,1.0,1.0,1.0,1.0,,1,1293,0.000224,6417.0,1.0,1
+gold-048,Multi-hop table (one filing),table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.41666666666666663,"#1: 4, #2: 3",True,,0.0,1.0,1.0,1.0,1.0,0.0,1,4192,0.014605,6750.8,1.0,1
+gold-048,Multi-hop table (one filing),table,multi,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.325,"#1: 4, #2: 4",True,,0.0,1.0,1.0,1.0,1.0,0.0,1,4555,0.0153125,6755.9,1.0,1
+gold-049,Single-hop table,table,single,numeric,system_a,,10.0,0.0,1.0,1.0,0.16666666666666666,#1: 6,True,,1.0,1.0,1.0,1.0,1.0,,1,2251,0.000367,1587.5,1.0,1
+gold-049,Single-hop table,table,single,numeric,system_b,,5.0,1.0,1.0,1.0,0.25,#1: 4,True,,1.0,1.0,1.0,1.0,1.0,,1,1276,0.000224,6500.4,1.0,1
+gold-049,Single-hop table,table,single,numeric,system_c_v1,,6.0,0.0,1.0,1.0,0.16666666666666666,#1: 6,True,,1.0,1.0,1.0,1.0,1.0,1.0,1,6434,0.0206475,9441.6,1.0,1
+gold-049,Single-hop table,table,single,numeric,system_c_v2,,7.0,0.0,1.0,1.0,0.14285714285714285,#1: 7,True,,1.0,1.0,1.0,1.0,1.0,1.0,1,7006,0.022865,8928.3,1.0,1
+gold-050,Multi-hop table (one filing),table,multi,numeric,system_a,,10.0,0.0,1.0,1.0,0.18333333333333335,"#1: 6, #2: 6",True,,1.0,0.5,1.0,0.6666666666666666,1.0,,1,2085,0.000342,2593.4,1.0,2
+gold-050,Multi-hop table (one filing),table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.75,"#1: 1, #2: 4",True,,1.0,0.5,1.0,0.6666666666666666,1.0,,1,1590,0.000271,6877.0,1.0,2
+gold-050,Multi-hop table (one filing),table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.5833333333333333,"#1: 2, #2: 2",True,,1.0,0.0,0.0,0.0,1.0,0.0,1,4543,0.01457,5397.9,1.0,1
+gold-050,Multi-hop table (one filing),table,multi,numeric,system_c_v2,,7.0,1.0,1.0,1.0,0.42063492063492064,"#1: 3, #2: 3",True,,1.0,0.0,0.0,0.0,1.0,0.0,1,5088,0.0157075,5901.4,1.0,1
+gold-051,Single-hop text,text,single,qualitative,system_a,,10.0,1.0,1.0,1.0,0.3333333333333333,#1: 3,,1.0,,1.0,1.0,1.0,1.0,,1,2249,0.000366,1649.6,1.0,1
+gold-051,Single-hop text,text,single,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,#1: 1,,1.0,,1.0,1.0,1.0,1.0,,1,1194,0.000209,6029.5,1.0,1
+gold-051,Single-hop text,text,single,qualitative,system_c_v1,,10.0,1.0,1.0,1.0,0.5,#1: 2,,1.0,,1.0,1.0,1.0,1.0,0.0,3,12462,0.042905,20383.3,1.0,1
+gold-051,Single-hop text,text,single,qualitative,system_c_v2,,10.0,1.0,1.0,1.0,0.5,#1: 2,,1.0,,1.0,1.0,1.0,1.0,0.0,3,12478,0.04297,20508.7,1.0,1
+gold-052,Multi-hop text (one filing),text,multi,qualitative,system_a,,10.0,1.0,1.0,1.0,0.9444444444444445,"#1: 3, #2: 1, #3: 1",,1.0,,,,,1.0,,1,2822,0.000524,3632.2,1.0,3
+gold-052,Multi-hop text (one filing),text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 2, #2: 1, #3: 1",,1.0,,1.0,1.0,1.0,1.0,,1,1610,0.000344,8417.8,1.0,5
+gold-052,Multi-hop text (one filing),text,multi,qualitative,system_c_v1,,9.0,0.6666666666666666,1.0,1.0,0.6716269841269842,"#1: 3, #2: 1, #3: 7",,1.0,,1.0,1.0,1.0,1.0,0.0,2,12490,0.047675,21577.6,1.0,7
+gold-052,Multi-hop text (one filing),text,multi,qualitative,system_c_v2,,9.0,0.6666666666666666,1.0,1.0,0.6716269841269842,"#1: 3, #2: 1, #3: 8",,1.0,,1.0,1.0,1.0,1.0,0.0,2,12589,0.048585,23211.0,1.0,7
+gold-053,Single-hop text,text,single,qualitative,system_a,,10.0,0.0,1.0,1.0,0.14285714285714285,#1: 7,,1.0,,1.0,1.0,1.0,1.0,,1,1700,0.000333,3454.3,1.0,2
+gold-053,Single-hop text,text,single,qualitative,system_b,,5.0,1.0,1.0,1.0,0.8666666666666667,#1: 1,,1.0,,1.0,1.0,1.0,1.0,,1,1414,0.000258,6722.3,1.0,3
+gold-053,Single-hop text,text,single,qualitative,system_c_v1,,6.0,1.0,1.0,1.0,1.0,#1: 1,,1.0,,1.0,1.0,1.0,1.0,0.0,1,6275,0.0233625,10311.1,1.0,2
+gold-053,Single-hop text,text,single,qualitative,system_c_v2,,6.0,1.0,1.0,1.0,1.0,#1: 1,,1.0,,1.0,1.0,1.0,1.0,0.0,1,7050,0.0270125,10833.7,1.0,2
+gold-054,Multi-hop text (one filing),text,multi,qualitative,system_a,,3.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2",,1.0,,1.0,1.0,1.0,1.0,,1,1136,0.000224,2974.9,1.0,2
+gold-054,Multi-hop text (one filing),text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2",,1.0,,1.0,1.0,1.0,1.0,,1,1468,0.000266,7249.6,1.0,2
+gold-054,Multi-hop text (one filing),text,multi,qualitative,system_c_v1,,14.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2",,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,3,15652,0.05438,24957.1,1.0,3
+gold-054,Multi-hop text (one filing),text,multi,qualitative,system_c_v2,,10.0,1.0,1.0,1.0,0.5833333333333333,"#1: 2, #2: 3",,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,2,12003,0.0435075,20565.6,1.0,3
+gold-055,Single-hop text,text,single,qualitative,system_a,hardest,10.0,1.0,1.0,1.0,1.0,#1: 1,True,0.6666666666666666,,0.5,1.0,0.6666666666666666,1.0,,1,2059,0.000334,2250.2,0.6666666666666666,2
+gold-055,Single-hop text,text,single,qualitative,system_b,hardest,5.0,1.0,1.0,1.0,1.0,#1: 1,True,0.6666666666666666,,0.5,1.0,0.6666666666666666,1.0,,1,1408,0.000232,5946.7,0.6666666666666666,2
+gold-055,Single-hop text,text,single,qualitative,system_c_v1,hardest,6.0,1.0,1.0,1.0,1.0,#1: 1,True,0.6666666666666666,,1.0,1.0,1.0,1.0,0.0,1,4224,0.01446,6121.4,0.6666666666666666,1
+gold-055,Single-hop text,text,single,qualitative,system_c_v2,hardest,6.0,1.0,1.0,1.0,1.0,#1: 1,True,0.6666666666666666,,1.0,1.0,1.0,1.0,0.0,1,4218,0.01437,6530.4,0.6666666666666666,1
+gold-056,Multi-hop text (one filing),text,multi,qualitative,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 2, #2: 1",,1.0,,0.5,1.0,0.6666666666666666,1.0,,1,2114,0.000395,6955.1,1.0,3
+gold-056,Multi-hop text (one filing),text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 2, #2: 1",,1.0,,0.3333333333333333,1.0,0.5,1.0,,1,1296,0.000262,7988.4,1.0,4
+gold-056,Multi-hop text (one filing),text,multi,qualitative,system_c_v1,,12.0,1.0,1.0,1.0,0.8303571428571428,"#1: 1, #2: 2",,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,3,16534,0.065535,31700.9,1.0,6
+gold-056,Multi-hop text (one filing),text,multi,qualitative,system_c_v2,,16.0,1.0,1.0,1.0,0.7708333333333334,"#1: 1, #2: 2",,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,3,18175,0.070025,32908.8,1.0,6
+gold-057,Single-hop text,text,single,qualitative,system_a,,10.0,1.0,1.0,1.0,0.6666666666666666,"#1: 1, #2: 1",,1.0,,1.0,1.0,1.0,1.0,,1,2215,0.00036,1832.0,1.0,1
+gold-057,Single-hop text,text,single,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",,1.0,,1.0,1.0,1.0,1.0,,1,1230,0.00021,6150.0,1.0,1
+gold-057,Single-hop text,text,single,qualitative,system_c_v1,,11.0,0.0,1.0,1.0,0.1,"#1: 10, #2: 10",,1.0,,1.0,1.0,1.0,1.0,0.0,3,13077,0.0492925,23905.5,1.0,1
+gold-057,Single-hop text,text,single,qualitative,system_c_v2,,14.0,0.0,1.0,1.0,0.09090909090909091,"#1: 11, #2: 11",,1.0,,1.0,1.0,1.0,1.0,0.0,3,14197,0.0505425,21311.0,1.0,1
+gold-058,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.0,0.6666666666666666,0.0,0.1111111111111111,"#1: 9, #2: 9, #3: –",True,0.6666666666666666,0.0,1.0,1.0,1.0,1.0,,1,3216,0.000539,2614.8,0.8333333333333333,2
+gold-058,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –, #3: –",False,0.0,0.0,,,,0.0,,1,1273,0.000195,6760.3,0.0,0
+gold-058,Table + text (one filing),table_text,multi,mixed,system_c_v1,,12.0,0.0,0.0,0.0,0.0,"#1: –, #2: –, #3: –",False,0.6666666666666666,0.0,1.0,0.5,0.6666666666666666,1.0,0.0,3,18075,0.0621125,24941.5,0.3333333333333333,2
+gold-058,Table + text (one filing),table_text,multi,mixed,system_c_v2,,12.0,0.0,0.6666666666666666,0.0,0.1,"#1: 10, #2: 10, #3: –",True,0.6666666666666666,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,3,23256,0.075965,28235.2,0.8333333333333333,1
+gold-059,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.6666666666666666,1.0,1.0,0.7947278911564626,"#1: 1, #2: 1, #3: 8",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,2434,0.000443,3079.6,1.0,2
+gold-059,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,1.0,1.0,1.0,0.9166666666666666,"#1: 2, #2: 1, #3: 1",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,1293,0.000266,7473.8,1.0,2
+gold-059,Table + text (one filing),table_text,multi,mixed,system_c_v1,,12.0,0.6666666666666666,1.0,1.0,1.0,"#1: 1, #2: 5, #3: 7",True,1.0,1.0,1.0,1.0,1.0,1.0,0.0,2,10190,0.0368625,17581.8,1.0,2
+gold-059,Table + text (one filing),table_text,multi,mixed,system_c_v2,,13.0,0.3333333333333333,1.0,1.0,0.7545918367346939,"#1: 2, #2: 6, #3: 8",True,1.0,1.0,1.0,1.0,1.0,1.0,0.0,2,10730,0.038775,17312.5,1.0,2
+gold-060,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,1.0,1.0,1.0,0.6215277777777777,"#1: 1, #2: 1",True,0.5,1.0,1.0,1.0,1.0,1.0,,1,3411,0.000562,2373.1,0.75,1
+gold-060,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,1.0,1.0,1.0,0.8055555555555555,"#1: 1, #2: 1",True,0.5,1.0,1.0,1.0,1.0,1.0,,1,1639,0.000281,6962.4,0.75,1
+gold-060,Table + text (one filing),table_text,multi,mixed,system_c_v1,,10.0,1.0,1.0,1.0,0.5074074074074074,"#1: 1, #2: 1",True,0.5,1.0,1.0,1.0,1.0,1.0,0.0,3,14860,0.053975,24214.6,0.75,1
+gold-060,Table + text (one filing),table_text,multi,mixed,system_c_v2,,11.0,1.0,1.0,1.0,0.3611111111111111,"#1: 2, #2: 2",True,0.5,1.0,1.0,1.0,1.0,1.0,0.0,2,11094,0.038985,18032.8,0.75,1
+gold-061,Table + text (one filing),table_text,multi,mixed,system_a,hardest,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –, #3: –",False,0.5,0.0,0.5,0.5,0.5,1.0,,1,1627,0.000354,4196.1,0.25,3
+gold-061,Table + text (one filing),table_text,multi,mixed,system_b,hardest,5.0,0.6666666666666666,0.6666666666666666,0.0,1.0,"#1: –, #2: 2, #3: 1",False,0.0,0.0,,,,0.0,,1,1269,0.000195,6053.1,0.0,0
+gold-061,Table + text (one filing),table_text,multi,mixed,system_c_v1,hardest,9.0,0.0,0.0,0.0,0.0,"#1: –, #2: –, #3: –",False,0.75,0.0,0.5,1.0,0.6666666666666666,1.0,0.75,3,19337,0.0798675,36782.1,0.375,6
+gold-061,Table + text (one filing),table_text,multi,mixed,system_c_v2,hardest,7.0,0.0,0.0,0.0,0.0,"#1: –, #2: –, #3: –",False,0.5,0.0,0.5,0.5,0.5,1.0,0.0,1,13613,0.0534325,21171.3,0.25,4
+gold-062,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.3333333333333333,0.3333333333333333,0.0,0.31746031746031744,"#1: 3, #2: –, #3: –",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,2525,0.000467,3892.5,1.0,2
+gold-062,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.6666666666666666,0.6666666666666666,0.0,0.5,"#1: –, #2: 2, #3: 2",False,0.0,0.0,,,,0.0,,1,1436,0.00022,5737.0,0.0,0
+gold-062,Table + text (one filing),table_text,multi,mixed,system_c_v1,,6.0,0.3333333333333333,0.3333333333333333,0.0,0.5333333333333333,"#1: 2, #2: –, #3: –",True,0.6666666666666666,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,5452,0.020105,8601.8,0.8333333333333333,1
+gold-062,Table + text (one filing),table_text,multi,mixed,system_c_v2,,7.0,0.3333333333333333,0.3333333333333333,0.0,0.41111111111111115,"#1: 3, #2: –, #3: –",True,0.6666666666666666,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,5972,0.0214925,9079.2,0.8333333333333333,1
+gold-063,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.5,1.0,1.0,0.75,"#1: 6, #2: 6, #3: 1, #4: 1",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,2696,0.000479,3065.9,1.0,2
+gold-063,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.5,0.5,0.0,0.95,"#1: –, #2: –, #3: 1, #4: 1",False,0.0,0.0,,,,0.0,,1,1429,0.000219,5849.7,0.0,0
+gold-063,Table + text (one filing),table_text,multi,mixed,system_c_v1,,12.0,0.5,1.0,1.0,0.37103174603174605,"#1: 3, #2: 3, #3: 8, #4: 7",True,1.0,1.0,1.0,1.0,1.0,1.0,0.0,2,10749,0.038985,16614.4,1.0,2
+gold-063,Table + text (one filing),table_text,multi,mixed,system_c_v2,,13.0,0.5,1.0,1.0,0.31174242424242427,"#1: 3, #2: 3, #3: 10, #4: 8",True,1.0,1.0,1.0,1.0,1.0,1.0,0.0,2,11753,0.0429825,18379.2,1.0,3
+gold-064,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,1.0,1.0,1.0,0.5916666666666667,"#1: 5, #2: 1",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,2368,0.000417,2517.0,1.0,2
+gold-064,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,1.0,1.0,1.0,0.6388888888888888,"#1: 4, #2: 2",True,1.0,1.0,1.0,0.5,0.6666666666666666,1.0,,1,1454,0.000273,6495.4,1.0,2
+gold-064,Table + text (one filing),table_text,multi,mixed,system_c_v1,,13.0,0.5,1.0,1.0,0.36944444444444446,"#1: 3, #2: 8",True,1.0,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,3,13973,0.050995,22812.0,1.0,2
+gold-064,Table + text (one filing),table_text,multi,mixed,system_c_v2,,7.0,0.5,0.5,0.0,0.29166666666666663,"#1: 4, #2: –",True,0.6666666666666666,1.0,1.0,1.0,1.0,1.0,0.0,1,7065,0.0241,9409.9,0.8333333333333333,2
+gold-065,Table + text (one filing),table_text,multi,mixed,system_a,,10.0,0.3333333333333333,1.0,1.0,0.6805555555555555,"#1: 8, #2: 8, #3: 1",True,1.0,1.0,1.0,1.0,1.0,1.0,,1,1998,0.000352,2352.8,1.0,3
+gold-065,Table + text (one filing),table_text,multi,mixed,system_b,,5.0,0.3333333333333333,0.3333333333333333,0.0,1.0,"#1: –, #2: –, #3: 1",False,0.6666666666666666,0.0,1.0,1.0,1.0,1.0,,1,1615,0.00028,7375.8,0.3333333333333333,2
+gold-065,Table + text (one filing),table_text,multi,mixed,system_c_v1,,13.0,0.0,0.6666666666666666,0.0,0.1,"#1: 10, #2: 10, #3: –",False,0.3333333333333333,0.0,1.0,0.5,0.6666666666666666,1.0,0.0,3,17945,0.060725,27207.8,0.16666666666666666,1
+gold-065,Table + text (one filing),table_text,multi,mixed,system_c_v2,,15.0,0.0,1.0,1.0,0.23763736263736263,"#1: 13, #2: 13, #3: 7",False,1.0,0.0,1.0,0.5,0.6666666666666666,1.0,0.0,3,15660,0.053625,22379.6,0.5,3
+gold-066,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,0.41666666666666663,"#1: 3, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,,1,2692,0.000442,2257.7,1.0,2
+gold-066,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,0.5,0.5,0.0,0.25,"#1: –, #2: 4",False,,0.0,,,,0.0,,1,1514,0.000232,5671.9,0.0,0
+gold-066,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,11.0,0.5,0.5,0.0,0.5,"#1: 2, #2: –",False,,0.0,,,,0.0,0.0,3,16252,0.0545425,22085.1,0.0,0
+gold-066,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.5,0.5,0.0,0.25,"#1: 4, #2: –",True,,1.0,0.0,0.0,0.0,1.0,0.0,1,9067,0.02768,8387.9,1.0,2
+gold-067,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,0.5,1.0,0.6666666666666666,1.0,,1,1948,0.000352,2429.0,0.0,3
+gold-067,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,1219,0.000187,6448.0,0.0,0
+gold-067,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,12.0,1.0,1.0,1.0,0.325,"#1: 5, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,0.0,2,15066,0.0472275,13320.6,1.0,2
+gold-067,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.0,1.0,1.0,0.22619047619047616,"#1: 7, #2: 6",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,5103,0.017245,7145.6,1.0,2
+gold-068,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,0.0,1.0,1.0,0.2964285714285714,"#1: 9, #2: 6",True,,1.0,1.0,0.5,0.6666666666666666,1.0,,1,1657,0.000271,2058.1,1.0,2
+gold-068,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,1.0,0.5,0.6666666666666666,1.0,,1,1392,0.000254,7226.8,0.0,2
+gold-068,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.7708333333333333,"#1: 4, #2: 1",True,,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,4008,0.01432,6302.6,1.0,2
+gold-068,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.5,1.0,1.0,0.43333333333333335,"#1: 6, #2: 3",True,,1.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,4744,0.01611,6707.5,1.0,2
+gold-069,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1682,0.000302,2242.2,1.0,2
+gold-069,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.5833333333333333,"#1: 2, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,,1,1173,0.000222,5798.2,1.0,2
+gold-069,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.8333333333333333,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,3499,0.013385,6958.4,1.0,2
+gold-069,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,6.0,1.0,1.0,1.0,0.8333333333333333,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,3508,0.0133825,7254.4,1.0,2
+gold-070,Cross-year table,cross_year_table,multi,numeric,system_a,,9.0,1.0,1.0,1.0,0.25,"#1: 4, #2: 4",False,,0.0,,,,0.0,,1,1858,0.000283,1414.5,0.0,0
+gold-070,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1328,0.000223,5508.5,1.0,2
+gold-070,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,12.0,0.0,1.0,1.0,0.14285714285714285,"#1: 7, #2: 7",False,,0.0,1.0,1.0,1.0,1.0,1.0,3,22449,0.07736,33719.1,0.0,1
+gold-070,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,11.0,0.0,1.0,1.0,0.1111111111111111,"#1: 9, #2: 9",False,,0.0,0.5,1.0,0.6666666666666666,1.0,1.0,3,21151,0.0744275,28821.4,0.0,2
+gold-071,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,1.0,1.0,1.0,1.0,,1,1949,0.00036,3275.3,0.0,1
+gold-071,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,1428,0.000219,5022.3,0.0,0
+gold-071,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,13.0,0.5,1.0,1.0,0.4712087912087912,"#1: 2, #2: 7",True,,1.0,0.0,0.0,0.0,1.0,0.3333,3,19702,0.06233,21631.3,1.0,2
+gold-071,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.5,0.5,0.0,0.30357142857142855,"#1: 4, #2: –",True,,1.0,0.0,0.0,0.0,1.0,0.0,1,8342,0.0258675,7537.5,1.0,2
+gold-072,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,2353,0.000409,2946.3,1.0,2
+gold-072,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.325,"#1: 4, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,,1,1758,0.000319,6342.8,1.0,2
+gold-072,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,10.0,1.0,1.0,1.0,0.6968253968253968,"#1: 1, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,3,12036,0.04599,21991.7,1.0,2
+gold-072,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,1.0,1.0,1.0,0.41666666666666663,"#1: 3, #2: 3",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4660,0.0164875,7083.4,1.0,2
+gold-073,Cross-year table,cross_year_table,multi,numeric,system_a,,8.0,0.5,0.5,0.0,0.2,"#1: 5, #2: –",False,,0.0,1.0,1.0,1.0,1.0,,1,1771,0.000332,3378.1,0.0,2
+gold-073,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,1213,0.000186,6147.1,0.0,0
+gold-073,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,10.0,0.5,1.0,1.0,0.25,"#1: 8, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,0.3333,2,12388,0.04037,14832.9,1.0,2
+gold-073,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.0,0.5,0.0,0.16666666666666666,"#1: –, #2: 6",False,,0.0,1.0,1.0,1.0,1.0,0.0,1,10563,0.03672,15695.4,0.0,2
+gold-074,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,0.7,"#1: 1, #2: 1",False,,0.0,,,,0.0,,1,129,0.000344,9845.8,0.0,0
+gold-074,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.5,"#1: 2, #2: 2",False,,0.0,,,,0.0,,1,1135,0.000175,5601.0,0.0,0
+gold-074,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,10.0,1.0,1.0,1.0,0.5888888888888889,"#1: 2, #2: 2",False,,0.0,,,,0.0,0.0,3,13357,0.0504925,24573.3,0.0,0
+gold-074,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,1.0,1.0,1.0,0.4154761904761905,"#1: 3, #2: 3",False,,0.0,,,,0.0,0.0,1,6690,0.023675,11036.2,0.0,0
+gold-075,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,0.5333333333333333,"#1: 2, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,,1,3252,0.000513,1996.1,1.0,2
+gold-075,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.9166666666666666,"#1: 1, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,,1,1254,0.000208,6525.1,1.0,2
+gold-075,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,15.0,1.0,1.0,1.0,0.41636141636141627,"#1: 4, #2: 3",True,,1.0,1.0,1.0,1.0,1.0,0.0,3,14851,0.053815,24551.0,1.0,2
+gold-075,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.5,1.0,1.0,0.3206349206349206,"#1: 6, #2: 5",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,5243,0.019395,9096.2,1.0,2
+gold-076,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,0.45,"#1: 2, #2: 5",True,,1.0,1.0,1.0,1.0,1.0,,1,2589,0.000446,2658.3,1.0,2
+gold-076,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,0.5,0.5,0.0,0.5,"#1: –, #2: 2",False,,0.0,,,,0.0,,1,1164,0.000179,6859.0,0.0,0
+gold-076,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,0.41666666666666663,"#1: 3, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,3903,0.0147825,7280.7,1.0,2
+gold-076,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,1.0,1.0,1.0,0.325,"#1: 5, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,0.0,1,4563,0.016195,7559.7,1.0,2
+gold-077,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,0.0,0.5,0.0,0.17142857142857143,"#1: 7, #2: –",False,,0.0,,,,0.0,,1,2589,0.000393,1186.4,0.0,0
+gold-077,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,0.5,0.5,0.0,0.5,"#1: 2, #2: –",False,,0.0,,,,0.0,,1,1447,0.000222,6007.4,0.0,0
+gold-077,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,17.0,0.5,1.0,1.0,0.6388888888888888,"#1: 12, #2: 1",True,,1.0,0.5,1.0,0.6666666666666666,1.0,0.3333,3,21245,0.067725,21048.3,1.0,2
+gold-077,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,0.5,0.5,0.0,0.3666666666666667,"#1: –, #2: 3",True,,1.0,0.0,0.0,0.0,1.0,0.0,1,6502,0.020155,6611.2,1.0,2
+gold-078,Cross-year table,cross_year_table,multi,numeric,system_a,,10.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,,1,2325,0.000383,2249.5,1.0,2
+gold-078,Cross-year table,cross_year_table,multi,numeric,system_b,,5.0,0.5,0.5,0.0,0.5,"#1: –, #2: 2",False,,0.0,1.0,1.0,1.0,1.0,,1,1250,0.000241,6859.5,0.0,3
+gold-078,Cross-year table,cross_year_table,multi,numeric,system_c_v1,,6.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2",True,,1.0,1.0,1.0,1.0,1.0,0.5,1,6402,0.0223425,9356.0,1.0,2
+gold-078,Cross-year table,cross_year_table,multi,numeric,system_c_v2,,8.0,1.0,1.0,1.0,0.41666666666666663,"#1: 3, #2: 4",True,,1.0,1.0,1.0,1.0,1.0,0.5,1,8183,0.028645,12430.7,1.0,3
+gold-079,Cross-year text,cross_year_text,multi,qualitative,system_a,contrast,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",True,0.0,,1.0,1.0,1.0,1.0,,1,1550,0.000308,3875.2,0.0,3
+gold-079,Cross-year text,cross_year_text,multi,qualitative,system_b,contrast,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,,1,1062,0.000241,7789.8,1.0,2
+gold-079,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,contrast,15.0,1.0,1.0,1.0,0.8333333333333333,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,17799,0.0692725,33165.6,1.0,2
+gold-079,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,contrast,13.0,1.0,1.0,1.0,0.8333333333333333,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,17094,0.06896,31344.4,1.0,2
+gold-080,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,0.0,,,,,0.0,,1,1617,0.000247,1623.4,0.0,0
+gold-080,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,0.5833333333333333,"#1: 2, #2: 2",True,1.0,,0.5,1.0,0.6666666666666666,1.0,,1,1434,0.000284,7434.8,1.0,5
+gold-080,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,15.0,1.0,1.0,1.0,0.6666666666666666,"#1: 1, #2: 4",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,3,15992,0.06328,34460.3,1.0,3
+gold-080,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,13.0,1.0,1.0,1.0,0.7555555555555555,"#1: 1, #2: 3",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,3,14617,0.05968,31710.9,1.0,3
+gold-081,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,0.0,,,,,0.0,,1,1628,0.000249,1489.2,0.0,0
+gold-081,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,0.41666666666666663,"#1: 3, #2: 4",True,0.75,,1.0,1.0,1.0,1.0,,1,770,0.000186,8328.2,0.75,2
+gold-081,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,11.0,1.0,1.0,1.0,0.5909090909090909,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,13766,0.0537775,27708.6,1.0,2
+gold-081,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,12.0,1.0,1.0,1.0,0.75,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,14674,0.0590725,35399.7,1.0,2
+gold-082,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,1.0,1.0,1.0,0.9166666666666666,"#1: 1, #2: 1, #3: 1, #4: 1",True,1.0,,0.5,1.0,0.6666666666666666,1.0,,1,2902,0.000605,5176.4,1.0,5
+gold-082,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 2, #3: 2, #4: 1",True,1.0,,0.5,1.0,0.6666666666666666,1.0,,1,1685,0.000383,8803.0,1.0,5
+gold-082,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,10.0,1.0,1.0,1.0,0.8134920634920634,"#1: 1, #2: 1, #3: 1, #4: 1",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,2,14292,0.0550425,21288.5,1.0,4
+gold-082,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,9.0,1.0,1.0,1.0,0.8261904761904761,"#1: 1, #2: 1, #3: 1, #4: 1",True,1.0,,0.5,1.0,0.6666666666666666,1.0,0.0,2,26122,0.099605,38237.2,1.0,4
+gold-083,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,0.0,0.5,0.0,0.16666666666666666,"#1: 6, #2: –",True,0.6666666666666666,,1.0,1.0,1.0,1.0,,1,1557,0.000315,3175.0,0.6666666666666666,2
+gold-083,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,0.5,0.5,0.0,0.3333333333333333,"#1: 3, #2: –",True,0.3333333333333333,,0.5,1.0,0.6666666666666666,1.0,,1,1668,0.000342,9407.5,0.3333333333333333,2
+gold-083,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,14.0,0.0,0.5,0.0,0.07142857142857142,"#1: 14, #2: –",True,1.0,,0.3333333333333333,1.0,0.5,1.0,0.0,3,24389,0.0929475,39075.0,1.0,5
+gold-083,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,16.0,0.5,1.0,1.0,0.20604395604395606,"#1: 4, #2: 13",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,17637,0.068255,33311.4,1.0,3
+gold-084,Cross-year text,cross_year_text,multi,qualitative,system_a,hardest,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,0.0,,,,,0.0,,1,1507,0.000231,1459.5,0.0,0
+gold-084,Cross-year text,cross_year_text,multi,qualitative,system_b,hardest,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",False,0.0,,,,,0.0,,1,1019,0.000157,7828.8,0.0,0
+gold-084,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,hardest,12.0,1.0,1.0,1.0,0.29166666666666663,"#1: 3, #2: 3",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,15837,0.06728,38880.4,1.0,3
+gold-084,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,hardest,8.0,1.0,1.0,1.0,0.3333333333333333,"#1: 3, #2: 3",True,0.6666666666666666,,1.0,1.0,1.0,1.0,0.0,1,7473,0.03257,17234.2,0.6666666666666666,2
+gold-085,Cross-year text,cross_year_text,multi,qualitative,system_a,,8.0,0.6,0.6,0.0,0.225,"#1: 5, #2: –, #3: 5, #4: 5, #5: –",True,0.6666666666666666,,1.0,1.0,1.0,1.0,,1,2233,0.000633,10640.7,0.6666666666666666,5
+gold-085,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,0.6,0.6,0.0,0.45,"#1: 2, #2: –, #3: 5, #4: 2, #5: –",False,0.0,,,,,0.0,,1,1255,0.000193,6478.0,0.0,0
+gold-085,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,11.0,0.6,0.8,0.0,0.35281385281385286,"#1: 2, #2: –, #3: 2, #4: 2, #5: 7",True,1.0,,1.0,1.0,1.0,1.0,0.0,2,31082,0.1292425,50038.8,1.0,5
+gold-085,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,12.0,0.6,0.6,0.0,0.5,"#1: 2, #2: –, #3: 2, #4: 2, #5: –",True,0.6666666666666666,,1.0,1.0,1.0,1.0,0.0,3,41985,0.164675,60996.1,0.6666666666666666,6
+gold-086,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,0.0,1.0,1.0,0.14285714285714285,"#1: 7, #2: 7",True,1.0,,1.0,1.0,1.0,1.0,,1,2650,0.000514,5197.5,1.0,4
+gold-086,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,,1,1523,0.00029,7290.5,1.0,2
+gold-086,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,10.0,1.0,1.0,1.0,0.6666666666666666,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,13836,0.05519,31703.6,1.0,2
+gold-086,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,13.0,1.0,1.0,1.0,0.6666666666666666,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,21715,0.0829875,38864.5,1.0,3
+gold-087,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,0.0,,,,,0.0,,1,2154,0.000328,1817.8,0.0,0
+gold-087,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,,1,1434,0.000273,6866.7,1.0,2
+gold-087,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,6.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,1,5885,0.0216625,8371.2,1.0,2
+gold-087,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,6.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,1,5889,0.0219975,10554.1,1.0,2
+gold-088,Cross-year text,cross_year_text,multi,qualitative,system_a,,10.0,1.0,1.0,1.0,0.9,"#1: 1, #2: 1, #3: 1, #4: 1",True,1.0,,1.0,1.0,1.0,1.0,,1,2232,0.000465,4676.2,1.0,3
+gold-088,Cross-year text,cross_year_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 3, #2: 1, #3: 3, #4: 1",False,0.0,,,,,0.0,,1,1298,0.000199,5971.0,0.0,0
+gold-088,Cross-year text,cross_year_text,multi,qualitative,system_c_v1,,11.0,1.0,1.0,1.0,1.0,"#1: 1, #2: 1, #3: 1, #4: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,15543,0.0624075,31602.4,1.0,3
+gold-088,Cross-year text,cross_year_text,multi,qualitative,system_c_v2,,10.0,1.0,1.0,1.0,0.9428571428571428,"#1: 1, #2: 1, #3: 1, #4: 1",True,1.0,,1.0,1.0,1.0,1.0,0.0,3,15783,0.064345,28577.6,1.0,5
+gold-089,Cross-company table,cross_company_table,multi,numeric,system_a,contrast,8.0,0.5,0.5,0.0,0.8928571428571428,"#1: –, #2: 1",False,,0.0,0.5,1.0,0.6666666666666666,1.0,,1,2337,0.000401,2807.5,0.0,3
+gold-089,Cross-company table,cross_company_table,multi,numeric,system_b,contrast,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,1.0,1.0,1.0,1.0,,1,1059,0.000192,7225.7,0.0,2
+gold-089,Cross-company table,cross_company_table,multi,numeric,system_c_v1,contrast,13.0,0.5,1.0,1.0,0.8928571428571428,"#1: 7, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,3,14047,0.050305,21428.2,1.0,2
+gold-089,Cross-company table,cross_company_table,multi,numeric,system_c_v2,contrast,8.0,0.5,0.5,0.0,0.4777777777777777,"#1: –, #2: 3",False,,0.0,1.0,1.0,1.0,1.0,0.0,1,7050,0.0242375,11007.8,0.0,1
+gold-090,Cross-company table,cross_company_table,multi,numeric,system_a,,9.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",False,,0.0,1.0,0.5,0.6666666666666666,1.0,,1,2004,0.000351,3086.6,0.0,1
+gold-090,Cross-company table,cross_company_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,0.8875,"#1: 2, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1511,0.000271,7665.0,1.0,2
+gold-090,Cross-company table,cross_company_table,multi,numeric,system_c_v1,,12.0,0.5,1.0,1.0,0.7291666666666666,"#1: 8, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,2,9793,0.03382,13147.2,1.0,2
+gold-090,Cross-company table,cross_company_table,multi,numeric,system_c_v2,,12.0,0.5,1.0,1.0,0.7470238095238095,"#1: 7, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,2,9350,0.0322125,12973.6,1.0,2
+gold-091,Cross-company table,cross_company_table,multi,numeric,system_a,hardest,6.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,1316,0.000202,1932.4,0.0,0
+gold-091,Cross-company table,cross_company_table,multi,numeric,system_b,hardest,5.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",False,,0.0,,,,0.0,,1,1113,0.000171,6259.3,0.0,0
+gold-091,Cross-company table,cross_company_table,multi,numeric,system_c_v1,hardest,17.0,0.5,0.5,0.0,0.25,"#1: 4, #2: –",True,,1.0,1.0,0.5,0.6666666666666666,1.0,0.3333,3,21617,0.0705425,23843.0,1.0,2
+gold-091,Cross-company table,cross_company_table,multi,numeric,system_c_v2,hardest,8.0,0.0,0.5,0.0,0.16666666666666666,"#1: 6, #2: –",False,,0.0,1.0,0.5,0.6666666666666666,1.0,0.0,1,8293,0.02717,9906.4,0.0,1
+gold-092,Cross-company table,cross_company_table,multi,numeric,system_a,,10.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",False,,0.0,,,,0.0,,1,1455,0.000223,1148.8,0.0,0
+gold-092,Cross-company table,cross_company_table,multi,numeric,system_b,,5.0,1.0,1.0,1.0,1.0,"#1: 2, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,,1,1071,0.000203,6775.1,1.0,2
+gold-092,Cross-company table,cross_company_table,multi,numeric,system_c_v1,,12.0,0.5,1.0,1.0,0.6428571428571428,"#1: 7, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,2,9024,0.030835,12473.0,1.0,2
+gold-092,Cross-company table,cross_company_table,multi,numeric,system_c_v2,,12.0,0.5,1.0,1.0,0.6428571428571428,"#1: 7, #2: 1",True,,1.0,1.0,1.0,1.0,1.0,0.0,2,9090,0.0317375,13557.5,1.0,2
+gold-093,Cross-company text,cross_company_text,multi,qualitative,system_a,,7.0,0.5,0.5,0.0,1.0,"#1: –, #2: 1",True,0.6666666666666666,,1.0,1.0,1.0,1.0,,1,1655,0.00031,4151.7,0.6666666666666666,1
+gold-093,Cross-company text,cross_company_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,0.5888888888888889,"#1: 3, #2: 2",True,0.6666666666666666,,1.0,1.0,1.0,1.0,,1,1383,0.000296,10174.1,0.6666666666666666,2
+gold-093,Cross-company text,cross_company_text,multi,qualitative,system_c_v1,,14.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",True,0.6666666666666666,,0.3333333333333333,1.0,0.5,1.0,0.0,3,18517,0.0680175,38869.9,0.6666666666666666,7
+gold-093,Cross-company text,cross_company_text,multi,qualitative,system_c_v2,,12.0,0.5,1.0,1.0,0.8095238095238094,"#1: 1, #2: 7",True,0.6666666666666666,,1.0,1.0,1.0,1.0,0.0,3,14557,0.054905,28446.9,0.6666666666666666,3
+gold-094,Cross-company text,cross_company_text,multi,qualitative,system_a,hardest,7.0,0.5,0.5,0.0,0.3333333333333333,"#1: 3, #2: –",True,0.3333333333333333,,1.0,1.0,1.0,1.0,,1,877,0.000163,2377.6,0.3333333333333333,1
+gold-094,Cross-company text,cross_company_text,multi,qualitative,system_b,hardest,5.0,0.5,0.5,0.0,0.41666666666666663,"#1: 3, #2: –",True,0.3333333333333333,,0.5,1.0,0.6666666666666666,1.0,,1,1243,0.000249,8463.6,0.3333333333333333,4
+gold-094,Cross-company text,cross_company_text,multi,qualitative,system_c_v1,hardest,13.0,0.0,0.5,0.0,0.16666666666666666,"#1: 6, #2: –",True,0.3333333333333333,,1.0,1.0,1.0,1.0,0.0,3,13619,0.05471,30557.1,0.3333333333333333,2
+gold-094,Cross-company text,cross_company_text,multi,qualitative,system_c_v2,hardest,8.0,0.0,0.5,0.0,0.125,"#1: 8, #2: –",True,0.3333333333333333,,1.0,1.0,1.0,1.0,0.0,1,6152,0.02368,10670.2,0.3333333333333333,1
+gold-095,Cross-company text,cross_company_text,multi,qualitative,system_a,,9.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",True,1.0,,,,,0.0,,1,2834,0.000494,3693.3,1.0,0
+gold-095,Cross-company text,cross_company_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,0.95,"#1: 1, #2: 5",True,0.6666666666666666,,0.6666666666666666,1.0,0.8,1.0,,1,1175,0.00022,6065.6,0.6666666666666666,4
+gold-095,Cross-company text,cross_company_text,multi,qualitative,system_c_v1,,15.0,0.5,1.0,1.0,0.875,"#1: 1, #2: 8",True,0.6666666666666666,,0.6666666666666666,1.0,0.8,1.0,0.0,3,18300,0.0710125,40384.5,0.6666666666666666,7
+gold-095,Cross-company text,cross_company_text,multi,qualitative,system_c_v2,,6.0,0.5,1.0,1.0,0.9166666666666666,"#1: 1, #2: 6",True,0.6666666666666666,,0.6666666666666666,1.0,0.8,1.0,0.0,1,7307,0.029855,13122.5,0.6666666666666666,5
+gold-096,Cross-company text,cross_company_text,multi,qualitative,system_a,contrast,7.0,0.5,0.5,0.0,1.0,"#1: 1, #2: –",True,0.5,,1.0,1.0,1.0,1.0,,1,1690,0.000349,4405.0,0.5,2
+gold-096,Cross-company text,cross_company_text,multi,qualitative,system_b,contrast,5.0,1.0,1.0,1.0,0.75,"#1: 1, #2: 4",True,1.0,,1.0,1.0,1.0,1.0,,1,1373,0.000319,8503.4,1.0,2
+gold-096,Cross-company text,cross_company_text,multi,qualitative,system_c_v1,contrast,14.0,0.5,1.0,1.0,0.5285714285714286,"#1: 1, #2: 7",True,1.0,,0.6666666666666666,1.0,0.8,1.0,0.0,3,16993,0.064795,33856.0,1.0,4
+gold-096,Cross-company text,cross_company_text,multi,qualitative,system_c_v2,contrast,14.0,0.5,1.0,1.0,0.4983164983164983,"#1: 1, #2: 9",True,1.0,,0.6666666666666666,1.0,0.8,1.0,0.0,3,27182,0.10068,39275.9,1.0,5
+gold-097,Cross-company text,cross_company_text,multi,qualitative,system_a,,10.0,0.0,0.0,0.0,0.0,"#1: –, #2: –",True,0.6666666666666666,,1.0,1.0,1.0,1.0,,1,1490,0.000298,3541.7,0.6666666666666666,2
+gold-097,Cross-company text,cross_company_text,multi,qualitative,system_b,,5.0,1.0,1.0,1.0,0.5,"#1: 2, #2: 2",True,1.0,,1.0,1.0,1.0,1.0,,1,1244,0.00026,7215.9,1.0,2
+gold-097,Cross-company text,cross_company_text,multi,qualitative,system_c_v1,,11.0,1.0,1.0,1.0,0.625,"#1: 1, #2: 1",True,1.0,,0.6666666666666666,1.0,0.8,1.0,0.0,2,11730,0.0439875,20911.2,1.0,5
+gold-097,Cross-company text,cross_company_text,multi,qualitative,system_c_v2,,13.0,1.0,1.0,1.0,0.6428571428571428,"#1: 1, #2: 1",True,1.0,,0.6666666666666666,1.0,0.8,1.0,0.0,3,16485,0.0633375,28744.6,1.0,6

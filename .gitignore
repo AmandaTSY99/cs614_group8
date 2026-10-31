@@ -81,3 +81,6 @@ TAT-QA/
 
 # --- trash ---
 .Trash*/
+
+# --- other folders ---
+amanda_archive/
