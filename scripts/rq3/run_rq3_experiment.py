@@ -6,7 +6,7 @@ Evaluates 5 systems head-to-head on the standardized benchmark pool:
 1. `system_a`: Vanilla Dense Baseline (rag5 contextual headers, 1 LLM call)
 2. `system_b`: Advanced Single-Pass Hybrid RAG (Okapi BM25 + dense + cross-encoder rerank, 1 LLM call)
 3. `system_c_v1`: Adaptive Multi-Hop RAG (AMR: dynamic 1-3 hops + Sufficiency Critic + Guardrail)
-4. `system_c_v2`: Agentic Adaptive Multi-Hop RAG (AAMR: XBRL tabular tool + dynamic 1-3 hops + Guardrail)
+4. `system_c_v3`: Agentic Adaptive Multi-Hop RAG (AAMR-SG: schema-aware sufficiency + dynamic 1-3 hops + Guardrail)
 5. `system_c_fixed_3hop`: Unconditioned 3-Hop Ablation Control (force_max_hops=True)
 
 Hardened Experimental Protocol:
@@ -38,7 +38,7 @@ DEFAULT_BENCHMARK_2015 = REPO_ROOT / "data" / "benchmark_qa_pool_2015.json"
 DEFAULT_RECORDS_FILE = REPO_ROOT / "reports" / "rq3" / "records.jsonl"
 DEFAULT_ERRORS_FILE = REPO_ROOT / "reports" / "rq3" / "errors.jsonl"
 
-ALL_SYSTEMS = ["system_a", "system_b", "system_c_v1", "system_c_v2"]
+ALL_SYSTEMS = ["system_a", "system_b", "system_c_v1", "system_c_v3"]
 
 
 def load_benchmark_records(path: Path, min_year: int = 2015) -> List[Dict[str, Any]]:

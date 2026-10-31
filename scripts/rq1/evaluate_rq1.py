@@ -2,7 +2,7 @@
 """
 Research Question 1 (RQ1) Evaluation Harness: Retrieval Completeness across Non-Adjacent Sections.
 
-Evaluates all 4 RAG architectures (system_a, system_b, system_c_v1, system_c_v2) on:
+Evaluates all 4 RAG architectures (system_a, system_b, system_c_v1, system_c_v3) on:
 1. Evidence Recall@k: Proportion of gold evidence facts retrieved in the candidate context.
 2. Multi-Hop Evidence Completeness: % of multi-hop queries where ALL gold evidence items were found.
 3. Cross-Section Discovery Rate: % of questions with disparate 10-K sections (e.g. Item 7 + Item 8)
@@ -34,7 +34,7 @@ DEFAULT_RECORDS = REPO_ROOT / "reports" / "rq3" / "records.jsonl"
 DEFAULT_OUT_CSV = REPO_ROOT / "reports" / "rq1" / "summary_metrics.csv"
 DEFAULT_OUT_JSON = REPO_ROOT / "reports" / "rq1" / "summary_metrics.json"
 
-SYSTEMS = ["system_a", "system_b", "system_c_v1", "system_c_v2"]
+SYSTEMS = ["system_a", "system_b", "system_c_v1", "system_c_v3"]
 
 
 def normalize_text(text: str) -> str:

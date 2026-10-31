@@ -48,8 +48,8 @@ We evaluate four distinct system configurations over an identical corpus of **95
 flowchart TD
     START --> Decomposer[decomposer_node: Query Decomposition & Entity Extraction]
     
-    subgraph RoutingLogic["v1 vs v2 Routing"]
-        Decomposer -->|v2_aamr AND needs_tabular_tool| TabularTool[tabular_tool_node: Structured XBRL Lookup]
+    subgraph RoutingLogic["v1 vs v3 Routing"]
+        Decomposer -->|v3_aamr_sg AND needs_tabular_tool| TabularTool[tabular_tool_node: Structured XBRL Lookup]
         Decomposer -->|v1_amr OR not needs_tabular_tool| Retriever[retriever_node: Supabase Hybrid BM25 + Dense Search]
         TabularTool --> Retriever
     end

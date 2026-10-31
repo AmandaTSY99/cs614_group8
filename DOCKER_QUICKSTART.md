@@ -55,7 +55,7 @@ docker compose run --rm runner pytest tests/ -v
 ```
 
 ### B. Run the Milestone 1 Demo Showcase
-Runs the 3 curated SEC 10-K benchmark queries (Single-Hop early stopping, MD&A + Footnotes multi-hop, and Quantitative Tabular `v1_amr` vs `v2_aamr`) and prints the formatted comparison table:
+Runs the 3 curated SEC 10-K benchmark queries (Single-Hop early stopping, MD&A + Footnotes multi-hop, and Quantitative Tabular `v1_amr` vs `v3_aamr_sg`) and prints the formatted comparison table:
 ```bash
 # Rapid mock mode:
 docker compose run --rm runner python scripts/demo_milestone1_system_c.py --mock
@@ -65,7 +65,7 @@ docker compose run --rm -e LLM_PROVIDER=ollama runner python scripts/demo_milest
 ```
 
 ### C. Run the RQ3 Inference Economics Ablation Benchmark
-Benchmarks Fixed 1-Hop vs. Fixed 3-Hop vs. Adaptive AMR (v1) vs. Agentic AAMR (v2) and exports CSV/JSON summaries:
+Benchmarks Fixed 1-Hop vs. Fixed 3-Hop vs. Adaptive AMR (v1) vs. Adaptive Agentic AAMR-SG (v3) and exports CSV/JSON summaries:
 ```bash
 docker compose run --rm runner python scripts/run_rq3_ablation.py --mock
 ```
@@ -79,7 +79,7 @@ docker compose run --rm runner python scripts/plot_rq3_pareto.py
 ### E. Run an Interactive Ad-Hoc Financial Query
 ```bash
 docker compose run --rm runner python -m src.system_c.graph \
-  --mode v2_aamr \
+  --mode v3_aamr_sg \
   --max-hops 3 \
   --query "Compare NVIDIA total revenue and net income between FY2025 and FY2026, and calculate the operating margin."
 ```
@@ -111,7 +111,7 @@ Then open your browser to: **`http://localhost:8888`**
 The stages only talk through the files in `reports/rq2/<run_id>/` (the project folder is mounted).
 ```bash
 # Stage 1 (live, needs OPENAI_API_KEY in .env):
-docker compose run --rm -e LLM_PROVIDER=openai system-c python scripts/rq2/generate.py --systems system_c_v1,system_c_v2 --run-id smoke --ids GOLD-01,GOLD-21,GOLD-56
+docker compose run --rm -e LLM_PROVIDER=openai system-c python scripts/rq2/generate.py --systems system_c_v1,system_c_v3 --run-id smoke --ids GOLD-01,GOLD-21,GOLD-56
 
 # Stage 2 (runs score.py then report.py; judge defaults to OpenAI gpt-4o-mini):
 docker compose run --rm rq2-eval

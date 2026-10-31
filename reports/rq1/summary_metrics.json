@@ -38,17 +38,17 @@
     "mean_chunks_retrieved": 9.9,
     "mean_hops_executed": 2.24
   },
-  "system_c_v2": {
+  "system_c_v3": {
     "n_queries": 97,
-    "overall_evidence_recall_pct": 84.47,
-    "full_evidence_discovery_rate_pct": 72.16,
+    "overall_evidence_recall_pct": 90.52,
+    "full_evidence_discovery_rate_pct": 82.47,
     "doc_recall_pct": 100.0,
-    "mrr": 0.515,
-    "context_precision_pct": 26.08,
-    "multihop_evidence_recall_pct": 81.32,
-    "multihop_full_discovery_pct": 66.67,
-    "cross_section_discovery_rate_pct": 45.45,
-    "mean_chunks_retrieved": 9.4,
-    "mean_hops_executed": 1.77
+    "mrr": 0.622,
+    "context_precision_pct": 28.5,
+    "multihop_evidence_recall_pct": 88.21,
+    "multihop_full_discovery_pct": 78.21,
+    "cross_section_discovery_rate_pct": 68.18,
+    "mean_chunks_retrieved": 11.1,
+    "mean_hops_executed": 2.12
   }
 }

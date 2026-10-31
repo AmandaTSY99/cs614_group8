@@ -6,7 +6,7 @@ Ablation Conditions Benchmarked:
 1. `fixed_1hop`: Fixed 1-Hop Baseline (max_hops=1, single-pass retrieval)
 2. `fixed_3hop`: Fixed 3-Hop Exhaustive (max_hops=3, force_max_hops=True, no early-stopping)
 3. `adaptive_v1`: Adaptive Multi-Hop AMR (max_hops=3, dynamic reflection & early-stopping)
-4. `agentic_v2`:  Agentic Adaptive AMR AAMR (max_hops=3, tabular_tool + dynamic reflection)
+4. `agentic_v3`:  Agentic Adaptive AMR-SG (max_hops=3, schema-aware tabular tool + dynamic reflection)
 
 Metrics Computed:
 - Latency (ms): Mean, Std, Min, Max, p50, p90, p99
@@ -173,12 +173,12 @@ ABLATION_CONDITIONS = [
         "description": "System C v1 with Evidence Sufficiency Critic dynamic early-stopping.",
     },
     {
-        "key": "agentic_v2",
-        "label": "Agentic Adaptive (AAMR v2)",
-        "mode": "v2_aamr",
+        "key": "agentic_v3",
+        "label": "Agentic Adaptive (AAMR-SG v3)",
+        "mode": "v3_aamr_sg",
         "max_hops": 3,
         "force_max_hops": False,
-        "description": "System C v2 with autonomous tabular XBRL tool + dynamic early-stopping.",
+        "description": "System C v3 with autonomous tabular XBRL tool, schema-aware sufficiency & table continuity.",
     },
 ]
 

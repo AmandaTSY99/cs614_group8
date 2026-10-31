@@ -82,14 +82,14 @@ DEMO_QUERIES = [
         "description": "Baseline multi-hop RAG relying solely on unstructured text and table chunks.",
     },
     {
-        "id": "Q3_v2",
-        "name": "Quantitative Financial Comparison (v2_aamr - Agentic XBRL Tabular Tool)",
+        "id": "Q3_v3",
+        "name": "Quantitative Financial Comparison (v3_aamr_sg - Agentic XBRL Tabular Tool)",
         "query": "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate.",
         "ticker": "NVDA",
         "years": [2025, 2026],
-        "mode": "v2_aamr",
+        "mode": "v3_aamr_sg",
         "max_hops": 3,
-        "description": "Agentic System C v2: routes to tabular_tool (financials.csv) for deterministic XBRL grounding [F-NVDA-2026].",
+        "description": "Agentic System C v3: routes to tabular_tool (financials.csv) for deterministic XBRL grounding [F-NVDA-2026].",
     },
 ]
 
@@ -97,7 +97,7 @@ DEMO_QUERIES = [
 def print_banner(provider: str, model: str) -> None:
     print(f"\n{BOLD}{CYAN}╔══════════════════════════════════════════════════════════════════════════════════════════════╗{RESET}")
     print(f"{BOLD}{CYAN}║    CS614 MILESTONE 1 DEMO: SYSTEM C (ADAPTIVE MULTI-HOP RAG FOR SEC 10-K DISCLOSURES)         ║{RESET}")
-    print(f"{BOLD}{CYAN}║    Architectural Showcase: AMR v1 (State Graph) & AAMR v2 (Agentic Tabular Tool)             ║{RESET}")
+    print(f"{BOLD}{CYAN}║    Architectural Showcase: AMR v1 (State Graph) & AAMR-SG v3 (Agentic Tabular Tool)           ║{RESET}")
     print(f"{BOLD}{CYAN}╚══════════════════════════════════════════════════════════════════════════════════════════════╝{RESET}")
     print(f"  {BOLD}LLM Provider:{RESET} {GREEN}{provider.upper()}{RESET}  |  {BOLD}Model:{RESET} {GREEN}{model}{RESET}  |  {BOLD}Date:{RESET} 24-25 Oct 2026\n")
 
@@ -119,9 +119,9 @@ def print_query_trace(idx: int, item: Dict[str, Any], state: AdaptiveRAGState) -
     print(f"     • Needs Tabular Tool:  {state.get('needs_tabular_tool')}")
     print(f"     • Planned Sub-Queries: {state.get('sub_queries')}")
 
-    # Step 2: Tabular tool (if v2)
+    # Step 2: Tabular tool (if v3)
     if state.get("tabular_evidence"):
-        print(f"\n  {BOLD}{GREEN}2. Autonomous Tabular Tool Execution (v2_aamr):{RESET}")
+        print(f"\n  {BOLD}{GREEN}2. Autonomous Tabular Tool Execution (v3_aamr_sg):{RESET}")
         for tab_block in state.get("tabular_evidence", []):
             first_line = tab_block.split("\n")[0]
             print(f"     • Injected XBRL Block: {CYAN}{first_line}{RESET}")
