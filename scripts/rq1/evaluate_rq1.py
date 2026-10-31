@@ -2,7 +2,7 @@
 """
 RQ1: Retrieval completeness of the 4 systems, by question type. One command for the free pipeline:
 
-    Stage 1   score.py          lexical recall@k, context recall, completeness, context precision
+    Stage 1   score.py          lexical recall@k, recall@all, completeness, average precision
     Stage 1b  score_ragas.py    (optional, LLM judge) RAGAS context recall / precision; run separately
     Stage 2   report.py         bootstrap CIs per system x question-type facet -> aggregate.csv, report.md
 

@@ -37,13 +37,13 @@ def test_question_metrics_recall_completeness_and_average_precision():
     m = question_metrics(rel, k_values=(2, 4))
     assert m["recall@2"] == 0.5 and m["complete@2"] == 0.0
     assert m["recall@4"] == 1.0 and m["complete@4"] == 1.0
-    assert m["context_recall"] == 1.0 and m["complete@all"] == 1.0 and m["zero_recall"] == 0.0
-    assert m["context_precision"] == pytest.approx((1 / 2 + 2 / 4) / 2)
+    assert m["recall@all"] == 1.0 and m["complete@all"] == 1.0 and m["zero_recall"] == 0.0
+    assert m["average_precision"] == pytest.approx((1 / 2 + 2 / 4) / 2)
 
 
 def test_question_metrics_nothing_found():
     m = question_metrics([[False, False]], k_values=(1,))
-    assert m["context_recall"] == 0.0 and m["zero_recall"] == 1.0 and m["context_precision"] == 0.0
+    assert m["recall@all"] == 0.0 and m["zero_recall"] == 1.0 and m["average_precision"] == 0.0
 
 
 def test_matching_and_first_rank():
@@ -91,7 +91,7 @@ def test_score_and_report_end_to_end(tmp_path):
     ])
     out = tmp_path / "out"
     q_rows, e_rows = score(bench, recs, out)
-    assert {(r["system"], r["context_recall"]) for r in q_rows} == {("system_a", 1.0), ("system_b", 0.5)}
+    assert {(r["system"], r["recall@all"]) for r in q_rows} == {("system_a", 1.0), ("system_b", 0.5)}
     assert len(e_rows) == 4
     text = build_report(out)
     assert "## By question type" in text and "## By evidence modality" in text

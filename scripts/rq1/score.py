@@ -7,10 +7,11 @@ XBRL blocks first), the same order RQ2's RAGAS Context Precision sees.
 
 Per (system, question), written to `question_scores.csv`:
 - recall@k            share of gold evidence items found in the first k chunks
-- context_recall      share of gold evidence items found anywhere in the retrieved context (recall@all)
+- recall@all          share of gold evidence items found anywhere in the retrieved context
 - complete@k / complete@all   1 if every gold evidence item was found
 - zero_recall         1 if no gold evidence item was found
-- context_precision   RAGAS-style average precision over the ranked chunks:
+- average_precision   average precision over the ranked chunks (same formula as RAGAS Context Precision,
+                      but with lexical labels, so not a RAGAS score):
                       sum_k(precision@k * rel_k) / (relevant chunks); 0 if none is relevant
 
 Per (system, question, gold evidence item), written to `evidence_scores.csv`: found, first rank, found@k,
@@ -46,7 +47,7 @@ def question_metrics(rel: List[List[bool]], k_values: Sequence[int] = K_VALUES) 
         out[f"recall@{k}"] = hits / n_ev
         out[f"complete@{k}"] = float(hits == n_ev)
     found = sum(r is not None for r in ranks)
-    out["context_recall"] = found / n_ev
+    out["recall@all"] = found / n_ev
     out["complete@all"] = float(found == n_ev)
     out["zero_recall"] = float(found == 0)
 
@@ -56,13 +57,13 @@ def question_metrics(rel: List[List[bool]], k_values: Sequence[int] = K_VALUES) 
         if is_rel:
             hits_so_far += 1
             ap += hits_so_far / k
-    out["context_precision"] = ap / hits_so_far if hits_so_far else 0.0
+    out["average_precision"] = ap / hits_so_far if hits_so_far else 0.0
     return out
 
 
 def question_metric_names(k_values: Sequence[int] = K_VALUES) -> List[str]:
-    return ([f"recall@{k}" for k in k_values] + ["context_recall"] + [f"complete@{k}" for k in k_values]
-            + ["complete@all", "zero_recall", "context_precision"])
+    return ([f"recall@{k}" for k in k_values] + ["recall@all"] + [f"complete@{k}" for k in k_values]
+            + ["complete@all", "zero_recall", "average_precision"])
 
 
 def evaluate_records(

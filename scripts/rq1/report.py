@@ -28,7 +28,7 @@ from scripts.rq2.common import read_jsonl  # noqa: E402
 from scripts.rq2.report import bootstrap_ci, latest_scores  # noqa: E402
 
 RAGAS_PREFIX = "ragas_"
-HEADLINE_METRICS = ["context_recall", "complete@all", f"recall@{K_VALUES[0]}", "context_precision"]
+HEADLINE_METRICS = ["recall@all", "complete@all", f"recall@{K_VALUES[0]}", "average_precision"]
 OVERALL = ("overall", "all")
 
 
@@ -120,8 +120,9 @@ def render_report(agg: List[Dict[str, Any]], question_rows: List[Dict[str, Any]]
         "across hops, with v2's XBRL blocks first.",
         "- Context sizes differ (max chunks: " + ", ".join(f"{s} {n}" for s, n in max_ctx.items())
         + f"). recall@{K_VALUES[0]} "
-        "compares systems at an equal budget; context_recall / complete@all compare full contexts.",
-        "- `context_precision` is RAGAS-style average precision with lexical labels. `ragas_*` metrics use an "
+        "compares systems at an equal budget; recall@all / complete@all compare full contexts.",
+        "- `average_precision` uses the RAGAS Context Precision formula with lexical labels; it is not a RAGAS "
+        "score. `ragas_*` metrics (when present) use an "
         "LLM judge against the gold answer, not the gold evidence quotes.",
         "- System C's hop counts and early stopping are reported in RQ3, not here.",
     ]

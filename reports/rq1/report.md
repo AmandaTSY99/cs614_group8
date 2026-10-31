@@ -9,18 +9,18 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 |---|---|---|---|---|
 | recall@5 | 0.54 [0.45, 0.62] | 0.73 [0.66, 0.81] | 0.70 [0.62, 0.77] | 0.64 [0.56, 0.72] |
 | recall@10 | 0.70 [0.62, 0.77] | 0.73 [0.66, 0.81] | 0.89 [0.84, 0.94] | 0.81 [0.75, 0.87] |
-| context_recall | 0.70 [0.62, 0.77] | 0.73 [0.66, 0.81] | 0.91 [0.86, 0.95] | 0.84 [0.79, 0.90] |
+| recall@all | 0.70 [0.62, 0.77] | 0.73 [0.66, 0.81] | 0.91 [0.86, 0.95] | 0.84 [0.79, 0.90] |
 | complete@5 | 0.40 [0.31, 0.48] | 0.62 [0.53, 0.70] | 0.53 [0.42, 0.62] | 0.47 [0.38, 0.58] |
 | complete@10 | 0.57 [0.46, 0.66] | 0.62 [0.53, 0.70] | 0.81 [0.74, 0.89] | 0.67 [0.58, 0.76] |
 | complete@all | 0.57 [0.46, 0.66] | 0.62 [0.53, 0.70] | 0.85 [0.77, 0.91] | 0.72 [0.64, 0.81] |
 | zero_recall | 0.16 [0.09, 0.25] | 0.16 [0.09, 0.24] | 0.03 [0.00, 0.07] | 0.04 [0.01, 0.08] |
-| context_precision | 0.54 [0.46, 0.62] | 0.65 [0.58, 0.72] | 0.60 [0.54, 0.67] | 0.49 [0.44, 0.55] |
+| average_precision | 0.54 [0.46, 0.62] | 0.65 [0.58, 0.72] | 0.60 [0.54, 0.67] | 0.49 [0.44, 0.55] |
 
 ## By question type
 
 ### recipe
 
-**context_recall**
+**recall@all**
 
 | recipe | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -56,7 +56,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 | cross_company_text (n=5) | 0.30 [0.10, 0.50] | 0.90 [0.70, 1.00] | 0.50 [0.20, 0.80] | 0.50 [0.20, 0.80] |
 | cross_company_table (n=4) | 0.38 [0.12, 0.50] | 0.50 [0.00, 1.00] | 0.50 [0.50, 0.50] | 0.38 [0.12, 0.50] |
 
-**context_precision**
+**average_precision**
 
 | recipe | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -70,7 +70,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 
 ### modality
 
-**context_recall**
+**recall@all**
 
 | modality | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -94,7 +94,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 | table (n=40) | 0.60 [0.46, 0.74] | 0.64 [0.49, 0.76] | 0.72 [0.61, 0.82] | 0.62 [0.50, 0.75] |
 | table+text (n=19) | 0.33 [0.23, 0.45] | 0.54 [0.39, 0.68] | 0.40 [0.26, 0.54] | 0.36 [0.24, 0.49] |
 
-**context_precision**
+**average_precision**
 
 | modality | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -104,7 +104,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 
 ### scope
 
-**context_recall**
+**recall@all**
 
 | scope | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -128,7 +128,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 | cross_year (n=33) | 0.52 [0.37, 0.67] | 0.73 [0.59, 0.85] | 0.79 [0.68, 0.89] | 0.70 [0.56, 0.82] |
 | cross_company (n=9) | 0.33 [0.17, 0.50] | 0.72 [0.44, 0.94] | 0.50 [0.33, 0.61] | 0.44 [0.28, 0.61] |
 
-**context_precision**
+**average_precision**
 
 | scope | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -138,7 +138,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 
 ### evidence_count
 
-**context_recall**
+**recall@all**
 
 | evidence_count | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -162,7 +162,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 | 2 (n=64) | 0.50 [0.39, 0.59] | 0.71 [0.62, 0.80] | 0.69 [0.60, 0.77] | 0.61 [0.50, 0.70] |
 | 3+ (n=18) | 0.58 [0.40, 0.75] | 0.71 [0.55, 0.85] | 0.58 [0.39, 0.76] | 0.56 [0.37, 0.74] |
 
-**context_precision**
+**average_precision**
 
 | evidence_count | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -172,7 +172,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 
 ### section_spread
 
-**context_recall**
+**recall@all**
 
 | section_spread | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -193,7 +193,7 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 | 1 item (n=76) | 0.59 [0.49, 0.69] | 0.79 [0.71, 0.87] | 0.76 [0.69, 0.83] | 0.71 [0.62, 0.80] |
 | 2+ items (n=21) | 0.35 [0.23, 0.47] | 0.53 [0.37, 0.68] | 0.46 [0.33, 0.60] | 0.37 [0.26, 0.49] |
 
-**context_precision**
+**average_precision**
 
 | section_spread | system_a | system_b | system_c_v1 | system_c_v2 |
 |---|---|---|---|---|
@@ -227,6 +227,6 @@ Cells: mean [bootstrap 95% CI]. Hypothesis tests are not run yet.
 
 - Relevance is lexical: a gold evidence quote counts as retrieved if a 6-word sub-phrase or >= 65% of its words appear in a chunk (`scripts/rq1/matching.py`). Scores are lower bounds.
 - Ranks follow each system's own `retrieved_contexts` order; System C's order is retrieval order across hops, with v2's XBRL blocks first.
-- Context sizes differ (max chunks: system_a 10, system_b 5, system_c_v1 17, system_c_v2 17). recall@5 compares systems at an equal budget; context_recall / complete@all compare full contexts.
-- `context_precision` is RAGAS-style average precision with lexical labels. `ragas_*` metrics use an LLM judge against the gold answer, not the gold evidence quotes.
+- Context sizes differ (max chunks: system_a 10, system_b 5, system_c_v1 17, system_c_v2 17). recall@5 compares systems at an equal budget; recall@all / complete@all compare full contexts.
+- `average_precision` uses the RAGAS Context Precision formula with lexical labels; it is not a RAGAS score. `ragas_*` metrics (when present) use an LLM judge against the gold answer, not the gold evidence quotes.
 - System C's hop counts and early stopping are reported in RQ3, not here.

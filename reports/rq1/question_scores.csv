@@ -1,4 +1,4 @@
-system,question_id,recipe,modality,scope,evidence_count,section_spread,n_gold_evidence,n_contexts,recall@5,complete@5,recall@10,complete@10,context_recall,complete@all,zero_recall,context_precision
+system,question_id,recipe,modality,scope,evidence_count,section_spread,n_gold_evidence,n_contexts,recall@5,complete@5,recall@10,complete@10,recall@all,complete@all,zero_recall,average_precision
 system_c_v1,gold-024,text,text,single_doc,2,1 item,2,11,0.5,0.0,1.0,1.0,1.0,1.0,0.0,0.26666666666666666
 system_b,gold-029,table_text,table+text,single_doc,2,2+ items,2,5,0.5,0.0,0.5,0.0,0.5,0.0,0.0,1.0
 system_b,gold-024,text,text,single_doc,2,1 item,2,5,1.0,1.0,1.0,1.0,1.0,1.0,0.0,1.0
