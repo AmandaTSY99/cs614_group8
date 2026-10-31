@@ -24,8 +24,10 @@ from scripts.rq2.judge import EMBEDDING_MODEL  # noqa: E402
 METRIC_ORDER = [
     "faithfulness", "answer_relevancy", "context_recall", "context_precision", "factual_correctness",
     "numeric_accuracy", "citation_precision", "citation_recall", "citation_f1", "citation_coverage",
-    "grounding_error_rate",
+    "grounding_error_rate", "abstained",
 ]
+# The RQ2 proposal's question attributes (`dims` on each score row), reported as extra groups "dim=value".
+DIMENSIONS = ["answer_type", "evidence_format", "hop", "task", "evidence_scope"]
 LLM_METRICS = METRIC_ORDER[:5]
 N_BOOT = 1000
 SEED = 0
@@ -57,7 +59,9 @@ def aggregate(scores: List[Dict[str, Any]], n_boot: int = N_BOOT, seed: int = SE
     """One row per (system, category | "overall", metric): n ok, n_na, n_failed, mean, 95% CI."""
     groups: Dict[Tuple[str, str, str], Dict[str, Any]] = defaultdict(lambda: {"values": [], "na": 0, "failed": 0})
     for row in latest_scores(scores):
-        for cat in ("overall", row.get("category") or "unknown"):
+        dims = row.get("dims") or {}
+        dim_groups = [f"{d}={dims[d]}" for d in DIMENSIONS if dims.get(d)]
+        for cat in ("overall", row.get("category") or "unknown", *dim_groups):
             g = groups[(row["system"], cat, row["metric"])]
             if row["status"] == "ok" and row.get("value") is not None:
                 g["values"].append(float(row["value"]))
@@ -224,7 +228,9 @@ def render_report(
     lines.append("|---|---|---|")
     for s in systems:
         lines.append(f"| {s} | {sum(r['system'] == s for r in records)} | {failures.get(s, 0)} |")
-    for cat in ["overall"] + CATEGORIES:
+    dim_groups = sorted({a["category"] for a in agg if "=" in a["category"]},
+                        key=lambda g: (DIMENSIONS.index(g.split("=")[0]) if g.split("=")[0] in DIMENSIONS else 99, g))
+    for cat in ["overall"] + CATEGORIES + dim_groups:
         lines += ["", f"## {cat}", "", "| Metric | " + " | ".join(systems) + " |",
                   "|---|" + "---|" * len(systems)]
         for metric in METRIC_ORDER:
@@ -244,6 +250,19 @@ def render_report(
         "statements or notes counts as `Item 8`, and a cover-page chunk (no Item heading; registrant name, "
         "address, file number) counts as `Item 1`, matching how the golden set labels those facts.",
         "- RAGAS metrics see the answer with citation tags stripped.",
+        "- Refusals (\"Not found in the provided context\", \"cannot be determined\", ...) are counted by "
+        "`abstained`. They are N/A for faithfulness (no claims to check) and score 0 for factual correctness, "
+        "instead of the 1.0 RAGAS would give a claim-free answer.",
+        "- RAGAS references come from the benchmark: factual correctness uses the gold answer plus its key "
+        "points; context recall / precision use the gold evidence quotes plus the gold answer, because a "
+        "computed answer such as \"-30.36%\" does not appear in any filing. A bare negative gold number is "
+        "also written as a decrease.",
+        "- Numeric accuracy accepts the unsigned value of a negative gold number (\"-25.64%\" matches "
+        "\"decreased by 25.6%\", 0.5% relative tolerance), so a wrong sign is not caught.",
+        "- Categories: multi_company_comparison is only questions across companies; one company across years "
+        "is cross_section_multihop. `dim=value` sections use the proposal's attributes from the benchmark: "
+        "answer_type (type), evidence_format (recipe), hop, task (calculation when the gold has a program), "
+        "evidence_scope (scope).",
     ]
     if smoke:
         lines += ["", "## Smoke test: judge usage", "",

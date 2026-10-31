@@ -129,14 +129,44 @@ def strip_citation_tags(answer: str) -> str:
     return re.sub(r"[ \t]+", " ", text).strip()
 
 
+def _number_found(gold: str, text: str) -> bool:
+    g = CURRENCY_RE.sub("", gold).strip()
+    # The benchmark writes decreases as "-25.64%" while answers say "decreased by 25.6%", so the unsigned
+    # value also counts (a sign error is then not caught; documented in report.md).
+    return fuzzy_financial_match(g, text) or (g.startswith("-") and fuzzy_financial_match(g[1:].strip(), text))
+
+
 def numeric_accuracy(answer: str, ground_truth_numbers: List[Any]) -> Optional[float]:
     """Share of gold numbers found in the answer (scale-aware: $60.9 billion matches 60,922 million)."""
     gold = [str(n).strip() for n in ground_truth_numbers if str(n).strip()]
     if not gold:
         return None
     text = CURRENCY_RE.sub("", strip_citation_tags(answer))
-    hits = sum(fuzzy_financial_match(CURRENCY_RE.sub("", g).strip(), text) for g in gold)
+    hits = sum(_number_found(g, text) for g in gold)
     return hits / len(gold)
+
+
+ABSTENTION_RE = re.compile(
+    r"\b(not found in the provided context|not (?:found|provided|disclosed|available|included) in the "
+    r"(?:provided |given )?(?:context|evidence|excerpts|filings?)|cannot be (?:determined|calculated|answered)"
+    r"|(?:do|does) not (?:disclose|provide|contain|include)|insufficient (?:information|evidence|context)"
+    r"|unable to (?:determine|find|answer))",
+    re.IGNORECASE,
+)
+
+
+FIRST_SENTENCE_RE = re.compile(r"^.*?(?:[.!?](?:\s|$)|\n|$)", re.DOTALL)
+PARTIAL_ANSWER_RE = re.compile(r"\b(only part|answer only|only answer|partial answer)\b", re.IGNORECASE)
+
+
+def is_abstention(answer: str) -> bool:
+    """
+    The system declined to answer: its first sentence says the evidence is missing. A partial answer that
+    gives a result and only later notes a missing detail is not an abstention.
+    """
+    text = strip_citation_tags(answer or "").replace("**", "").strip()
+    first = FIRST_SENTENCE_RE.match(text).group(0) if text else ""
+    return bool(ABSTENTION_RE.search(first)) and not PARTIAL_ANSWER_RE.search(first)
 
 
 def grounding_error(guardrail_report: Optional[Dict[str, Any]]) -> Optional[float]:
@@ -166,4 +196,5 @@ def custom_scores(record: Dict[str, Any]) -> Dict[str, Tuple[Optional[float], st
         "numeric_accuracy": (num, "ok" if num is not None else "na", "" if num is not None else "no gold numbers"),
         "grounding_error_rate": (ground, "ok" if ground is not None else "na",
                                  "" if ground is not None else "no guardrail report"),
+        "abstained": (1.0 if is_abstention(record.get("answer", "")) else 0.0, "ok", ""),
     }
