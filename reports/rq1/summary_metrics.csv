@@ -1,0 +1,5 @@
+system,n_queries,overall_evidence_recall_pct,full_evidence_discovery_rate_pct,doc_recall_pct,mrr,context_precision_pct,multihop_evidence_recall_pct,multihop_full_discovery_pct,cross_section_discovery_rate_pct,mean_chunks_retrieved,mean_hops_executed
+system_a,97,70.03,56.7,94.33,0.593,20.2,66.58,50.0,36.36,9.6,1.0
+system_b,97,73.47,61.86,96.91,0.66,35.88,70.85,56.41,40.91,5.0,1.0
+system_c_v1,97,91.03,84.54,100.0,0.685,28.03,88.85,80.77,59.09,9.9,2.24
+system_c_v3,97,90.52,82.47,100.0,0.622,28.5,88.21,78.21,68.18,11.1,2.12

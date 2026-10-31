@@ -5,7 +5,7 @@ Runs in the main `cs614` env and never imports ragas. Resumable: (system, questi
 `records.jsonl` are skipped; failures go to `gen_errors.jsonl` and are retried on the next run.
 
 Usage:
-    python scripts/rq2/generate.py --systems system_c_v1,system_c_v2 --run-id smoke --limit 3
+    python scripts/rq2/generate.py --systems system_c_v1,system_c_v3 --run-id smoke --limit 3
 """
 
 import argparse
@@ -115,7 +115,7 @@ def select_questions(questions: List[Dict[str, Any]], ids: Optional[List[str]], 
 
 def main() -> None:
     p = argparse.ArgumentParser(description="RQ2 Stage 1: generate answers per system and question.")
-    p.add_argument("--systems", default="system_a,system_b,system_c_v1,system_c_v2")
+    p.add_argument("--systems", default="system_a,system_b,system_c_v1,system_c_v3")
     p.add_argument("--run-id", required=True)
     p.add_argument("--eval-set", default=str(GOLDEN_PATH))
     p.add_argument("--ids", default=None, help="Comma-separated question ids.")

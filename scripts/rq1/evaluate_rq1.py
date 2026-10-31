@@ -6,6 +6,14 @@ RQ1: Retrieval completeness of the 4 systems, by question type. One command for 
     Stage 1b  score_ragas.py    (optional, LLM judge) RAGAS context recall / precision; run separately
     Stage 2   report.py         bootstrap CIs per system x question-type facet -> aggregate.csv, report.md
 
+Evaluates all 4 RAG architectures (system_a, system_b, system_c_v1, system_c_v3) on:
+1. Evidence Recall@k: Proportion of gold evidence facts retrieved in the candidate context.
+2. Multi-Hop Evidence Completeness: % of multi-hop queries where ALL gold evidence items were found.
+3. Cross-Section Discovery Rate: % of questions with disparate 10-K sections (e.g. Item 7 + Item 8)
+   where evidence was successfully retrieved from both non-adjacent sections.
+4. Context Precision: Fraction of retrieved context chunks that contain ground-truth evidence.
+5. Hop Saturation: Relationship between iterative hops and evidence discovery.
+
 Reads pre-generated records (default `reports/rq3/records.jsonl`, 97 questions x 4 systems); never
 re-runs the systems. Outputs go to `reports/rq1/`.
 

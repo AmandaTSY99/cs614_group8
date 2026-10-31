@@ -1,6 +1,6 @@
 # Comparative Engineering & Evaluation Guide: 4 Financial RAG Systems
 
-**Scope:** Standardized evaluation protocol across System A, System B, System C v1, and System C v2.  
+**Scope:** Standardized evaluation protocol across System A, System B, System C v1, and System C v3.  
 **Branch:** `dev`  
 **Purpose:** Instructions for connecting to the 4 RAG systems and executing standardized evaluations for **RQ1 (Retrieval Completeness)**, **RQ2 (Grounding & Citations)**, and **RQ3 (Inference Economics)**.
 
@@ -13,7 +13,7 @@ Every research question in our paper evaluates the exact same **4 RAG systems**:
 1. **`system_a` (Vanilla Dense Baseline):** Standard vector search (top-10 chunks from Supabase) $\rightarrow$ 1 LLM answer.
 2. **`system_b` (Advanced Hybrid Single-Pass):** Vector search + BM25 keyword search + cross-encoder reranking $\rightarrow$ 1 LLM answer. Does **not** hop.
 3. **`system_c_v1` (Adaptive Multi-Hop):** Breaks question into sub-queries, loops through 1 to 3 retrieval hops, checks evidence with a Critic, and verifies numbers with a Guardrail.
-4. **`system_c_v2` (Agentic Multi-Hop with Financial Tools):** Pulls structured financial data from an SEC XBRL tool first, then loops through 1 to 3 hops with Critic and Guardrail.
+4. **`system_c_v3` (Agentic Multi-Hop with Schema-Aware Sufficiency & Financial Tools):** Pulls structured financial data from an SEC XBRL tool first, then loops through 1 to 3 hops with Critic, structural table continuity stitching, and Guardrail.
 
 ---
 
@@ -63,7 +63,7 @@ load_dotenv(override=True)
 from scripts.rq2.adapters import get_adapters
 
 # Load the 4 systems
-adapters = get_adapters(["system_a", "system_b", "system_c_v1", "system_c_v2"])
+adapters = get_adapters(["system_a", "system_b", "system_c_v1", "system_c_v3"])
 
 # Example question
 question = {
@@ -76,7 +76,7 @@ question = {
 }
 
 # Run any system
-output = adapters["system_c_v2"].answer(question)
+output = adapters["system_c_v3"].answer(question)
 
 print("Answer:", output["answer"])
 print("Retrieved Chunks:", len(output["retrieved_contexts"]))
@@ -123,7 +123,7 @@ This file contains 388 completed results with full answers, all retrieved chunks
 All execution commands use Docker, mounting your local workspace so all outputs (`reports/`) persist directly to your machine.
 
 > [!NOTE]
-> `runner` (or `system-c`) in the Docker command is simply the name of the Docker execution container. Running `scripts/rq1/evaluate_rq1.py` evaluates **all 4 systems** (`system_a`, `system_b`, `system_c_v1`, `system_c_v2`) side-by-side, not just System C!
+> `runner` (or `system-c`) in the Docker command is simply the name of the Docker execution container. Running `scripts/rq1/evaluate_rq1.py` evaluates **all 4 systems** (`system_a`, `system_b`, `system_c_v1`, `system_c_v3`) side-by-side, not just System C!
 
 ### Research Question 1 (RQ1): Retrieval Completeness & Cross-Section Discovery
 * **Objective:** Determine whether adaptive multi-hop retrieval uncovers scattered evidence across non-adjacent 10-K sections (e.g., Item 7 MD&A and Item 8 Footnotes) that single-pass architectures omit.

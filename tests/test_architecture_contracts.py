@@ -85,7 +85,7 @@ def test_anti_leakage_firewall_all_systems():
         "CANARY_SECRET_HEADING_999",
     ]
 
-    adapters = get_adapters(["system_a", "system_b", "system_c_v1", "system_c_v2"])
+    adapters = get_adapters(["system_a", "system_b", "system_c_v1", "system_c_v3"])
     for name, adapter in adapters.items():
         out = adapter.answer(canary_qa)
         # Inspect all retrieved contexts
@@ -115,7 +115,7 @@ def test_plug_and_play_adapter_schema_all_systems():
     records = json.loads(BENCHMARK_2015_PATH.read_text(encoding="utf-8"))
     sample_q = records[0]  # amanda-001 or amanda-002
 
-    systems = ["system_a", "system_b", "system_c_v1", "system_c_v2", "system_c_fixed_3hop"]
+    systems = ["system_a", "system_b", "system_c_v1", "system_c_v3", "system_c_fixed_3hop"]
     adapters = get_adapters(systems)
 
     for sys_name, adapter in adapters.items():
@@ -192,7 +192,7 @@ def test_no_groq_provider_hijacking_when_openai_selected(monkeypatch):
 
 
 def test_rq2_load_golden_populates_all_required_fields():
-    """Invariant 8: load_golden() must populate category, target_sections, ground_truth_numbers, and target_pairs on the 97-question 2015+ benchmark."""
+    """Invariant 8: load_golden() must populate category, target_sections, ground_truth_numbers, and target_pairs on the 97-question audited 2015+ benchmark."""
     from scripts.rq2.common import CATEGORIES, load_golden
 
     questions = load_golden(BENCHMARK_2015_PATH)

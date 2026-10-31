@@ -38,13 +38,15 @@ COLORS = {
     "fixed_1hop": "#64748b",   # Slate Grey
     "fixed_3hop": "#ef4444",   # Coral Red
     "adaptive_v1": "#3b82f6",  # Royal Blue
-    "agentic_v2": "#10b981",   # Emerald Green
+    "agentic_v3": "#10b981",   # Emerald Green
+    "agentic_v2": "#10b981",   # Backwards compatibility
 }
 
 MARKERS = {
     "fixed_1hop": "o",
     "fixed_3hop": "s",
     "adaptive_v1": "^",
+    "agentic_v3": "*",
     "agentic_v2": "*",
 }
 

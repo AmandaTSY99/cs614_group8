@@ -21,11 +21,76 @@ from src.system_c.corpus import (
 from src.system_c.llm import call_llm, clean_and_parse_json
 from src.system_c.state import AdaptiveRAGState
 
+# Standard 10-column continuous SEC XBRL financial schema mapping (financials.csv)
+XBRL_CORE_METRICS: Dict[str, List[str]] = {
+    "revenue": ["total revenue", "revenue", "net sales", "total sales", "turnover"],
+    "net_income": ["net income", "net earnings", "profit"],
+    "operating_income": ["operating income", "operating profit", "ebit"],
+    "total_assets": ["total assets"],
+    "total_liabilities": ["total liabilities"],
+    "stockholders_equity": [
+        "stockholders equity", "shareholders equity", "stockholders' equity",
+        "shareholders' equity", "book value",
+    ],
+    "cash_and_equivalents": ["cash and cash equivalents", "cash and equivalents", "cash balance"],
+    "operating_cash_flow": [
+        "operating cash flow", "cash from operations", "cash flow from operations",
+        "cash flows from operating", "ocf",
+    ],
+    "eps_diluted": ["diluted eps", "diluted earnings per share", "earnings per share", "eps"],
+}
+
+# Negative exclusion indicators: granular footnotes, segments, debt schedules, or narrative explanations
+# that CANNOT be satisfied by continuous macro financial statement totals (financials.csv).
+FOOTNOTE_OR_SEGMENT_EXCLUSIONS: List[str] = [
+    "gross margin", "operating margin", "profit margin", "margin", "margins",
+    "segment", "segments", "division", "geographic", "geographical", "held in",
+    "retail square footage", "square footage", "tegra", "aws", "azure", "cloud",
+    "intelligent cloud", "compute & networking", "personal computing", "productivity and business",
+    "debt maturity", "maturity schedule", "future principal", "principal payment",
+    "principal payments", "scheduled to repay", "repay", "repayment", "term debt",
+    "long-term debt", "senior notes", "commercial paper", "derivative", "hedging",
+    "foreign exchange contract", "fx forward", "covenant", "contingenc", "legal",
+    "customer concentration", "concentration", "footnote", "note ", "notes ", "note:",
+    "item 8", "item 7", "item 1", "schedule", "research and development", "r&d",
+    "share of total sales", "share of sales", "as a share of",
+    "goodwill", "reserve", "reserves", "sales return", "returns reserve",
+    "stock option", "stock options", "equity incentive", "restricted stock",
+    "impairment", "fair value", "pension", "allowance", "valuation",
+    "why", "driver", "strategy", "cause", "impact", "explain", "describe", "description",
+]
+
+
+def is_xbrl_headline_target(query: str) -> bool:
+    """
+    Returns True ONLY if the query explicitly targets standard continuous XBRL headline financial metrics
+    (Revenue, Net Income, Operating Income, Total Assets, Total Liabilities, Stockholders Equity,
+    Cash & Equivalents, Operating Cash Flow, Diluted EPS) with NO footnote, segment, margin,
+    or debt schedule requirements.
+    """
+    q_lower = query.lower()
+
+    # 1. Any footnote, segment, debt maturity, or qualitative indicator disqualifies XBRL-only pre-retrieval
+    for excl in FOOTNOTE_OR_SEGMENT_EXCLUSIONS:
+        if excl in q_lower:
+            return False
+
+    # 2. Check for explicit match against standard XBRL core metrics
+    for metric, aliases in XBRL_CORE_METRICS.items():
+        for alias in aliases:
+            if alias == "eps":
+                if re.search(r"\beps\b", q_lower):
+                    return True
+            elif alias in q_lower:
+                return True
+
+    return False
+
 DECOMPOSER_SYSTEM_PROMPT = """You are a Senior Financial Analyst & Query Planner for SEC 10-K filings.
 Given a user's financial question, return a strict JSON object with the following keys:
 - "target_ticker": primary stock ticker (one of AAPL, AMZN, GOOGL, JNJ, JPM, META, MSFT, NVDA, TSLA, WMT, or null)
 - "target_tickers": list of all stock tickers mentioned if comparing multiple companies, e.g. ["AAPL", "NVDA"]
-- "fiscal_years": list of integer fiscal years mentioned (e.g. [2024, 2025]), or empty list []
+- "fiscal_years": list of integer fiscal years of the SEC 10-K filings to retrieve (e.g. [2024, 2018]). If the question specifies a filing year (e.g. "According to their fiscal year 2019 10-Ks", "In the 2018 10-K"), include ONLY the filing year(s) to search, NOT future maturity, repayment, or contractual years (e.g. "scheduled to repay in 2020").
 - "query_complexity": "single_hop" if it asks for one isolated fact, or "multi_hop" if it connects multiple sections, years, drivers, or footnotes
 - "needs_tabular_tool": true if the question asks for reported financial metrics (revenue, net income, operating income, assets, liabilities, equity, cash flow, EPS, margins)
 - "sub_query_plans": list of 1 to 4 structured sub-query objects with tool routing:
@@ -41,6 +106,11 @@ Given a user's financial question, return a strict JSON object with the followin
 - "sub_queries": list of 1 to 4 atomic search query strings corresponding to "sub_query_plans"
 
 Respond ONLY with valid JSON."""
+
+FUTURE_MATURITY_YEAR_RE = re.compile(
+    r"(?:repay(?:ing|ment)?|due|matur(?:ing|ity|ities)|scheduled\s+for|thereafter\s+in)\s+(?:in\s+)?(199\d|20[0-2]\d)",
+    re.IGNORECASE,
+)
 
 
 def _parse_json_safely(raw_text: str) -> Dict[str, Any]:
@@ -89,7 +159,25 @@ def decomposer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
             llm_years.append(int(y))
         except (ValueError, TypeError):
             pass
-    fiscal_years = state.get("fiscal_years") or llm_years or regex_years
+
+    mode = state.get("mode")
+    if mode == "v3_aamr_sg":
+        # Question Text Year Priority & Semantic Disambiguation for System C v3:
+        # Distinguish SEC filing years from future contractual/maturity schedule years (e.g. "repay in 2020").
+        future_years = {int(y) for y in FUTURE_MATURITY_YEAR_RE.findall(query)}
+        valid_regex_years = [y for y in regex_years if y not in future_years]
+
+        extracted_years: List[int] = []
+        for y in (valid_regex_years + llm_years):
+            if y not in extracted_years and y not in future_years:
+                extracted_years.append(y)
+
+        existing_years = [int(y) for y in (state.get("fiscal_years") or []) if int(y) not in future_years]
+        # If question explicitly mentions filing years, those define the filing search pool;
+        # otherwise fall back to existing state years.
+        fiscal_years = sorted(list(dict.fromkeys(extracted_years if extracted_years else existing_years)))
+    else:
+        fiscal_years = state.get("fiscal_years") or llm_years or regex_years
 
     pairs = (
         [[t, y] for t in all_tickers for y in fiscal_years]
@@ -173,14 +261,27 @@ def decomposer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
     if complexity not in ("single_hop", "multi_hop"):
         complexity = "multi_hop"
 
-    needs_tabular = (
-        bool(parsed.get("needs_tabular_tool", False))
-        or any(p.get("target_tool") == "tabular_tool" for p in sub_query_plans)
-        or any(
-            kw in query.lower()
-            for kw in ("revenue", "margin", "income", "eps", "asset", "liability", "cash flow", "debt", "equity")
+    mode = state.get("mode")
+    if mode == "v3_aamr_sg":
+        # System C v3 (AAMR-SG): Schema-aware sufficiency & pre-routing.
+        # Only set needs_tabular_tool = True if query explicitly targets one of the standard XBRL headline metrics.
+        # Queries for Gross Margin, Segment Revenue, Debt Maturity Schedules, or Footnotes route directly to retriever.
+        needs_tabular = is_xbrl_headline_target(query)
+        target_metric_type = "xbrl_headline" if needs_tabular else "footnote_disclosure"
+        if not needs_tabular:
+            for p in sub_query_plans:
+                p["target_tool"] = "retriever"
+    else:
+        # Legacy v1/v2 heuristic routing
+        target_metric_type = "xbrl_headline" if parsed.get("needs_tabular_tool") else "hybrid"
+        needs_tabular = (
+            bool(parsed.get("needs_tabular_tool", False))
+            or any(p.get("target_tool") == "tabular_tool" for p in sub_query_plans)
+            or any(
+                kw in query.lower()
+                for kw in ("revenue", "margin", "income", "eps", "asset", "liability", "cash flow", "debt", "equity")
+            )
         )
-    )
 
     return {
         "target_ticker": primary_ticker,
@@ -189,6 +290,8 @@ def decomposer_node(state: AdaptiveRAGState) -> Dict[str, Any]:
         "target_pairs": pairs,
         "query_complexity": complexity,
         "needs_tabular_tool": needs_tabular,
+        "target_metric_type": target_metric_type,
+        "last_action": "tabular_tool" if (needs_tabular and mode in ("v2_aamr", "v3_aamr_sg")) else "retriever",
         "sub_queries": sub_queries,
         "sub_query_plans": sub_query_plans,
         "current_sub_query": sub_queries[0],

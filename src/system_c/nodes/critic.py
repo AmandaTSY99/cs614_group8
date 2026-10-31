@@ -20,17 +20,18 @@ import re
 from typing import Any, Dict, List, Set
 
 from src.system_c.llm import call_llm, clean_and_parse_json
+from src.system_c.nodes.decomposer import is_xbrl_headline_target
 from src.system_c.state import AdaptiveRAGState
 
-CRITIC_SYSTEM_PROMPT = """You are an Evidence Sufficiency Critic for an SEC 10-K Financial RAG system.
+CRITIC_SYSTEM_PROMPT_BASE = """You are an Evidence Sufficiency Critic for an SEC 10-K Financial RAG system.
 Evaluate whether the Accumulated Evidence (including any tabular XBRL blocks) contains ALL required facts, numbers, segment breakdowns, and footnote disclosures to thoroughly answer the Original Query.
 
-STRICT RULE 1 (ZERO-TOLERANCE MULTI-COMPANY & SEGMENT COVERAGE):
-If the Original Query asks to compare multiple companies (e.g. Microsoft, Amazon, Alphabet) or specific business segments (e.g. AWS, Intelligent Cloud, Google Cloud, Compute & Networking) or footnote percentages (e.g. customer concentration, senior notes), ALL of them must be present in the evidence.
-If even ONE company, segment, or footnote is missing:
+STRICT RULE 1 (ZERO-TOLERANCE MULTI-COMPANY, SEGMENT & FOOTNOTE COVERAGE):
+If the Original Query asks to compare multiple companies (e.g. Microsoft, Amazon, Alphabet), specific business segments (e.g. AWS, Tegra, Intelligent Cloud), granular footnotes (e.g. debt maturity schedules, foreign exchange derivatives, geographic asset splits), or metrics not reported on the face of the financial statements (e.g. gross margin, R&D expense as a share of sales), ALL of them must be present in the evidence.
+Note: High-level financial statements [F-...] do NOT contain Gross Margin, Segment Revenue, Debt Maturity Schedules, or Footnote disclosures. If the question asks for these granular items and only macro balance sheet/income statement tables are present:
 - "is_sufficient" MUST be false.
 - "sufficiency_score" MUST be strictly < 0.70 (e.g. 0.40 - 0.60).
-- "missing_premises" MUST list the exact missing company, segment, or footnote disclosures.
+- "missing_premises" MUST list the exact missing footnote, segment, or margin disclosures.
 
 STRICT RULE 2 (CONSISTENCY REQUIREMENT):
 If your "critic_reasoning" states that any data point, segment, or footnote is missing, lacking, or not provided, you CANNOT set "is_sufficient": true. You MUST set "is_sufficient": false and "sufficiency_score" < 0.70.
@@ -46,6 +47,14 @@ Return ONLY a valid JSON object with keys:
 - "missing_years": list of integer fiscal years missing data (e.g. [2022]). Empty list [] if all requested years are represented.
 - "missing_premises": list of specific missing facts or targeted questions for the next retrieval hop (empty list [] if is_sufficient is true)
 - "critic_reasoning": concise 1-2 sentence justification explaining what is covered and what remains missing."""
+
+# Upgraded prompt for System C v3 ("v3_aamr_sg") with Strict Rule 3 for lead-in chunks & Rule 4 for debt principal disambiguation
+CRITIC_SYSTEM_PROMPT_V3 = CRITIC_SYSTEM_PROMPT_BASE.replace(
+    "STRICT RULE 2 (CONSISTENCY REQUIREMENT):\nIf your \"critic_reasoning\" states that any data point, segment, or footnote is missing, lacking, or not provided, you CANNOT set \"is_sufficient\": true. You MUST set \"is_sufficient\": false and \"sufficiency_score\" < 0.70.",
+    "STRICT RULE 2 (CONSISTENCY REQUIREMENT):\nIf your \"critic_reasoning\" states that any data point, segment, or footnote is missing, lacking, or not provided, you CANNOT set \"is_sufficient\": true. You MUST set \"is_sufficient\": false and \"sufficiency_score\" < 0.70.\n\nSTRICT RULE 3 (UNRESOLVED LEAD-IN SENTENCES & MISSING TABLES):\nIf an evidence chunk contains a forward reference, lead-in sentence, or placeholder such as \"is summarized below:\", \"as follows:\", \"refer to Note X\", or introduces an upcoming table (e.g. stock option activity, contractual obligations, fair value hierarchy), but the ACTUAL NUMERICAL ROWS AND COLUMNS of that table are absent from the evidence, the evidence is INCOMPLETE. You CANNOT set \"is_sufficient\": true. You MUST set \"is_sufficient\": false, set \"sufficiency_score\" < 0.70, and explicitly list the missing table or metric in \"missing_premises\".\n\nSTRICT RULE 4 (DEBT PRINCIPAL VS CONTRACTUAL COMMITMENTS DISAMBIGUATION):\nWhen the user query asks specifically for future principal payments on debt (or principal payments on long-term debt), do NOT accept a Contractual Obligations / Commitments table that combines debt principal and interest. The evidence must include the pure principal repayment/maturity schedule from the Long-Term Debt footnote disclosures."
+)
+
+CRITIC_SYSTEM_PROMPT = CRITIC_SYSTEM_PROMPT_V3
 
 
 def _parse_critic_json(raw_text: str) -> Dict[str, Any]:
@@ -86,11 +95,14 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
         f"Accumulated Evidence ({len(evidence)} chunks):\n{evidence_digest}"
     )
 
+    mode = state.get("mode")
+    sys_prompt = CRITIC_SYSTEM_PROMPT_V3 if mode == "v3_aamr_sg" else CRITIC_SYSTEM_PROMPT_BASE
+
     raw_resp, updated_telemetry = call_llm(
         state=state,
         node_name="critic",
         messages=[
-            {"role": "system", "content": CRITIC_SYSTEM_PROMPT},
+            {"role": "system", "content": sys_prompt},
             {"role": "user", "content": user_prompt},
         ],
         temperature=0.0,
@@ -183,27 +195,45 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
 
         # Detection B: Tabular XBRL complete coverage for quantitative queries
         # If query needs tabular tool and tabular_evidence exists covering all target tickers
+        mode = state.get("mode")
         if state.get("needs_tabular_tool") and tabular:
             covered_tickers = {t for t in target_tickers if any(f"F-{t}" in blk for blk in tabular)}
             if target_tickers and covered_tickers == set(target_tickers):
-                # Check if query actually requires narrative text (footnotes, segments, risks, drivers)
-                q_lower = state.get("original_query", "").lower()
-                has_narrative_need = any(
-                    w in q_lower for w in (
-                        "risk", "footnote", "note", "notes", "segment", "segments",
-                        "cloud", "aws", "compute", "intelligent cloud", "concentration",
-                        "customer", "impact", "legal", "covenant", "contingenc",
-                        "why", "driver", "strategy", "cause", "item 7", "item 8", "item 1"
+                if mode == "v3_aamr_sg":
+                    # System C v3 (AAMR-SG): Granularity-aware sufficiency reflection.
+                    # Verify target metric is truly in standard continuous XBRL headline schema.
+                    # If the query asks for Gross Margin, Segment Revenue, Debt Schedules, or Footnotes,
+                    # DO NOT force score = 0.95. Let the LLM Critic's organic score govern early-stopping.
+                    q_text = state.get("original_query", "")
+                    if is_xbrl_headline_target(q_text):
+                        score = max(score, 0.95)
+                        missing_entities = []
+                        missing_years = []
+                        missing_premises = []
+                        redundant_prevented = True
+                        reasoning += " [Complete factual coverage: Tabular XBRL tool provided exact reported headline financials]."
+                    else:
+                        # Allow LLM Critic's organic sufficiency score to govern continuation to Hops 2 and 3
+                        pass
+                else:
+                    # Legacy v2 heuristic
+                    q_lower = state.get("original_query", "").lower()
+                    has_narrative_need = any(
+                        w in q_lower for w in (
+                            "risk", "footnote", "note", "notes", "segment", "segments",
+                            "cloud", "aws", "compute", "intelligent cloud", "concentration",
+                            "customer", "impact", "legal", "covenant", "contingenc",
+                            "why", "driver", "strategy", "cause", "item 7", "item 8", "item 1"
+                        )
                     )
-                )
-                # Tabular tool satisfies simple single-hop headline financial lookup when NO narrative/footnote/segment is requested
-                if not has_narrative_need:
-                    score = max(score, 0.95)
-                    missing_entities = []
-                    missing_years = []
-                    missing_premises = []
-                    redundant_prevented = True
-                    reasoning += " [Complete factual coverage: Tabular XBRL tool provided exact reported financials]."
+                    # Tabular tool satisfies simple single-hop headline financial lookup when NO narrative/footnote/segment is requested
+                    if not has_narrative_need:
+                        score = max(score, 0.95)
+                        missing_entities = []
+                        missing_years = []
+                        missing_premises = []
+                        redundant_prevented = True
+                        reasoning += " [Complete factual coverage: Tabular XBRL tool provided exact reported financials]."
 
         # Detection C: Multi-company comparative query coverage check
         # For queries with multiple target tickers (e.g. GOLD-51: MSFT, AMZN, GOOGL),
@@ -224,12 +254,39 @@ def critic_node(state: AdaptiveRAGState) -> Dict[str, Any]:
             if missing_tickers and hop < max_hops:
                 score = min(score, 0.60)
                 is_sufficient = False
-                for mt in missing_tickers:
-                    lbl = f"{mt} financial disclosures"
-                    if lbl not in missing_entities:
-                        missing_entities.append(lbl)
+                if mode == "v3_aamr_sg":
+                    for mt in missing_tickers:
+                        if mt not in missing_entities:
+                            missing_entities.append(mt)
+                else:
+                    for mt in missing_tickers:
+                        lbl = f"{mt} financial disclosures"
+                        if lbl not in missing_entities:
+                            missing_entities.append(lbl)
                 missing_premises.append(f"Disclosures, line items, and segment performance for {', '.join(missing_tickers)}")
                 reasoning += f" [Multi-company coverage incomplete: missing evidence for {', '.join(missing_tickers)}]."
+
+        # Detection D: Unresolved forward reference / lead-in chunk check (System C v3 only)
+        if mode == "v3_aamr_sg" and hop < max_hops:
+            q_lower = state.get("original_query", "").lower()
+            unresolved_lead_in = False
+            for c in evidence:
+                content = c.get("content", "")
+                if re.search(r"(?:summarized below|as follows|the following table)\s*:", content, re.IGNORECASE):
+                    if any(term in q_lower for term in ("option", "exercisable", "maturity", "schedule", "contractual", "obligation")):
+                        has_exercisable_count = any(
+                            "exercisable" in oc.get("content", "").lower()
+                            and any(char.isdigit() for char in oc.get("content", ""))
+                            and "|" in oc.get("content", "")
+                            for oc in evidence
+                        )
+                        if not has_exercisable_count:
+                            unresolved_lead_in = True
+                            break
+            if unresolved_lead_in:
+                score = min(score, 0.65)
+                missing_premises.append("Detailed tabular rows for summarized disclosure/schedule")
+                reasoning += " [Unresolved lead-in detected: Text references an upcoming disclosure table missing from current evidence]."
 
         # 4. Apply quantitative early-stopping threshold (>= threshold triggers early stop)
         has_gaps = bool(missing_entities or missing_years or missing_premises)

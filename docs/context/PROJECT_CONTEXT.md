@@ -70,3 +70,10 @@ The project repository is containerized via `Dockerfile` and `docker-compose.yam
 * **System C Demo Execution:** `docker compose run --rm system-c python scripts/demo_milestone1_system_c.py --mock`
 * **Unit Tests via Docker:** `docker compose run --rm system-c pytest tests/test_system_c.py -v`
 * **Host Ollama Connectivity:** Configured with `host.docker.internal:host-gateway` and `OLLAMA_HOST=http://host.docker.internal:11434` for seamless local LLM inference from inside containers.
+
+---
+
+## 7. Critical Architectural Insights: System C v1 vs. v2 Trade-offs
+* Full Analysis Document: [`docs/context/ARCHITECTURAL_INSIGHTS_V1_VS_V2.md`](file:///Users/anishdobz/projects/cs614_group8/docs/context/ARCHITECTURAL_INSIGHTS_V1_VS_V2.md)
+* **The 10-K Lookback Barrier:** SEC 10-K balance sheets only report the prior 2 years. Questions spanning >2 years (e.g. FY21 vs FY25 in `gold-066`) cause text RAG (v1) to fail across all 3 hops. System C v2 solves this in 1 hop by querying continuous multi-year XBRL time-series data.
+* **The Premature Sufficiency Trade-off:** High-level XBRL tables in v2 occasionally trick the Sufficiency Critic into stopping at Hop 1, missing deep footnote line items (e.g., segment revenues, debt maturity schedules) that v1 retrieved by being forced into Hops 2 and 3. Overall 97-question accuracy: System C v1 = 89.66%, System C v2 = 82.76%, but v2 delivers 36.7% faster median latency ($13.6\text{s}$ vs $21.4\text{s}$) and 13.8% lower cost.

@@ -264,7 +264,8 @@ def _call_mock(
                 found_tickers.append(t)
 
         ticker = found_tickers[0] if found_tickers else "NVDA"
-        years = [int(y) for y in ("2023", "2024", "2025", "2026") if y in query] or [2026]
+        future_years = {int(y) for y in re.findall(r"(?:repay(?:ing|ment)?|due|matur(?:ing|ity|ities)|scheduled\s+for|thereafter\s+in)\s+(?:in\s+)?(199\d|20[0-2]\d)", query, re.IGNORECASE)}
+        years = [int(m) for m in re.findall(r"\b(199\d|20[0-2]\d)\b", query) if int(m) not in future_years] or [2026]
         is_multi = len(found_tickers) > 1 or any(
             w in query.lower()
             for w in ("impact", "footnote", "covenant", "compare", "how did", "supply", "across", "concentration", "risk")
@@ -385,7 +386,7 @@ def _call_mock(
         content = json.dumps(resp_obj)
 
     elif node_name == "generator":
-        missing = state.get("missing_premises", ["quantitative footnote details"])
+        missing = state.get("missing_premises") or ["quantitative footnote details"]
         ticker = state.get("target_ticker") or "NVDA"
         years = state.get("fiscal_years") or [2026]
         content = json.dumps(

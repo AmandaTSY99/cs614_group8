@@ -276,10 +276,10 @@ def test_usage_written_to_score_rows(tmp_path):
 
 def test_report_aggregates_per_category_with_ci_and_generation_failures(tmp_path):
     records = [_record("Q1"), _record("Q2"), _record("Q3", category="single_hop_factual"),
-               _record("Q1", system="system_c_v2")]
+               _record("Q1", system="system_c_v3")]
     _write_records(tmp_path, records)
-    append_jsonl(tmp_path / GEN_ERRORS_FILE, {"system": "system_c_v2", "question_id": "Q2", "error": "boom"})
-    append_jsonl(tmp_path / GEN_ERRORS_FILE, {"system": "system_c_v2", "question_id": "Q1", "error": "later ok"})
+    append_jsonl(tmp_path / GEN_ERRORS_FILE, {"system": "system_c_v3", "question_id": "Q2", "error": "boom"})
+    append_jsonl(tmp_path / GEN_ERRORS_FILE, {"system": "system_c_v3", "question_id": "Q1", "error": "later ok"})
     values = {"Q1": 0.2, "Q2": 0.4, "Q3": 0.9}
     for r in records:
         append_jsonl(tmp_path / SCORES_FILE, {
@@ -296,9 +296,9 @@ def test_report_aggregates_per_category_with_ci_and_generation_failures(tmp_path
     assert agg[("system_c_v1", "single_hop_factual", "faithfulness")]["n"] == 1
 
     assert R.generation_failures(read_jsonl(tmp_path / RECORDS_FILE), read_jsonl(tmp_path / GEN_ERRORS_FILE)) == {
-        "system_c_v1": 0, "system_c_v2": 1}
+        "system_c_v1": 0, "system_c_v3": 1}
     text = R.build_report(tmp_path)
-    assert "| system_c_v2 | 1 | 1 |" in text
+    assert "| system_c_v3 | 1 | 1 |" in text
     assert "Context Precision is order-sensitive" in text
     assert "(n=3)" in text
     assert (tmp_path / "aggregate.csv").exists()

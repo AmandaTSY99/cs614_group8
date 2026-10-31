@@ -1,7 +1,7 @@
 # CS614 GenAI Project: Adaptive Multi-Hop RAG for SEC 10-K Financial Disclosures
 
 **Course:** CS614 Generative AI with LLMs (SMU)  
-**System Comparison:** System A (Vanilla Dense) vs. System B (Hybrid Rerank) vs. System C v1 (Adaptive Multi-Hop) vs. System C v2 (Agentic Multi-Hop)  
+**System Comparison:** System A (Vanilla Dense) vs. System B (Hybrid Rerank) vs. System C v1 (Adaptive Multi-Hop) vs. System C v3 (Adaptive Agentic Multi-Hop with Schema-Aware Sufficiency & Guardrails)  
 
 ---
 
@@ -9,7 +9,7 @@
 
 * 📖 **[Team Engineering & Evaluation Guide](docs/guides/TEAM_RAG_EVALUATION_GUIDE.md)** — Step-by-step instructions for running RQ1, RQ2, and RQ3 evaluations across all 4 systems.
 * 🐳 **[Docker Quickstart Guide](DOCKER_QUICKSTART.md)** — One-line commands to run tests, demos, benchmarks, and Jupyter inside Docker.
-* 🏛️ **[System C Architecture & Mermaid State Graph](ARCHITECTURE.md)** — Complete LangGraph specification (AMR v1 & AAMR v2).
+* 🏛️ **[System C Architecture & Mermaid State Graph](ARCHITECTURE.md)** — Complete LangGraph specification (AMR v1 & AAMR-SG v3).
 * 🔎 **[System B Architecture & Setup Guide](docs/SYSTEM_B.md)** — BM25 + dense retrieval + weighted hybrid fusion + cross-encoder reranking.
 * 📈 **[System B Evaluation Report](reports/system_b/EVALUATION_REPORT.md)** — Benchmark summary and per-query results.
 * 🎤 **[Milestone 1 Demo Guide](reports/MILESTONE1_DEMO_SCRIPT.md)** — Presentation walkthrough and query execution traces.
@@ -67,7 +67,7 @@ Our research evaluates four distinct RAG architectures on complex SEC Form 10-K 
 | **`system_a`** (Vanilla Dense Baseline) | Top-10 Dense Vector Search | Structure-Preserving + Filing Headers (`rag5`) | 1-Hop | Single-pass generation; direct citation tags |
 | **`system_b`** (Advanced Hybrid Single-Pass) | Okapi BM25 + BGE-Small Dense + Cross-Encoder Reranker | Structure-Preserving (`rag3`) | 1-Hop | Min-Max weighted score fusion ($\alpha=0.50$) |
 | **`system_c_v1`** (Adaptive Multi-Hop AMR) | Iterative Multi-Hop Hybrid Retrieval | Structure-Preserving + Deduplication | Dynamic (1 to 3 hops) | Evidence Sufficiency Critic reflection loop + Numerical Guardrail |
-| **`system_c_v2`** (Agentic Multi-Hop AAMR) | Autonomous Tool Routing + Multi-Hop Hybrid | Structure-Preserving + Deduplication | Dynamic (1 to 3 hops) | Pre-routes to SEC XBRL financial statements (`financials.csv`) + Numerical Guardrail |
+| **`system_c_v3`** (Agentic Multi-Hop AAMR-SG) | Autonomous Schema-Aware Sufficiency + Multi-Hop Hybrid | Structure-Preserving + Table Stitching + Deduplication | Dynamic (1 to 3 hops) | Pre-routes to SEC XBRL financial statements (`financials.csv`) + Structural table continuity detector + Time-series consistency + Numerical Guardrail |
 
 <details>
 <summary><b>Note on Baseline Development Variants (RAG 1 to RAG 6)</b></summary>
@@ -100,8 +100,8 @@ python -m src.system_b --query "What was NVIDIA's total revenue?" --tickers NVDA
 # AMR (v1: Adaptive Multi-Hop)
 python -m src.system_c.graph --mode v1_amr --query "What was NVIDIA's revenue and gross margin in FY2026?"
 
-# AAMR (v2: Agentic Multi-Hop with XBRL Tabular Tool)
-python -m src.system_c.graph --mode v2_aamr --query "Compare NVIDIA and Apple total revenue in 2024."
+# AAMR-SG (v3: Agentic Multi-Hop with Schema-Aware Sufficiency & Table Continuity)
+python -m src.system_c.graph --mode v3_aamr_sg --query "Compare NVIDIA and Apple total revenue in 2024."
 ```
 
 ---

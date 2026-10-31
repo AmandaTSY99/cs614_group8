@@ -11,7 +11,7 @@ import os
 import re
 from typing import Any, Callable, Dict, List, Optional
 
-from src.system_c.corpus import chunk_corpus, load_filings
+from src.system_c.corpus import chunk_corpus, extract_all_tickers_and_years_from_query, load_filings
 from src.system_c.state import AdaptiveRAGState, EvidenceChunk
 from src.system_c.telemetry import track_node_latency
 
@@ -332,6 +332,82 @@ def retrieve_10k_chunks(
     return chunks
 
 
+TABLE_LEAD_IN_RE = re.compile(
+    r"(?:(?:following\s+table|summarized\s+below|is\s+set\s+forth\s+below|are\s+set\s+forth\s+below|as\s+follows)\s*:|"
+    r"(?:following\s+table[^\n:]{0,120}:|summarized\s+below[^\n:]{0,60}:|set\s+forth\s+below[^\n:]{0,60}:|as\s+follows[^\n:]{0,60}:))",
+    re.IGNORECASE,
+)
+
+STRUCTURAL_TABLE_CONTINUATION_RE = re.compile(
+    r"(?:"
+    r"following\s+table[^\n:]{0,120}:|"
+    r"summarized\s+below[^\n:]{0,60}:|"
+    r"set\s+forth\s+below[^\n:]{0,60}:|"
+    r"as\s+follows[^\n:]{0,60}:|"
+    r"\b(?:are|is|were|was|consists?\s+of|comprises?\s+of)\s*:\s*$|"
+    r"\|[^\n]+\|\s*$"
+    r")",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _get_adjacent_chunk_id(chunk_id: str) -> Optional[str]:
+    """Given a chunk_id like MSFT_FY2017_2017-06-30:379, return MSFT_FY2017_2017-06-30:380."""
+    if not chunk_id:
+        return None
+    if ":" in chunk_id:
+        prefix, seq_str = chunk_id.rsplit(":", 1)
+        if seq_str.isdigit():
+            return f"{prefix}:{int(seq_str) + 1}"
+    m = re.search(r"^(.*?)([-_])(\d+)$", chunk_id)
+    if m:
+        prefix, sep, seq_str = m.group(1), m.group(2), m.group(3)
+        return f"{prefix}{sep}{int(seq_str) + 1}"
+    return None
+
+
+def _fetch_chunk_by_id(chunk_id: str, cached_records: Optional[List[Dict[str, Any]]] = None) -> Optional[Dict[str, Any]]:
+    """Retrieve chunk by exact chunk_id from in-memory cache or live Supabase Cloud sec_chunks."""
+    if not chunk_id:
+        return None
+    if cached_records:
+        for r in cached_records:
+            if r.get("id") == chunk_id:
+                return r
+    for key, records in _CORPUS_CACHE.items():
+        for r in records:
+            if r.get("id") == chunk_id:
+                return r
+    supabase_url = os.getenv("SUPABASE_DB_URL")
+    is_mock = os.getenv("LLM_PROVIDER", "").strip().lower() == "mock"
+    if supabase_url and not is_mock:
+        try:
+            import json
+            import psycopg
+
+            with psycopg.connect(supabase_url, sslmode="require", autocommit=True) as conn:
+                row = conn.execute(
+                    "SELECT chunk_id, section, content, metadata FROM sec_chunks WHERE chunk_id = %s",
+                    (chunk_id,),
+                ).fetchone()
+                if row:
+                    meta = row[3] if isinstance(row[3], dict) else json.loads(row[3] or "{}")
+                    return {
+                        "id": row[0],
+                        "text": row[2],
+                        "meta": meta,
+                    }
+        except Exception:
+            pass
+    elif is_mock:
+        return {
+            "id": chunk_id,
+            "text": "Item 8 > PART II (table)\n| (In millions) |\n| Total | $10,106 |",
+            "meta": {"chunk_id": chunk_id, "section": "Item 8 > PART II", "ticker": "MSFT", "fiscal_year": 2017},
+        }
+    return None
+
+
 def retriever_node(
     state: AdaptiveRAGState,
     custom_retriever_fn: Optional[Callable[..., List[EvidenceChunk]]] = None,
@@ -344,8 +420,35 @@ def retriever_node(
     hop = state.get("current_hop", 1)
     sub_query = state.get("current_sub_query") or state["original_query"]
     ticker = state.get("target_ticker") or "NVDA"
-    tickers = state.get("target_tickers") or ([ticker] if ticker else ["NVDA"])
-    years = state.get("fiscal_years") or []
+    tickers = list(state.get("target_tickers") or ([ticker] if ticker else ["NVDA"]))
+    years = list(state.get("fiscal_years") or [])
+
+    mode = state.get("mode")
+    if mode == "v3_aamr_sg":
+        # Atomic sub-query single ticker isolation for cross-company comparative queries
+        if len(tickers) > 1:
+            sub_tickers, _ = extract_all_tickers_and_years_from_query(sub_query)
+            matching_tickers = [t for t in sub_tickers if t in tickers]
+            if len(matching_tickers) == 1:
+                isolated_ticker = matching_tickers[0]
+                tickers = [isolated_ticker]
+                ticker = isolated_ticker
+
+        # Dynamic Year Expansion in Follow-Up Hops:
+        # If the Critic flagged missing_years, dynamically expand fiscal_years
+        critic_missing_years = []
+        for y in state.get("missing_years") or []:
+            try:
+                s = str(y).strip().upper()
+                val = int(s[2:] if s.startswith("FY") else s)
+                critic_missing_years.append(val)
+            except (ValueError, TypeError):
+                pass
+        if critic_missing_years:
+            for y in critic_missing_years:
+                if y not in years:
+                    years.append(y)
+            years = sorted(years)
 
     with track_node_latency(telemetry, "retriever"):
         fn = custom_retriever_fn or retrieve_10k_chunks
@@ -394,8 +497,62 @@ def retriever_node(
                     if len(existing) >= len(seen_ids):
                         break
 
+        # Adjacent Table Chunk Stitching for Orphaned & Severed Table Chunking (mode == "v3_aamr_sg")
+        if mode == "v3_aamr_sg":
+            stitched_chunks: List[EvidenceChunk] = []
+            for ch in list(existing):
+                content = ch.get("content", "").strip()
+                if STRUCTURAL_TABLE_CONTINUATION_RE.search(content) or TABLE_LEAD_IN_RE.search(content):
+                    adj_cid = _get_adjacent_chunk_id(ch.get("chunk_id", ""))
+                    if adj_cid and adj_cid not in seen_ids:
+                        adj_rec = _fetch_chunk_by_id(adj_cid)
+                        if adj_rec:
+                            adj_text = adj_rec.get("text", "")
+                            is_table_row_end = bool(re.search(r"\|[^\n]+\|\s*$", content))
+                            if not is_table_row_end or ("|" in adj_text or "(table)" in adj_text.lower()):
+                                stitched = EvidenceChunk(
+                                    chunk_id=adj_rec["id"],
+                                    content=adj_text,
+                                    metadata={
+                                        **(adj_rec.get("meta") or {}),
+                                        "source_type": "10k_section_chunk",
+                                        "stitched_from": ch.get("chunk_id"),
+                                    },
+                                    relevance_score=round(float(ch.get("relevance_score", 0.90)), 4),
+                                    hop_retrieved=hop,
+                                )
+                                stitched_chunks.append(stitched)
+                                seen_ids.add(adj_cid)
+
+                                # If the stitched chunk itself ends mid-table, stitch one more contiguous chunk
+                                if re.search(r"\|[^\n]+\|\s*$", adj_text.strip()):
+                                    next_adj_cid = _get_adjacent_chunk_id(adj_cid)
+                                    if next_adj_cid and next_adj_cid not in seen_ids:
+                                        next_adj_rec = _fetch_chunk_by_id(next_adj_cid)
+                                        if next_adj_rec and ("|" in next_adj_rec.get("text", "") or "(table)" in next_adj_rec.get("text", "").lower()):
+                                            stitched_2 = EvidenceChunk(
+                                                chunk_id=next_adj_rec["id"],
+                                                content=next_adj_rec["text"],
+                                                metadata={
+                                                    **(next_adj_rec.get("meta") or {}),
+                                                    "source_type": "10k_section_chunk",
+                                                    "stitched_from": adj_cid,
+                                                },
+                                                relevance_score=round(float(ch.get("relevance_score", 0.90)), 4),
+                                                hop_retrieved=hop,
+                                            )
+                                            stitched_chunks.append(stitched_2)
+                                            seen_ids.add(next_adj_cid)
+            if stitched_chunks:
+                existing.extend(stitched_chunks)
+
     telemetry["hop_count"] = hop
-    return {
+    ret = {
         "accumulated_evidence": existing,
         "telemetry": telemetry,
     }
+    if mode == "v3_aamr_sg" and years != (state.get("fiscal_years") or []):
+        ret["fiscal_years"] = years
+        if tickers and years:
+            ret["target_pairs"] = [[t, y] for t in tickers for y in years]
+    return ret

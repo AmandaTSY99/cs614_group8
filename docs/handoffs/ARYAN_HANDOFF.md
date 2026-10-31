@@ -75,7 +75,7 @@ The complete LangGraph state machine (`v1_amr` and `v2_aamr`) is implemented und
 ### RQ2 evaluation ([`scripts/rq2/`](../../scripts/rq2))
 * Two stages: `generate.py` runs the systems in the `cs614` env and writes `records.jsonl`; `score.py` and `report.py` run in the `cs614-eval` env (ragas 0.4.3) and read only the JSONL files.
 * Metrics: RAGAS faithfulness, answer relevancy, context recall/precision and factual correctness, plus custom citation precision/recall/F1 (section-level), numeric accuracy and the guardrail's numerical grounding error rate.
-* Usage: `python scripts/rq2/generate.py --systems system_c_v1,system_c_v2 --run-id smoke --limit 3`, then `python scripts/rq2/score.py --run reports/rq2/smoke` and `python scripts/rq2/report.py --run reports/rq2/smoke`. Docker: the `rq2-eval` service (`Dockerfile.eval`, untested).
+* Usage: `python scripts/rq2/generate.py --systems system_c_v1,system_c_v3 --run-id smoke --limit 3`, then `python scripts/rq2/score.py --run reports/rq2/smoke` and `python scripts/rq2/report.py --run reports/rq2/smoke`. Docker: the `rq2-eval` service (`Dockerfile.eval`, untested).
 * Status: smoke run only (`reports/rq2/smoke/`); the full run is pending and the System A / B adapters are stubs.
 
 ---
@@ -94,7 +94,7 @@ The complete LangGraph state machine (`v1_amr` and `v2_aamr`) is implemented und
 3. **Run a live end-to-end query using Local Ollama (`qwen2.5:7b`) or Groq (`LLM_PROVIDER=groq`):**
    ```bash
    # Using local Ollama (no API key needed):
-   LLM_PROVIDER=ollama LLM_MODEL=qwen2.5:7b python -m src.system_c.graph --mode v2_aamr --max-hops 2 \
+   LLM_PROVIDER=ollama LLM_MODEL=qwen2.5:7b python -m src.system_c.graph --mode v3_aamr_sg --max-hops 2 \
      --query "What was NVIDIA total revenue and operating income in FY2026, and what key Data Center trends drove that performance?"
 
    # Or using Groq (with GROQ_API_KEY in .env):

@@ -1,1 +1,0 @@
-{"system": "system_c_v1", "question_id": "gold-089", "error": "RuntimeError: No chunks retrieved from Supabase sec_chunks for tickers=['AMZN, AAPL'], fiscal_years=[2020]. Refusing to return synthetic dummy chunks in live mode.", "timestamp": "2026-10-29T10:50:56.962205+00:00"}

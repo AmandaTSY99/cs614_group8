@@ -20,7 +20,7 @@ RAGAS_SCORES_FILE = "ragas_scores.jsonl"
 AGGREGATE_FILE = "aggregate.csv"
 REPORT_FILE = "report.md"
 
-SYSTEMS = ["system_a", "system_b", "system_c_v1", "system_c_v2"]
+SYSTEMS = ["system_a", "system_b", "system_c_v1", "system_c_v3"]
 K_VALUES = (5, 10)
 
 # Facets that describe *where the gold evidence lives*; each question falls in exactly one group per facet.

@@ -54,7 +54,7 @@
         "item": "Item 7.Management's Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Restructuring",
         "kind": "table",
-        "quote": "| Research and development | 1,581 | 413 | — | 1,994 |"
+        "quote": "| Research and development | 1,581 | 413 | \u2014 | 1,994 |"
       },
       {
         "doc_id": "META_FY2023_2023-12-31",
@@ -149,7 +149,7 @@
         "doc_id": "AAPL_FY2019_2019-09-28",
         "ticker": "AAPL",
         "year": 2019,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Other Income/(Expense), Net",
         "kind": "table",
         "quote": "| Interest and dividend income | $4,961 |  | $5,686 |  | $5,201 |"
@@ -158,7 +158,7 @@
         "doc_id": "AAPL_FY2019_2019-09-28",
         "ticker": "AAPL",
         "year": 2019,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Other Income/(Expense), Net",
         "kind": "table",
         "quote": "| Interest expense | (3,576) |  | (3,240) |  | (2,323) |"
@@ -201,7 +201,7 @@
         "item": "Item 8. Financial Statements and Supplementary Data",
         "heading": "Commercial Paper",
         "kind": "text",
-        "quote": "The weighted-average interest rate of the Company’s commercial paper was 5.00% and 5.28% as of September 28, 2024 and September 30, 2023, respectively."
+        "quote": "The weighted-average interest rate of the Company\u2019s commercial paper was 5.00% and 5.28% as of September 28, 2024 and September 30, 2023, respectively."
       }
     ],
     "company": "Apple Inc.",
@@ -239,7 +239,7 @@
         "ticker": "AMZN",
         "year": 2016,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 5—LONG-TERM DEBT",
+        "heading": "Note 5\u2014LONG-TERM DEBT",
         "kind": "table",
         "quote": "| Thereafter | 5,250 |"
       },
@@ -248,7 +248,7 @@
         "ticker": "AMZN",
         "year": 2016,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 5—LONG-TERM DEBT",
+        "heading": "Note 5\u2014LONG-TERM DEBT",
         "kind": "table",
         "quote": "| 2017 | $1,056 |"
       }
@@ -260,7 +260,7 @@
     "hop": "multi",
     "recipe": "table",
     "sources": [
-      "AMZN_FY2016_2016-12-31 | Item 8 | Note 5—LONG-TERM DEBT | table"
+      "AMZN_FY2016_2016-12-31 | Item 8 | Note 5\u2014LONG-TERM DEBT | table"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",
@@ -368,9 +368,9 @@
         "ticker": "AAPL",
         "year": 2019,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "CONSOLIDATED STATEMENTS OF SHAREHOLDERS’ EQUITY",
+        "heading": "CONSOLIDATED STATEMENTS OF SHAREHOLDERS\u2019 EQUITY",
         "kind": "table",
-        "quote": "| Total shareholders’ equity, ending balances | $90,488 | $107,147 | $134,047 |"
+        "quote": "| Total shareholders\u2019 equity, ending balances | $90,488 | $107,147 | $134,047 |"
       }
     ],
     "company": "Apple Inc.",
@@ -380,7 +380,7 @@
     "hop": "single",
     "recipe": "table",
     "sources": [
-      "AAPL_FY2019_2019-09-28 | Item 8 | CONSOLIDATED STATEMENTS OF SHAREHOLDERS’ EQUITY | table"
+      "AAPL_FY2019_2019-09-28 | Item 8 | CONSOLIDATED STATEMENTS OF SHAREHOLDERS\u2019 EQUITY | table"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",
@@ -511,7 +511,7 @@
         "item": "Item 8. Financial Statements and Supplementary Data",
         "heading": "Earnings Per Share",
         "kind": "table",
-        "quote": "| Total dilutive effect of outstanding stock awards | — | 188 | 248 |"
+        "quote": "| Total dilutive effect of outstanding stock awards | \u2014 | 188 | 248 |"
       },
       {
         "doc_id": "AMZN_FY2024_2024-12-31",
@@ -578,7 +578,7 @@
         "doc_id": "NVDA_FY2021_2021-01-31",
         "ticker": "NVDA",
         "year": 2021,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Fiscal Year 2021 Summary",
         "kind": "table",
         "quote": "Net income per diluted share | $6.90 | $4.52 | Up 53%"
@@ -587,7 +587,7 @@
         "doc_id": "NVDA_FY2018_2018-01-28",
         "ticker": "NVDA",
         "year": 2018,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Fiscal Year 2018 Summary",
         "kind": "table",
         "quote": "Net income per diluted share | $4.82 | $2.57 | Up 88%"
@@ -630,7 +630,7 @@
         "doc_id": "JNJ_FY2021_2022-01-02",
         "ticker": "JNJ",
         "year": 2021,
-        "item": "Item 7.MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7.MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Research and Development Expense:",
         "kind": "table",
         "quote": "Total research and development expense | $14,714 | 15.7% | $12,159 | 14.7%"
@@ -639,7 +639,7 @@
         "doc_id": "JNJ_FY2018_2018-12-30",
         "ticker": "JNJ",
         "year": 2018,
-        "item": "Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Analysis of Consolidated Earnings Before Provision for Taxes on Income",
         "kind": "table",
         "quote": "Total research and development expense | $10,775 | 13.2% | 10,594 | 13.9 | 9,143 | 12.7"
@@ -1091,16 +1091,16 @@
         "ticker": "AAPL",
         "year": 2018,
         "item": "Item 1A. Risk Factors",
-        "heading": "The Company’s business is subject to the risks of international operations.",
+        "heading": "The Company\u2019s business is subject to the risks of international operations.",
         "kind": "text",
-        "quote": "Due to the high cost structure associated with the Company’s retail stores, a decline in sales or the closure or poor performance of individual or multiple stores could result in significant lease termination costs, write-offs of equipment and leasehold improvements and severance costs."
+        "quote": "Due to the high cost structure associated with the Company\u2019s retail stores, a decline in sales or the closure or poor performance of individual or multiple stores could result in significant lease termination costs, write-offs of equipment and leasehold improvements and severance costs."
       },
       {
         "doc_id": "AAPL_FY2018_2018-09-29",
         "ticker": "AAPL",
         "year": 2018,
         "item": "Item 1A. Risk Factors",
-        "heading": "The Company’s business is subject to the risks of international operations.",
+        "heading": "The Company\u2019s business is subject to the risks of international operations.",
         "kind": "text",
         "quote": "Compliance with applicable U.S. and foreign laws and regulations, such as import and export requirements, anti-corruption laws, tax laws, foreign exchange controls and cash repatriation restrictions, data privacy and data localization requirements, environmental laws, labor laws and anti-competition regulations, increases the costs of doing business in foreign jurisdictions."
       }
@@ -1112,7 +1112,7 @@
     "hop": "multi",
     "recipe": "text",
     "sources": [
-      "AAPL_FY2018_2018-09-29 | Item 1A | The Company’s business is subject to the risks of international operations. | text"
+      "AAPL_FY2018_2018-09-29 | Item 1A | The Company\u2019s business is subject to the risks of international operations. | text"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",
@@ -1209,7 +1209,7 @@
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
         "heading": "Uncertain Tax Positions",
         "kind": "text",
-        "quote": "We are currently under examination by the Internal Revenue Service (“IRS”) for the years 2015 to 2018."
+        "quote": "We are currently under examination by the Internal Revenue Service (\u201cIRS\u201d) for the years 2015 to 2018."
       },
       {
         "doc_id": "TSLA_FY2016_2016-12-31",
@@ -1272,18 +1272,18 @@
         "ticker": "JPM",
         "year": 2023,
         "item": "Item 1A. Risk Factors.",
-        "heading": "Unfavorable market and economic conditions can have an adverse effect on JPMorgan Chase’s wholesale businesses.",
+        "heading": "Unfavorable market and economic conditions can have an adverse effect on JPMorgan Chase\u2019s wholesale businesses.",
         "kind": "text",
-        "quote": "the profitability of JPMorgan Chase’s businesses engaged in capital markets activities, including loan syndication, securities underwriting and leveraged lending activities, could be reduced"
+        "quote": "the profitability of JPMorgan Chase\u2019s businesses engaged in capital markets activities, including loan syndication, securities underwriting and leveraged lending activities, could be reduced"
       },
       {
         "doc_id": "JPM_FY2018_2018-12-31",
         "ticker": "JPM",
         "year": 2018,
         "item": "Item 1A. Risk Factors.",
-        "heading": "Unfavorable market and economic conditions can have an adverse effect on JPMorgan Chase’s wholesale businesses.",
+        "heading": "Unfavorable market and economic conditions can have an adverse effect on JPMorgan Chase\u2019s wholesale businesses.",
         "kind": "text",
-        "quote": "the profitability of JPMorgan Chase’s capital markets businesses could be reduced to the extent that those businesses: • earn less fee revenue due to lower transaction volumes, including when clients are unwilling or unable to refinance their outstanding debt obligations in unfavorable market conditions • dispose of portions of credit commitments, such as loan syndications or securities underwritings, at a loss"
+        "quote": "the profitability of JPMorgan Chase\u2019s capital markets businesses could be reduced to the extent that those businesses: \u2022 earn less fee revenue due to lower transaction volumes, including when clients are unwilling or unable to refinance their outstanding debt obligations in unfavorable market conditions \u2022 dispose of portions of credit commitments, such as loan syndications or securities underwritings, at a loss"
       }
     ],
     "company": "JPMORGAN CHASE & CO",
@@ -1293,8 +1293,8 @@
     "hop": "multi",
     "recipe": "cross_year_text",
     "sources": [
-      "JPM_FY2023_2023-12-31 | Item 1A | Unfavorable market and economic conditions can have an adverse effect on JPMorgan Chase’s wholesale businesses. | text",
-      "JPM_FY2018_2018-12-31 | Item 1A | Unfavorable market and economic conditions can have an adverse effect on JPMorgan Chase’s wholesale businesses. | text"
+      "JPM_FY2023_2023-12-31 | Item 1A | Unfavorable market and economic conditions can have an adverse effect on JPMorgan Chase\u2019s wholesale businesses. | text",
+      "JPM_FY2018_2018-12-31 | Item 1A | Unfavorable market and economic conditions can have an adverse effect on JPMorgan Chase\u2019s wholesale businesses. | text"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",
@@ -1328,7 +1328,7 @@
         "doc_id": "GOOGL_FY2019_2019-12-31",
         "ticker": "GOOGL",
         "year": 2019,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Information about Segments",
         "kind": "text",
         "quote": "Other Bets includes Access, Calico, CapitalG, GV, Verily, Waymo, and X, among others."
@@ -1337,7 +1337,7 @@
         "doc_id": "GOOGL_FY2015_2015-12-31",
         "ticker": "GOOGL",
         "year": 2015,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Information about Segments",
         "kind": "text",
         "quote": "Other Bets includes businesses such as Access/Google Fiber, Calico, Nest, Verily, GV, Google Capital, X, and other initiatives."
@@ -1441,7 +1441,7 @@
         "doc_id": "NVDA_FY2015_2015-01-25",
         "ticker": "NVDA",
         "year": 2015,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Operating Expenses",
         "kind": "table",
         "quote": "Total operating expenses | $1,840.5 | $1,771.5 | $69.0 | 4% | $1,771.5 | $1,578.1 | $193.4 | 12% |"
@@ -1626,7 +1626,7 @@
         "item": "Item 1A",
         "heading": "PART I",
         "kind": "text",
-        "quote": "Our datacenters depend on the availability of permitted and buildable land, predictable energy, networking supplies, and servers, including graphics processing units (“GPUs”) and other components."
+        "quote": "Our datacenters depend on the availability of permitted and buildable land, predictable energy, networking supplies, and servers, including graphics processing units (\u201cGPUs\u201d) and other components."
       }
     ],
     "company": "MICROSOFT CORP",
@@ -1793,7 +1793,7 @@
         "ticker": "AAPL",
         "year": 2015,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 11 – Segment Information and Geographic Data",
+        "heading": "Note 11 \u2013 Segment Information and Geographic Data",
         "kind": "table",
         "quote": "| Segment operating income | $83,850 | $62,209 | $56,525 |"
       },
@@ -1801,7 +1801,7 @@
         "doc_id": "AAPL_FY2015_2015-09-26",
         "ticker": "AAPL",
         "year": 2015,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Liquidity and Capital Resources",
         "kind": "text",
         "quote": "During 2015, cash generated from operating activities of $81.3 billion was a result of $53.4 billion of net income, non-cash adjustments to net income of $16.2 billion and an increase in the net change in operating assets and liabilities of $11.7 billion."
@@ -1814,7 +1814,7 @@
     "hop": "multi",
     "recipe": "table_text",
     "sources": [
-      "AAPL_FY2015_2015-09-26 | Item 8 | Note 11 – Segment Information and Geographic Data | table",
+      "AAPL_FY2015_2015-09-26 | Item 8 | Note 11 \u2013 Segment Information and Geographic Data | table",
       "AAPL_FY2015_2015-09-26 | Item 7 | Liquidity and Capital Resources | text"
     ],
     "generator": "qwen/qwen3.8-27b",
@@ -1855,7 +1855,7 @@
         "doc_id": "JNJ_FY2025_2025-12-28",
         "ticker": "JNJ",
         "year": 2025,
-        "item": "Item 7. Management’s discussion and analysis of results of operations and financial condition",
+        "item": "Item 7. Management\u2019s discussion and analysis of results of operations and financial condition",
         "heading": "Economic and market factors",
         "kind": "text",
         "quote": "The Company has accounted for operations in Argentina, Venezuela, Turkey and Egypt (beginning in the fiscal fourth quarter of 2024) as highly inflationary, as the prior three-year cumulative inflation rate surpassed 100%."
@@ -1901,7 +1901,7 @@
         "doc_id": "NVDA_FY2018_2018-01-28",
         "ticker": "NVDA",
         "year": 2018,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Revenue by Reportable Segments",
         "kind": "table",
         "quote": "| Tegra Processor | 1,534 | 824 | 710 | 86% | 824 | 559 | 265 | 47% |"
@@ -1910,7 +1910,7 @@
         "doc_id": "NVDA_FY2018_2018-01-28",
         "ticker": "NVDA",
         "year": 2018,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Our Company and Our Businesses",
         "kind": "text",
         "quote": "Our Tegra brand integrates an entire computer onto a single chip, and incorporates GPUs and multi-core CPUs to drive supercomputing for autonomous robots, drones, and cars, as well as for consoles and mobile gaming and entertainment devices."
@@ -2020,7 +2020,7 @@
         "ticker": "AMZN",
         "year": 2017,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 2—CASH, CASH EQUIVALENTS, AND MARKETABLE SECURITIES",
+        "heading": "Note 2\u2014CASH, CASH EQUIVALENTS, AND MARKETABLE SECURITIES",
         "kind": "table",
         "quote": "Corporate debt securities | 2,105 | 1 | (2) | 2,104"
       },
@@ -2029,7 +2029,7 @@
         "ticker": "AMZN",
         "year": 2017,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 2—CASH, CASH EQUIVALENTS, AND MARKETABLE SECURITIES",
+        "heading": "Note 2\u2014CASH, CASH EQUIVALENTS, AND MARKETABLE SECURITIES",
         "kind": "table",
         "quote": "Corporate debt securities | 4,265 | 1 | (9) | 4,257"
       },
@@ -2037,7 +2037,7 @@
         "doc_id": "AMZN_FY2017_2017-12-31",
         "ticker": "AMZN",
         "year": 2017,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Liquidity and Capital Resources",
         "kind": "text",
         "quote": "The increase in operating cash flow in 2017, compared to the comparable prior year period, was primarily due to the increase in net income, excluding non-cash charges such as depreciation, amortization, and stock-based compensation."
@@ -2050,7 +2050,7 @@
     "hop": "multi",
     "recipe": "table_text",
     "sources": [
-      "AMZN_FY2017_2017-12-31 | Item 8 | Note 2—CASH, CASH EQUIVALENTS, AND MARKETABLE SECURITIES | table",
+      "AMZN_FY2017_2017-12-31 | Item 8 | Note 2\u2014CASH, CASH EQUIVALENTS, AND MARKETABLE SECURITIES | table",
       "AMZN_FY2017_2017-12-31 | Item 7 | Liquidity and Capital Resources | text"
     ],
     "generator": "qwen/qwen3.8-27b",
@@ -2085,7 +2085,7 @@
         "item": "Item 7.Management's Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Provision for income taxes",
         "kind": "table",
-        "quote": "| Provision for income taxes | $25,474 | $8,303 | $8,330 | 207% | —% |"
+        "quote": "| Provision for income taxes | $25,474 | $8,303 | $8,330 | 207% | \u2014% |"
       },
       {
         "doc_id": "META_FY2025_2025-12-31",
@@ -2193,7 +2193,7 @@
         "item": "Item 8.Financial Statements and Supplementary Data",
         "heading": "Note 15. Income Taxes",
         "kind": "table",
-        "quote": "Gross unrecognized tax benefits ‑ end of period | $15,131 | $11,666 | $10,757 |"
+        "quote": "Gross unrecognized tax benefits \u2011 end of period | $15,131 | $11,666 | $10,757 |"
       }
     ],
     "company": "Meta Platforms, Inc.",
@@ -2230,7 +2230,7 @@
         "doc_id": "GOOGL_FY2020_2020-12-31",
         "ticker": "GOOGL",
         "year": 2020,
-        "item": "ITEM 7.MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7.MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "General and Administrative",
         "kind": "table",
         "quote": "| General and administrative expenses | $9,551 | $11,052 |"
@@ -2359,7 +2359,7 @@
         "doc_id": "TSLA_FY2015_2015-12-31",
         "ticker": "TSLA",
         "year": 2015,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Summary of Cash Flows",
         "kind": "table",
         "quote": "| Net cash used in investing activities | (1,673,551) | (990,444) | (249,417) |"
@@ -2368,7 +2368,7 @@
         "doc_id": "TSLA_FY2015_2015-12-31",
         "ticker": "TSLA",
         "year": 2015,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Summary of Cash Flows",
         "kind": "table",
         "quote": "| Net cash provided by financing activities | 1,523,523 | 2,143,130 | 635,422 |"
@@ -2411,7 +2411,7 @@
         "item": "Item 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
         "heading": "20. Restructuring",
         "kind": "table",
-        "quote": "| Reserve balance, December 29, 2019 | 164 | — |  | 16 |  | 180 |"
+        "quote": "| Reserve balance, December 29, 2019 | 164 | \u2014 |  | 16 |  | 180 |"
       },
       {
         "doc_id": "JNJ_FY2020_2021-01-03",
@@ -2420,7 +2420,7 @@
         "item": "Item 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
         "heading": "20. Restructuring",
         "kind": "table",
-        "quote": "| Reserve balance, January 3, 2021(1) | $135 | — |  | 9 |  | 144 |"
+        "quote": "| Reserve balance, January 3, 2021(1) | $135 | \u2014 |  | 9 |  | 144 |"
       }
     ],
     "company": "JOHNSON & JOHNSON",
@@ -2507,7 +2507,7 @@
         "ticker": "TSLA",
         "year": 2021,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 14 – Income Taxes",
+        "heading": "Note 14 \u2013 Income Taxes",
         "kind": "table",
         "quote": "| Foreign | 839 | 248 | 86 |"
       }
@@ -2519,7 +2519,7 @@
     "hop": "single",
     "recipe": "table",
     "sources": [
-      "TSLA_FY2021_2021-12-31 | Item 8 | Note 14 – Income Taxes | table"
+      "TSLA_FY2021_2021-12-31 | Item 8 | Note 14 \u2013 Income Taxes | table"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",
@@ -2764,7 +2764,7 @@
         "item": "Item 1A: RISK FACTORS",
         "heading": "Part I",
         "kind": "text",
-        "quote": "To the extent that outstanding senior long-term debt of JPMorgan Chase & Co. is not classified as eligible LTD under the TLAC rule as finally adopted by the Federal Reserve, the Firm could be required to issue a substantial amount of new senior long-term debt which could significantly increase the Firm’s funding costs."
+        "quote": "To the extent that outstanding senior long-term debt of JPMorgan Chase & Co. is not classified as eligible LTD under the TLAC rule as finally adopted by the Federal Reserve, the Firm could be required to issue a substantial amount of new senior long-term debt which could significantly increase the Firm\u2019s funding costs."
       }
     ],
     "company": "JPMORGAN CHASE & CO",
@@ -2849,7 +2849,7 @@
         "doc_id": "GOOGL_FY2020_2020-12-31",
         "ticker": "GOOGL",
         "year": 2020,
-        "item": "ITEM 7.MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7.MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Fair Value Measurements",
         "kind": "text",
         "quote": "We maximize the use of relevant observable inputs and minimize the use of unobservable inputs."
@@ -2858,7 +2858,7 @@
         "doc_id": "GOOGL_FY2020_2020-12-31",
         "ticker": "GOOGL",
         "year": 2020,
-        "item": "ITEM 7.MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7.MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Fair Value Measurements",
         "kind": "text",
         "quote": "We recognize compensation expense based on the estimated payouts, which may result in expense recognized before investment returns are realized, and may require the use of unobservable inputs."
@@ -3018,7 +3018,7 @@
         "doc_id": "NVDA_FY2023_2023-01-29",
         "ticker": "NVDA",
         "year": 2023,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Liquidity and Capital Resources",
         "kind": "table",
         "quote": "Cash, cash equivalents, and marketable securities | $13,296 | $21,208"
@@ -3080,7 +3080,7 @@
         "doc_id": "JNJ_FY2022_2023-01-01",
         "ticker": "JNJ",
         "year": 2022,
-        "item": "Item 7.MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7.MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Financing and Market Risk",
         "kind": "text",
         "quote": "Total borrowings at the end of 2022 and 2021 were $39.7 billion and $33.8 billion, respectively."
@@ -3089,7 +3089,7 @@
         "doc_id": "JNJ_FY2022_2023-01-01",
         "ticker": "JNJ",
         "year": 2022,
-        "item": "Item 7.MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7.MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Financing and Market Risk",
         "kind": "text",
         "quote": "The increase in borrowings was due to the acquisition of Abiomed, Inc."
@@ -3136,7 +3136,7 @@
         "ticker": "AAPL",
         "year": 2025,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 2 – Revenue",
+        "heading": "Note 2 \u2013 Revenue",
         "kind": "table",
         "quote": "| Services (1) | 109,158 | 96,169 | 85,200 |"
       },
@@ -3145,9 +3145,9 @@
         "ticker": "AAPL",
         "year": 2025,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 2 – Revenue",
+        "heading": "Note 2 \u2013 Revenue",
         "kind": "text",
-        "quote": "Therefore, the Company accounts for all third-party application–related sales on a net basis by recognizing in Services net sales only the commission it retains."
+        "quote": "Therefore, the Company accounts for all third-party application\u2013related sales on a net basis by recognizing in Services net sales only the commission it retains."
       },
       {
         "doc_id": "AAPL_FY2025_2025-09-27",
@@ -3156,7 +3156,7 @@
         "item": "Item 1. Business",
         "heading": "Competition",
         "kind": "text",
-        "quote": "The markets for the Company’s products and services are highly competitive and are characterized by aggressive price competition, downward pressure on gross margins, continual improvement in product performance, and price sensitivity on the part of consumers and businesses."
+        "quote": "The markets for the Company\u2019s products and services are highly competitive and are characterized by aggressive price competition, downward pressure on gross margins, continual improvement in product performance, and price sensitivity on the part of consumers and businesses."
       }
     ],
     "company": "Apple Inc.",
@@ -3166,7 +3166,7 @@
     "hop": "multi",
     "recipe": "table_text",
     "sources": [
-      "AAPL_FY2025_2025-09-27 | Item 8 | Note 2 – Revenue | table",
+      "AAPL_FY2025_2025-09-27 | Item 8 | Note 2 \u2013 Revenue | table",
       "AAPL_FY2025_2025-09-27 | Item 1 | Competition | text"
     ],
     "generator": "qwen/qwen3.8-27b",
@@ -3199,7 +3199,7 @@
         "ticker": "TSLA",
         "year": 2020,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 13 – Leases",
+        "heading": "Note 13 \u2013 Leases",
         "kind": "table",
         "quote": "| Total operating lease liabilities | $1,540 | $1,184 |"
       },
@@ -3207,7 +3207,7 @@
         "doc_id": "TSLA_FY2020_2020-12-31",
         "ticker": "TSLA",
         "year": 2020,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Liquidity and Capital Resources",
         "kind": "text",
         "quote": "We expect that the cash we generate from our core operations will generally be sufficient to cover our future capital expenditures and to pay down our near-term debt obligations, although we may choose to seek alternative financing sources."
@@ -3216,7 +3216,7 @@
         "doc_id": "TSLA_FY2020_2020-12-31",
         "ticker": "TSLA",
         "year": 2020,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Liquidity and Capital Resources",
         "kind": "text",
         "quote": "we currently expect our capital expenditures to be $4.50 to $6.00 billion in 2021 and in each of the next two fiscal years."
@@ -3229,7 +3229,7 @@
     "hop": "multi",
     "recipe": "table_text",
     "sources": [
-      "TSLA_FY2020_2020-12-31 | Item 8 | Note 13 – Leases | table",
+      "TSLA_FY2020_2020-12-31 | Item 8 | Note 13 \u2013 Leases | table",
       "TSLA_FY2020_2020-12-31 | Item 7 | Liquidity and Capital Resources | text"
     ],
     "generator": "qwen/qwen3.8-27b",
@@ -3280,7 +3280,7 @@
         "doc_id": "JNJ_FY2016_2017-01-01",
         "ticker": "JNJ",
         "year": 2016,
-        "item": "Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Income Before Tax by Segment",
         "kind": "text",
         "quote": "The increase in income before tax was primarily due to strong sales volume growth and favorable selling, marketing and administrative expenses due to cost management."
@@ -3289,7 +3289,7 @@
         "doc_id": "JNJ_FY2016_2017-01-01",
         "ticker": "JNJ",
         "year": 2016,
-        "item": "Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Income Before Tax by Segment",
         "kind": "text",
         "quote": "In 2016, the Pharmaceutical segment income before tax as a percent to sales was 38.3% versus 37.3% in 2015."
@@ -3335,7 +3335,7 @@
         "ticker": "AMZN",
         "year": 2023,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 9 — INCOME TAXES",
+        "heading": "Note 9 \u2014 INCOME TAXES",
         "kind": "text",
         "quote": "Cash paid for income taxes, net of refunds, was $3.7 billion, $6.0 billion, and $11.2 billion for 2021, 2022, and 2023."
       },
@@ -3343,7 +3343,7 @@
         "doc_id": "AMZN_FY2023_2023-12-31",
         "ticker": "AMZN",
         "year": 2023,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Liquidity and Capital Resources",
         "kind": "text",
         "quote": "The increase in operating cash flow in 2023, compared to the prior year, was due to an increase in net income (loss), excluding non-cash expenses, and changes in working capital."
@@ -3356,7 +3356,7 @@
     "hop": "multi",
     "recipe": "table_text",
     "sources": [
-      "AMZN_FY2023_2023-12-31 | Item 8 | Note 9 — INCOME TAXES | table",
+      "AMZN_FY2023_2023-12-31 | Item 8 | Note 9 \u2014 INCOME TAXES | table",
       "AMZN_FY2023_2023-12-31 | Item 7 | Liquidity and Capital Resources | text"
     ],
     "generator": "qwen/qwen3.8-27b",
@@ -3406,7 +3406,7 @@
         "doc_id": "JNJ_FY2015_2016-01-03",
         "ticker": "JNJ",
         "year": 2015,
-        "item": "Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Critical Accounting Policies and Estimates",
         "kind": "text",
         "quote": "The returns reserve is based on historical return trends by product and by market as a percent to gross sales."
@@ -3508,7 +3508,7 @@
         "doc_id": "NVDA_FY2018_2018-01-28",
         "ticker": "NVDA",
         "year": 2018,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Operating Expenses",
         "kind": "table",
         "quote": "| Research and development expenses | $1,797 | $1,463 | $334 | 23% | $1,463 | $1,331 | $132 | 10% |"
@@ -3716,7 +3716,7 @@
         "doc_id": "MSFT_FY2016_2016-06-30",
         "ticker": "MSFT",
         "year": 2016,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "PART II",
         "kind": "table",
         "quote": "| Operating income | $20,182 | $18,161 | $27,759 | 11% | (35)% |"
@@ -3811,7 +3811,7 @@
         "doc_id": "NVDA_FY2022_2022-01-30",
         "ticker": "NVDA",
         "year": 2022,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Fiscal Year 2022 Summary",
         "kind": "table",
         "quote": "Gross margin | 64.9% | 62.3% | Up 260 bps"
@@ -3820,7 +3820,7 @@
         "doc_id": "NVDA_FY2016_2016-01-31",
         "ticker": "NVDA",
         "year": 2016,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Recent Developments, Future Objectives and Challenges",
         "kind": "table",
         "quote": "Gross margin | 56.1% | 55.5% | up 60 bps"
@@ -3915,7 +3915,7 @@
         "doc_id": "TSLA_FY2020_2020-12-31",
         "ticker": "TSLA",
         "year": 2020,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Selling, General and Administrative Expense",
         "kind": "table",
         "quote": "As a percentage of revenues | 10% | 11% | 13% |  |  |  |"
@@ -3924,7 +3924,7 @@
         "doc_id": "TSLA_FY2017_2017-12-31",
         "ticker": "TSLA",
         "year": 2017,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Selling, General and Administrative Expense",
         "kind": "table",
         "quote": "As a percentage of revenues | 21% | 20% | 23% |  |  |  |"
@@ -4020,7 +4020,7 @@
         "ticker": "TSLA",
         "year": 2023,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 18 – Segment Reporting and Information about Geographic Areas",
+        "heading": "Note 18 \u2013 Segment Reporting and Information about Geographic Areas",
         "kind": "table",
         "quote": "Total | $96,773 | $81,462 | $53,823"
       },
@@ -4029,7 +4029,7 @@
         "ticker": "TSLA",
         "year": 2017,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 23 – Segment Reporting and Information about Geographic Areas",
+        "heading": "Note 23 \u2013 Segment Reporting and Information about Geographic Areas",
         "kind": "table",
         "quote": "Total | $11,758,751 | $7,000,132"
       }
@@ -4041,8 +4041,8 @@
     "hop": "multi",
     "recipe": "cross_year_table",
     "sources": [
-      "TSLA_FY2023_2023-12-31 | Item 8 | Note 18 – Segment Reporting and Information about Geographic Areas | table",
-      "TSLA_FY2017_2017-12-31 | Item 8 | Note 23 – Segment Reporting and Information about Geographic Areas | table"
+      "TSLA_FY2023_2023-12-31 | Item 8 | Note 18 \u2013 Segment Reporting and Information about Geographic Areas | table",
+      "TSLA_FY2017_2017-12-31 | Item 8 | Note 23 \u2013 Segment Reporting and Information about Geographic Areas | table"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",
@@ -4072,18 +4072,18 @@
         "ticker": "TSLA",
         "year": 2023,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 2 – Summary of Significant Accounting Policies",
+        "heading": "Note 2 \u2013 Summary of Significant Accounting Policies",
         "kind": "table",
-        "quote": "Accrued warranty—end of period | $5,152 | $3,505 | $2,101"
+        "quote": "Accrued warranty\u2014end of period | $5,152 | $3,505 | $2,101"
       },
       {
         "doc_id": "TSLA_FY2018_2018-12-31",
         "ticker": "TSLA",
         "year": 2018,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 2 – Summary of Significant Accounting Policies",
+        "heading": "Note 2 \u2013 Summary of Significant Accounting Policies",
         "kind": "table",
-        "quote": "Accrued warranty—end of period | $747,826 | $401,790 | $266,655"
+        "quote": "Accrued warranty\u2014end of period | $747,826 | $401,790 | $266,655"
       }
     ],
     "company": "Tesla, Inc.",
@@ -4093,8 +4093,8 @@
     "hop": "multi",
     "recipe": "cross_year_table",
     "sources": [
-      "TSLA_FY2023_2023-12-31 | Item 8 | Note 2 – Summary of Significant Accounting Policies | table",
-      "TSLA_FY2018_2018-12-31 | Item 8 | Note 2 – Summary of Significant Accounting Policies | table"
+      "TSLA_FY2023_2023-12-31 | Item 8 | Note 2 \u2013 Summary of Significant Accounting Policies | table",
+      "TSLA_FY2018_2018-12-31 | Item 8 | Note 2 \u2013 Summary of Significant Accounting Policies | table"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",
@@ -4372,16 +4372,16 @@
         "ticker": "TSLA",
         "year": 2025,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 2 – Summary of Significant Accounting Policies",
+        "heading": "Note 2 \u2013 Summary of Significant Accounting Policies",
         "kind": "text",
-        "quote": "On July 4, 2025, the U.S. H.R.1, an act to provide for reconciliation pursuant to title II of H. Con. Res. 14. (the “OBBBA”) was enacted."
+        "quote": "On July 4, 2025, the U.S. H.R.1, an act to provide for reconciliation pursuant to title II of H. Con. Res. 14. (the \u201cOBBBA\u201d) was enacted."
       },
       {
         "doc_id": "TSLA_FY2019_2019-12-31",
         "ticker": "TSLA",
         "year": 2019,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 2 – Summary of Significant Accounting Policies",
+        "heading": "Note 2 \u2013 Summary of Significant Accounting Policies",
         "kind": "text",
         "quote": "We had entered into agreements with the State of Nevada and Storey County in Nevada that provide abatements for sales, use, real property, personal property and employer excise taxes, discounts to the base tariff energy rates and transferable tax credits."
       }
@@ -4393,8 +4393,8 @@
     "hop": "multi",
     "recipe": "cross_year_text",
     "sources": [
-      "TSLA_FY2025_2025-12-31 | Item 8 | Note 2 – Summary of Significant Accounting Policies | text",
-      "TSLA_FY2019_2019-12-31 | Item 8 | Note 2 – Summary of Significant Accounting Policies | text"
+      "TSLA_FY2025_2025-12-31 | Item 8 | Note 2 \u2013 Summary of Significant Accounting Policies | text",
+      "TSLA_FY2019_2019-12-31 | Item 8 | Note 2 \u2013 Summary of Significant Accounting Policies | text"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",
@@ -4566,7 +4566,7 @@
         "doc_id": "TSLA_FY2024_2024-12-31",
         "ticker": "TSLA",
         "year": 2024,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Summary of Cash Flows",
         "kind": "text",
         "quote": "Net cash flows from investing activities and their variability across each period related primarily to capital expenditures, which were $11.34 billion and $8.90 billion for the years ended December 31, 2024 and 2023, respectively, mainly for AI-related capital expenditures, global factory expansion and machinery and equipment as we expand and enhance our product roadmap."
@@ -4575,7 +4575,7 @@
         "doc_id": "TSLA_FY2020_2020-12-31",
         "ticker": "TSLA",
         "year": 2020,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Summary of Cash Flows",
         "kind": "text",
         "quote": "Cash flows from investing activities and their variability across each period related primarily to capital expenditures, which were $3.16 billion for the year ended December 31, 2020, mainly for Model Y production expansion at the Fremont Factory, expansion of Gigafactory Shanghai and construction of Gigafactory Berlin and Gigafactory Texas, and $1.33 billion for the year ended December 31, 2019, mainly for Gigafactory Shanghai construction, Model 3 production ramp and Model Y preparations."
@@ -4679,7 +4679,7 @@
         "doc_id": "AAPL_FY2025_2025-09-27",
         "ticker": "AAPL",
         "year": 2025,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Products and Services Performance",
         "kind": "text",
         "quote": "iPhone net sales increased during 2025 compared to 2024 due to higher net sales of Pro models."
@@ -4688,7 +4688,7 @@
         "doc_id": "AAPL_FY2025_2025-09-27",
         "ticker": "AAPL",
         "year": 2025,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Products and Services Performance",
         "kind": "text",
         "quote": "Wearables, Home and Accessories net sales decreased during 2025 compared to 2024 primarily due to lower net sales of Accessories and Wearables."
@@ -4697,7 +4697,7 @@
         "doc_id": "AAPL_FY2020_2020-09-26",
         "ticker": "AAPL",
         "year": 2020,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Products and Services Performance",
         "kind": "text",
         "quote": "iPhone net sales decreased during 2020 compared to 2019 due primarily to the absence of new iPhone models in the fourth quarter of 2020 and the weakness in foreign currencies relative to the U.S. dollar, partially offset by the introduction of iPhone SE in the third quarter of 2020."
@@ -4706,7 +4706,7 @@
         "doc_id": "AAPL_FY2020_2020-09-26",
         "ticker": "AAPL",
         "year": 2020,
-        "item": "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations",
+        "item": "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of Operations",
         "heading": "Products and Services Performance",
         "kind": "text",
         "quote": "Wearables, Home and Accessories net sales increased during 2020 compared to 2019 due primarily to higher net sales of AirPods and Apple Watch."
@@ -4750,7 +4750,7 @@
         "ticker": "AMZN",
         "year": 2020,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 6 — DEBT",
+        "heading": "Note 6 \u2014 DEBT",
         "kind": "table",
         "quote": "|  | $33,174 |"
       },
@@ -4771,7 +4771,7 @@
     "hop": "multi",
     "recipe": "cross_company_table",
     "sources": [
-      "AMZN_FY2020_2020-12-31 | Item 8 | Note 6 — DEBT | table",
+      "AMZN_FY2020_2020-12-31 | Item 8 | Note 6 \u2014 DEBT | table",
       "AAPL_FY2020_2020-09-26 | Item 8 | Term Debt | table"
     ],
     "generator": "qwen/qwen3.8-27b",
@@ -4809,7 +4809,7 @@
         "doc_id": "JNJ_FY2017_2017-12-31",
         "ticker": "JNJ",
         "year": 2017,
-        "item": "Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Dividends",
         "kind": "text",
         "quote": "Cash dividends paid were $3.32 per share in 2017 compared with dividends of $3.15 per share in 2016, and $2.95 per share in 2015."
@@ -4852,7 +4852,7 @@
         "ticker": "AMZN",
         "year": 2019,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 6 — DEBT",
+        "heading": "Note 6 \u2014 DEBT",
         "kind": "table",
         "quote": "2020 | $1,307"
       },
@@ -4860,7 +4860,7 @@
         "doc_id": "JNJ_FY2019_2019-12-29",
         "ticker": "JNJ",
         "year": 2019,
-        "item": "Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
+        "item": "Item 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF RESULTS OF OPERATIONS AND FINANCIAL CONDITION",
         "heading": "Contractual Obligations and Commitments",
         "kind": "table",
         "quote": "2020 | $528 | 1,100 | 886 | 103 | 215 | 2,832"
@@ -4873,7 +4873,7 @@
     "hop": "multi",
     "recipe": "cross_company_table",
     "sources": [
-      "AMZN_FY2019_2019-12-31 | Item 8 | Note 6 — DEBT | table",
+      "AMZN_FY2019_2019-12-31 | Item 8 | Note 6 \u2014 DEBT | table",
       "JNJ_FY2019_2019-12-29 | Item 7 | Contractual Obligations and Commitments | table"
     ],
     "generator": "qwen/qwen3.8-27b",
@@ -4903,7 +4903,7 @@
         "ticker": "TSLA",
         "year": 2025,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 10 – Leases",
+        "heading": "Note 10 \u2013 Leases",
         "kind": "table",
         "quote": "Operating leases | 7.7 years | 7.9 years"
       },
@@ -4924,7 +4924,7 @@
     "hop": "multi",
     "recipe": "cross_company_table",
     "sources": [
-      "TSLA_FY2025_2025-12-31 | Item 8 | Note 10 – Leases | table",
+      "TSLA_FY2025_2025-12-31 | Item 8 | Note 10 \u2013 Leases | table",
       "META_FY2025_2025-12-31 | Item 8 | Note 7. Leases | table"
     ],
     "generator": "qwen/qwen3.8-27b",
@@ -4969,7 +4969,7 @@
         "item": "ITEM 1: BUSINESS",
         "heading": "Competition",
         "kind": "text",
-        "quote": "The Firm’s businesses generally compete on the basis of the quality and variety of the Firm’s products and services, transaction execution, innovation, reputation and price."
+        "quote": "The Firm\u2019s businesses generally compete on the basis of the quality and variety of the Firm\u2019s products and services, transaction execution, innovation, reputation and price."
       }
     ],
     "company": "AMAZON COM INC; JPMORGAN CHASE & CO",
@@ -5021,7 +5021,7 @@
         "doc_id": "GOOGL_FY2019_2019-12-31",
         "ticker": "GOOGL",
         "year": 2019,
-        "item": "ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
+        "item": "ITEM 7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS",
         "heading": "Income Taxes",
         "kind": "text",
         "quote": "In addition, we are subject to the continuous examination of our income tax returns by the Internal Revenue Services (IRS) and other tax authorities which may assert assessments against us."
@@ -5133,7 +5133,7 @@
         "item": "Item 7A. Quantitative and Qualitative Disclosures About Market Risk",
         "heading": "Interest Rate Risk",
         "kind": "text",
-        "quote": "To protect against interest rate risk, the Company may use derivative instruments, offset interest rate–sensitive assets and liabilities, or control duration of the investment and term debt portfolios."
+        "quote": "To protect against interest rate risk, the Company may use derivative instruments, offset interest rate\u2013sensitive assets and liabilities, or control duration of the investment and term debt portfolios."
       }
     ],
     "company": "Alphabet Inc.; Apple Inc.",
@@ -5177,7 +5177,7 @@
         "ticker": "TSLA",
         "year": 2020,
         "item": "ITEM 8. FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA",
-        "heading": "Note 13 – Leases",
+        "heading": "Note 13 \u2013 Leases",
         "kind": "text",
         "quote": "Our leases, where we are the lessee, often include options to extend the lease term for up to 10 years."
       },
@@ -5186,7 +5186,7 @@
         "ticker": "AAPL",
         "year": 2020,
         "item": "Item 8. Financial Statements and Supplementary Data",
-        "heading": "Note 12 – Leases",
+        "heading": "Note 12 \u2013 Leases",
         "kind": "text",
         "quote": "These leases typically have original terms not exceeding 10 years and generally contain multi-year renewal options, some of which are reasonably certain of exercise."
       }
@@ -5198,8 +5198,8 @@
     "hop": "multi",
     "recipe": "cross_company_text",
     "sources": [
-      "TSLA_FY2020_2020-12-31 | Item 8 | Note 13 – Leases | text",
-      "AAPL_FY2020_2020-09-26 | Item 8 | Note 12 – Leases | text"
+      "TSLA_FY2020_2020-12-31 | Item 8 | Note 13 \u2013 Leases | text",
+      "AAPL_FY2020_2020-09-26 | Item 8 | Note 12 \u2013 Leases | text"
     ],
     "generator": "qwen/qwen3.8-27b",
     "made_by": "cs614_group8",

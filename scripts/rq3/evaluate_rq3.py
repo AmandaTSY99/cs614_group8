@@ -75,10 +75,10 @@ def compute_wilcoxon_tests(df: pd.DataFrame) -> Dict[str, Any]:
         return {"note": "scipy not available for Wilcoxon tests"}
 
     comparisons = [
-        ("system_c_v2", "system_c_v1", "hops", "H3c Hop Reduction (AAMR vs AMR)"),
-        ("system_c_v2", "system_c_v1", "latency_ms", "AAMR Latency vs AMR"),
+        ("system_c_v3", "system_c_v1", "hops", "H3c Hop Reduction (AAMR-SG vs AMR)"),
+        ("system_c_v3", "system_c_v1", "latency_ms", "AAMR-SG Latency vs AMR"),
         ("system_c_v1", "system_b", "numeric_correct", "H3b Accuracy vs System B Hybrid"),
-        ("system_c_v2", "system_b", "numeric_correct", "AAMR Accuracy vs System B Hybrid"),
+        ("system_c_v3", "system_b", "numeric_correct", "AAMR-SG Accuracy vs System B Hybrid"),
         ("system_b", "system_a", "latency_ms", "System B Rerank Latency vs System A"),
         ("system_b", "system_a", "numeric_correct", "System B Accuracy vs System A"),
     ]
@@ -113,7 +113,8 @@ def compute_wilcoxon_tests(df: pd.DataFrame) -> Dict[str, Any]:
 def compute_system_metrics(df: pd.DataFrame) -> Dict[str, Any]:
     """Calculate comprehensive economic, latency, and quality metrics per system."""
     summary = {}
-    systems = df["system"].unique()
+    target_order = ["system_a", "system_b", "system_c_v1", "system_c_v3", "system_c_fixed_3hop"]
+    systems = [s for s in target_order if s in df["system"].unique()]
 
     for s in systems:
         sub = df[df["system"] == s].copy()
@@ -208,12 +209,12 @@ def simulate_routing_cascade(df: pd.DataFrame) -> Dict[str, Any]:
     Simulates a production two-tier cascade:
     1. Query routed to System B (hybrid RAG).
     2. If System B produces correct numerical grounding / sufficiency, accept System B (low cost, fast).
-    3. If System B is insufficient, cascade to System C v2 (Agentic Multi-Hop AAMR).
+    3. If System B is insufficient, cascade to System C v3 (Agentic Multi-Hop AAMR-SG).
     """
     b_df = df[df["system"] == "system_b"].set_index("query_id")
-    c2_df = df[df["system"] == "system_c_v2"].set_index("query_id")
+    c3_df = df[df["system"] == "system_c_v3"].set_index("query_id")
 
-    common_ids = list(set(b_df.index).intersection(set(c2_df.index)))
+    common_ids = list(set(b_df.index).intersection(set(c3_df.index)))
     if not common_ids:
         return {"n_queries": 0, "status": "insufficient_paired_data"}
 
@@ -224,7 +225,7 @@ def simulate_routing_cascade(df: pd.DataFrame) -> Dict[str, Any]:
 
     for qid in common_ids:
         b_row = b_df.loc[qid]
-        c2_row = c2_df.loc[qid]
+        c3_row = c3_df.loc[qid]
 
         b_correct = bool(b_row.get("numeric_correct", False))
 
@@ -236,9 +237,9 @@ def simulate_routing_cascade(df: pd.DataFrame) -> Dict[str, Any]:
         else:
             # Escalated to tier 2
             escalated_count += 1
-            total_cost += float(b_row.get("estimated_cost_usd", 0.0)) + float(c2_row.get("estimated_cost_usd", 0.0))
-            total_latency += float(b_row.get("latency_ms", 0.0)) + float(c2_row.get("latency_ms", 0.0))
-            if bool(c2_row.get("numeric_correct", False)):
+            total_cost += float(b_row.get("estimated_cost_usd", 0.0)) + float(c3_row.get("estimated_cost_usd", 0.0))
+            total_latency += float(b_row.get("latency_ms", 0.0)) + float(c3_row.get("latency_ms", 0.0))
+            if bool(c3_row.get("numeric_correct", False)):
                 correct_count += 1
 
     n = len(common_ids)
@@ -274,13 +275,13 @@ def plot_pareto_and_figures(summary: Dict[str, Any], df: pd.DataFrame, out_dir: 
         "system_a": "#64748b",
         "system_b": "#3b82f6",
         "system_c_v1": "#10b981",
-        "system_c_v2": "#8b5cf6",
+        "system_c_v3": "#8b5cf6",
     }
     labels = {
         "system_a": "SYS A (Dense Baseline)",
         "system_b": "SYS B (Hybrid + Reranker)",
         "system_c_v1": "SYS C v1 (Adaptive AMR)",
-        "system_c_v2": "SYS C v2 (Agentic AAMR)",
+        "system_c_v3": "SYS C v3 (Agentic AAMR-SG)",
     }
 
     xs, ys, names = [], [], []
@@ -304,7 +305,7 @@ def plot_pareto_and_figures(summary: Dict[str, Any], df: pd.DataFrame, out_dir: 
 
     # 2. Fig 2: Stage Latency Breakdown
     fig, ax = plt.subplots(figsize=(9, 4.5), dpi=300)
-    sys_order = [s for s in ["system_a", "system_b", "system_c_v1", "system_c_v2", "system_c_fixed_3hop"] if s in summary]
+    sys_order = [s for s in ["system_a", "system_b", "system_c_v1", "system_c_v3", "system_c_fixed_3hop"] if s in summary]
     ret_vals = [summary[s]["latency"]["stages_mean_ms"]["retrieval"] for s in sys_order]
     rer_vals = [summary[s]["latency"]["stages_mean_ms"]["rerank"] for s in sys_order]
     cri_vals = [summary[s]["latency"]["stages_mean_ms"]["agent_critic"] for s in sys_order]
@@ -402,7 +403,7 @@ def evaluate_experiment(
 def main():
     parser = argparse.ArgumentParser(description="Evaluate RQ3 Experiment Telemetry.")
     parser.add_argument("--records", type=Path, default=DEFAULT_RECORDS, help="Path to input records JSONL.")
-    parser.add_argument("--out-json", type=Path, default=DEFAULT_SUMMARY_JSON, help="Path to output summary JSON.")
+    parser.add_argument("--out-json", "--output", type=Path, default=DEFAULT_SUMMARY_JSON, help="Path to output summary JSON.")
     parser.add_argument("--out-csv", type=Path, default=DEFAULT_SUMMARY_CSV, help="Path to output summary CSV.")
     parser.add_argument("--figures-dir", type=Path, default=FIGURES_DIR, help="Directory to save publication PNGs.")
     parser.add_argument("--no-plots", action="store_true", help="Skip figure generation.")
