@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--alpha', type=float, default=0.5)
     parser.add_argument('--candidates', type=int, default=30)
     parser.add_argument('--rerank-candidates', type=int, default=30)
-    parser.add_argument('--top-k', type=int, default=5)
+    parser.add_argument('--top-k', type=int, default=10)
     parser.add_argument('--mode', choices=['dense', 'bm25', 'hybrid', 'hybrid_rerank'], default='hybrid_rerank')
     parser.add_argument('--all-modes', action='store_true', help='Benchmark all four retrieval variants')
     parser.add_argument('--reranker', default='BAAI/bge-reranker-large')

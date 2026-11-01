@@ -84,3 +84,17 @@ TAT-QA/
 
 # --- other folders ---
 amanda_archive/
+
+# Local evaluation checkpoints and reconstructed outputs; rebuild from published answers.
+reports/b-accuracy/*
+!reports/b-accuracy/README.md
+!reports/b-accuracy/HANDOVER.md
+!reports/b-accuracy/UPDATED_SLIDE_TABLES.md
+!reports/b-accuracy/answers.jsonl
+!reports/b-accuracy/paired_summary.json
+!reports/b-accuracy/provenance.json
+!reports/b-accuracy/table_comparisons.json
+!reports/b-accuracy/build_tables.py
+!reports/b-accuracy/replay.py
+!reports/b-accuracy/summarize.py
+!reports/b-accuracy/offline.py
