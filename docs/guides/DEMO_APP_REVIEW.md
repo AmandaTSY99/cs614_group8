@@ -32,6 +32,7 @@ This file records what they found, what was fixed and what was left on purpose.
 | Low | The citation renderer crashed on a number containing a backslash, and on malformed guardrail data. | Function replacement in `re.sub`; type checks. |
 | Low | The five answers on the explorer page shared the same source-link ids, so citation chips in tabs 2–5 jumped to tab 1. | Ids prefixed per answer. |
 | Low | The step timer overlapped long step titles. | Timer drawn above the step. |
+| Medium | The run-bar counters stayed at 0 in some browsers (Safari does not redraw a counter driven by an animated `@property`), and the "this step" counter could keep the previous step's animation. | Counters are now m:ss digit rollers (stepped `transform` animations, supported everywhere); the animation name alternates per redraw so each step restarts at 0:00. Found in the owner's review after the first deploy. |
 | Low | Clicking "Compare all five answers" then the active tab sent the visitor back to Ask. | Navigation keeps its last page. |
 | Low | Company and year detection for Systems A/B missed "FY21" / "FY'22", matched "chase" and "meta-analysis", and read "$2019 million" as a year. | Fixed in `ui/live.py`. |
 | Low | Gold answers were cut after HTML escaping (could split an entity), and live costs were labelled "gpt-5.4 rates" for every model. | Truncate first, then escape; label is now "estimated cost". |

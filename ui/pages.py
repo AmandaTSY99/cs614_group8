@@ -201,12 +201,20 @@ def page_ask() -> None:
                         unsafe_allow_html=True)
 
 
+def _tick(elapsed: float, phase: int) -> str:
+    """An m:ss counter that starts at `elapsed` seconds and keeps counting in the browser (see `.tick` in theme)."""
+    col = lambda cls, n: f'<span class="dg {cls}">' + "".join(f"<span>{i}</span>" for i in range(n)) + "</span>"
+    return (f'<span class="tick{" b" if phase % 2 else ""}" style="animation-delay:-{elapsed:.1f}s" aria-hidden="true">'
+            f'{col("m", 10)}<span>:</span>{col("t", 6)}{col("o", 10)}</span>')
+
+
 def _run_bar(system: str, node: Optional[str], step_elapsed: float, total_elapsed: float, model_label: str,
-             label: Optional[str] = None) -> str:
+             label: Optional[str] = None, phase: int = 0) -> str:
     """Live status line: which step is running, what it is waiting on, and ticking step / total timers.
 
     The counters are CSS animations started at the elapsed time so far, so they keep counting while a slow
-    language-model call blocks the script (Streamlit cannot redraw until the step returns).
+    language-model call blocks the script (Streamlit cannot redraw until the step returns). `phase` alternates
+    per redraw so the browser restarts the animations instead of reusing the previous step's.
     """
     if node:
         what = f'<b>{html.escape(node_title(system, node))}</b>'
@@ -215,8 +223,8 @@ def _run_bar(system: str, node: Optional[str], step_elapsed: float, total_elapse
         now = f'<span class="now" title="{hint}">{what}</span><span class="wait">{html.escape(why)}…</span>'
     else:
         now = f'<span class="now">{html.escape(label or "Working")}</span>'
-    clock = (f'<span class="clock">this step <span class="tick" style="animation-delay:-{step_elapsed:.1f}s"></span>'
-             f' · total <span class="tick" style="animation-delay:-{total_elapsed:.1f}s"></span>'
+    clock = (f'<span class="clock">this step {_tick(step_elapsed, phase)}'
+             f' · total {_tick(total_elapsed, phase)}'
              f' · {html.escape(model_label)}</span>')
     return f'<div class="runbar"><span class="pulse"></span>{now}{clock}</div>'
 
@@ -237,10 +245,12 @@ def _execute(system, question, max_hops, scope, diagram_slot, status_slot, model
     timings: Dict[str, List[float]] = {}
     log: List[str] = []
     last = [t0]
+    redraws = [0]
 
     def draw(active: Optional[str], visited: List[str]) -> None:
         now = time.perf_counter()
-        bar = _run_bar(system, active, now - last[0], now - t0, model_label) if active else ""
+        redraws[0] += 1
+        bar = _run_bar(system, active, now - last[0], now - t0, model_label, phase=redraws[0]) if active else ""
         shown = {k: (v[0], int(v[1])) for k, v in timings.items()}
         diagram_slot.markdown(bar + render_diagram(system, active=active, visited=visited, timings=shown), unsafe_allow_html=True)
 

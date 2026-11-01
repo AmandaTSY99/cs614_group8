@@ -158,11 +158,20 @@ button[data-testid="stBaseButton-pillsActive"] { border-color: var(--accent) !im
 .diagram .nodetip:focus { outline: none; }
 .diagram .nodetip:focus .hit { stroke: var(--accent); stroke-width: 2; }
 
-/* Live run bar: what the run is waiting on, with CSS-only second counters (no reruns needed while a step runs) */
-@property --sec { syntax: '<integer>'; inherits: false; initial-value: 0; }
-@keyframes tick { from { --sec: 0; } to { --sec: 3600; } }
-.tick { animation: tick 3600s linear forwards; counter-reset: sec var(--sec); font-family: var(--mono); font-variant-numeric: tabular-nums; }
-.tick::after { content: counter(sec) "s"; }
+/* Live run bar: what the run is waiting on, with CSS-only m:ss counters (no reruns needed while a step runs).
+   Each digit is a column of numbers rolled by a stepped transform, which every browser animates (an animated
+   @property counter stays at 0 in Safari). Two identical keyframes alternate per redraw so the counter restarts. */
+.tick { display: inline-flex; align-items: flex-start; height: 1.25em; line-height: 1.25em; overflow: hidden; vertical-align: bottom;
+  font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.tick .dg > span { flex: none; height: 1.25em; }
+.tick .dg { display: flex; flex-direction: column; animation-name: rollA; animation-delay: inherit;
+  animation-timing-function: steps(10, end); animation-iteration-count: infinite; }
+.tick.b .dg { animation-name: rollB; }
+.tick .dg.m { animation-duration: 600s; }
+.tick .dg.t { animation-duration: 60s; animation-timing-function: steps(6, end); }
+.tick .dg.o { animation-duration: 10s; }
+@keyframes rollA { from { transform: translateY(0); } to { transform: translateY(-100%); } }
+@keyframes rollB { from { transform: translateY(0); } to { transform: translateY(-100%); } }
 .runbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 10px 14px; margin-bottom: 8px;
   background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--accent); border-radius: var(--radius); font-size: .9rem; }
 .runbar .now { color: var(--text); }
