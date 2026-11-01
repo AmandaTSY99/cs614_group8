@@ -150,6 +150,25 @@ button[data-testid="stBaseButton-pillsActive"] { border-color: var(--accent) !im
 
 .diagram { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 12px 6px; overflow-x: auto; }
 .diagram svg { display: block; width: 100%; height: auto; min-width: 640px; }
+.diagram .nodetip .hit { fill: transparent; pointer-events: all; cursor: help; }
+.diagram .nodetip .tip { opacity: 0; pointer-events: none; transition: opacity .12s ease-in; }
+.diagram .nodetip:hover .tip { opacity: 1; }
+
+/* Live run bar: what the run is waiting on, with CSS-only second counters (no reruns needed while a step runs) */
+@property --sec { syntax: '<integer>'; inherits: false; initial-value: 0; }
+@keyframes tick { from { --sec: 0; } to { --sec: 3600; } }
+.tick { animation: tick 3600s linear forwards; counter-reset: sec var(--sec); font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.tick::after { content: counter(sec) "s"; }
+.runbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 10px 14px; margin-bottom: 8px;
+  background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--accent); border-radius: var(--radius); font-size: .9rem; }
+.runbar .now { color: var(--text); }
+.runbar .now b { font-weight: 600; }
+.runbar .wait { color: var(--muted); }
+.runbar .clock { margin-left: auto; color: var(--muted); font-size: .82rem; }
+.runbar .clock .tick { color: var(--accent); }
+.runbar .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+.runbar.done .pulse { animation: none; background: var(--ok); }
 
 .rq { border-top: 2px solid var(--accent); padding: 12px 2px 4px; height: 100%; }
 .rq .k { font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }

@@ -35,7 +35,7 @@ def _layouts() -> Dict[str, Tuple[Layout, Edges, int, int]]:
             "generate": (single_x[2], MAIN_Y, "Generate", ["One gpt-5.4 call", "cites chunks as [n]"]),
             "answer": (single_x[3], MAIN_Y, "Answer", ["No checking step", "1 hop"]),
         }, [("question", "retrieve", "", "main"), ("retrieve", "generate", "", "main"),
-            ("generate", "answer", "", "main")], 150, 1000),
+            ("generate", "answer", "", "main")], 230, 1000),
         "system_b": ({
             "question": (five_x[0], MAIN_Y, "Question", ["Company and year", "filters the search"]),
             "retrieve": (five_x[1], MAIN_Y, "BM25 + dense", ["Equal-weight fusion", "30 candidates"]),
@@ -43,7 +43,7 @@ def _layouts() -> Dict[str, Tuple[Layout, Edges, int, int]]:
             "generate": (five_x[3], MAIN_Y, "Generate", ["One gpt-5.4 call", "cites chunks as [n]"]),
             "answer": (five_x[4], MAIN_Y, "Answer", ["No checking step", "1 hop"]),
         }, [("question", "retrieve", "", "main"), ("retrieve", "rerank", "", "main"),
-            ("rerank", "generate", "", "main"), ("generate", "answer", "", "main")], 150, 1000),
+            ("rerank", "generate", "", "main"), ("generate", "answer", "", "main")], 230, 1000),
         "system_c_v1": ({
             "decomposer": (five_x[0], MAIN_Y, "Decomposer", ["Finds tickers, years", "and sub-queries"]),
             "retriever": (five_x[1], MAIN_Y, "Retriever", ["Hybrid search,", "removes duplicates"]),
@@ -83,6 +83,64 @@ def _layouts() -> Dict[str, Tuple[Layout, Edges, int, int]]:
 
 LAYOUTS = _layouts()
 
+FONT = "IBM Plex Sans, -apple-system, sans-serif"
+
+# Plain-English hover text for each step. System-specific wording wins over the shared default.
+NODE_INFO: Dict[str, str] = {
+    "question": "Your question, plus the company and year spotted in it. These narrow the search to the right filings.",
+    "retrieve": "Searches the 10-K filings for the passages that best match your question.",
+    "rerank": "A second model re-reads the top 30 passages and keeps the 5 that best answer the question.",
+    "generate": "The language model writes an answer using only those passages, citing them as [1], [2] and so on.",
+    "answer": "The final answer. Nothing checks it, so a wrong number goes straight through.",
+    "decomposer": "Reads your question and works out which companies, which years and what exactly to look for.",
+    "tabular_tool": "Looks up the company's officially reported figures (XBRL) and adds them as evidence before searching.",
+    "retriever": "Searches the 10-K filings by keyword and by meaning, adding new passages each round.",
+    "critic": "Checks whether the evidence so far is enough to answer. If not, it says exactly what is missing.",
+    "generator": "Writes a new search aimed at what the critic said is missing, then searches again (up to 3 rounds).",
+    "synthesizer": "Writes the answer and tags every sentence with the passage it came from.",
+    "guardrail": "Checks every number in the answer against the passage it cites. If one does not match, it tries to fix it once.",
+}
+SYSTEM_NODE_INFO: Dict[Tuple[str, str], str] = {
+    ("system_a", "retrieve"): "Turns your question into a vector and finds the 10 passages with the closest meaning.",
+    ("system_b", "retrieve"): "Searches two ways, exact keywords (BM25) and meaning (embeddings), and merges the two result lists.",
+    ("system_c_v3", "tabular_tool"): "Looks up officially reported figures (XBRL), but only for the 9 headline numbers such as revenue or total assets.",
+    ("system_c_v3", "critic"): "Checks that every figure the question asks for has been found, for every year. If not, it says what is missing.",
+    ("system_c_v3", "retriever"): "Searches the filings by keyword and by meaning, re-joining tables that were split across passages.",
+}
+
+# What a running step is waiting on, for the live status bar
+NODE_WAIT = {
+    "decomposer": "waiting for the language model", "critic": "waiting for the language model",
+    "generator": "waiting for the language model", "synthesizer": "waiting for the language model",
+    "guardrail": "checking numbers, then a language-model check", "repair": "waiting for the language model",
+    "generate": "waiting for the language model", "retriever": "searching the filings", "retrieve": "searching the filings",
+    "rerank": "re-ranking passages", "tabular_tool": "looking up reported figures", "question": "preparing the search",
+}
+
+
+def node_title(system: str, node: str) -> str:
+    node = "guardrail" if node == "repair" else node
+    return LAYOUTS[system][0].get(node, (0, 0, node.title(), []))[2]
+
+
+def node_info(system: str, node: str) -> str:
+    return SYSTEM_NODE_INFO.get((system, node)) or NODE_INFO.get(node, "")
+
+
+def _wrap(text: str, width: int = 38) -> List[str]:
+    lines, line = [], ""
+    for word in text.split():
+        if line and len(line) + 1 + len(word) > width:
+            lines.append(line)
+            line = word
+        else:
+            line = f"{line} {word}".strip()
+    return lines + ([line] if line else [])
+
+
+def _fmt_secs(sec: float) -> str:
+    return f"{sec:.1f}s" if sec < 60 else f"{int(sec // 60)}m{int(sec % 60):02d}s"
+
 
 def _edge_path(a, b, kind) -> Tuple[str, Tuple[float, float]]:
     ax, ay = a[0], a[1]
@@ -111,8 +169,14 @@ def render_diagram(
     visited: Iterable[str] = (),
     caption: Optional[str] = None,
     static: bool = False,
+    timings: Optional[Dict[str, Tuple[float, int]]] = None,
 ) -> str:
-    """Return the system's diagram as HTML; `active` glows, `visited` nodes are ticked, `static` colours everything."""
+    """Return the system's diagram as HTML.
+
+    `active` glows, `visited` nodes are ticked, `static` colours everything, and `timings` ({node: (seconds, runs)})
+    replaces the tick with how long the step took. Hovering a step shows what it does.
+    """
+    timings = timings or {}
     layout, edges, height, width = LAYOUTS[system]
     color = SYSTEM_INFO[system]["color"]
     visited = set(layout) if static else set(visited)
@@ -148,9 +212,9 @@ def render_diagram(
         fill = "#1D2023" if not (is_active or is_done) else ("#2B2719" if is_active else "#202326")
         stroke = color if (is_active or is_done) else "#3A3F45"
         glow = f' filter="url(#glow-{system})"' if is_active else ""
-        width = 2.4 if is_active else 1.4
+        stroke_w = 2.4 if is_active else 1.4
         parts.append(f'<g{glow}><rect x="{nx}" y="{ny}" width="{NODE_W}" height="{NODE_H}" rx="5" '
-                     f'fill="{fill}" stroke="{stroke}" stroke-width="{width}"/>')
+                     f'fill="{fill}" stroke="{stroke}" stroke-width="{stroke_w}"/>')
         if is_active:
             parts.append(f'<rect x="{nx}" y="{ny}" width="{NODE_W}" height="{NODE_H}" rx="5" fill="none" stroke="{color}" '
                          'stroke-width="2"><animate attributeName="opacity" values="1;0.25;1" dur="1.4s" repeatCount="indefinite"/></rect>')
@@ -161,9 +225,35 @@ def render_diagram(
         for i, line in enumerate(sub):
             parts.append(f'<text x="{nx + 14}" y="{ny + 45 + i * 15}" font-size="11.5" fill="#A29D92" '
                          f'font-family="IBM Plex Sans, -apple-system, sans-serif">{html.escape(line)}</text>')
-        if is_done and not is_active and not static:
+        if node_id in timings and not is_active:
+            secs, runs = timings[node_id]
+            label = _fmt_secs(secs) + (f" ×{runs}" if runs > 1 else "")
+            parts.append(f'<text x="{nx + NODE_W - 12}" y="{ny + 22}" text-anchor="end" font-size="11" fill="{color}" '
+                         f'font-family="IBM Plex Mono, ui-monospace, monospace">{html.escape(label)}</text>')
+        elif is_done and not is_active and not static:
             parts.append(f'<circle cx="{nx + NODE_W - 16}" cy="{ny + 18}" r="7" fill="{color}"/>'
                          f'<path d="M{nx + NODE_W - 19.5},{ny + 18} l2.5,2.5 l4.5,-5" stroke="#17191B" stroke-width="2" fill="none"/>')
+        # "i" marker: hovering the step shows what it does
+        parts.append(f'<circle cx="{nx + NODE_W - 14}" cy="{ny + NODE_H - 14}" r="7" fill="none" stroke="#6E6A63" stroke-width="1.2"/>'
+                     f'<text x="{nx + NODE_W - 14}" y="{ny + NODE_H - 10.5}" text-anchor="middle" font-size="10" font-weight="600" '
+                     f'fill="#A29D92" font-family="Georgia, serif">i</text>')
+
+    # Hover layer, drawn last so the tip sits above every node and edge
+    for node_id, (nx, ny, title, _) in layout.items():
+        info = node_info(system, node_id)
+        if not info:
+            continue
+        lines = _wrap(info)
+        tip_w, tip_h = 252, 26 + 15 * len(lines)
+        tx = max(4, min(nx, width - tip_w - 4))
+        ty = ny + NODE_H + 8 if ny + NODE_H + 8 + tip_h <= height else ny - tip_h - 8
+        text = "".join(f'<tspan x="{tx + 12}" dy="{15 if i else 0}">{html.escape(l)}</tspan>' for i, l in enumerate(lines))
+        parts.append(
+            f'<g class="nodetip"><title>{html.escape(title)}: {html.escape(info)}</title>'
+            f'<rect class="hit" x="{nx}" y="{ny}" width="{NODE_W}" height="{NODE_H}" rx="5"/>'
+            f'<g class="tip"><rect x="{tx}" y="{ty}" width="{tip_w}" height="{tip_h}" rx="4" fill="#26292D" stroke="{color}" stroke-width="1"/>'
+            f'<text x="{tx + 12}" y="{ty + 20}" font-size="12" fill="#ECE7DC" font-family="{FONT}">{text}</text></g></g>'
+        )
 
     parts.append("</svg>")
     cap = f'<div class="small muted" style="padding:6px 4px 2px">{html.escape(caption)}</div>' if caption else ""

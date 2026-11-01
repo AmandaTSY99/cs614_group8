@@ -10,7 +10,9 @@ import streamlit as st
 from ui import live
 from ui.citations import render_answer
 from ui.data import COMPANIES, RECIPE_LABELS, benchmark_by_question, load_benchmark, load_rq1, load_rq2, load_rq3, question_companies
-from ui.diagrams import render_diagram
+import time
+
+from ui.diagrams import NODE_WAIT, node_info, node_title, render_diagram
 from ui.theme import SYSTEM_INFO, SYSTEM_ORDER, SYSTEMS, system_pill
 
 PAGES = ["Ask", "Benchmark explorer", "Results", "How it works"]
@@ -136,7 +138,7 @@ def page_ask() -> None:
     diagram_slot = st.empty()
     status_slot = st.empty()
     if not run_clicked and "live_result" not in st.session_state:
-        diagram_slot.markdown(render_diagram(system), unsafe_allow_html=True)
+        diagram_slot.markdown(render_diagram(system, caption="Hover a step to see what it does."), unsafe_allow_html=True)
 
     if run_clicked:
         scope = live.detect_scope(question)
@@ -184,23 +186,62 @@ def page_ask() -> None:
             st.markdown("##### How it got there")
             st.markdown(_trace_html(run["trace"]), unsafe_allow_html=True)
     st.markdown("##### Path through the system")
-    st.markdown(render_diagram(rsys, visited=run.get("visited", [])), unsafe_allow_html=True)
+    st.caption("Time spent in each step is shown on it (×2 means it ran twice). Hover a step to see what it does.")
+    st.markdown(render_diagram(rsys, visited=run.get("visited", []), timings=run.get("timings")), unsafe_allow_html=True)
+
+
+def _run_bar(system: str, node: Optional[str], step_elapsed: float, total_elapsed: float, model_label: str,
+             label: Optional[str] = None) -> str:
+    """Live status line: which step is running, what it is waiting on, and ticking step / total timers.
+
+    The counters are CSS animations started at the elapsed time so far, so they keep counting while a slow
+    language-model call blocks the script (Streamlit cannot redraw until the step returns).
+    """
+    if node:
+        what = f'<b>{html.escape(node_title(system, node))}</b>'
+        why = NODE_WAIT.get(node, "working")
+        hint = html.escape(node_info(system, node))
+        now = f'<span class="now" title="{hint}">{what}</span><span class="wait">{html.escape(why)}…</span>'
+    else:
+        now = f'<span class="now">{html.escape(label or "Working")}</span>'
+    clock = (f'<span class="clock">this step <span class="tick" style="animation-delay:-{step_elapsed:.1f}s"></span>'
+             f' · total <span class="tick" style="animation-delay:-{total_elapsed:.1f}s"></span>'
+             f' · {html.escape(model_label)}</span>')
+    return f'<div class="runbar"><span class="pulse"></span>{now}{clock}</div>'
 
 
 def _execute(system, question, max_hops, scope, diagram_slot, status_slot, model_label) -> Dict[str, Any]:
-    """Run one system live, updating the diagram and the status log as it goes."""
+    """Run one system live: the run bar and diagram show the step in progress, and each step's time is recorded."""
     name = SYSTEM_INFO[system]["name"]
+    t0 = time.perf_counter()
     if system not in live.C_MODES:
-        diagram_slot.markdown(render_diagram(system, active="retrieve", visited=["question"]), unsafe_allow_html=True)
+        diagram_slot.markdown(
+            _run_bar(system, "retrieve", 0, 0, model_label)
+            + render_diagram(system, active="retrieve", visited=["question"]), unsafe_allow_html=True)
         with status_slot.status(f"Running {name} on {model_label}…", expanded=False) as status:
             run = live.run_single_pass(question, system, scope)
             status.update(label=f"Done in {_fmt_ms(run['latency_ms'])} · {model_label}", state="complete")
         return run
 
-    diagram_slot.markdown(render_diagram(system, active="decomposer"), unsafe_allow_html=True)
-    with status_slot.status(f"Running {name} on {model_label}…", expanded=True) as status:
+    timings: Dict[str, List[float]] = {}
+    last = [t0]
+
+    def draw(active: Optional[str], visited: List[str]) -> None:
+        now = time.perf_counter()
+        bar = _run_bar(system, active, now - last[0], now - t0, model_label) if active else ""
+        shown = {k: (v[0], int(v[1])) for k, v in timings.items()}
+        diagram_slot.markdown(bar + render_diagram(system, active=active, visited=visited, timings=shown), unsafe_allow_html=True)
+
+    draw("decomposer", [])
+    with status_slot.status(f"Running {name} on {model_label}…", expanded=False) as status:
         def on_step(node, nxt, visited, state):
-            diagram_slot.markdown(render_diagram(system, active=nxt, visited=visited), unsafe_allow_html=True)
+            now = time.perf_counter()
+            key = "guardrail" if node == "repair" else node
+            spent = timings.setdefault(key, [0.0, 0])
+            spent[0] += now - last[0]
+            spent[1] += 1
+            last[0] = now
+            draw(nxt, visited)
             hop = state.get("current_hop", 1)
             msg = {
                 "decomposer": f"Planned the search for {', '.join(state.get('target_tickers') or []) or 'the named companies'}",
@@ -214,10 +255,11 @@ def _execute(system, question, max_hops, scope, diagram_slot, status_slot, model
                 "repair": "Repaired a figure the guardrail could not verify",
             }.get(node)
             if msg:
-                status.write(msg)
+                status.write(f"{msg} · {now - t0:.1f}s")
         run = live.run_system_c(question, system, max_hops=max_hops, on_step=on_step, scope=scope)
-        status.update(label=f"Done in {_fmt_ms(run['latency_ms'])} · {run['hops']} hop(s) · {model_label}",
+        status.update(label=f"Done in {_fmt_ms(run['latency_ms'])} · {run['hops']} hop(s) · {model_label} · step log",
                       state="complete", expanded=False)
+    run["timings"] = {k: (v[0], int(v[1])) for k, v in timings.items()}
     return run
 
 
@@ -582,6 +624,6 @@ def page_architecture() -> None:
         title, bullets = ARCH_TEXT[s]
         st.markdown(f'<div style="margin-top:22px">{system_pill(s)}</div>', unsafe_allow_html=True)
         st.markdown(f"#### {title}")
-        st.markdown(render_diagram(s, static=True), unsafe_allow_html=True)
+        st.markdown(render_diagram(s, static=True, caption="Hover a step to see what it does."), unsafe_allow_html=True)
         st.markdown("\n".join(f"- {b}" for b in bullets))
 
