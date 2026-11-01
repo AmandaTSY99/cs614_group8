@@ -32,6 +32,13 @@ def _clip(text: str, n: int = 140) -> str:
     return text if len(text) <= n else text[: n - 1].rstrip() + "…"
 
 
+def keep_selection(key: str, last_key: str, fallback: str) -> None:
+    """Segmented controls deselect when the active option is clicked again; keep the previous choice instead."""
+    if st.session_state.get(key) is None:
+        st.session_state[key] = st.session_state.get(last_key) or fallback
+    st.session_state[last_key] = st.session_state[key]
+
+
 def _go_to(page: str, question_id: Optional[str] = None) -> None:
     st.session_state["nav"] = page
     if question_id:
@@ -78,6 +85,7 @@ def page_ask() -> None:
 
     system = st.segmented_control(
         "System", SYSTEMS, default="system_c_v3", key="ask_system", format_func=lambda s: SYSTEM_INFO[s]["short"],
+        on_change=keep_selection, args=("ask_system", "ask_system_last", "system_c_v3"),
     ) or "system_c_v3"
     recommended = ' <span style="color:var(--accent)">Recommended: the most accurate system in our benchmark.</span>'
     st.markdown(f'<div class="small muted" style="margin:-6px 0 12px">{html.escape(SYSTEM_INFO[system]["name"])} · '

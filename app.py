@@ -46,7 +46,8 @@ with brand:
     )
 with nav_col:
     st.session_state.setdefault("nav", "Ask")
-    page = st.segmented_control("Navigate", pages.PAGES, key="nav", label_visibility="collapsed") or "Ask"
+    page = st.segmented_control("Navigate", pages.PAGES, key="nav", label_visibility="collapsed",
+                                on_change=pages.keep_selection, args=("nav", "nav_last", "Ask")) or "Ask"
 st.markdown('<div class="top-rule"></div>', unsafe_allow_html=True)
 
 # Start each page at the top (Streamlit keeps the previous scroll position across reruns)
