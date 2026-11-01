@@ -50,28 +50,28 @@
     "system_b": {
       "n_queries": 97,
       "latency": {
-        "mean_ms": 6898.2,
-        "std_ms": 1373.2,
-        "p50_ms": 6608.2,
-        "p90_ms": 8436.1,
-        "p99_ms": 10984.9,
+        "mean_ms": 8205.6,
+        "std_ms": 1685.4,
+        "p50_ms": 7896.2,
+        "p90_ms": 9929.9,
+        "p99_ms": 15581.9,
         "stages_mean_ms": {
           "retrieval": 4675.9,
           "rerank": 4394.9,
           "agent_critic": 0.0,
-          "synthesis": 1970.1
+          "synthesis": 3277.5
         }
       },
       "tokens": {
-        "mean_prompt": 1251.5,
-        "mean_completion": 80.5,
-        "mean_total": 1332.1
+        "mean_prompt": 2286.5,
+        "mean_completion": 175.1,
+        "mean_total": 2461.6
       },
       "economics": {
-        "mean_cost_per_query_usd": 0.004337,
-        "cost_per_1k_queries_usd": 4.337,
-        "cost_per_correct_answer_usd": 0.0074,
-        "robust_risk_adjusted_loss_per_query_usd": 0.4181
+        "mean_cost_per_query_usd": 0.008343,
+        "cost_per_1k_queries_usd": 8.343,
+        "cost_per_correct_answer_usd": 0.0108,
+        "robust_risk_adjusted_loss_per_query_usd": 0.2382
       },
       "hop_dynamics": {
         "mean_hops": 1.0,
@@ -87,10 +87,10 @@
         }
       },
       "accuracy": {
-        "numeric_correct_pct": 58.62,
-        "verified_correct_count": 51,
+        "numeric_correct_pct": 77.01,
+        "verified_correct_count": 67,
         "scorable_count": 87,
-        "strict_numeric_correct_pct": 42.86,
+        "strict_numeric_correct_pct": 61.9,
         "strict_scorable_count": 63
       }
     },
@@ -287,7 +287,7 @@
         "first_only_correct": 8,
         "second_only_correct": 2,
         "p_raw": 0.10938,
-        "p_adjusted_holm": 0.3281,
+        "p_adjusted_holm": 0.5469,
         "significant_at_05": false
       },
       {
@@ -300,7 +300,7 @@
         "first_only_correct": 14,
         "second_only_correct": 5,
         "p_raw": 0.06357,
-        "p_adjusted_holm": 0.3071,
+        "p_adjusted_holm": 0.3814,
         "significant_at_05": false
       },
       {
@@ -323,10 +323,10 @@
         "test": "mcnemar_exact",
         "statistic": null,
         "n": 63,
-        "first_only_correct": 15,
-        "second_only_correct": 5,
-        "p_raw": 0.04139,
-        "p_adjusted_holm": 0.2734,
+        "first_only_correct": 5,
+        "second_only_correct": 7,
+        "p_raw": 0.77441,
+        "p_adjusted_holm": 0.9969,
         "significant_at_05": false
       },
       {
@@ -336,10 +336,10 @@
         "test": "mcnemar_exact",
         "statistic": null,
         "n": 87,
-        "first_only_correct": 20,
-        "second_only_correct": 9,
-        "p_raw": 0.06143,
-        "p_adjusted_holm": 0.3071,
+        "first_only_correct": 6,
+        "second_only_correct": 11,
+        "p_raw": 0.33231,
+        "p_adjusted_holm": 0.9969,
         "significant_at_05": false
       },
       {
@@ -379,7 +379,7 @@
         "test": "wilcoxon",
         "statistic": 182.0,
         "p_raw": 0.11266,
-        "p_adjusted_holm": 0.3281,
+        "p_adjusted_holm": 0.5469,
         "significant_at_05": false
       },
       {
@@ -389,7 +389,7 @@
         "test": "wilcoxon",
         "statistic": 2162.0,
         "p_raw": 0.44022,
-        "p_adjusted_holm": 0.4402,
+        "p_adjusted_holm": 0.9969,
         "significant_at_05": false
       },
       {
@@ -407,7 +407,7 @@
         "metric": "latency_ms",
         "description": "System B Rerank Latency vs System A",
         "test": "wilcoxon",
-        "statistic": 98.0,
+        "statistic": 2.0,
         "p_raw": 0.0,
         "p_adjusted_holm": 0.0,
         "significant_at_05": true
@@ -418,9 +418,9 @@
     "oracle": true,
     "n_queries": 97,
     "cascade_accuracy_pct": 89.69,
-    "escalation_rate_pct": 47.42,
-    "mean_latency_ms": 15740.46,
-    "mean_cost_usd": 0.028929,
-    "cost_per_1k_queries_usd": 28.929
+    "escalation_rate_pct": 30.93,
+    "mean_latency_ms": 13928.94,
+    "mean_cost_usd": 0.024336,
+    "cost_per_1k_queries_usd": 24.336
   }
 }

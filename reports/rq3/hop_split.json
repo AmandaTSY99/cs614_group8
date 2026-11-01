@@ -1,0 +1,264 @@
+{
+  "funnel": {
+    "benchmark": {
+      "n": 97,
+      "hop": {
+        "single": 19,
+        "multi": 78
+      }
+    },
+    "answer_contains_number": {
+      "n": 87,
+      "hop": {
+        "single": 14,
+        "multi": 73
+      },
+      "type": {
+        "numeric": 43,
+        "qualitative": 24,
+        "mixed": 20
+      }
+    },
+    "excluded_no_number": [
+      "gold-017",
+      "gold-021",
+      "gold-023",
+      "gold-024",
+      "gold-051",
+      "gold-052",
+      "gold-053",
+      "gold-054",
+      "gold-056",
+      "gold-057"
+    ],
+    "typed_numeric_or_mixed": {
+      "n": 63,
+      "hop": {
+        "single": 11,
+        "multi": 52
+      }
+    }
+  },
+  "systems": {
+    "system_a": {
+      "scored": {
+        "all": {
+          "correct": 62,
+          "n": 87,
+          "pct": 71.3
+        },
+        "single": {
+          "correct": 11,
+          "n": 14,
+          "pct": 78.6
+        },
+        "multi": {
+          "correct": 51,
+          "n": 73,
+          "pct": 69.9
+        }
+      },
+      "typed": {
+        "all": {
+          "correct": 44,
+          "n": 63,
+          "pct": 69.8
+        },
+        "single": {
+          "correct": 9,
+          "n": 11,
+          "pct": 81.8
+        },
+        "multi": {
+          "correct": 35,
+          "n": 52,
+          "pct": 67.3
+        }
+      },
+      "mean_agent_hops": {
+        "single": 1.0,
+        "multi": 1.0
+      },
+      "p50_latency_s": {
+        "single": 2.2,
+        "multi": 2.6
+      }
+    },
+    "system_b": {
+      "scored": {
+        "all": {
+          "correct": 67,
+          "n": 87,
+          "pct": 77.0
+        },
+        "single": {
+          "correct": 12,
+          "n": 14,
+          "pct": 85.7
+        },
+        "multi": {
+          "correct": 55,
+          "n": 73,
+          "pct": 75.3
+        }
+      },
+      "typed": {
+        "all": {
+          "correct": 45,
+          "n": 63,
+          "pct": 71.4
+        },
+        "single": {
+          "correct": 9,
+          "n": 11,
+          "pct": 81.8
+        },
+        "multi": {
+          "correct": 36,
+          "n": 52,
+          "pct": 69.2
+        }
+      },
+      "mean_agent_hops": {
+        "single": 1.0,
+        "multi": 1.0
+      },
+      "p50_latency_s": {
+        "single": 7.3,
+        "multi": 8.0
+      }
+    },
+    "system_c_v1": {
+      "scored": {
+        "all": {
+          "correct": 78,
+          "n": 87,
+          "pct": 89.7
+        },
+        "single": {
+          "correct": 14,
+          "n": 14,
+          "pct": 100.0
+        },
+        "multi": {
+          "correct": 64,
+          "n": 73,
+          "pct": 87.7
+        }
+      },
+      "typed": {
+        "all": {
+          "correct": 54,
+          "n": 63,
+          "pct": 85.7
+        },
+        "single": {
+          "correct": 11,
+          "n": 11,
+          "pct": 100.0
+        },
+        "multi": {
+          "correct": 43,
+          "n": 52,
+          "pct": 82.7
+        }
+      },
+      "mean_agent_hops": {
+        "single": 1.64,
+        "multi": 2.33
+      },
+      "p50_latency_s": {
+        "single": 9.4,
+        "multi": 22.0
+      }
+    },
+    "system_c_v2": {
+      "scored": {
+        "all": {
+          "correct": 72,
+          "n": 87,
+          "pct": 82.8
+        },
+        "single": {
+          "correct": 13,
+          "n": 14,
+          "pct": 92.9
+        },
+        "multi": {
+          "correct": 59,
+          "n": 73,
+          "pct": 80.8
+        }
+      },
+      "typed": {
+        "all": {
+          "correct": 48,
+          "n": 63,
+          "pct": 76.2
+        },
+        "single": {
+          "correct": 10,
+          "n": 11,
+          "pct": 90.9
+        },
+        "multi": {
+          "correct": 38,
+          "n": 52,
+          "pct": 73.1
+        }
+      },
+      "mean_agent_hops": {
+        "single": 1.43,
+        "multi": 1.77
+      },
+      "p50_latency_s": {
+        "single": 8.9,
+        "multi": 14.9
+      }
+    },
+    "system_c_v3": {
+      "scored": {
+        "all": {
+          "correct": 87,
+          "n": 87,
+          "pct": 100.0
+        },
+        "single": {
+          "correct": 14,
+          "n": 14,
+          "pct": 100.0
+        },
+        "multi": {
+          "correct": 73,
+          "n": 73,
+          "pct": 100.0
+        }
+      },
+      "typed": {
+        "all": {
+          "correct": 63,
+          "n": 63,
+          "pct": 100.0
+        },
+        "single": {
+          "correct": 11,
+          "n": 11,
+          "pct": 100.0
+        },
+        "multi": {
+          "correct": 52,
+          "n": 52,
+          "pct": 100.0
+        }
+      },
+      "mean_agent_hops": {
+        "single": 1.79,
+        "multi": 2.18
+      },
+      "p50_latency_s": {
+        "single": 7.8,
+        "multi": 18.4
+      }
+    }
+  }
+}
