@@ -1,8 +1,8 @@
 {
   "metadata": {
     "provider": "mock",
-    "model": "mock",
-    "timestamp": "2026-10-24T12:11:17Z"
+    "model": "qwen2.5:7b",
+    "timestamp": "2026-10-30T12:52:53Z"
   },
   "summary_table": [
     {
@@ -12,13 +12,13 @@
       "hop_count": 1,
       "max_hops": 3,
       "early_stopped": true,
-      "chunks": 4,
+      "chunks": 6,
       "guardrail_passed": true,
       "grounding_err": 0.0,
-      "latency_ms": 20.27,
-      "total_tokens": 2464,
-      "cost_per_1k": 0.2794,
-      "estimated_cost_usd": 0.0002794
+      "latency_ms": 743.17,
+      "total_tokens": 3809,
+      "cost_per_1k": 0.4161,
+      "estimated_cost_usd": 0.0004161
     },
     {
       "id": "Q2",
@@ -27,13 +27,13 @@
       "hop_count": 2,
       "max_hops": 3,
       "early_stopped": true,
-      "chunks": 8,
+      "chunks": 12,
       "guardrail_passed": true,
       "grounding_err": 0.0,
-      "latency_ms": 13.42,
-      "total_tokens": 4869,
-      "cost_per_1k": 0.5349,
-      "estimated_cost_usd": 0.0005349
+      "latency_ms": 36.72,
+      "total_tokens": 7915,
+      "cost_per_1k": 0.8439,
+      "estimated_cost_usd": 0.0008439
     },
     {
       "id": "Q3_v1",
@@ -42,13 +42,13 @@
       "hop_count": 2,
       "max_hops": 3,
       "early_stopped": true,
-      "chunks": 8,
+      "chunks": 12,
       "guardrail_passed": true,
       "grounding_err": 0.0,
-      "latency_ms": 44.53,
-      "total_tokens": 4778,
-      "cost_per_1k": 0.5262,
-      "estimated_cost_usd": 0.0005262
+      "latency_ms": 467.21,
+      "total_tokens": 7726,
+      "cost_per_1k": 0.8254,
+      "estimated_cost_usd": 0.0008254
     },
     {
       "id": "Q3_v2",
@@ -57,13 +57,13 @@
       "hop_count": 1,
       "max_hops": 3,
       "early_stopped": true,
-      "chunks": 6,
+      "chunks": 8,
       "guardrail_passed": true,
       "grounding_err": 0.0,
-      "latency_ms": 225.38,
-      "total_tokens": 2149,
-      "cost_per_1k": 0.2459,
-      "estimated_cost_usd": 0.0002459
+      "latency_ms": 87.31,
+      "total_tokens": 3615,
+      "cost_per_1k": 0.4013,
+      "estimated_cost_usd": 0.0004013
     }
   ],
   "detailed_traces": [
@@ -81,32 +81,63 @@
         "description": "Tests Decomposer single_hop classification and early-stopping at Hop 1 without running redundant hops."
       },
       "original_query": "What was NVIDIA's fiscal year 2026 period end date, and what is the address of its principal executive office?",
-      "final_answer": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities, NVDA_FY2026_2026-01-25:365] [NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Exhibit Index, NVDA_FY2026_2026-01-25:462].",
+      "final_answer": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 16. Form 10-K Summary > Power of Attorney, NVDA_FY2026_2026-01-25:472] [NVDA FY2026, (Exact name of registrant as specified in its charter), NVDA_FY2026_2026-01-25:3].",
       "citations": [
         {
-          "tag": "[NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities, NVDA_FY2026_2026-01-25:365]",
-          "chunk_id": "NVDA_FY2026_2026-01-25:365",
+          "tag": "[NVDA FY2026, Item 16. Form 10-K Summary > Power of Attorney, NVDA_FY2026_2026-01-25:472]",
+          "chunk_id": "NVDA_FY2026_2026-01-25:472",
           "ticker": "NVDA",
           "fiscal_year": 2026,
-          "section": "Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities",
-          "supported_claim": "Item 15. Exhibits and Financial Statement Schedules > Note 7 - Cash Equivalents and Marketable Securities\n(1) In the first quarter of fiscal year 2026, one inve"
+          "section": "Item 16. Form 10-K Summary > Power of Attorney",
+          "supported_claim": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors."
         },
         {
-          "tag": "[NVDA FY2026, Item 15. Exhibits and Financial Statement Schedules > Exhibit Index, NVDA_FY2026_2026-01-25:462]",
-          "chunk_id": "NVDA_FY2026_2026-01-25:462",
+          "tag": "[NVDA FY2026, (Exact name of registrant as specified in its charter), NVDA_FY2026_2026-01-25:3]",
+          "chunk_id": "NVDA_FY2026_2026-01-25:3",
           "ticker": "NVDA",
           "fiscal_year": 2026,
-          "section": "Item 15. Exhibits and Financial Statement Schedules > Exhibit Index",
-          "supported_claim": "Item 15. Exhibits and Financial Statement Schedules > Exhibit Index (table)\n| 10.10+ | Amended and Restated 2007 Equity Incentive Plan - Global Performance-Base"
+          "section": "(Exact name of registrant as specified in its charter)",
+          "supported_claim": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors."
         }
       ],
       "guardrail_report": {
         "total_numerical_claims": 0,
         "verified_numbers": [],
         "ungrounded_numbers": [],
+        "uncited_numbers": [],
+        "derived_numbers": [],
         "numerical_grounding_error_rate": 0.0,
         "faithfulness_score": 1.0,
-        "has_inline_citations": true
+        "has_inline_citations": true,
+        "invalid_citations": [],
+        "sentences": [
+          {
+            "text": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 16. Form 10-K Summary > Power of Attorney, NVDA_FY2026_2026-01-25:472] [NVDA FY2026, (Exact name of registrant as specified in its charter), NVDA_FY2026_2026-01-25:3].",
+            "citations": [
+              "[NVDA FY2026, Item 16. Form 10-K Summary > Power of Attorney, NVDA_FY2026_2026-01-25:472]",
+              "[NVDA FY2026, (Exact name of registrant as specified in its charter), NVDA_FY2026_2026-01-25:3]"
+            ],
+            "chunk_ids": [
+              "NVDA_FY2026_2026-01-25:472",
+              "NVDA_FY2026_2026-01-25:3"
+            ],
+            "numbers": [],
+            "semantic_verdict": "supported",
+            "reason": "mock mode: judge output not parsed"
+          }
+        ],
+        "unverified_sentences": [],
+        "unchecked_sentences": [],
+        "uncited_claim_sentences": [],
+        "semantic_check_enabled": true,
+        "semantic_judge_provider": "mock",
+        "semantic_judge_model": "mock",
+        "semantic_verdict_counts": {
+          "supported": 1,
+          "partial": 0,
+          "unsupported": 0,
+          "unchecked": 0
+        }
       },
       "telemetry": {
         "mode": "v1_amr",
@@ -119,7 +150,7 @@
             "prompt_tokens": 287,
             "completion_tokens": 74,
             "total_tokens": 361,
-            "latency_ms": 0.06,
+            "latency_ms": 0.1,
             "cost_usd": 5.09e-05
           },
           {
@@ -127,62 +158,77 @@
             "hop": 1,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 809,
+            "prompt_tokens": 1209,
             "completion_tokens": 26,
-            "total_tokens": 835,
-            "latency_ms": 0.04,
-            "cost_usd": 8.87e-05
+            "total_tokens": 1235,
+            "latency_ms": 0.1,
+            "cost_usd": 0.0001287
           },
           {
             "node": "synthesizer",
             "hop": 1,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 1203,
-            "completion_tokens": 65,
-            "total_tokens": 1268,
-            "latency_ms": 0.04,
-            "cost_usd": 0.0001398
+            "prompt_tokens": 1576,
+            "completion_tokens": 54,
+            "total_tokens": 1630,
+            "latency_ms": 0.09,
+            "cost_usd": 0.0001738
+          },
+          {
+            "node": "guardrail_semantic",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 561,
+            "completion_tokens": 22,
+            "total_tokens": 583,
+            "latency_ms": 0.02,
+            "cost_usd": 6.27e-05
           }
         ],
         "node_latencies_ms": {
-          "decomposer": 0.06,
-          "retriever": 20.03,
-          "critic": 0.04,
-          "synthesizer": 0.04,
-          "guardrail": 0.1
+          "decomposer": 0.1,
+          "retriever": 742.77,
+          "critic": 0.1,
+          "synthesizer": 0.09,
+          "guardrail": 0.09,
+          "guardrail_semantic": 0.02
         },
-        "total_prompt_tokens": 2299,
-        "total_completion_tokens": 165,
-        "total_tokens": 2464,
-        "estimated_cost_usd": 0.0002794,
+        "total_prompt_tokens": 3633,
+        "total_completion_tokens": 176,
+        "total_tokens": 3809,
+        "estimated_cost_usd": 0.0004161,
         "hop_count": 1,
         "early_stopped": true,
-        "cost_per_1k_queries_usd": 0.2794,
+        "cost_per_1k_queries_usd": 0.4161,
         "rq3_summary": {
           "mode": "v1_amr",
           "hop_count": 1,
           "max_hops": 3,
           "early_stopped": true,
-          "total_latency_ms": 20.27,
-          "total_prompt_tokens": 2299,
-          "total_completion_tokens": 165,
-          "total_tokens": 2464,
-          "estimated_cost_usd": 0.0002794,
-          "cost_per_1k_queries_usd": 0.2794,
+          "total_latency_ms": 743.17,
+          "total_prompt_tokens": 3633,
+          "total_completion_tokens": 176,
+          "total_tokens": 3809,
+          "estimated_cost_usd": 0.0004161,
+          "cost_per_1k_queries_usd": 0.4161,
           "node_latencies_ms": {
-            "decomposer": 0.06,
-            "retriever": 20.03,
-            "critic": 0.04,
-            "synthesizer": 0.04,
-            "guardrail": 0.1
+            "decomposer": 0.1,
+            "retriever": 742.77,
+            "critic": 0.1,
+            "synthesizer": 0.09,
+            "guardrail": 0.09,
+            "guardrail_semantic": 0.02
           },
           "hop_attribution_chunk_ids": {
             "1": [
-              "NVDA_FY2026_2026-01-25:365",
+              "NVDA_FY2026_2026-01-25:472",
+              "NVDA_FY2026_2026-01-25:3",
+              "NVDA_FY2026_2026-01-25:10",
               "NVDA_FY2026_2026-01-25:462",
-              "NVDA_FY2026_2026-01-25:406",
-              "NVDA_FY2026_2026-01-25:347"
+              "NVDA_FY2026_2026-01-25:463",
+              "NVDA_FY2026_2026-01-25:61"
             ]
           }
         }
@@ -210,7 +256,7 @@
           "ticker": "NVDA",
           "fiscal_year": 2026,
           "section": "Item 1. Business > Our Businesses",
-          "supported_claim": "Item 1. Business > Our Businesses\nWe report our business results in two segments. The Compute & Networking segment includes our Data Center accelerated computin"
+          "supported_claim": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors."
         },
         {
           "tag": "[NVDA FY2026, Item 1. Business > Business Strategies, NVDA_FY2026_2026-01-25:32]",
@@ -218,16 +264,47 @@
           "ticker": "NVDA",
           "fiscal_year": 2026,
           "section": "Item 1. Business > Business Strategies",
-          "supported_claim": "Item 1. Business > Business Strategies\nNVIDIA\u2019s key strategies that shape our overall business approach include: Advancing the NVIDIA accelerated computing plat"
+          "supported_claim": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors."
         }
       ],
       "guardrail_report": {
         "total_numerical_claims": 0,
         "verified_numbers": [],
         "ungrounded_numbers": [],
+        "uncited_numbers": [],
+        "derived_numbers": [],
         "numerical_grounding_error_rate": 0.0,
         "faithfulness_score": 1.0,
-        "has_inline_citations": true
+        "has_inline_citations": true,
+        "invalid_citations": [],
+        "sentences": [
+          {
+            "text": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22] [NVDA FY2026, Item 1. Business > Business Strategies, NVDA_FY2026_2026-01-25:32].",
+            "citations": [
+              "[NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22]",
+              "[NVDA FY2026, Item 1. Business > Business Strategies, NVDA_FY2026_2026-01-25:32]"
+            ],
+            "chunk_ids": [
+              "NVDA_FY2026_2026-01-25:22",
+              "NVDA_FY2026_2026-01-25:32"
+            ],
+            "numbers": [],
+            "semantic_verdict": "supported",
+            "reason": "mock mode: judge output not parsed"
+          }
+        ],
+        "unverified_sentences": [],
+        "unchecked_sentences": [],
+        "uncited_claim_sentences": [],
+        "semantic_check_enabled": true,
+        "semantic_judge_provider": "mock",
+        "semantic_judge_model": "mock",
+        "semantic_verdict_counts": {
+          "supported": 1,
+          "partial": 0,
+          "unsupported": 0,
+          "unchecked": 0
+        }
       },
       "telemetry": {
         "mode": "v1_amr",
@@ -240,7 +317,7 @@
             "prompt_tokens": 299,
             "completion_tokens": 83,
             "total_tokens": 382,
-            "latency_ms": 0.04,
+            "latency_ms": 0.11,
             "cost_usd": 5.48e-05
           },
           {
@@ -248,92 +325,109 @@
             "hop": 1,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 767,
+            "prompt_tokens": 1203,
             "completion_tokens": 48,
-            "total_tokens": 815,
-            "latency_ms": 0.04,
-            "cost_usd": 9.11e-05
+            "total_tokens": 1251,
+            "latency_ms": 0.12,
+            "cost_usd": 0.0001347
           },
           {
             "node": "generator",
             "hop": 1,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 416,
+            "prompt_tokens": 309,
             "completion_tokens": 37,
-            "total_tokens": 453,
+            "total_tokens": 346,
             "latency_ms": 0.02,
-            "cost_usd": 5.27e-05
+            "cost_usd": 4.2e-05
           },
           {
             "node": "critic",
             "hop": 2,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 1259,
+            "prompt_tokens": 1943,
             "completion_tokens": 26,
-            "total_tokens": 1285,
-            "latency_ms": 0.04,
-            "cost_usd": 0.0001337
+            "total_tokens": 1969,
+            "latency_ms": 0.27,
+            "cost_usd": 0.0002021
           },
           {
             "node": "synthesizer",
             "hop": 2,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 1888,
+            "prompt_tokens": 3356,
             "completion_tokens": 46,
-            "total_tokens": 1934,
+            "total_tokens": 3402,
+            "latency_ms": 0.25,
+            "cost_usd": 0.0003494
+          },
+          {
+            "node": "guardrail_semantic",
+            "hop": 2,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 543,
+            "completion_tokens": 22,
+            "total_tokens": 565,
             "latency_ms": 0.05,
-            "cost_usd": 0.0002026
+            "cost_usd": 6.09e-05
           }
         ],
         "node_latencies_ms": {
-          "decomposer": 0.04,
-          "retriever": 13.21,
-          "critic": 0.08,
+          "decomposer": 0.11,
+          "retriever": 35.64,
+          "critic": 0.39,
           "generator": 0.02,
-          "synthesizer": 0.05,
-          "guardrail": 0.02
+          "synthesizer": 0.25,
+          "guardrail": 0.26,
+          "guardrail_semantic": 0.05
         },
-        "total_prompt_tokens": 4629,
-        "total_completion_tokens": 240,
-        "total_tokens": 4869,
-        "estimated_cost_usd": 0.0005349,
+        "total_prompt_tokens": 7653,
+        "total_completion_tokens": 262,
+        "total_tokens": 7915,
+        "estimated_cost_usd": 0.0008439,
         "hop_count": 2,
         "early_stopped": true,
-        "cost_per_1k_queries_usd": 0.5349,
+        "cost_per_1k_queries_usd": 0.8439,
         "rq3_summary": {
           "mode": "v1_amr",
           "hop_count": 2,
           "max_hops": 3,
           "early_stopped": true,
-          "total_latency_ms": 13.42,
-          "total_prompt_tokens": 4629,
-          "total_completion_tokens": 240,
-          "total_tokens": 4869,
-          "estimated_cost_usd": 0.0005349,
-          "cost_per_1k_queries_usd": 0.5349,
+          "total_latency_ms": 36.72,
+          "total_prompt_tokens": 7653,
+          "total_completion_tokens": 262,
+          "total_tokens": 7915,
+          "estimated_cost_usd": 0.0008439,
+          "cost_per_1k_queries_usd": 0.8439,
           "node_latencies_ms": {
-            "decomposer": 0.04,
-            "retriever": 13.21,
-            "critic": 0.08,
+            "decomposer": 0.11,
+            "retriever": 35.64,
+            "critic": 0.39,
             "generator": 0.02,
-            "synthesizer": 0.05,
-            "guardrail": 0.02
+            "synthesizer": 0.25,
+            "guardrail": 0.26,
+            "guardrail_semantic": 0.05
           },
           "hop_attribution_chunk_ids": {
             "1": [
               "NVDA_FY2026_2026-01-25:22",
               "NVDA_FY2026_2026-01-25:32",
               "NVDA_FY2026_2026-01-25:434",
-              "NVDA_FY2026_2026-01-25:53"
+              "NVDA_FY2026_2026-01-25:53",
+              "NVDA_FY2026_2026-01-25:103",
+              "NVDA_FY2026_2026-01-25:112"
             ],
             "2": [
               "NVDA_FY2026_2026-01-25:9",
-              "NVDA_FY2026_2026-01-25:245",
-              "NVDA_FY2026_2026-01-25:244",
-              "NVDA_FY2026_2026-01-25:203"
+              "NVDA_FY2026_2026-01-25:166",
+              "NVDA_FY2026_2026-01-25:107",
+              "NVDA_FY2026_2026-01-25:121",
+              "NVDA_FY2026_2026-01-25:57",
+              "NVDA_FY2026_2026-01-25:95"
             ]
           }
         }
@@ -354,32 +448,63 @@
         "description": "Baseline multi-hop RAG relying solely on unstructured text and table chunks."
       },
       "original_query": "Compare NVIDIA's total revenue, operating income, and net income between FY2025 and FY2026, and calculate the year-over-year revenue growth rate.",
-      "final_answer": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22] [NVDA FY2025, Item 1. Business > Our Businesses, NVDA_FY2025_2025-01-26:21].",
+      "final_answer": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2025, Item 1. Business > Our Businesses, NVDA_FY2025_2025-01-26:21] [NVDA FY2025, Item 1. Business > Business Strategies, NVDA_FY2025_2025-01-26:33].",
       "citations": [
-        {
-          "tag": "[NVDA FY2026, Item 1. Business > Our Businesses, NVDA_FY2026_2026-01-25:22]",
-          "chunk_id": "NVDA_FY2026_2026-01-25:22",
-          "ticker": "NVDA",
-          "fiscal_year": 2026,
-          "section": "Item 1. Business > Our Businesses",
-          "supported_claim": "Item 1. Business > Our Businesses\nWe report our business results in two segments. The Compute & Networking segment includes our Data Center accelerated computin"
-        },
         {
           "tag": "[NVDA FY2025, Item 1. Business > Our Businesses, NVDA_FY2025_2025-01-26:21]",
           "chunk_id": "NVDA_FY2025_2025-01-26:21",
           "ticker": "NVDA",
           "fiscal_year": 2025,
           "section": "Item 1. Business > Our Businesses",
-          "supported_claim": "Item 1. Business > Our Businesses\nWe report our business results in two segments. The Compute & Networking segment includes our Data Center accelerated computin"
+          "supported_claim": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors."
+        },
+        {
+          "tag": "[NVDA FY2025, Item 1. Business > Business Strategies, NVDA_FY2025_2025-01-26:33]",
+          "chunk_id": "NVDA_FY2025_2025-01-26:33",
+          "ticker": "NVDA",
+          "fiscal_year": 2025,
+          "section": "Item 1. Business > Business Strategies",
+          "supported_claim": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors."
         }
       ],
       "guardrail_report": {
         "total_numerical_claims": 0,
         "verified_numbers": [],
         "ungrounded_numbers": [],
+        "uncited_numbers": [],
+        "derived_numbers": [],
         "numerical_grounding_error_rate": 0.0,
         "faithfulness_score": 1.0,
-        "has_inline_citations": true
+        "has_inline_citations": true,
+        "invalid_citations": [],
+        "sentences": [
+          {
+            "text": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2025, Item 1. Business > Our Businesses, NVDA_FY2025_2025-01-26:21] [NVDA FY2025, Item 1. Business > Business Strategies, NVDA_FY2025_2025-01-26:33].",
+            "citations": [
+              "[NVDA FY2025, Item 1. Business > Our Businesses, NVDA_FY2025_2025-01-26:21]",
+              "[NVDA FY2025, Item 1. Business > Business Strategies, NVDA_FY2025_2025-01-26:33]"
+            ],
+            "chunk_ids": [
+              "NVDA_FY2025_2025-01-26:21",
+              "NVDA_FY2025_2025-01-26:33"
+            ],
+            "numbers": [],
+            "semantic_verdict": "supported",
+            "reason": "mock mode: judge output not parsed"
+          }
+        ],
+        "unverified_sentences": [],
+        "unchecked_sentences": [],
+        "uncited_claim_sentences": [],
+        "semantic_check_enabled": true,
+        "semantic_judge_provider": "mock",
+        "semantic_judge_model": "mock",
+        "semantic_verdict_counts": {
+          "supported": 1,
+          "partial": 0,
+          "unsupported": 0,
+          "unchecked": 0
+        }
       },
       "telemetry": {
         "mode": "v1_amr",
@@ -392,7 +517,7 @@
             "prompt_tokens": 288,
             "completion_tokens": 84,
             "total_tokens": 372,
-            "latency_ms": 0.04,
+            "latency_ms": 0.2,
             "cost_usd": 5.4e-05
           },
           {
@@ -400,92 +525,109 @@
             "hop": 1,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 751,
+            "prompt_tokens": 1128,
             "completion_tokens": 49,
-            "total_tokens": 800,
-            "latency_ms": 0.05,
-            "cost_usd": 8.98e-05
+            "total_tokens": 1177,
+            "latency_ms": 0.12,
+            "cost_usd": 0.0001275
           },
           {
             "node": "generator",
             "hop": 1,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 408,
+            "prompt_tokens": 301,
             "completion_tokens": 37,
-            "total_tokens": 445,
-            "latency_ms": 0.02,
-            "cost_usd": 5.19e-05
+            "total_tokens": 338,
+            "latency_ms": 0.03,
+            "cost_usd": 4.12e-05
           },
           {
             "node": "critic",
             "hop": 2,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 1279,
+            "prompt_tokens": 1916,
             "completion_tokens": 26,
-            "total_tokens": 1305,
-            "latency_ms": 0.05,
-            "cost_usd": 0.0001357
+            "total_tokens": 1942,
+            "latency_ms": 0.13,
+            "cost_usd": 0.0001994
           },
           {
             "node": "synthesizer",
             "hop": 2,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 1810,
+            "prompt_tokens": 3218,
             "completion_tokens": 46,
-            "total_tokens": 1856,
-            "latency_ms": 0.04,
-            "cost_usd": 0.0001948
+            "total_tokens": 3264,
+            "latency_ms": 0.16,
+            "cost_usd": 0.0003356
+          },
+          {
+            "node": "guardrail_semantic",
+            "hop": 2,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 611,
+            "completion_tokens": 22,
+            "total_tokens": 633,
+            "latency_ms": 0.03,
+            "cost_usd": 6.77e-05
           }
         ],
         "node_latencies_ms": {
-          "decomposer": 0.04,
-          "retriever": 44.31,
-          "critic": 0.1,
-          "generator": 0.02,
-          "synthesizer": 0.04,
-          "guardrail": 0.02
+          "decomposer": 0.2,
+          "retriever": 466.39,
+          "critic": 0.25,
+          "generator": 0.03,
+          "synthesizer": 0.16,
+          "guardrail": 0.15,
+          "guardrail_semantic": 0.03
         },
-        "total_prompt_tokens": 4536,
-        "total_completion_tokens": 242,
-        "total_tokens": 4778,
-        "estimated_cost_usd": 0.0005262,
+        "total_prompt_tokens": 7462,
+        "total_completion_tokens": 264,
+        "total_tokens": 7726,
+        "estimated_cost_usd": 0.0008254,
         "hop_count": 2,
         "early_stopped": true,
-        "cost_per_1k_queries_usd": 0.5262,
+        "cost_per_1k_queries_usd": 0.8254,
         "rq3_summary": {
           "mode": "v1_amr",
           "hop_count": 2,
           "max_hops": 3,
           "early_stopped": true,
-          "total_latency_ms": 44.53,
-          "total_prompt_tokens": 4536,
-          "total_completion_tokens": 242,
-          "total_tokens": 4778,
-          "estimated_cost_usd": 0.0005262,
-          "cost_per_1k_queries_usd": 0.5262,
+          "total_latency_ms": 467.21,
+          "total_prompt_tokens": 7462,
+          "total_completion_tokens": 264,
+          "total_tokens": 7726,
+          "estimated_cost_usd": 0.0008254,
+          "cost_per_1k_queries_usd": 0.8254,
           "node_latencies_ms": {
-            "decomposer": 0.04,
-            "retriever": 44.31,
-            "critic": 0.1,
-            "generator": 0.02,
-            "synthesizer": 0.04,
-            "guardrail": 0.02
+            "decomposer": 0.2,
+            "retriever": 466.39,
+            "critic": 0.25,
+            "generator": 0.03,
+            "synthesizer": 0.16,
+            "guardrail": 0.15,
+            "guardrail_semantic": 0.03
           },
           "hop_attribution_chunk_ids": {
             "1": [
-              "NVDA_FY2026_2026-01-25:22",
               "NVDA_FY2025_2025-01-26:21",
+              "NVDA_FY2025_2025-01-26:33",
+              "NVDA_FY2025_2025-01-26:449",
+              "NVDA_FY2026_2026-01-25:22",
               "NVDA_FY2026_2026-01-25:32",
               "NVDA_FY2026_2026-01-25:434"
             ],
             "2": [
-              "NVDA_FY2026_2026-01-25:9",
               "NVDA_FY2025_2025-01-26:9",
-              "NVDA_FY2026_2026-01-25:245",
-              "NVDA_FY2026_2026-01-25:244"
+              "NVDA_FY2026_2026-01-25:9",
+              "NVDA_FY2025_2025-01-26:168",
+              "NVDA_FY2026_2026-01-25:166",
+              "NVDA_FY2025_2025-01-26:114",
+              "NVDA_FY2026_2026-01-25:107"
             ]
           }
         }
@@ -514,7 +656,7 @@
           "ticker": "NVDA",
           "fiscal_year": 2025,
           "section": "SEC XBRL Reported Financials (financials.csv)",
-          "supported_claim": "[F-NVDA-2025] (NVDA FY2025 reported financials; amounts in USD, EPSDiluted in USD per share)\nfiscal_year,fiscal_year_end,Revenue,NetIncome,OperatingIncome,Total"
+          "supported_claim": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors."
         },
         {
           "tag": "[NVDA FY2026, SEC XBRL Reported Financials (financials.csv), F-NVDA-2026]",
@@ -522,16 +664,48 @@
           "ticker": "NVDA",
           "fiscal_year": 2026,
           "section": "SEC XBRL Reported Financials (financials.csv)",
-          "supported_claim": "[F-NVDA-2026] (NVDA FY2026 reported financials; amounts in USD, EPSDiluted in USD per share)\nfiscal_year,fiscal_year_end,Revenue,NetIncome,OperatingIncome,Total"
+          "supported_claim": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors."
         }
       ],
       "guardrail_report": {
         "total_numerical_claims": 0,
         "verified_numbers": [],
         "ungrounded_numbers": [],
+        "uncited_numbers": [],
+        "derived_numbers": [],
         "numerical_grounding_error_rate": 0.0,
         "faithfulness_score": 1.0,
-        "has_inline_citations": true
+        "has_inline_citations": true,
+        "invalid_citations": [],
+        "sentences": [
+          {
+            "text": "Based on the retrieved SEC 10-K disclosures, NVDA reported strong operational results alongside disclosed risk and footnote factors [NVDA FY2025, SEC XBRL Reported Financials (financials.csv), F-NVDA-2025] [NVDA FY2026, SEC XBRL Reported Financials (financials.csv), F-NVDA-2026] [F-NVDA-2025].",
+            "citations": [
+              "[NVDA FY2025, SEC XBRL Reported Financials (financials.csv), F-NVDA-2025]",
+              "[NVDA FY2026, SEC XBRL Reported Financials (financials.csv), F-NVDA-2026]",
+              "[F-NVDA-2025]"
+            ],
+            "chunk_ids": [
+              "F-NVDA-2025",
+              "F-NVDA-2026"
+            ],
+            "numbers": [],
+            "semantic_verdict": "supported",
+            "reason": "mock mode: judge output not parsed"
+          }
+        ],
+        "unverified_sentences": [],
+        "unchecked_sentences": [],
+        "uncited_claim_sentences": [],
+        "semantic_check_enabled": true,
+        "semantic_judge_provider": "mock",
+        "semantic_judge_model": "mock",
+        "semantic_verdict_counts": {
+          "supported": 1,
+          "partial": 0,
+          "unsupported": 0,
+          "unchecked": 0
+        }
       },
       "telemetry": {
         "mode": "v2_aamr",
@@ -544,7 +718,7 @@
             "prompt_tokens": 288,
             "completion_tokens": 84,
             "total_tokens": 372,
-            "latency_ms": 0.04,
+            "latency_ms": 0.14,
             "cost_usd": 5.4e-05
           },
           {
@@ -552,64 +726,79 @@
             "hop": 1,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 851,
-            "completion_tokens": 26,
-            "total_tokens": 877,
-            "latency_ms": 0.06,
-            "cost_usd": 9.29e-05
+            "prompt_tokens": 1228,
+            "completion_tokens": 48,
+            "total_tokens": 1276,
+            "latency_ms": 0.17,
+            "cost_usd": 0.0001372
           },
           {
             "node": "synthesizer",
             "hop": 1,
             "provider": "mock",
             "model": "mock",
-            "prompt_tokens": 855,
+            "prompt_tokens": 1648,
             "completion_tokens": 45,
-            "total_tokens": 900,
-            "latency_ms": 0.04,
-            "cost_usd": 9.9e-05
+            "total_tokens": 1693,
+            "latency_ms": 0.18,
+            "cost_usd": 0.0001783
+          },
+          {
+            "node": "guardrail_semantic",
+            "hop": 1,
+            "provider": "mock",
+            "model": "mock",
+            "prompt_tokens": 252,
+            "completion_tokens": 22,
+            "total_tokens": 274,
+            "latency_ms": 0.03,
+            "cost_usd": 3.18e-05
           }
         ],
         "node_latencies_ms": {
-          "decomposer": 0.04,
-          "tabular_tool": 210.34,
-          "retriever": 14.88,
-          "critic": 0.06,
-          "synthesizer": 0.04,
-          "guardrail": 0.02
+          "decomposer": 0.14,
+          "tabular_tool": 55.11,
+          "retriever": 31.42,
+          "critic": 0.17,
+          "synthesizer": 0.18,
+          "guardrail": 0.26,
+          "guardrail_semantic": 0.03
         },
-        "total_prompt_tokens": 1994,
-        "total_completion_tokens": 155,
-        "total_tokens": 2149,
-        "estimated_cost_usd": 0.0002459,
+        "total_prompt_tokens": 3416,
+        "total_completion_tokens": 199,
+        "total_tokens": 3615,
+        "estimated_cost_usd": 0.0004013,
         "hop_count": 1,
         "early_stopped": true,
-        "cost_per_1k_queries_usd": 0.2459,
+        "cost_per_1k_queries_usd": 0.4013,
         "rq3_summary": {
           "mode": "v2_aamr",
           "hop_count": 1,
           "max_hops": 3,
           "early_stopped": true,
-          "total_latency_ms": 225.38,
-          "total_prompt_tokens": 1994,
-          "total_completion_tokens": 155,
-          "total_tokens": 2149,
-          "estimated_cost_usd": 0.0002459,
-          "cost_per_1k_queries_usd": 0.2459,
+          "total_latency_ms": 87.31,
+          "total_prompt_tokens": 3416,
+          "total_completion_tokens": 199,
+          "total_tokens": 3615,
+          "estimated_cost_usd": 0.0004013,
+          "cost_per_1k_queries_usd": 0.4013,
           "node_latencies_ms": {
-            "decomposer": 0.04,
-            "tabular_tool": 210.34,
-            "retriever": 14.88,
-            "critic": 0.06,
-            "synthesizer": 0.04,
-            "guardrail": 0.02
+            "decomposer": 0.14,
+            "tabular_tool": 55.11,
+            "retriever": 31.42,
+            "critic": 0.17,
+            "synthesizer": 0.18,
+            "guardrail": 0.26,
+            "guardrail_semantic": 0.03
           },
           "hop_attribution_chunk_ids": {
             "1": [
               "F-NVDA-2025",
               "F-NVDA-2026",
-              "NVDA_FY2026_2026-01-25:22",
               "NVDA_FY2025_2025-01-26:21",
+              "NVDA_FY2025_2025-01-26:33",
+              "NVDA_FY2025_2025-01-26:449",
+              "NVDA_FY2026_2026-01-25:22",
               "NVDA_FY2026_2026-01-25:32",
               "NVDA_FY2026_2026-01-25:434"
             ]

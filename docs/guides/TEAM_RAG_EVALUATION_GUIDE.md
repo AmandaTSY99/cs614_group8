@@ -161,6 +161,25 @@ All execution commands use Docker, mounting your local workspace so all outputs 
 
 ---
 
+### RQ1 Evidence Metrics vs RQ2 Citation Metrics
+The names are similar, but they measure different pipeline stages and are not interchangeable.
+
+| | RQ1 `recall@all` / `average_precision` | RQ2 `citation_recall` / `citation_precision` |
+|---|---|---|
+| **What's checked** | Everything the system retrieved, whether or not the answer used it | Only the chunks the answer cites in its citation tags |
+| **Pipeline step** | Retrieval: did the system find the evidence? | Generation: did the answer point to the right sources? |
+| **What counts as a match** | The specific gold evidence quotes from the golden set | The 10-K section (e.g. Item 7, Item 8) the gold answer comes from |
+| **How a match is decided** | Text overlap: a 6-word phrase or at least 65% of the quote's words appear in the chunk (`scripts/rq1/matching.py`) | Section labels: the cited chunk's Item number equals a target section's (`scripts/rq2/metrics_custom.py`) |
+| **Recall** | Share of gold quotes found anywhere in the retrieved chunks | Share of target sections the answer cites at least once |
+| **Precision** | Rank-aware: RAGAS-style average precision, rewarding relevant chunks ranked near the top | Not rank-aware: share of the cited sections that are target sections |
+| **Answers with no citations** | Not applicable (scores the retrieved chunks, not citations) | Scored N/A, not 0. Tracked separately by `citation_coverage` |
+
+* **Example:** if the gold evidence is one sentence in Item 7, RQ1 recall is 1 only if that sentence (or most of its words) was retrieved. RQ2 citation recall is 1 if the answer cites *any* Item 7 chunk, even one about something else.
+* **Neither is LLM-judged.** RQ1's `recall@all` / `average_precision` (previously named `context_recall` / `context_precision`) use RAGAS-style formulas with lexical relevance labels; they are not RAGAS scores. The LLM-judged versions (`scripts/rq1/score_ragas.py`, `scripts/rq2/score.py`) have only been run on the 3-question RQ2 smoke test (`reports/rq2/smoke/report_scores_gpt4omini.md`).
+* **Always report citation precision/recall next to `citation_coverage`.** Answers without citations drop out of the average, so a system that often omits citations can look better than it is. For example, System B's citation recall is 0.97 over the 67 of 97 answers that cite; counting no-citation answers as 0 gives 0.67, the lowest of the four systems.
+
+---
+
 ## 7. Strict Academic Rigor Rules (For AI Coding Agents)
 
 When your AI assistants (Claude, Cursor, Copilot) write or modify evaluation code, they must strictly follow these 4 rules:
