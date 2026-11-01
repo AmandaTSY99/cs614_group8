@@ -24,6 +24,10 @@ RECIPE_LABELS = {
 
 @st.cache_data(show_spinner=False)
 def load_benchmark() -> List[Dict[str, Any]]:
+    # The repo keeps the gzip; the Hugging Face deploy unzips it, because the Space rejects binary files pushed without LFS.
+    plain = APP_DATA / "benchmark.json"
+    if plain.exists():
+        return json.loads(plain.read_text(encoding="utf-8"))
     with gzip.open(APP_DATA / "benchmark.json.gz", "rt", encoding="utf-8") as f:
         return json.load(f)
 

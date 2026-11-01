@@ -31,6 +31,8 @@ jobs:
           mkdir -p /tmp/hf_deploy
           # README.md carries the Space config header (sdk, app_file); keep it at the top of the file
           cp -r app.py requirements.txt README.md src ui app_data .streamlit /tmp/hf_deploy/
+          # Spaces reject binary files pushed without LFS: ship the benchmark bundle as plain JSON (~5 MB)
+          gunzip /tmp/hf_deploy/app_data/benchmark.json.gz
           # Live Systems A and B reuse the RQ2 evaluation adapters
           mkdir -p /tmp/hf_deploy/scripts/rq2
           cp scripts/rq2/__init__.py scripts/rq2/adapters.py /tmp/hf_deploy/scripts/rq2/
