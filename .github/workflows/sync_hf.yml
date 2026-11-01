@@ -29,7 +29,11 @@ jobs:
 
           # Create a lightweight deploy package (excludes 948MB of raw .htm files)
           mkdir -p /tmp/hf_deploy
-          cp -r app.py requirements.txt README.md src /tmp/hf_deploy/
+          # README.md carries the Space config header (sdk, app_file); keep it at the top of the file
+          cp -r app.py requirements.txt README.md src ui app_data .streamlit /tmp/hf_deploy/
+          # Live Systems A and B reuse the RQ2 evaluation adapters
+          mkdir -p /tmp/hf_deploy/scripts/rq2
+          cp scripts/rq2/__init__.py scripts/rq2/adapters.py /tmp/hf_deploy/scripts/rq2/
           mkdir -p /tmp/hf_deploy/data
           cp data/financials.csv data/filings_index.csv data/benchmark_qa_pool_2015.json /tmp/hf_deploy/data/
 

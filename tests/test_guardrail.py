@@ -570,3 +570,17 @@ def test_repair_receives_unverified_sentences_with_cited_chunks(monkeypatch):
     assert "4,321" in out["repair_history"][0]["flagged_numbers"]
     # Verified sentence is not sent as unverified
     assert prompt.count("Revenue was $60.9 billion") == 1
+
+
+def test_percentage_point_change_is_derived_from_two_cited_percentages():
+    fy16 = {"chunk_id": "NVDA_FY2016_2016-01-31:160", "metadata": {"ticker": "NVDA", "fiscal_year": 2016, "section": "Item 7"},
+            "content": "Gross margin was 56.1% for fiscal year 2016."}
+    fy22 = {"chunk_id": "NVDA_FY2022_2022-01-30:197", "metadata": {"ticker": "NVDA", "fiscal_year": 2022, "section": "Item 7"},
+            "content": "Gross margin was 64.9% for fiscal year 2022."}
+    answer = (
+        "Gross margin rose from 56.1% to 64.9%, an increase of 8.8 percentage points "
+        "[NVDA FY2016, Item 7, NVDA_FY2016_2016-01-31:160] [NVDA FY2022, Item 7, NVDA_FY2022_2022-01-30:197]."
+    )
+    report = verify_numerical_grounding(answer, [fy16, fy22])
+    assert report["ungrounded_numbers"] == []
+    assert report["derived_numbers"][0]["value"] == "8.8 percentage points"

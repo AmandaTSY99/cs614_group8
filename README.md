@@ -1,3 +1,15 @@
+---
+title: Adaptive Multi-Hop RAG for SEC 10-K Filings
+emoji: 📑
+colorFrom: indigo
+colorTo: blue
+sdk: streamlit
+sdk_version: 1.45.1
+app_file: app.py
+pinned: false
+short_description: Cited, guardrail-checked answers over 272 SEC 10-K filings
+---
+
 # CS614 GenAI Project: Adaptive Multi-Hop RAG for SEC 10-K Financial Disclosures
 
 **Course:** CS614 Generative AI with LLMs (SMU)  
