@@ -31,53 +31,53 @@ def _layouts() -> Dict[str, Tuple[Layout, Edges, int, int]]:
     return {
         "system_a": ({
             "question": (single_x[0], MAIN_Y, "Question", ["Company and year", "filters the search"]),
-            "retrieve": (single_x[1], MAIN_Y, "Dense search", ["BGE-small embeddings", "up to 10 chunks"]),
-            "generate": (single_x[2], MAIN_Y, "Generate", ["One gpt-5.4 call", "cites chunks as [n]"]),
+            "retrieve": (single_x[1], MAIN_Y, "Dense search", ["Search by meaning,", "up to 10 passages"]),
+            "generate": (single_x[2], MAIN_Y, "Generate", ["One model call,", "cites passages [n]"]),
             "answer": (single_x[3], MAIN_Y, "Answer", ["No checking step", "1 hop"]),
         }, [("question", "retrieve", "", "main"), ("retrieve", "generate", "", "main"),
             ("generate", "answer", "", "main")], 230, 1000),
         "system_b": ({
             "question": (five_x[0], MAIN_Y, "Question", ["Company and year", "filters the search"]),
-            "retrieve": (five_x[1], MAIN_Y, "BM25 + dense", ["Equal-weight fusion", "30 candidates"]),
+            "retrieve": (five_x[1], MAIN_Y, "Hybrid search", ["Keywords + meaning,", "30 candidates"]),
             "rerank": (five_x[2], MAIN_Y, "Rerank", ["Cross-encoder", "keeps top 5"]),
-            "generate": (five_x[3], MAIN_Y, "Generate", ["One gpt-5.4 call", "cites chunks as [n]"]),
+            "generate": (five_x[3], MAIN_Y, "Generate", ["One model call,", "cites passages [n]"]),
             "answer": (five_x[4], MAIN_Y, "Answer", ["No checking step", "1 hop"]),
         }, [("question", "retrieve", "", "main"), ("retrieve", "rerank", "", "main"),
             ("rerank", "generate", "", "main"), ("generate", "answer", "", "main")], 230, 1000),
         "system_c_v1": ({
             "decomposer": (five_x[0], MAIN_Y, "Decomposer", ["Finds tickers, years", "and sub-queries"]),
-            "retriever": (five_x[1], MAIN_Y, "Retriever", ["Hybrid search,", "removes duplicates"]),
-            "critic": (five_x[2], MAIN_Y, "Critic", ["Checks evidence,", "names what's missing"]),
+            "retriever": (five_x[1], MAIN_Y, "Retriever", ["Searches the filings,", "keeps new passages"]),
+            "critic": (five_x[2], MAIN_Y, "Critic", ["Checks: is anything", "still missing?"]),
             "synthesizer": (five_x[3], MAIN_Y, "Synthesizer", ["Writes the answer", "with citations"]),
-            "guardrail": (five_x[4], MAIN_Y, "Guardrail", ["Checks every number", "against its source"]),
+            "guardrail": (five_x[4], MAIN_Y, "Guardrail", ["Checks every number", "against its passage"]),
             "generator": (310, LOOP_Y, "Generator", ["Writes a follow-up", "query for the gap"]),
         }, [("decomposer", "retriever", "", "main"), ("retriever", "critic", "", "main"),
             ("critic", "synthesizer", "enough", "main"), ("synthesizer", "guardrail", "", "main"),
-            ("critic", "generator", "gaps remain and hop < 3", "loop"), ("generator", "retriever", "", "back")], 300, 1000),
+            ("critic", "generator", "something missing, under 3 rounds", "loop"), ("generator", "retriever", "", "back")], 300, 1000),
         "system_c_v2": ({
             "decomposer": (x[0], MAIN_Y, "Decomposer", ["Flags numeric", "questions"]),
-            "tabular_tool": (x[1], MAIN_Y, "XBRL lookup", ["Adds reported figures", "from financials.csv"]),
-            "retriever": (x[2], MAIN_Y, "Retriever", ["Hybrid search,", "removes duplicates"]),
-            "critic": (x[3], MAIN_Y, "Critic", ["Stops at 0.95 if the", "table covers companies"]),
+            "tabular_tool": (x[1], MAIN_Y, "XBRL lookup", ["Adds officially", "reported figures"]),
+            "retriever": (x[2], MAIN_Y, "Retriever", ["Searches the filings,", "keeps new passages"]),
+            "critic": (x[3], MAIN_Y, "Critic", ["Stops early once the", "table has the company"]),
             "synthesizer": (x[4], MAIN_Y, "Synthesizer", ["Writes the answer", "with citations"]),
-            "guardrail": (x[5], MAIN_Y, "Guardrail", ["Checks every number", "against its source"]),
+            "guardrail": (x[5], MAIN_Y, "Guardrail", ["Checks every number", "against its passage"]),
             "generator": (x[2] + 100, LOOP_Y, "Generator", ["Writes a follow-up", "query for the gap"]),
         }, [("decomposer", "tabular_tool", "", "main"), ("tabular_tool", "retriever", "", "main"),
             ("decomposer", "retriever", "not numeric", "bypass"), ("retriever", "critic", "", "main"),
             ("critic", "synthesizer", "enough", "main"), ("synthesizer", "guardrail", "", "main"),
-            ("critic", "generator", "gaps remain and hop < 3", "loop"), ("generator", "retriever", "", "back")], 300, 1176),
+            ("critic", "generator", "something missing, under 3 rounds", "loop"), ("generator", "retriever", "", "back")], 300, 1176),
         "system_c_v3": ({
             "decomposer": (x[0], MAIN_Y, "Decomposer", ["Plans years, tickers", "and the route"]),
             "tabular_tool": (x[1], MAIN_Y, "XBRL lookup", ["Only for the 9", "headline metrics"]),
             "retriever": (x[2], MAIN_Y, "Hybrid search", ["BM25 + dense per hop,", "stitches split tables"]),
-            "critic": (x[3], MAIN_Y, "Critic", ["Is each line item", "present, every year?"]),
+            "critic": (x[3], MAIN_Y, "Critic", ["Checks: is every figure", "found for every year?"]),
             "synthesizer": (x[4], MAIN_Y, "Synthesizer", ["Writes the answer,", "one citation per claim"]),
             "guardrail": (x[5], MAIN_Y, "Guardrail", ["Checks every number;", "repairs if one fails"]),
             "generator": (x[2] + 100, LOOP_Y, "Generator", ["Targets the missing", "line item"]),
         }, [("decomposer", "tabular_tool", "", "main"), ("tabular_tool", "retriever", "", "main"),
             ("decomposer", "retriever", "margins, segments, footnotes", "bypass"), ("retriever", "critic", "", "main"),
             ("critic", "synthesizer", "found", "main"), ("synthesizer", "guardrail", "", "main"),
-            ("critic", "generator", "line item missing and hop < 3", "loop"), ("generator", "retriever", "", "back")], 300, 1176),
+            ("critic", "generator", "a figure missing, under 3 rounds", "loop"), ("generator", "retriever", "", "back")], 300, 1176),
     }
 
 
@@ -125,6 +125,13 @@ def node_title(system: str, node: str) -> str:
 
 def node_info(system: str, node: str) -> str:
     return SYSTEM_NODE_INFO.get((system, node)) or NODE_INFO.get(node, "")
+
+
+def step_list_html(system: str) -> str:
+    """Every step's explanation as plain text, for touch and keyboard users who cannot hover."""
+    rows = "".join(f"<li><b>{html.escape(t)}</b> {html.escape(node_info(system, n))}</li>"
+                   for n, (_, _, t, _) in LAYOUTS[system][0].items() if node_info(system, n))
+    return f'<ul class="steps">{rows}</ul>'
 
 
 def _wrap(text: str, width: int = 38) -> List[str]:
@@ -184,10 +191,11 @@ def render_diagram(
         active = "guardrail"
     parts: List[str] = [
         f'<svg viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" role="img" '
-        f'aria-label="{html.escape(SYSTEM_INFO[system]["name"])} architecture">',
+        f'aria-label="{html.escape(SYSTEM_INFO[system]["name"])} architecture. Steps: '
+        f'{html.escape(", ".join(v[2] for v in layout.values()))}.">',
         "<defs>",
         f'<marker id="arr-{system}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
-        '<path d="M0,0 L10,5 L0,10 z" fill="#5F646B"/></marker>',
+        '<path d="M0,0 L10,5 L0,10 z" fill="#6A7078"/></marker>',
         f'<marker id="arr-on-{system}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
         f'<path d="M0,0 L10,5 L0,10 z" fill="{color}"/></marker>',
         f'<filter id="glow-{system}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/>'
@@ -198,19 +206,19 @@ def render_diagram(
     for src, dst, label, kind in edges:
         path, (lx, ly) = _edge_path(layout[src], layout[dst], kind)
         lit = src in visited and (dst in visited or dst == active)
-        stroke = color if lit else "#454A50"
+        stroke = color if lit else "#6A7078"
         dash = ' stroke-dasharray="5 5"' if kind in ("bypass", "loop", "back") else ""
         marker = f"arr-on-{system}" if lit else f"arr-{system}"
         parts.append(f'<path d="{path}" fill="none" stroke="{stroke}" stroke-width="2"{dash} marker-end="url(#{marker})"/>')
         if label:
             anchor = "start" if kind == "loop" else "middle"
-            parts.append(f'<text x="{lx}" y="{ly}" text-anchor="{anchor}" font-size="11.5" fill="#A29D92" '
+            parts.append(f'<text x="{lx}" y="{ly}" text-anchor="{anchor}" font-size="12" fill="#A29D92" '
                          f'font-family="IBM Plex Sans, -apple-system, sans-serif">{html.escape(label)}</text>')
 
     for node_id, (nx, ny, title, sub) in layout.items():
         is_active, is_done = node_id == active, node_id in visited
         fill = "#1D2023" if not (is_active or is_done) else ("#2B2719" if is_active else "#202326")
-        stroke = color if (is_active or is_done) else "#3A3F45"
+        stroke = color if (is_active or is_done) else "#5A6068"
         glow = f' filter="url(#glow-{system})"' if is_active else ""
         stroke_w = 2.4 if is_active else 1.4
         parts.append(f'<g{glow}><rect x="{nx}" y="{ny}" width="{NODE_W}" height="{NODE_H}" rx="5" '
@@ -220,17 +228,17 @@ def render_diagram(
                          'stroke-width="2"><animate attributeName="opacity" values="1;0.25;1" dur="1.4s" repeatCount="indefinite"/></rect>')
         parts.append("</g>")
         title_color = "#F2EDE2" if (is_active or is_done) else "#D6D1C6"
-        parts.append(f'<text x="{nx + 14}" y="{ny + 25}" font-size="14.5" font-weight="600" fill="{title_color}" '
+        parts.append(f'<text x="{nx + 14}" y="{ny + 25}" font-size="15" font-weight="600" fill="{title_color}" '
                      f'font-family="IBM Plex Sans, -apple-system, sans-serif">{html.escape(title)}</text>')
         for i, line in enumerate(sub):
-            parts.append(f'<text x="{nx + 14}" y="{ny + 45 + i * 15}" font-size="11.5" fill="#A29D92" '
+            parts.append(f'<text x="{nx + 14}" y="{ny + 45 + i * 15}" font-size="12" fill="#A29D92" '
                          f'font-family="IBM Plex Sans, -apple-system, sans-serif">{html.escape(line)}</text>')
         if node_id in timings and not is_active:
             secs, runs = timings[node_id]
             label = _fmt_secs(secs) + (f" ×{runs}" if runs > 1 else "")
-            parts.append(f'<text x="{nx + NODE_W - 12}" y="{ny + 22}" text-anchor="end" font-size="11" fill="{color}" '
+            parts.append(f'<text x="{nx + NODE_W - 2}" y="{ny - 6}" text-anchor="end" font-size="11.5" fill="{color}" '
                          f'font-family="IBM Plex Mono, ui-monospace, monospace">{html.escape(label)}</text>')
-        elif is_done and not is_active and not static:
+        if is_done and not is_active and not static:
             parts.append(f'<circle cx="{nx + NODE_W - 16}" cy="{ny + 18}" r="7" fill="{color}"/>'
                          f'<path d="M{nx + NODE_W - 19.5},{ny + 18} l2.5,2.5 l4.5,-5" stroke="#17191B" stroke-width="2" fill="none"/>')
         # "i" marker: hovering the step shows what it does
@@ -249,7 +257,7 @@ def render_diagram(
         ty = ny + NODE_H + 8 if ny + NODE_H + 8 + tip_h <= height else ny - tip_h - 8
         text = "".join(f'<tspan x="{tx + 12}" dy="{15 if i else 0}">{html.escape(l)}</tspan>' for i, l in enumerate(lines))
         parts.append(
-            f'<g class="nodetip"><title>{html.escape(title)}: {html.escape(info)}</title>'
+            f'<g class="nodetip" tabindex="0" role="note" aria-label="{html.escape(title)}: {html.escape(info)}"><title>{html.escape(title)}: {html.escape(info)}</title>'
             f'<rect class="hit" x="{nx}" y="{ny}" width="{NODE_W}" height="{NODE_H}" rx="5"/>'
             f'<g class="tip"><rect x="{tx}" y="{ty}" width="{tip_w}" height="{tip_h}" rx="4" fill="#26292D" stroke="{color}" stroke-width="1"/>'
             f'<text x="{tx + 12}" y="{ty + 20}" font-size="12" fill="#ECE7DC" font-family="{FONT}">{text}</text></g></g>'

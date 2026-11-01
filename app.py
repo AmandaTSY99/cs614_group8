@@ -15,7 +15,11 @@ REPO_ROOT = os.path.abspath(os.path.dirname(__file__))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-load_dotenv(override=True)
+# Once per process, without overriding: re-loading .env on every rerun would reset provider and key variables
+# in the middle of another visitor's run (ui/live.py scopes them per run).
+if not os.environ.get("_APP_DOTENV_LOADED"):
+    load_dotenv(override=False)
+    os.environ["_APP_DOTENV_LOADED"] = "1"
 
 st.set_page_config(
     page_title="10-K RAG · CS614 Group 8",

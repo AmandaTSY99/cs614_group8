@@ -32,8 +32,8 @@ NUMBER_RE = re.compile(
     r"(?<![\w.])(?P<dollar>\$\s?)?"
     # A comma-grouped number may not run on into more digits (`28,391035000000` is not 28,391)
     r"(?P<num>\d{1,3}(?:,\d{3})+(?!\d)(?:\.\d+)?|\d+(?:\.\d+)?)"
-    # `percentage points` / `pp` are percent-family so `8.8 percentage points` can match `64.9% - 56.1%`
-    r"(?:(?P<pct>\s?%|\s?percentage\s+points?\b|\s?pp\b|\s?percent\b|\s?per\s?cent\b)"
+    # `percentage points` / lower-case `pp` (not `PP&E`) are percent-family so `8.8 percentage points` can match `64.9% - 56.1%`
+    r"(?:(?P<pct>\s?%|\s?percentage\s+points?\b|\s?(?-i:pp)\b(?!&)|\s?percent\b|\s?per\s?cent\b)"
     r"|(?P<bps>\s?bps\b|\s?basis\s+points?\b)"
     r"|(?P<scale>\s?(?:trillion|billion|million|thousand|bn|mn)\b|(?-i:[TBMK])\b))?",
     re.IGNORECASE,

@@ -62,3 +62,18 @@ def test_run_with_other_settings_waits_for_active_run(space_env):
     t1.join(3), t2.join(3)
     assert order == ["first-start", "first-end", ("second", "visitor-key")]
     assert os.environ["GROQ_API_KEY"] == "space-groq"
+
+
+def test_system_a_client_is_not_shared_across_visitor_keys(space_env, monkeypatch):
+    from src.system_a import llm as system_a_llm
+
+    monkeypatch.setattr(system_a_llm, "load_dotenv", lambda *a, **k: None)
+    with live.llm_session("openai", "gpt-5.4", api_key="visitor-a"):
+        first = system_a_llm.get_client()
+    with live.llm_session("openai", "gpt-5.4", api_key="visitor-b"):
+        second = system_a_llm.get_client()
+    with live.llm_session("groq", "openai/gpt-oss-120b"):
+        third = system_a_llm.get_client()
+    assert first is not second
+    assert first.api_key == "visitor-a" and second.api_key == "visitor-b"
+    assert third.api_key == "space-groq"

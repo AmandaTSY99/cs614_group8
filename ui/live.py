@@ -28,17 +28,33 @@ PROVIDERS = {
 # `llm_session` sets them only for the duration of a run and restores the Space's own values afterwards, so a
 # visitor's pasted key is never reused for anyone else. Runs with identical settings may overlap; a run with
 # different settings waits until the others finish.
-_ENV_NAMES = ("LLM_PROVIDER", "LLM_MODEL", "SYSTEM_B_MODEL", *{k for p in PROVIDERS.values() for k in p["keys"]})
+_ENV_NAMES = ("LLM_PROVIDER", "LLM_MODEL", "SYSTEM_B_MODEL", "SYSTEM_B_API_KEY", "SYSTEM_B_BASE_URL",
+              *{k for p in PROVIDERS.values() for k in p["keys"]})
+WAIT_TIMEOUT_S = 120  # how long a run waits for runs with other settings before telling the visitor to retry
+
+
+class BusyError(RuntimeError):
+    """Another visitor's run with different model settings is still in progress."""
+
+
+def is_provider_error(exc: BaseException) -> bool:
+    """True for failures another provider could get past (bad key, rate limit, timeout, outage)."""
+    name = type(exc).__name__
+    text = str(exc).lower()
+    return (any(k in name for k in ("RateLimit", "Authentication", "PermissionDenied", "APIConnection", "APITimeout",
+                                    "APIStatus", "InternalServer", "ServiceUnavailable"))
+            or any(k in text for k in ("api key", "api_key", "rate limit", "429", "quota", "gemini api error", "unauthorized")))
 _BASELINE = {k: os.environ.get(k) for k in _ENV_NAMES}
 _session_cond = threading.Condition()
 _session_state: Dict[str, Any] = {"signature": None, "active": 0}
 
 COMPANY_ALIASES = {
     "AAPL": ["apple"], "AMZN": ["amazon"], "GOOGL": ["alphabet", "google"], "JNJ": ["johnson & johnson", "johnson and johnson", "j&j"],
-    "JPM": ["jpmorgan", "jp morgan", "chase"], "META": ["meta", "facebook"], "MSFT": ["microsoft"], "NVDA": ["nvidia"],
+    "JPM": ["jpmorgan", "jp morgan", "jpmorgan chase"], "META": ["meta platforms", "meta", "facebook"], "MSFT": ["microsoft"], "NVDA": ["nvidia"],
     "TSLA": ["tesla"], "WMT": ["walmart", "wal-mart"],
 }
-YEAR_RE = re.compile(r"\b(?:FY\s?)?(20[1-2]\d)\b", re.IGNORECASE)
+YEAR_RE = re.compile(r"(?<![$\d])\b(?:FY\s?)?(20[1-2]\d)\b(?!\s*(?:million|billion|thousand))", re.IGNORECASE)
+SHORT_FY_RE = re.compile(r"\bFY\s?'?([1-2]\d)\b", re.IGNORECASE)
 
 
 def space_has_key(provider: str) -> bool:
@@ -65,10 +81,17 @@ def llm_session(provider: str, model: str, api_key: str = "") -> Iterator[None]:
     env = {"LLM_PROVIDER": provider, "LLM_MODEL": model, "SYSTEM_B_MODEL": model}
     if key:
         env.update({name: key for name in PROVIDERS[provider]["keys"]})
+        if provider == "openai":  # System B prefers SYSTEM_B_API_KEY over OPENAI_API_KEY
+            env["SYSTEM_B_API_KEY"] = key
     signature = (provider, model, hashlib.sha256(key.encode()).hexdigest() if key else None)
     with _session_cond:
+        deadline = time.monotonic() + WAIT_TIMEOUT_S
         while _session_state["active"] and _session_state["signature"] != signature:
-            _session_cond.wait()
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise BusyError("Another visitor's question with different model settings is still running. "
+                                "Please try again in a minute, or use the demo's default model.")
+            _session_cond.wait(timeout=remaining)
         if not _session_state["active"]:
             _restore_baseline()
             os.environ.update(env)
@@ -93,8 +116,8 @@ def detect_scope(question: str) -> Tuple[List[str], List[int]]:
     """Tickers and fiscal years named in a question (used to scope the single-pass systems)."""
     q = question.lower()
     tickers = [t for t, names in COMPANY_ALIASES.items()
-               if any(re.search(rf"\b{re.escape(n)}\b", q) for n in names) or re.search(rf"\b{t.lower()}\b", q)]
-    years = sorted({int(y) for y in YEAR_RE.findall(question)})
+               if any(re.search(rf"\b{re.escape(n)}\b(?!-)", q) for n in names) or re.search(rf"\b{t.lower()}\b(?!-)", q)]
+    years = sorted({int(y) for y in YEAR_RE.findall(question)} | {2000 + int(y) for y in SHORT_FY_RE.findall(question)})
     return tickers, years
 
 

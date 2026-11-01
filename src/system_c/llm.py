@@ -190,7 +190,7 @@ def _call_groq_or_openai(
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("GROQ_API_KEY is not set. Please provide your Groq API key in the UI or in Streamlit Secrets.")
-        client = Groq(api_key=api_key)
+        client = Groq(api_key=api_key, timeout=90)
     elif provider == "cohere":
         from openai import OpenAI
         api_key = os.getenv("COHERE_API_KEY")
@@ -205,7 +205,7 @@ def _call_groq_or_openai(
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OPENAI_API_KEY is not set. Please provide your OpenAI API key in the UI or in Streamlit Secrets.")
-        client = OpenAI(api_key=api_key)
+        client = OpenAI(api_key=api_key, timeout=90)
 
     kwargs: Dict[str, Any] = {
         "model": model,

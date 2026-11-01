@@ -584,3 +584,10 @@ def test_percentage_point_change_is_derived_from_two_cited_percentages():
     report = verify_numerical_grounding(answer, [fy16, fy22])
     assert report["ungrounded_numbers"] == []
     assert report["derived_numbers"][0]["value"] == "8.8 percentage points"
+
+
+def test_pp_unit_does_not_capture_ppe():
+    nums = _extract_numbers("Net property 1,234 PP&E and a 2.5 pp rise")
+    by_value = {n["value"]: n for n in nums}
+    assert "1,234" in by_value and by_value["1,234"]["kind"] != "percent"
+    assert any(n["kind"] == "percent" and n["number"] == 2.5 for n in nums)

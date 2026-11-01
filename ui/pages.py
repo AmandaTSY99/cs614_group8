@@ -12,7 +12,7 @@ from ui.citations import render_answer
 from ui.data import COMPANIES, RECIPE_LABELS, benchmark_by_question, load_benchmark, load_rq1, load_rq2, load_rq3, question_companies
 import time
 
-from ui.diagrams import NODE_WAIT, node_info, node_title, render_diagram
+from ui.diagrams import NODE_WAIT, node_info, node_title, render_diagram, step_list_html
 from ui.theme import SYSTEM_INFO, SYSTEM_ORDER, SYSTEMS, system_pill
 
 PAGES = ["Ask", "Benchmark explorer", "Results", "How it works"]
@@ -43,6 +43,7 @@ def keep_selection(key: str, last_key: str, fallback: str) -> None:
 
 def _go_to(page: str, question_id: Optional[str] = None) -> None:
     st.session_state["nav"] = page
+    st.session_state["nav_last"] = page
     if question_id:
         st.session_state["explore_qid"] = question_id
 
@@ -54,20 +55,20 @@ def _stats(items: List[tuple]) -> str:
 
 
 def _show_run(run: Dict[str, Any], heading: str, key: str) -> None:
-    parts = render_answer(run, heading=heading)
+    parts = render_answer(run, heading=heading, anchor=f"src-{key}")
     st.markdown(parts["answer"], unsafe_allow_html=True)
     st.markdown(_stats([
-        (run.get("hops", 1), "retrieval hops"),
+        (run.get("hops", 1), "search rounds"),
         (_fmt_ms(run.get("latency_ms")), "end-to-end latency"),
         (f'{int(run.get("tokens") or 0):,}', "tokens"),
-        (f'${float(run.get("cost_usd") or 0):.4f}', "cost (gpt-5.4 rates)"),
+        (f'${float(run.get("cost_usd") or 0):.4f}', "estimated cost"),
     ]), unsafe_allow_html=True)
     st.markdown(f"##### Sources cited ({parts['n_sources']})")
-    st.caption("Each numbered chip in the answer links to the exact 10-K chunk below. Green figures were found in "
-               "(or computed from) the cited chunk by the guardrail; amber ones were not.")
+    st.caption("Each numbered chip in the answer links to the 10-K passage below that it came from. Numbers in green "
+               "were checked against that passage; amber numbers could not be found in it.")
     st.markdown(parts["sources"], unsafe_allow_html=True)
     if int(parts["n_uncited"]):
-        with st.expander(f"Also retrieved but not cited ({parts['n_uncited']} chunks)"):
+        with st.expander(f"Also found but not cited ({parts['n_uncited']} passages)"):
             st.markdown(parts["uncited"], unsafe_allow_html=True)
 
 
@@ -80,8 +81,8 @@ def page_ask() -> None:
     st.markdown(
         '<div class="hero"><div class="eyebrow">Ask a 10-K question</div>'
         "<h1>Answers you can check, line by line</h1>"
-        "<p>System C searches SEC 10-K filings in several hops until a critic is satisfied, then writes an answer where "
-        "every sentence cites the filing chunk it came from and every number is checked against that chunk.</p></div>",
+        "<p>Ask about a company's annual report (its 10-K filing) and see where every sentence and number came from. "
+        "System C searches more than once: a checker asks “is anything missing?” and, if so, it searches again.</p></div>",
         unsafe_allow_html=True,
     )
 
@@ -100,17 +101,18 @@ def page_ask() -> None:
     if example and st.session_state.get("ask_last_example") != example:
         st.session_state["ask_question"] = example
         st.session_state["ask_last_example"] = example
-    question = st.text_area("Your question", key="ask_question", height=90,
+    question = st.text_area("Your question", key="ask_question", height=72, max_chars=500,
                             placeholder="e.g. How much did Tesla's total assets grow between FY2021 and FY2025?")
 
     space = live.space_providers()
-    with st.expander("Model and API key"):
+    ask_col, settings_col = st.columns([1, 7], vertical_alignment="top")
+    with settings_col, st.expander("Model and API key"):
         s1, s2, s3 = st.columns(3)
         names = list(live.PROVIDERS)
         provider = s1.selectbox("Provider", names, index=names.index(space[0]) if space else 0,
                                 format_func=lambda p: live.PROVIDERS[p]["label"] + ("" if live.space_has_key(p) else " (bring your own key)"))
         model = s2.selectbox("Model", live.PROVIDERS[provider]["models"])
-        max_hops = s3.slider("Max hops (System C)", 1, 3, 3)
+        max_hops = s3.slider("Max search rounds (System C)", 1, 3, 3)
         api_key = st.text_input(f"Your {live.PROVIDERS[provider]['label']} API key (optional)", type="password",
                                 help="Used only for your own questions, only while they run. It is not stored or shared.")
         if live.space_has_key(provider):
@@ -127,7 +129,8 @@ def page_ask() -> None:
     else:
         attempts = []
     ready = bool(attempts) and live.database_ready()
-    run_clicked = st.button("Ask", type="primary", disabled=not (ready and question.strip()))
+    with ask_col:
+        run_clicked = st.button("Ask", type="primary", disabled=not (ready and question.strip()), use_container_width=True)
     if not ready:
         missing = [] if attempts else [f"an API key for {live.PROVIDERS[provider]['label']}"]
         missing += [] if live.database_ready() else ["the Supabase connection (SUPABASE_DB_URL)"]
@@ -138,12 +141,12 @@ def page_ask() -> None:
     diagram_slot = st.empty()
     status_slot = st.empty()
     if not run_clicked and "live_result" not in st.session_state:
-        diagram_slot.markdown(render_diagram(system, caption="Hover a step to see what it does."), unsafe_allow_html=True)
+        diagram_slot.markdown(render_diagram(system, caption="Hover or tap a step to see what it does."), unsafe_allow_html=True)
 
     if run_clicked:
         scope = live.detect_scope(question)
         if system not in live.C_MODES and not (scope[0] and scope[1]):
-            st.warning("Single-pass systems search only the filings you name. Include a company and a fiscal year "
+            st.warning("Systems A and B only search the company and year you name. Include both "
                        "(e.g. “Microsoft fiscal year 2019”), or use System C, which works them out itself.")
             st.stop()
         errors = []
@@ -159,6 +162,8 @@ def page_ask() -> None:
                 break
             except Exception as exc:  # provider limits, bad keys, database errors
                 errors.append((live.PROVIDERS[attempt_provider]["label"], exc))
+                if not live.is_provider_error(exc):
+                    break  # a database or code error would fail the same way on another provider
         else:
             status_slot.empty()
             st.error(f"The run failed: {errors[-1][1]}" if errors else "The run failed.")
@@ -186,8 +191,14 @@ def page_ask() -> None:
             st.markdown("##### How it got there")
             st.markdown(_trace_html(run["trace"]), unsafe_allow_html=True)
     st.markdown("##### Path through the system")
-    st.caption("Time spent in each step is shown on it (×2 means it ran twice). Hover a step to see what it does.")
+    st.caption("The time above each step is how long it took (×2 means it ran twice). Hover or tap a step to see what it does.")
     st.markdown(render_diagram(rsys, visited=run.get("visited", []), timings=run.get("timings")), unsafe_allow_html=True)
+    with st.expander("What each step does"):
+        st.markdown(step_list_html(rsys), unsafe_allow_html=True)
+    if run.get("log"):
+        with st.expander("Step-by-step log"):
+            st.markdown('<ul class="steps mono">' + "".join(f"<li>{html.escape(line)}</li>" for line in run["log"]) + "</ul>",
+                        unsafe_allow_html=True)
 
 
 def _run_bar(system: str, node: Optional[str], step_elapsed: float, total_elapsed: float, model_label: str,
@@ -212,18 +223,19 @@ def _run_bar(system: str, node: Optional[str], step_elapsed: float, total_elapse
 
 def _execute(system, question, max_hops, scope, diagram_slot, status_slot, model_label) -> Dict[str, Any]:
     """Run one system live: the run bar and diagram show the step in progress, and each step's time is recorded."""
-    name = SYSTEM_INFO[system]["name"]
     t0 = time.perf_counter()
     if system not in live.C_MODES:
         diagram_slot.markdown(
             _run_bar(system, "retrieve", 0, 0, model_label)
             + render_diagram(system, active="retrieve", visited=["question"]), unsafe_allow_html=True)
-        with status_slot.status(f"Running {name} on {model_label}…", expanded=False) as status:
-            run = live.run_single_pass(question, system, scope)
-            status.update(label=f"Done in {_fmt_ms(run['latency_ms'])} · {model_label}", state="complete")
+        run = live.run_single_pass(question, system, scope)
+        status_slot.markdown(f'<div class="runbar done"><span class="pulse"></span><span class="now">Done in '
+                             f'{_fmt_ms(run["latency_ms"])}</span><span class="clock">{html.escape(model_label)}</span></div>',
+                             unsafe_allow_html=True)
         return run
 
     timings: Dict[str, List[float]] = {}
+    log: List[str] = []
     last = [t0]
 
     def draw(active: Optional[str], visited: List[str]) -> None:
@@ -232,34 +244,37 @@ def _execute(system, question, max_hops, scope, diagram_slot, status_slot, model
         shown = {k: (v[0], int(v[1])) for k, v in timings.items()}
         diagram_slot.markdown(bar + render_diagram(system, active=active, visited=visited, timings=shown), unsafe_allow_html=True)
 
+    def on_step(node, nxt, visited, state):
+        now = time.perf_counter()
+        key = "guardrail" if node == "repair" else node
+        spent = timings.setdefault(key, [0.0, 0])
+        spent[0] += now - last[0]
+        spent[1] += 1
+        last[0] = now
+        draw(nxt, visited)
+        rnd = state.get("current_hop", 1)
+        msg = {
+            "decomposer": f"Planned the search for {', '.join(state.get('target_tickers') or []) or 'the named companies'}",
+            "tabular_tool": "Added the officially reported figures (XBRL) as evidence",
+            "retriever": f"Search round {rnd}: {len(state.get('accumulated_evidence') or [])} passages found so far",
+            "critic": (f"Round {rnd}: the checker says the evidence is enough" if state.get("is_sufficient")
+                       else f"Round {rnd}: still missing {_clip((state.get('missing_premises') or ['details'])[0])}"),
+            "generator": f"New search: “{_clip(state.get('current_sub_query', ''))}”",
+            "synthesizer": f"Wrote the answer with {len(state.get('citations') or [])} citations",
+            "guardrail": "Checked every number against the passage it cites",
+            "repair": "Fixed a number the check could not find",
+        }.get(node)
+        if msg:
+            log.append(f"{now - t0:5.1f}s  {msg}")
+
+    status_slot.empty()
     draw("decomposer", [])
-    with status_slot.status(f"Running {name} on {model_label}…", expanded=False) as status:
-        def on_step(node, nxt, visited, state):
-            now = time.perf_counter()
-            key = "guardrail" if node == "repair" else node
-            spent = timings.setdefault(key, [0.0, 0])
-            spent[0] += now - last[0]
-            spent[1] += 1
-            last[0] = now
-            draw(nxt, visited)
-            hop = state.get("current_hop", 1)
-            msg = {
-                "decomposer": f"Planned the search for {', '.join(state.get('target_tickers') or []) or 'the named companies'}",
-                "tabular_tool": "Added reported XBRL figures to the evidence",
-                "retriever": f"Hop {hop}: {len(state.get('accumulated_evidence') or [])} chunks gathered so far",
-                "critic": (f"Hop {hop}: evidence judged sufficient" if state.get("is_sufficient")
-                           else f"Hop {hop}: still missing {_clip((state.get('missing_premises') or ['details'])[0])}"),
-                "generator": f"Follow-up query: “{_clip(state.get('current_sub_query', ''))}”",
-                "synthesizer": f"Drafted the answer with {len(state.get('citations') or [])} citations",
-                "guardrail": "Checked every number against its cited chunk",
-                "repair": "Repaired a figure the guardrail could not verify",
-            }.get(node)
-            if msg:
-                status.write(f"{msg} · {now - t0:.1f}s")
-        run = live.run_system_c(question, system, max_hops=max_hops, on_step=on_step, scope=scope)
-        status.update(label=f"Done in {_fmt_ms(run['latency_ms'])} · {run['hops']} hop(s) · {model_label} · step log",
-                      state="complete", expanded=False)
+    run = live.run_system_c(question, system, max_hops=max_hops, on_step=on_step, scope=scope)
+    status_slot.markdown(f'<div class="runbar done"><span class="pulse"></span><span class="now">Done in '
+                         f'{_fmt_ms(run["latency_ms"])} · {run["hops"]} search round(s)</span>'
+                         f'<span class="clock">{html.escape(model_label)}</span></div>', unsafe_allow_html=True)
     run["timings"] = {k: (v[0], int(v[1])) for k, v in timings.items()}
+    run["log"] = log
     return run
 
 
@@ -273,16 +288,16 @@ def _trace_html(trace: List[Dict[str, Any]]) -> str:
             yrs = ", ".join(f"FY{y}" for y in step.get("years") or []) or "auto"
             out.append(f'<div class="hop"><div class="h">Plan</div><div class="small muted">{html.escape(who)} · {html.escape(yrs)} · {route}</div></div>')
         elif k == "xbrl":
-            out.append('<div class="hop"><div class="h">XBRL lookup</div><div class="small muted">Reported figures added as [F-…] evidence</div></div>')
+            out.append('<div class="hop"><div class="h">XBRL lookup</div><div class="small muted">Officially reported figures added as evidence</div></div>')
         elif k == "retrieve":
-            out.append(f'<div class="hop"><div class="h">Hop {step["hop"]} search</div><div class="q">“{html.escape(step["query"][:160])}”</div>'
-                       f'<div class="small muted">{step["total"]} chunks in evidence</div></div>')
+            out.append(f'<div class="hop"><div class="h">Search round {step["hop"]}</div><div class="q">“{html.escape(step["query"][:160])}”</div>'
+                       f'<div class="small muted">{step["total"]} passages in evidence</div></div>')
         elif k == "critic":
-            verdict = "enough evidence" if step["sufficient"] else ("hop budget reached" if step["budget_hit"] else "gaps remain")
+            verdict = "evidence is enough" if step["sufficient"] else ("out of search rounds" if step["budget_hit"] else "something is missing")
             miss = f'<div class="small muted">Missing: {html.escape(_clip("; ".join(step["missing"]), 220))}</div>' if step["missing"] and not step["sufficient"] else ""
-            out.append(f'<div class="hop"><div class="h">Critic · {step["score"]:.2f} · {verdict}</div>{miss}</div>')
+            out.append(f'<div class="hop"><div class="h">Checker: {verdict} <span class="muted small">(score {step["score"]:.2f})</span></div>{miss}</div>')
         elif k == "repair":
-            out.append('<div class="hop"><div class="h">Guardrail repair</div><div class="small muted">Rewrote an unverified figure</div></div>')
+            out.append('<div class="hop"><div class="h">Number fix</div><div class="small muted">Rewrote a number the check could not find</div></div>')
     return "".join(out)
 
 
@@ -291,14 +306,16 @@ def _benchmark_check(bench: Dict[str, Any]) -> None:
     for s in SYSTEM_ORDER:
         r = bench["runs"].get(s) or {}
         ok = r.get("lenient_correct")
-        mark = "✓" if ok else ("–" if ok is None else "✗")
+        mark = ('<span class="mark ok" aria-label="correct">✓</span>' if ok else
+                '<span class="mark" aria-label="not scored">–</span>' if ok is None else
+                '<span class="mark bad" aria-label="wrong">✗</span>')
         rows.append(f'<div style="display:flex;justify-content:space-between;padding:3px 0">'
                     f'<span><span class="swatch" style="background:{SYSTEM_INFO[s]["color"]}"></span> {SYSTEM_INFO[s]["name"]}</span>'
                     f'<span>{mark}</span></div>')
     st.markdown(
-        f'<div class="card"><h4>This is benchmark question {html.escape(bench["id"])}</h4>'
-        f'<div class="small muted">Gold answer</div><div style="margin:2px 0 10px;font-weight:600">{html.escape(str(bench["gold_answer"]))[:300]}</div>'
-        f'<div class="small muted" style="margin-bottom:4px">Recorded benchmark runs (lenient scorer)</div>{"".join(rows)}</div>',
+        f'<div class="card"><div class="eyebrow">From our benchmark · {html.escape(bench["id"])}</div>'
+        f'<div class="small muted">Correct answer</div><div style="margin:2px 0 10px;font-weight:600">{html.escape(_clip(bench["gold_answer"], 300))}</div>'
+        f'<div class="small muted" style="margin-bottom:4px">Did each system get it right in our test?</div>{"".join(rows)}</div>',
         unsafe_allow_html=True,
     )
     st.button("Compare all five answers", on_click=_go_to, args=("Benchmark explorer", bench["id"]), use_container_width=True)
@@ -321,7 +338,7 @@ def page_explore() -> None:
     f1, f2, f3 = st.columns(3)
     company = f1.selectbox("Company", ["All"] + sorted(COMPANIES), format_func=lambda t: "All companies" if t == "All" else f"{COMPANIES[t]} ({t})")
     recipe = f2.selectbox("Question type", ["All"] + list(RECIPE_LABELS), format_func=lambda r: "All types" if r == "All" else RECIPE_LABELS[r])
-    outcome = f3.selectbox("Outcome", ["All", "v3 right, v1 wrong", "Single-pass wrong, C v3 right", "Any system wrong"])
+    outcome = f3.selectbox("Outcome", ["All", "C v3 right, C v1 wrong", "A and B wrong, C v3 right", "Any system wrong"])
 
     def keep(q):
         runs = q["runs"]
@@ -330,9 +347,9 @@ def page_explore() -> None:
             return False
         if recipe != "All" and q.get("recipe") != recipe:
             return False
-        if outcome == "v3 right, v1 wrong":
+        if outcome == "C v3 right, C v1 wrong":
             return ok["system_c_v3"] is True and ok["system_c_v1"] is False
-        if outcome == "Single-pass wrong, C v3 right":
+        if outcome == "A and B wrong, C v3 right":
             return ok["system_c_v3"] is True and ok["system_a"] is False and ok["system_b"] is False
         if outcome == "Any system wrong":
             return any(v is False for v in ok.values())
@@ -350,12 +367,12 @@ def page_explore() -> None:
     q = next(x for x in shown if x["id"] == qid)
 
     tags = " ".join(f'<span class="tag">{html.escape(t)}</span>' for t in
-                    [RECIPE_LABELS.get(q.get("recipe"), q.get("recipe") or ""), f'{q.get("hop", "")}-hop', q.get("type") or ""] +
+                    [RECIPE_LABELS.get(q.get("recipe"), q.get("recipe") or ""), "one search" if q.get("hop") == "single" else "needs several searches", q.get("type") or ""] +
                     [COMPANIES.get(t, t) for t in question_companies(q)] if t)
     st.markdown(
         f'<div class="card"><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">{tags}</div>'
-        f'<div style="font-size:1.12rem;font-weight:650;line-height:1.45">{html.escape(q["question"])}</div>'
-        f'<div style="margin-top:12px" class="small muted">Gold answer</div>'
+        f'<div class="serif" style="font-size:1.32rem;line-height:1.4">{html.escape(q["question"])}</div>'
+        f'<div style="margin-top:12px" class="small muted">Correct answer</div>'
         f'<div style="font-weight:600;color:var(--ok)">{html.escape(str(q.get("gold_answer") or ""))}</div></div>',
         unsafe_allow_html=True,
     )
@@ -372,14 +389,14 @@ def page_explore() -> None:
         verdict = ('<span class="tag ok">Correct</span>' if ok else
                    '<span class="tag">Not scored</span>' if ok is None else '<span class="tag bad">Wrong</span>')
         col.markdown(
-            f'<div class="card" style="padding:12px 14px;border-top:3px solid {SYSTEM_INFO[s]["color"]}">'
-            f'<div style="font-weight:700">{SYSTEM_INFO[s]["name"]}</div>'
+            f'<div class="card" style="padding:12px 14px">'
+            f'<div style="font-weight:600"><span class="swatch" style="background:{SYSTEM_INFO[s]["color"]}"></span>{SYSTEM_INFO[s]["name"]}</div>'
             f'<div class="small muted" style="margin-bottom:8px">{SYSTEM_INFO[s]["tagline"]}</div>{verdict}'
-            f'<div class="small muted" style="margin-top:8px">{r.get("hops", 1)} hop · {_fmt_ms(r.get("latency_ms"))} · '
+            f'<div class="small muted" style="margin-top:8px">{r.get("hops", 1)} round(s) · {_fmt_ms(r.get("latency_ms"))} · '
             f'{len(r.get("citations") or [])} cites</div></div>',
             unsafe_allow_html=True,
         )
-    st.caption("Correct = lenient scorer (a number in the answer within 1% of the gold figure). Qualitative questions are not scored. "
+    st.caption("Correct = the answer contains a number within 1% of the correct one. Questions without a numeric answer are not scored. "
                "Citations and number checks are shown exactly as recorded during the evaluation.")
 
     tabs = st.tabs([SYSTEM_INFO[s]["name"] for s in SYSTEMS])
@@ -410,11 +427,11 @@ def _style(chart: alt.Chart) -> alt.Chart:
 def _bar_ci(df: pd.DataFrame, value_title: str, fmt: str = ".0%", domain=(0, 1)) -> alt.Chart:
     base = alt.Chart(df).encode(y=alt.Y("system:N", sort=[LABELS[s] for s in SYSTEM_ORDER], title=None))
     bars = base.mark_bar(cornerRadiusEnd=2, height=20).encode(
-        x=alt.X("mean:Q", title=value_title, scale=alt.Scale(domain=domain), axis=alt.Axis(format=fmt)),
+        x=alt.X("mean:Q", title=None, scale=alt.Scale(domain=domain), axis=alt.Axis(format=fmt)),
         color=alt.Color("system:N", scale=COLOR_SCALE, legend=None),
         tooltip=[alt.Tooltip("system:N", title="System"), alt.Tooltip("mean:Q", format=fmt),
                  alt.Tooltip("ci_low:Q", format=fmt, title="95% CI low"), alt.Tooltip("ci_high:Q", format=fmt, title="95% CI high")])
-    rules = base.mark_rule(color="#ECE7DC", opacity=0.75).encode(x="ci_low:Q", x2="ci_high:Q")
+    rules = base.mark_rule(color="#8E897F", strokeWidth=1.5).encode(x="ci_low:Q", x2="ci_high:Q")
     labels = base.mark_text(align="left", dx=6, color="#ECE7DC", fontSize=12, font="IBM Plex Mono").encode(x="ci_high:Q", text=alt.Text("mean:Q", format=fmt))
     return _style((bars + rules + labels).properties(height=190))
 
@@ -436,7 +453,7 @@ def page_results() -> None:
         ("RQ1 · Retrieval", "Does it retrieve all the evidence?",
          "Yes, multi-hop finds far more: context recall 0.91 for C v1 and v3 vs 0.73 for System B, and only 3% of questions "
          "come back with no gold evidence (16% for A and B)."),
-        ("RQ2 · Grounding", "Is the answer right and traceable?",
+        ("RQ2 · Accuracy and sources", "Is the answer right and traceable?",
          f"C v3 gets {sysm['system_c_v3']['accuracy']['strict_numeric_correct_pct']:.0f}% of questions fully right on the strict scorer "
          f"(vs {sysm['system_a']['accuracy']['strict_numeric_correct_pct']:.0f}% for A) and cites a source in every answer."),
         ("RQ3 · Economics", "Is the overhead worth paying?",
@@ -454,7 +471,9 @@ def page_results() -> None:
         unsafe_allow_html=True,
     )
 
-    t1, t2, t3, t4 = st.tabs(["RQ1 · Retrieval", "RQ2 · Grounding", "RQ3 · Economics", "Full scorecard"])
+    st.caption("Two ways we score numeric answers. Lenient: the answer contains a number within 1% of the correct one. "
+               "Strict: every number in the correct answer appears. Error bars show the likely range (95% bootstrap interval).")
+    t1, t2, t3, t4 = st.tabs(["RQ1 · Retrieval", "RQ2 · Accuracy and sources", "RQ3 · Cost and speed", "Full scorecard"])
 
     with t1:
         overall = rq1[(rq1["facet"] == "overall")].copy()
@@ -466,7 +485,7 @@ def page_results() -> None:
             st.altair_chart(_bar_ci(overall[overall["metric"] == "recall@all"], "recall"), use_container_width=True)
         with b:
             st.markdown("##### All evidence found")
-            st.caption("Share of questions where every gold passage was retrieved (complete@all).")
+            st.caption("Share of questions where every passage needed for the answer was found.")
             st.altair_chart(_bar_ci(overall[overall["metric"] == "complete@all"], "questions"), use_container_width=True)
         st.markdown("##### Where it gets hard: tables, and questions that need tables and text together")
         mod = rq1[(rq1["facet"] == "modality") & (rq1["metric"] == "complete@all")].copy()
@@ -506,7 +525,7 @@ def page_results() -> None:
             st.altair_chart(_bar_ci(df[df["metric"] == "citation_precision"], "precision"), use_container_width=True)
         with b:
             st.markdown("##### Numbers the guardrail could not verify")
-            st.caption("Share of figures in the answer not found in their cited chunk. Only System C has a guardrail.")
+            st.caption("Share of numbers in the answer that the check could not find in the cited passage. Only System C checks numbers.")
             st.altair_chart(_bar_ci(df[df["metric"] == "grounding_error_rate"], "unverified figures", domain=(0, 0.25)), use_container_width=True)
         st.caption("Scored with scripts/rq2/metrics_custom.py on the same 485 runs as RQ3. Citation precision is section-level.")
 
@@ -516,6 +535,7 @@ def page_results() -> None:
             "p50": sysm[s]["latency"]["p50_ms"] / 1000,
             "strict": sysm[s]["accuracy"]["strict_numeric_correct_pct"] / 100,
             "cost": sysm[s]["economics"]["cost_per_1k_queries_usd"],
+            "short": SYSTEM_INFO[s]["short"],
         } for s in SYSTEM_ORDER])
         a, b = st.columns(2)
         with a:
@@ -526,7 +546,8 @@ def page_results() -> None:
                 size=alt.Size("cost:Q", legend=None, scale=alt.Scale(range=[150, 1600])),
                 color=alt.Color("system:N", scale=COLOR_SCALE, legend=None),
                 tooltip=["system", alt.Tooltip("p50:Q", format=".1f", title="p50 (s)"), alt.Tooltip("strict:Q", format=".0%"), alt.Tooltip("cost:Q", format="$.2f", title="$ / 1k")])
-            txt = alt.Chart(econ).mark_text(dy=-22, color="#ECE7DC", fontSize=12).encode(x="p50:Q", y="strict:Q", text="system:N")
+            txt = alt.Chart(econ).mark_text(align="left", dx=16, dy=4, color="#ECE7DC", fontSize=12).encode(
+                x="p50:Q", y="strict:Q", text=alt.Text("short:N"))
             st.altair_chart(_style((pts + txt).properties(height=320)), use_container_width=True)
         with b:
             st.markdown("##### Which system is cheapest overall?")
@@ -538,10 +559,21 @@ def page_results() -> None:
             ch = alt.Chart(lines).mark_line(strokeWidth=2.5).encode(
                 x=alt.X("penalty:Q", title="penalty per wrong answer ($)", axis=alt.Axis(format="$.2f")),
                 y=alt.Y("expected:Q", title="expected cost per query ($)", axis=alt.Axis(format="$.2f")),
-                color=alt.Color("system:N", scale=COLOR_SCALE, title=None),
+                color=alt.Color("system:N", scale=COLOR_SCALE, legend=None),
                 tooltip=["system", alt.Tooltip("penalty:Q", format="$.2f"), alt.Tooltip("expected:Q", format="$.3f")])
-            rule = alt.Chart(pd.DataFrame({"x": [be["a_to_v3_strict"]]})).mark_rule(strokeDash=[4, 4], color="#D9B45F").encode(x="x:Q")
-            st.altair_chart(_style((ch + rule).properties(height=320)), use_container_width=True)
+            ends = lines[lines["penalty"] == lines["penalty"].max()].assign(
+                short=lambda d: d["system"].map({LABELS[k]: SYSTEM_INFO[k]["short"] for k in SYSTEM_ORDER}))
+            # Nudge labels apart where two lines end close together
+            ends = ends.sort_values("expected").assign(gap=lambda d: d["expected"].diff().fillna(1.0))
+            ends["dy"] = [(-6 if g < 0.006 else 0) for g in ends["gap"]]
+            end_labels = alt.Chart(ends).mark_text(align="left", dx=5, fontSize=12, font="IBM Plex Sans").encode(
+                yOffset=alt.YOffset("dy:Q", scale=None),
+                x="penalty:Q", y="expected:Q", text="short:N", color=alt.Color("system:N", scale=COLOR_SCALE, legend=None))
+            rule_df = pd.DataFrame({"x": [be["a_to_v3_strict"]], "label": [f"C v3 cheapest above ${be['a_to_v3_strict']:.2f}"]})
+            rule = alt.Chart(rule_df).mark_rule(strokeDash=[4, 4], color="#D9B45F").encode(x="x:Q")
+            rule_text = alt.Chart(rule_df).mark_text(align="left", dx=6, color="#D9B45F", fontSize=11.5,
+                                                    font="IBM Plex Sans").encode(x="x:Q", y=alt.value(12), text="label:N")
+            st.altair_chart(_style((ch + end_labels + rule + rule_text).properties(height=320)), use_container_width=True)
         st.markdown(_stats([
             (f"< ${be['b_to_a_strict']:.2f}", "System B is cheapest"),
             (f"${be['b_to_a_strict']:.2f} – ${be['a_to_v3_strict']:.2f}", "System A is cheapest"),
@@ -555,10 +587,10 @@ def page_results() -> None:
             "Contrast": t["comparison"].replace("system_", "").replace("c_", "C ").replace("_", " ").upper().replace(" VS ", " vs "),
             "Metric": {"strict_correct": "strict accuracy", "numeric_correct": "lenient accuracy", "hops": "hops", "latency_ms": "latency"}[t["metric"]],
             "Test": "McNemar" if t.get("test") == "mcnemar_exact" else "Wilcoxon",
-            "Discordant": f'{t["first_only_correct"]} / {t["second_only_correct"]}' if t.get("first_only_correct") is not None else "",
+            "Only first right / only second right": f'{t["first_only_correct"]} / {t["second_only_correct"]}' if t.get("first_only_correct") is not None else "",
             "p (raw)": t["p_raw"], "p (Holm)": t["p_adjusted_holm"],
         } for t in tests])
-        with st.expander("Paired significance tests (15 tests, Holm-corrected)"):
+        with st.expander("Is the difference real? Paired significance tests (15 tests, Holm-corrected)"):
             st.dataframe(tdf, hide_index=True, use_container_width=True,
                          column_config={"p (raw)": st.column_config.NumberColumn(format="%.4f"), "p (Holm)": st.column_config.NumberColumn(format="%.4f")})
 
@@ -578,7 +610,8 @@ def page_results() -> None:
                 "Cost per 1,000 queries": f'${d["economics"]["cost_per_1k_queries_usd"]:.2f}',
             }
         st.dataframe(pd.DataFrame(table), use_container_width=True)
-        st.caption("*In-sample. Source: reports/rq3/records.jsonl, reports/rq1, RQ2 scorer. Systems A and B repriced at gpt-5.4 rates.")
+        st.caption("*System C v3 was tuned on these same questions, so this figure is optimistic. Sources: reports/rq3/records.jsonl, "
+                   "reports/rq1, the RQ2 scorer. Systems A and B repriced at gpt-5.4 rates.")
 
 
 # ---------------------------------------------------------------------------
@@ -587,8 +620,8 @@ def page_results() -> None:
 
 ARCH_TEXT = {
     "system_a": ("One dense search, one answer",
-                 ["Embeds the question with BGE-small and pulls up to 10 chunks, each prefixed with its company and year.",
-                  "One gpt-5.4 call writes the answer and cites chunks as [n].",
+                 ["Embeds the question with BGE-small and pulls up to 10 passages, each labelled with its company and year.",
+                  "One gpt-5.4 call writes the answer and cites passages as [n].",
                   "No checking: whatever the single search finds is all it has."]),
     "system_b": ("Hybrid search with a reranker, still one pass",
                  ["BM25 keyword scores and dense scores are min-max normalised and fused with equal weight (α = 0.5).",
@@ -596,17 +629,17 @@ ARCH_TEXT = {
                   "Great on exact terms (“Level 3”), weaker on tables, where the reranker demotes dense rows."]),
     "system_c_v1": ("Keeps searching until a critic is satisfied",
                     ["The decomposer finds tickers, years and sub-queries.",
-                     "After each hop the critic names what is missing; the generator writes a query aimed at that gap, so the next "
-                     "search can reach a different section or filing (up to 3 hops).",
-                     "The synthesizer cites every sentence; the guardrail checks every number against the chunk that sentence cites."]),
+                     "After each search round the critic names what is missing; the generator writes a search aimed at that gap, so the "
+                     "next round can reach a different section or filing (up to 3 rounds).",
+                     "The synthesizer cites every sentence; the guardrail checks every number against the passage that sentence cites."]),
     "system_c_v2": ("Adds a table of reported figures, and lets it end the search",
                     ["Every 10-K ships machine-readable XBRL. We extracted 9 headline metrics per filing: 272 rows, 10 companies.",
-                     "Numeric questions get [F-TICKER-YEAR] rows before search, so multi-year totals become a one-hop lookup.",
+                     "Numeric questions get [F-TICKER-YEAR] rows before search, so multi-year totals become a single lookup.",
                      "The catch: if the table covers the companies, the critic stops at 0.95, even for margins and footnotes the table cannot answer."]),
     "system_c_v3": ("Checks for the exact line item, not just a table",
                     ["Schema-aware routing: XBRL only when the question names one of its 9 columns; margins, segments and debt schedules go to text search.",
                      "Line-item sufficiency: the critic stops only when the specific figure is found for every year asked.",
-                     "Table stitching re-joins tables split across chunks; filing years are told apart from maturity years; each company is searched separately in comparisons."]),
+                     "Table stitching re-joins tables split across passages; filing years are told apart from maturity years; each company is searched separately in comparisons."]),
 }
 
 
@@ -618,12 +651,16 @@ def page_architecture() -> None:
         "gather and check evidence, so differences in results point to the retrieval design.</p></div>",
         unsafe_allow_html=True,
     )
-    st.markdown(_stats([("10", "companies"), ("272", "10-K filings"), ("95,044", "indexed chunks"),
+    st.markdown(_stats([("10", "companies"), ("272", "10-K filings"), ("95,044", "searchable passages"),
                         ("97", "benchmark questions"), ("82 of 97", "need 2+ pieces of evidence")]), unsafe_allow_html=True)
+    st.caption("A 10-K is a company's annual report to the US SEC. Each one is cut into short passages (about a paragraph "
+               "or a table) so it can be searched; every answer cites the passages it used.")
     for s in SYSTEMS:
         title, bullets = ARCH_TEXT[s]
         st.markdown(f'<div style="margin-top:22px">{system_pill(s)}</div>', unsafe_allow_html=True)
         st.markdown(f"#### {title}")
-        st.markdown(render_diagram(s, static=True, caption="Hover a step to see what it does."), unsafe_allow_html=True)
-        st.markdown("\n".join(f"- {b}" for b in bullets))
+        st.markdown(render_diagram(s, static=True, caption="Hover or tap a step to see what it does."), unsafe_allow_html=True)
+        st.markdown('<ul class="steps">' + "".join(f"<li>{html.escape(b)}</li>" for b in bullets) + "</ul>", unsafe_allow_html=True)
+        with st.expander("What each step does"):
+            st.markdown(step_list_html(s), unsafe_allow_html=True)
 

@@ -11,15 +11,15 @@ SYSTEM_ORDER = ["system_a", "system_b", "system_c_v1", "system_c_v2", "system_c_
 
 SYSTEM_INFO = {
     "system_a": {"short": "A", "name": "System A", "tagline": "Vanilla dense", "color": "#8F969E",
-                 "blurb": "One dense search, one LLM answer."},
+                 "blurb": "One search by meaning, one answer, nothing checked."},
     "system_b": {"short": "B", "name": "System B", "tagline": "Hybrid + rerank", "color": "#7AA2C8",
-                 "blurb": "BM25 + dense fusion, cross-encoder rerank, one pass."},
+                 "blurb": "Searches by keywords and by meaning, re-ranks the results, and answers in one pass."},
     "system_c_v1": {"short": "C v1", "name": "System C v1", "tagline": "Adaptive multi-hop", "color": "#86B79A",
-                    "blurb": "Searches, checks, searches again until the critic is satisfied."},
-    "system_c_v2": {"short": "C v2", "name": "System C v2", "tagline": "Agentic + XBRL", "color": "#CF8F69",
-                    "blurb": "Adds a lookup of reported XBRL figures that can end the search early."},
-    "system_c_v3": {"short": "C v3", "name": "System C v3", "tagline": "Schema-aware", "color": "#D9B45F",
-                    "blurb": "Uses XBRL only for headline metrics and checks every line item is found."},
+                    "blurb": "Searches, checks what is still missing, and searches again (up to 3 rounds)."},
+    "system_c_v2": {"short": "C v2", "name": "System C v2", "tagline": "Adds reported figures", "color": "#CF8F69",
+                    "blurb": "Also looks up the company's officially reported figures (XBRL) and can stop early once it has them."},
+    "system_c_v3": {"short": "C v3", "name": "System C v3", "tagline": "Checks every figure", "color": "#D9B45F",
+                    "blurb": "Uses reported figures only for headline numbers such as revenue, and keeps searching until every figure asked for is found."},
 }
 
 SERIF = "'Newsreader', Georgia, 'Times New Roman', serif"
@@ -32,7 +32,7 @@ CSS = """
 
 :root {
   --bg: #111213; --surface: #17191B; --surface-2: #1D2023; --border: #2A2E32; --rule: #34393E;
-  --text: #ECE7DC; --muted: #A29D92; --faint: #74706A;
+  --text: #ECE7DC; --muted: #A29D92; --faint: #8E897F;
   --accent: #D9B45F; --accent-ink: #1A1508;
   --ok: #8CC09B; --warn: #E0A85A; --bad: #D9806F;
   --radius: 6px;
@@ -86,8 +86,8 @@ button[data-testid="stBaseButton-pillsActive"] { border-color: var(--accent) !im
 /* Hero */
 .hero { padding: 2px 0 10px; }
 .eyebrow { font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-.hero h1 { font-size: 2.35rem; line-height: 1.12; margin: 0 0 10px; padding: 0; color: var(--text); }
-.hero p { color: var(--muted); font-size: 1.02rem; line-height: 1.6; margin: 0; max-width: 720px; }
+.hero h1 { font-size: 2.35rem; line-height: 1.12; margin: 0 0 6px; padding: 0; color: var(--text); }
+.hero p { color: var(--muted); font-size: .98rem; line-height: 1.6; margin: 0; max-width: 660px; }
 .sys-note { font-size: .82rem; color: var(--accent); padding-bottom: 10px; text-align: right; }
 
 /* Figures row */
@@ -121,9 +121,11 @@ button[data-testid="stBaseButton-pillsActive"] { border-color: var(--accent) !im
 .cite { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 4px;
   margin: 0 1px 0 2px; border-radius: 3px; font-family: var(--mono); font-size: .68rem; font-weight: 500; vertical-align: 3px;
   text-decoration: none !important; color: var(--accent-ink) !important; background: var(--accent); }
-.cite.xbrl { background: #9FB7C9; }
+.cite.xbrl { background: #B9A26A; }
 .num-ok { color: var(--ok); border-bottom: 1px dotted rgba(140,192,155,.7); }
+.num-ok::after { content: "✓"; font-family: var(--sans); font-size: .62em; vertical-align: .45em; margin-left: 1px; }
 .num-bad { color: var(--warn); border-bottom: 1px dotted rgba(224,168,90,.8); }
+.num-bad::after { content: "?"; font-family: var(--sans); font-size: .62em; vertical-align: .45em; margin-left: 1px; }
 
 /* Source cards: filing excerpts */
 .src { border-bottom: 1px solid var(--border); }
@@ -152,7 +154,9 @@ button[data-testid="stBaseButton-pillsActive"] { border-color: var(--accent) !im
 .diagram svg { display: block; width: 100%; height: auto; min-width: 640px; }
 .diagram .nodetip .hit { fill: transparent; pointer-events: all; cursor: help; }
 .diagram .nodetip .tip { opacity: 0; pointer-events: none; transition: opacity .12s ease-in; }
-.diagram .nodetip:hover .tip { opacity: 1; }
+.diagram .nodetip:hover .tip, .diagram .nodetip:focus .tip, .diagram .nodetip:focus-within .tip { opacity: 1; }
+.diagram .nodetip:focus { outline: none; }
+.diagram .nodetip:focus .hit { stroke: var(--accent); stroke-width: 2; }
 
 /* Live run bar: what the run is waiting on, with CSS-only second counters (no reruns needed while a step runs) */
 @property --sec { syntax: '<integer>'; inherits: false; initial-value: 0; }
@@ -175,6 +179,28 @@ button[data-testid="stBaseButton-pillsActive"] { border-color: var(--accent) !im
 .rq .q { font-family: var(--serif); font-size: 1.25rem; margin: 6px 0 8px; }
 .rq .a { color: var(--muted); font-size: .9rem; line-height: 1.55; }
 .note { border-left: 2px solid var(--warn); padding: 8px 14px; color: #E2D3B0; font-size: .88rem; margin: 18px 0 14px; background: rgba(224,168,90,.05); }
+
+/* Keyboard focus stays visible even though borders are restyled */
+button:focus-visible, .src summary:focus-visible, a.cite:focus-visible, [data-baseweb="select"] :focus-visible {
+  outline: 2px solid var(--accent) !important; outline-offset: 2px; }
+
+ul.steps { list-style: none; padding-left: 0; margin: 10px 0 4px; }
+ul.steps li { position: relative; padding-left: 16px; margin-bottom: 6px; line-height: 1.55; color: #D6D1C6; }
+ul.steps li:before { content: ""; position: absolute; left: 0; top: .62em; width: 6px; height: 6px; background: var(--accent); }
+ul.steps li b { font-weight: 600; color: var(--text); margin-right: 4px; }
+ul.steps.mono li { font-family: var(--mono); font-size: .8rem; white-space: pre-wrap; }
+.mark { font-family: var(--mono); color: var(--muted); }
+.mark.ok { color: var(--ok); }
+.mark.bad { color: var(--bad); }
+.src .body:has(table.xbrl) { width: fit-content; padding-right: 22px; }
+
+@media (max-width: 640px) {
+  .masthead .meta { display: none; }
+  div[data-testid="stButtonGroup"] { flex-wrap: nowrap !important; overflow-x: auto; }
+  button[data-testid^="stBaseButton-segmented_control"] { padding: 6px 9px !important; white-space: nowrap; }
+  .hero h1 { font-size: 1.9rem; }
+  .diagram:after { content: "Scroll sideways to see the whole diagram"; display: block; font-size: .75rem; color: var(--muted); padding: 4px; }
+}
 
 .footer { color: var(--faint); font-size: .78rem; margin-top: 40px; border-top: 1px solid var(--rule); padding-top: 14px; }
 </style>
