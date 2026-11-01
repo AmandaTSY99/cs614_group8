@@ -5,6 +5,7 @@ Tracks execution latency, prompt/completion token consumption, monetary cost (US
 and hop attribution to compute Pareto efficiency frontiers across RAG architectures.
 """
 
+import re
 import time
 from contextlib import contextmanager
 from typing import Any, Dict, List
@@ -31,9 +32,20 @@ MODEL_PRICING_PER_1M: Dict[str, Dict[str, float]] = {
 }
 
 
+_DATED_SNAPSHOT_RE = re.compile(r"-\d{4}-\d{2}-\d{2}$")
+
+
+def resolve_model_pricing(model: str) -> Dict[str, float]:
+    """Look up per-1M rates, mapping dated snapshots (e.g. gpt-5.4-2026-03-05) to their base model."""
+    if model in MODEL_PRICING_PER_1M:
+        return MODEL_PRICING_PER_1M[model]
+    base = _DATED_SNAPSHOT_RE.sub("", model or "")
+    return MODEL_PRICING_PER_1M.get(base, {"prompt": 0.15, "completion": 0.60})
+
+
 def compute_call_cost_usd(model: str, prompt_tokens: int, completion_tokens: int) -> float:
     """Calculate USD cost for a single LLM invocation."""
-    rates = MODEL_PRICING_PER_1M.get(model, {"prompt": 0.15, "completion": 0.60})
+    rates = resolve_model_pricing(model)
     cost = (prompt_tokens / 1_000_000.0) * rates["prompt"] + (
         completion_tokens / 1_000_000.0
     ) * rates["completion"]

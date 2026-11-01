@@ -6,10 +6,11 @@ Computes:
 1. Overall & Stratified Scorecards (by hop: single vs multi; by recipe: table, text, etc.)
 2. Stage-Decomposed Latency (retrieval, rerank, critic, synthesis) and TPOT
 3. Exact Clopper-Pearson Binomial CIs for Early-Stopping Percentages
-4. Quality-Adjusted Cost with Asymmetric Regulatory Risk Penalty
-5. Paired Wilcoxon Signed-Rank Tests with Holm-Bonferroni FWER Correction
+4. Quality-Adjusted Cost with Asymmetric Regulatory Risk Penalty (scorable questions only)
+5. Paired tests with Holm-Bonferroni FWER Correction: exact McNemar for accuracy,
+   Wilcoxon signed-rank for hops and latency
 6. Formal Pareto Dominance & Empirical Hypervolume Indicator (HVI)
-7. Simulation of the Economic Routing Cascade (System B -> Critic Gate -> System C v2)
+7. Oracle upper bound of a B -> C v3 routing cascade (escalates using the gold answer)
 8. Publication-Quality Figures (saved to reports/figures/rq3_*.png)
 """
 
@@ -27,6 +28,9 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.rq2.metrics_custom import numeric_accuracy
+from src.system_c.telemetry import compute_call_cost_usd
 
 DEFAULT_RECORDS = REPO_ROOT / "reports" / "rq3" / "records.jsonl"
 DEFAULT_SUMMARY_JSON = REPO_ROOT / "reports" / "rq3" / "summary_metrics.json"
@@ -67,28 +71,65 @@ def holm_bonferroni_correction(p_values: List[float]) -> List[float]:
     return adjusted
 
 
+def mcnemar_exact(a: pd.Series, b: pd.Series) -> Tuple[int, int, float]:
+    """Exact two-sided McNemar test on paired booleans; returns (a-only, b-only, p)."""
+    from scipy.stats import binomtest
+
+    a_only = int((a & ~b).sum())
+    b_only = int((~a & b).sum())
+    n = a_only + b_only
+    p = binomtest(min(a_only, b_only), n, 0.5).pvalue if n else 1.0
+    return a_only, b_only, float(p)
+
+
 def compute_wilcoxon_tests(df: pd.DataFrame) -> Dict[str, Any]:
-    """Paired Wilcoxon signed-rank tests with Holm-Bonferroni adjustment."""
+    """Paired tests with Holm-Bonferroni adjustment.
+
+    Binary accuracy metrics use the exact McNemar test (scorable questions only);
+    hops and latency use the Wilcoxon signed-rank test.
+    """
     try:
         from scipy.stats import wilcoxon
     except ImportError:
-        return {"note": "scipy not available for Wilcoxon tests"}
+        return {"note": "scipy not available for paired tests"}
 
     comparisons = [
-        ("system_c_v3", "system_c_v1", "hops", "H3c Hop Reduction (AAMR-SG vs AMR)"),
+        ("system_c_v3", "system_c_v1", "strict_correct", "AAMR-SG Strict Accuracy vs AMR"),
+        ("system_c_v3", "system_c_v1", "numeric_correct", "AAMR-SG Lenient Accuracy vs AMR"),
+        ("system_c_v3", "system_c_v2", "strict_correct", "AAMR-SG Strict Accuracy vs AAMR"),
+        ("system_c_v1", "system_c_v2", "strict_correct", "AMR Strict Accuracy vs AAMR"),
+        ("system_c_v1", "system_a", "strict_correct", "AMR Strict Accuracy vs System A"),
+        ("system_c_v1", "system_a", "numeric_correct", "AMR Lenient Accuracy vs System A"),
+        ("system_a", "system_b", "strict_correct", "System A Strict Accuracy vs System B"),
+        ("system_a", "system_b", "numeric_correct", "System A Lenient Accuracy vs System B"),
+        ("system_c_v2", "system_c_v1", "hops", "H3c Hop Reduction (AAMR vs AMR)"),
+        ("system_c_v2", "system_c_v1", "latency_ms", "AAMR Latency vs AMR"),
         ("system_c_v3", "system_c_v1", "latency_ms", "AAMR-SG Latency vs AMR"),
-        ("system_c_v1", "system_b", "numeric_correct", "H3b Accuracy vs System B Hybrid"),
-        ("system_c_v3", "system_b", "numeric_correct", "AAMR-SG Accuracy vs System B Hybrid"),
+        ("system_c_v3", "system_c_v1", "hops", "AAMR-SG Hops vs AMR"),
+        ("system_c_v3", "system_c_v2", "latency_ms", "AAMR-SG Latency vs AAMR"),
+        ("system_c_v3", "system_c_v2", "hops", "AAMR-SG Hops vs AAMR"),
         ("system_b", "system_a", "latency_ms", "System B Rerank Latency vs System A"),
-        ("system_b", "system_a", "numeric_correct", "System B Accuracy vs System A"),
     ]
 
     p_raw, test_meta = [], []
     for sys1, sys2, metric, desc in comparisons:
+        if metric not in df.columns:
+            continue
         s1 = df[df["system"] == sys1].set_index("question_id")[metric]
         s2 = df[df["system"] == sys2].set_index("question_id")[metric]
         common = s1.index.intersection(s2.index)
-        if len(common) >= 5:
+        if metric in ("numeric_correct", "strict_correct"):
+            common = [q for q in common if pd.notna(s1.loc[q]) and pd.notna(s2.loc[q])]
+            if len(common) >= 5:
+                a_only, b_only, p = mcnemar_exact(s1.loc[common].astype(bool), s2.loc[common].astype(bool))
+                p_raw.append(p)
+                test_meta.append({
+                    "comparison": f"{sys1} vs {sys2}", "metric": metric, "description": desc,
+                    "test": "mcnemar_exact", "statistic": None, "n": len(common),
+                    "first_only_correct": a_only, "second_only_correct": b_only,
+                })
+                continue
+        elif len(common) >= 5:
             d1 = pd.to_numeric(s1.loc[common].astype(float), errors="coerce").fillna(0.0)
             d2 = pd.to_numeric(s2.loc[common].astype(float), errors="coerce").fillna(0.0)
             diff = d1 - d2
@@ -96,12 +137,12 @@ def compute_wilcoxon_tests(df: pd.DataFrame) -> Dict[str, Any]:
                 try:
                     stat, p = wilcoxon(d1, d2)
                     p_raw.append(float(p))
-                    test_meta.append({"comparison": f"{sys1} vs {sys2}", "metric": metric, "description": desc, "statistic": float(stat)})
+                    test_meta.append({"comparison": f"{sys1} vs {sys2}", "metric": metric, "description": desc, "test": "wilcoxon", "statistic": float(stat)})
                     continue
                 except Exception:
                     pass
         p_raw.append(1.0)
-        test_meta.append({"comparison": f"{sys1} vs {sys2}", "metric": metric, "description": desc, "statistic": None})
+        test_meta.append({"comparison": f"{sys1} vs {sys2}", "metric": metric, "description": desc, "test": None, "statistic": None})
 
     p_adj = holm_bonferroni_correction(p_raw)
     results = []
@@ -113,7 +154,7 @@ def compute_wilcoxon_tests(df: pd.DataFrame) -> Dict[str, Any]:
 def compute_system_metrics(df: pd.DataFrame) -> Dict[str, Any]:
     """Calculate comprehensive economic, latency, and quality metrics per system."""
     summary = {}
-    target_order = ["system_a", "system_b", "system_c_v1", "system_c_v3", "system_c_fixed_3hop"]
+    target_order = ["system_a", "system_b", "system_c_v1", "system_c_v2", "system_c_v3", "system_c_fixed_3hop"]
     systems = [s for s in target_order if s in df["system"].unique()]
 
     for s in systems:
@@ -151,17 +192,20 @@ def compute_system_metrics(df: pd.DataFrame) -> Dict[str, Any]:
         h1_pct = round(h1_count / n_queries * 100, 2)
         h1_ci = clopper_pearson_ci(h1_count, n_queries)
 
-        # Accuracy & Quality
-        num_ok = sub["numeric_correct"].dropna()
+        # Accuracy & Quality. Lenient: any gold number within 1% (numeric_correct);
+        # strict: every gold number present (RQ2 scorer). Qualitative questions are unscorable.
+        num_ok = sub["numeric_correct"].dropna().astype(bool)
         num_acc = round(float(num_ok.mean() * 100), 2) if len(num_ok) else 0.0
         verified_count = int(num_ok.sum())
+        strict_ok = sub["strict_correct"].dropna().astype(bool) if "strict_correct" in sub else pd.Series(dtype=bool)
+        strict_acc = round(float(strict_ok.mean() * 100), 2) if len(strict_ok) else None
 
-        # Robust Quality-Adjusted Cost with $1.00 regulatory penalty per incorrect answer
+        # Quality-Adjusted Cost with $1.00 regulatory penalty per incorrect (scorable) answer
         total_cost = float(cost_usd.sum())
-        incorrect_count = n_queries - verified_count
-        robust_economic_loss = total_cost + (1.00 * incorrect_count)
-        cost_per_correct = round(total_cost / max(1, verified_count), 4)
-        robust_loss_per_query = round(robust_economic_loss / max(1, n_queries), 4)
+        mean_cost = float(cost_usd.mean())
+        lenient_acc = verified_count / len(num_ok) if len(num_ok) else 0.0
+        cost_per_correct = round(mean_cost / lenient_acc, 4) if lenient_acc else None
+        robust_loss_per_query = round(mean_cost + 1.00 * (1.0 - lenient_acc), 4)
 
         summary[s] = {
             "n_queries": n_queries,
@@ -198,6 +242,9 @@ def compute_system_metrics(df: pd.DataFrame) -> Dict[str, Any]:
             "accuracy": {
                 "numeric_correct_pct": num_acc,
                 "verified_correct_count": verified_count,
+                "scorable_count": int(len(num_ok)),
+                "strict_numeric_correct_pct": strict_acc,
+                "strict_scorable_count": int(len(strict_ok)),
             },
         }
 
@@ -206,10 +253,10 @@ def compute_system_metrics(df: pd.DataFrame) -> Dict[str, Any]:
 
 def simulate_routing_cascade(df: pd.DataFrame) -> Dict[str, Any]:
     """
-    Simulates a production two-tier cascade:
-    1. Query routed to System B (hybrid RAG).
-    2. If System B produces correct numerical grounding / sufficiency, accept System B (low cost, fast).
-    3. If System B is insufficient, cascade to System C v3 (Agentic Multi-Hop AAMR-SG).
+    Oracle upper bound for a two-tier cascade (System B -> System C v3).
+
+    Escalation is decided by System B's correctness against the gold answer, which a
+    production router cannot observe, so these numbers are a ceiling, not a deployable result.
     """
     b_df = df[df["system"] == "system_b"].set_index("query_id")
     c3_df = df[df["system"] == "system_c_v3"].set_index("query_id")
@@ -231,13 +278,13 @@ def simulate_routing_cascade(df: pd.DataFrame) -> Dict[str, Any]:
 
         if b_correct:
             # Resolved at tier 1
-            total_cost += float(b_row.get("estimated_cost_usd", 0.0))
+            total_cost += float(b_row.get("cost_usd", 0.0))
             total_latency += float(b_row.get("latency_ms", 0.0))
             correct_count += 1
         else:
             # Escalated to tier 2
             escalated_count += 1
-            total_cost += float(b_row.get("estimated_cost_usd", 0.0)) + float(c3_row.get("estimated_cost_usd", 0.0))
+            total_cost += float(b_row.get("cost_usd", 0.0)) + float(c3_row.get("cost_usd", 0.0))
             total_latency += float(b_row.get("latency_ms", 0.0)) + float(c3_row.get("latency_ms", 0.0))
             if bool(c3_row.get("numeric_correct", False)):
                 correct_count += 1
@@ -249,6 +296,7 @@ def simulate_routing_cascade(df: pd.DataFrame) -> Dict[str, Any]:
     esc_pct = (escalated_count / n) * 100.0
 
     return {
+        "oracle": True,
         "n_queries": n,
         "cascade_accuracy_pct": round(acc, 2),
         "escalation_rate_pct": round(esc_pct, 2),
@@ -275,12 +323,14 @@ def plot_pareto_and_figures(summary: Dict[str, Any], df: pd.DataFrame, out_dir: 
         "system_a": "#64748b",
         "system_b": "#3b82f6",
         "system_c_v1": "#10b981",
+        "system_c_v2": "#f59e0b",
         "system_c_v3": "#8b5cf6",
     }
     labels = {
         "system_a": "SYS A (Dense Baseline)",
         "system_b": "SYS B (Hybrid + Reranker)",
         "system_c_v1": "SYS C v1 (Adaptive AMR)",
+        "system_c_v2": "SYS C v2 (Agentic AAMR)",
         "system_c_v3": "SYS C v3 (Agentic AAMR-SG)",
     }
 
@@ -297,7 +347,7 @@ def plot_pareto_and_figures(summary: Dict[str, Any], df: pd.DataFrame, out_dir: 
 
     ax.set_title("RQ3: Latency vs Accuracy Pareto Space (Bubble Size = Cost/1k Queries)", fontsize=11, weight="bold")
     ax.set_xlabel("Median Latency (p50 ms)", fontsize=10)
-    ax.set_ylabel("Numerical Grounding Accuracy (%)", fontsize=10)
+    ax.set_ylabel("Numeric Accuracy, lenient (% of scorable)", fontsize=10)
     ax.grid(True, linestyle="--", alpha=0.5)
     plt.tight_layout()
     fig.savefig(out_dir / "rq3_pareto_frontier.png")
@@ -305,7 +355,7 @@ def plot_pareto_and_figures(summary: Dict[str, Any], df: pd.DataFrame, out_dir: 
 
     # 2. Fig 2: Stage Latency Breakdown
     fig, ax = plt.subplots(figsize=(9, 4.5), dpi=300)
-    sys_order = [s for s in ["system_a", "system_b", "system_c_v1", "system_c_v3", "system_c_fixed_3hop"] if s in summary]
+    sys_order = [s for s in ["system_a", "system_b", "system_c_v1", "system_c_v2", "system_c_v3", "system_c_fixed_3hop"] if s in summary]
     ret_vals = [summary[s]["latency"]["stages_mean_ms"]["retrieval"] for s in sys_order]
     rer_vals = [summary[s]["latency"]["stages_mean_ms"]["rerank"] for s in sys_order]
     cri_vals = [summary[s]["latency"]["stages_mean_ms"]["agent_critic"] for s in sys_order]
@@ -357,6 +407,17 @@ def evaluate_experiment(
     if "latency_ms" not in df.columns:
         df["latency_ms"] = 0.0
 
+    # Reprice from token counts: records logged with a dated model snapshot were costed at the
+    # telemetry fallback rate rather than the model's real rate.
+    if "tokens" in df.columns and "model" in df.columns:
+        df["cost_usd"] = [
+            compute_call_cost_usd(m or "", t.get("prompt", 0), t.get("completion", 0)) if isinstance(t, dict) else c
+            for m, t, c in zip(df["model"], df["tokens"], df.get("cost_usd", pd.Series([0.0] * len(df))))
+        ]
+    if "answer" in df.columns and "ground_truth_numbers" in df.columns:
+        strict = [numeric_accuracy(a or "", g or []) for a, g in zip(df["answer"], df["ground_truth_numbers"])]
+        df["strict_correct"] = [None if v is None else v >= 1.0 for v in strict]
+
     summary = compute_system_metrics(df)
     stats = compute_wilcoxon_tests(df)
     cascade = simulate_routing_cascade(df)
@@ -388,6 +449,7 @@ def evaluate_experiment(
             "mean_hops": d["hop_dynamics"]["mean_hops"],
             "hop_1_early_stop_pct": d["hop_dynamics"]["hop_1_pct"],
             "accuracy_pct": d["accuracy"]["numeric_correct_pct"],
+            "strict_accuracy_pct": d["accuracy"]["strict_numeric_correct_pct"],
         })
     output_csv.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_csv(output_csv, index=False)

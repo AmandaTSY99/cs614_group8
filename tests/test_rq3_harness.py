@@ -203,3 +203,11 @@ def test_strict_budget_cutoff_loud_stop(tmp_path):
     assert errors_file.exists()
     err_text = errors_file.read_text(encoding="utf-8")
     assert "BudgetExceededError" in err_text
+
+
+def test_dated_model_snapshot_uses_base_model_pricing():
+    """Dated snapshots (e.g. gpt-5.4-2026-03-05) must not fall back to the default rate."""
+    from src.system_c.telemetry import compute_call_cost_usd
+
+    dated = compute_call_cost_usd("gpt-5.4-2026-03-05", 1_000_000, 1_000_000)
+    assert dated == compute_call_cost_usd("gpt-5.4", 1_000_000, 1_000_000) == 17.5
