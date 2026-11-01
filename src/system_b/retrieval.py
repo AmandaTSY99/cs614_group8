@@ -87,7 +87,7 @@ class Config:
     alpha: float = 0.5
     candidates: int = 30
     rerank_candidates: int = 30
-    top_k: int = 5
+    top_k: int = 10
     mode: str = 'hybrid_rerank'
 
     def __post_init__(self):
@@ -97,6 +97,19 @@ class Config:
             raise ValueError('Require 1 <= top_k <= rerank_candidates <= candidates')
         if self.mode not in ('dense', 'bm25', 'hybrid', 'hybrid_rerank'):
             raise ValueError('Unknown retrieval mode')
+
+
+def diversify_tail(reranked, dense_ranked, limit):
+    """Keep the first five cross-encoder hits, then recover distinct dense matches."""
+    selected = list(reranked[:min(5, limit)])
+    seen = {h['id'] for h in selected}
+    for hit in [*dense_ranked[:limit], *reranked[5:]]:
+        if len(selected) >= limit:
+            break
+        if hit['id'] not in seen:
+            selected.append(hit)
+            seen.add(hit['id'])
+    return selected
 
 
 class Retriever:
@@ -132,6 +145,7 @@ class Retriever:
         hits = [{**self.records[i], 'dense_score': dense.get(i), 'bm25_score': sparse.get(i),
                  'fusion_score': alpha * dn.get(i, 0) + (1-alpha) * sn.get(i, 0)} for i in ids]
         hits.sort(key=lambda h: (-h['fusion_score'], h['id']))
+        by_id = {hit['id']: hit for hit in hits}
         hits = hits[:c.rerank_candidates]
         if c.mode == 'hybrid_rerank' and hits:
             if self.reranker is None:
@@ -143,6 +157,9 @@ class Retriever:
             for hit, score in zip(hits, scores):
                 hit['rerank_score'] = float(score)
             hits.sort(key=lambda h: (-h['rerank_score'], h['id']))
+            if c.top_k > 5:
+                dense_ranked = [by_id[i] for i in sorted(dense, key=lambda i: (-dense[i], i)) if i in by_id]
+                hits = diversify_tail(hits, dense_ranked, c.top_k)
             timings['rerank_seconds'] = perf_counter() - t
         timings['retrieval_seconds'] = perf_counter() - start
         return {'hits': hits[:c.top_k], 'timings': timings, 'config': asdict(c)}

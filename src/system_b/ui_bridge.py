@@ -225,7 +225,7 @@ def execute_system_b_for_streamlit(
     selected_tickers: Optional[List[str]] = None,
     retrieval_mode: str = "hybrid_rerank",
     alpha: float = 0.5,
-    top_k: int = 5,
+    top_k: int = 10,
 ) -> Tuple[Dict[str, Any], List[str], float]:
     """
     Execute System B (`src.system_b.pipeline.run`) and return `(state_dict, visited_nodes, wall_time_sec)`
@@ -236,7 +236,8 @@ def execute_system_b_for_streamlit(
     target_tickers = list(selected_tickers) if selected_tickers else (regex_tickers or ["NVDA"])
     primary_ticker = target_tickers[0] if target_tickers else "NVDA"
 
-    candidates_k = max(30, top_k * 6)
+    # The dense supplement reuses the existing retrieval pool.
+    candidates_k = max(30, top_k) if retrieval_mode == "hybrid_rerank" else max(30, top_k * 6)
     config = Config(
         alpha=float(alpha),
         candidates=candidates_k,

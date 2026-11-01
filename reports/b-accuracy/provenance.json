@@ -1,0 +1,20 @@
+{
+  "base_commit": "ffc6e002ea83d99c12fba0da5134cae2fb103f9a",
+  "expected_questions": 97,
+  "answer_records": 194,
+  "generation": {
+    "provider": "groq",
+    "model": "openai/gpt-oss-120b",
+    "temperature": 0,
+    "max_completion_tokens": 1024,
+    "reasoning_effort": "low"
+  },
+  "context_mode": "Archived-context replay; A dense contexts used as proxy for B dense supplement",
+  "hash_encoding": "UTF-8 text normalized to LF newlines (portable across Git checkouts)",
+  "sha256": {
+    "data/benchmark_qa_pool_2015.json": "68ab9625e648e2a9ecceb640bc0d0e9e5a2f3a481001e3253727d991efdc055f",
+    "reports/rq2/full_v3/records.jsonl": "cbb324ddcec888ccb547b6b7f850beadcea55b8673f7a1570e9c35a69f2b88d6",
+    "reports/rq2/full_v3/aggregate_scores_gpt4omini.csv": "9cfb2f85d2490db84d74741ed130181344204142cb7eb49a650918e4590cb430",
+    "reports/b-accuracy/answers.jsonl": "2a5d3fafa4352e99831d8aea5422bf17b1825878c6cbb38c7fe030735964e724"
+  }
+}

@@ -236,7 +236,7 @@ class SystemBAdapter(SystemAdapter):
 
     name = "system_b"
 
-    def __init__(self, mode: str = "hybrid_rerank", top_k: int = 5):
+    def __init__(self, mode: str = "hybrid_rerank", top_k: int = 10):
         self.mode = mode
         self.top_k = top_k
         self._source = None

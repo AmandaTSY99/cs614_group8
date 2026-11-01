@@ -2,9 +2,13 @@ import re
 from time import perf_counter
 from .retrieval import Scope
 
-SYSTEM_PROMPT = ('Answer the question using ONLY the context below. Cite the chunk ids you used, like [2]. '
-                 'Each chunk is labelled with its company and fiscal year. '
-                 'If the answer is not in the context, reply exactly: Not found in the provided context.')
+SYSTEM_PROMPT = """Answer using only the supplied filing passages. Cite the passage number, such as [2],
+immediately after each supported claim. Match the company, fiscal period and line item to the question.
+For a calculation, use the reported inputs even when the filing does not state the result directly.
+Check the table headings, units and denominator. Show the inputs and calculation, then state the
+result with its unit and direction. If a required input is missing, identify it instead of guessing.
+For a multipart question, answer each supported part and say which part the passages do not establish.
+If no part can be answered from the passages, reply exactly: Not found in the provided context."""
 
 
 def run(retriever, query, scope=Scope(), generator=None):
