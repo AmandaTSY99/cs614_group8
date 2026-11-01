@@ -161,8 +161,10 @@ def main():
     OUT_DIR.mkdir(exist_ok=True)
 
     questions = build_benchmark(records)
-    with gzip.open(OUT_DIR / "benchmark.json.gz", "wt", encoding="utf-8") as f:
-        json.dump(questions, f, separators=(",", ":"))
+    # mtime=0 keeps the archive byte-identical across rebuilds of the same data
+    payload = json.dumps(questions, separators=(",", ":")).encode("utf-8")
+    with open(OUT_DIR / "benchmark.json.gz", "wb") as raw, gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as f:
+        f.write(payload)
 
     with open(RQ1_AGGREGATE, newline="", encoding="utf-8") as src, open(OUT_DIR / "rq1.csv", "w", newline="", encoding="utf-8") as dst:
         reader = csv.DictReader(src)
