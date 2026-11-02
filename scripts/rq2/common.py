@@ -34,13 +34,59 @@ def _derive_category(q: Dict[str, Any]) -> str:
         return str(q["category"])
     recipe = str(q.get("recipe") or "").lower()
     hop = str(q.get("hop") or "").lower()
-    if recipe in ("cross_year_table", "cross_year_text", "multi_company") or q.get("scope") == "multi_doc":
+    # Only questions spanning several companies are multi-company; one company across years is multi-hop.
+    if recipe.startswith("cross_company") or recipe == "multi_company" or q.get("scope") == "cross_company":
         return "multi_company_comparison"
-    if recipe == "table_text" or (hop == "multi" and recipe != "table"):
+    if recipe.startswith("cross_year") or recipe == "table_text" or (hop == "multi" and recipe != "table"):
         return "cross_section_multihop"
     if recipe == "table" or q.get("type") == "numeric":
         return "quantitative_tabular"
     return "single_hop_factual"
+
+
+def question_dimensions(q: Dict[str, Any]) -> Dict[str, str]:
+    """The RQ2 proposal's question attributes, from the benchmark's type / recipe / hop / program / scope."""
+    qtype = str(q.get("type") or "").lower()
+    recipe = str(q.get("recipe") or "").lower()
+    evidence = "table_text" if recipe.endswith("table_text") else "table" if recipe.endswith("table") else "text"
+    return {
+        "answer_type": {"numeric": "numerical", "qualitative": "narrative"}.get(qtype, qtype or "unknown"),
+        "evidence_format": evidence,
+        "hop": str(q.get("hop") or "unknown").lower(),
+        "task": "calculation" if str(q.get("program") or "").strip() else "lookup",
+        "evidence_scope": str(q.get("scope") or "unknown").lower(),
+    }
+
+
+def ragas_reference(q: Dict[str, Any]) -> Dict[str, str]:
+    """
+    References for RAGAS. A bare computed answer ("-30.36%") cannot be found in any filing, so:
+    - `answer`: the gold answer only; a bare negative number also states it as a decrease.
+    - `answer_keypoints`: `answer` plus the question's key points.
+    - `question_answer_keypoints`: "Question: … Answer: …" plus key points, so a bare number or a name has a
+      subject (factual correctness never sees the question).
+    - `evidence`: the gold evidence quotes plus the gold answer, for context recall / precision.
+    """
+    answer = str(q.get("answer") or q.get("ground_truth_answer") or "").strip()
+    if re.fullmatch(r"-\$?\d[\d,]*(?:\.\d+)?\s*(?:%|percent|million|billion)?", answer):
+        answer = f"{answer} (a decrease of {answer[1:]})"
+    key_points = [str(k).strip() for k in (q.get("key_points") or []) if str(k).strip()]
+    kp_sentences = [k if k.endswith(".") else k + "." for k in key_points]
+    full_answer = " ".join([answer] + kp_sentences).strip()
+    question = str(q.get("question") or q.get("query") or "").strip()
+    qa = " ".join([f"Question: {question}", f"Answer: {answer}"] + kp_sentences).strip()
+    quotes = [str(e.get("quote") or "").strip() for e in (q.get("gold_evidence") or []) if e.get("quote")]
+    evidence = "\n".join(quotes + ([f"Answer: {answer}"] if answer else [])).strip()
+    return {"answer": answer, "answer_keypoints": full_answer, "question_answer_keypoints": qa,
+            "evidence": evidence or full_answer}
+
+
+def benchmark_index(path: Path = BENCHMARK_PATH) -> Dict[str, Dict[str, Any]]:
+    """Raw benchmark questions by id (gold evidence, key points, attributes), for scoring."""
+    path = Path(path)
+    if not path.exists():
+        return {}
+    return {str(q["id"]): q for q in json.loads(path.read_text(encoding="utf-8"))}
 
 
 def now_iso() -> str:
