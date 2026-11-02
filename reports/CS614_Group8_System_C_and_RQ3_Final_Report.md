@@ -144,22 +144,20 @@ Table 2 is computed from `reports/rq3/records.jsonl` by `scripts/rq3/evaluate_rq
 
 | Metric | System A | System B | System C v1 | System C v2 | System C v3 |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| Numeric accuracy, lenient (n = 87) | 71.3% (62) | 77.0% (67) | 89.7% (78) | 82.8% (72) | 100%* (87) |
-| Numeric accuracy, strict (n = 63) | 58.7% | 61.9% | 73.0% | 63.5% | 84.1%* |
-| Strict 95% bootstrap CI | 46–71% | 49–73% | 62–84% | 52–75% | 75–92% |
-| Citation coverage | 83.5% | 95.9% | 97.9% | 96.9% | 100% |
+| Numeric accuracy, lenient (n = 87) | 71.3% (62) | 78.2% (68) | 89.7% (78) | 82.8% (72) | 100%* (87) |
+| Numeric accuracy, strict (n = 63) | 58.7% | 63.5% | 73.0% | 63.5% | 84.1%* |
+| Strict 95% bootstrap CI | 46–71% | 51–75% | 62–84% | 52–75% | 75–92% |
+| Citation coverage | 83.5% | 96.9% | 97.9% | 96.9% | 100% |
 | Grounding error rate (guardrail) | n/a | n/a | 8.9% | 6.3% | 6.6% |
 | Mean hops | 1.00 | 1.00 | 2.24 | 1.77 | 2.12 |
 | Stops after hop 1 | 100% | 100% | 28.9% | 54.6% | 39.2% |
-| Latency p50 / p90 (s) | 2.4 / 4.5 | 7.9† / 9.9† | 21.4 / 36.3 | 13.6 / 32.6 | 18.2 / 29.3 |
-| Tokens per query | 2,187 | 2,462 | 12,301 | 10,654 | 13,532 |
-| Cost per 1,000 queries | \$7.00 | \$8.34 | \$45.39 | \$39.10 | \$48.96 |
-| Cost per correct answer (lenient) | \$0.0098 | \$0.0108 | \$0.0506 | \$0.0472 | \$0.0490 |
-| Expected loss @ \$1/error (lenient) | \$0.294 | \$0.238 | \$0.149 | \$0.212 | \$0.049* |
+| Latency p50 / p90 (s) | 2.4 / 4.5 | 8.3 / 9.9 | 21.4 / 36.3 | 13.6 / 32.6 | 18.2 / 29.3 |
+| Tokens per query | 2,187 | 2,465 | 12,301 | 10,654 | 13,532 |
+| Cost per 1,000 queries | \$7.00 | \$8.40 | \$45.39 | \$39.10 | \$48.96 |
+| Cost per correct answer (lenient) | \$0.0098 | \$0.0107 | \$0.0506 | \$0.0472 | \$0.0490 |
+| Expected loss @ \$1/error (lenient) | \$0.294 | \$0.227 | \$0.149 | \$0.212 | \$0.049* |
 
 \*In-sample result; see Section 7.2. On its first run, before error-driven fixes, v3 scored **90.8% lenient (79/87) and 73.0% strict (46/63)**, at \$42.71 per 1,000 queries, p50 latency 18.6 s and 2.03 mean hops.
-
-†System B's retrieval and reranking time is taken from a run on the same hardware as the other systems; its generation time is from the final run (`latency_note` in `records.jsonl`).
 
 The lenient scorer counts the **87 questions whose gold answer contains a number**: 63 labelled numeric or mixed in the benchmark, plus 24 narrative questions whose gold answer cites a figure or year. The strict scorer uses the 63.
 
@@ -172,7 +170,7 @@ RQ1 context recall for reference (`scripts/rq1/evaluate_rq1.py`): A 0.70, B 0.84
 | System | All 87 | Single-hop (14) | Multi-hop (73) | Single → multi | Mean hops (single / multi) | p50 latency, s (single / multi) |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
 | A | 71.3% | 78.6% | 69.9% | −8.7 pp | 1.00 / 1.00 | 2.2 / 2.6 |
-| B | 77.0% | 85.7% | 75.3% | −10.4 pp | 1.00 / 1.00 | 7.3 / 8.0 |
+| B | 78.2% | 85.7% | 76.7% | −9.0 pp | 1.00 / 1.00 | 7.5 / 8.4 |
 | C v1 | 89.7% | 100% | 87.7% | −12.3 pp | 1.64 / 2.33 | 9.4 / 22.0 |
 | C v2 | 82.8% | 92.9% | 80.8% | −12.1 pp | 1.43 / 1.77 | 8.9 / 14.9 |
 | C v3 | 100%* | 100% | 100%* | 0 pp | 1.79 / 2.18 | 7.8 / 18.4 |
@@ -193,22 +191,22 @@ Accuracy is a paired binary outcome, so accuracy contrasts use an **exact McNema
 | v1 vs v2 | strict accuracy | 8 / 2 | 0.11 | 0.55 |
 | v1 vs A | strict accuracy | 14 / 5 | 0.064 | 0.38 |
 | v1 vs A | lenient accuracy | 21 / 5 | **0.002** | **0.024** |
-| A vs B | strict accuracy | 5 / 7 | 0.77 | 1.00 |
-| A vs B | lenient accuracy | 6 / 11 | 0.33 | 1.00 |
+| A vs B | strict accuracy | 4 / 7 | 0.55 | 0.88 |
+| A vs B | lenient accuracy | 5 / 11 | 0.21 | 0.63 |
 | v2 vs v1 | hops | 1.77 vs 2.24 | **< 0.001** | **< 0.001** |
 | v2 vs v1 | latency | 13.6 vs 21.4 s p50 | **0.002** | **0.024** |
 | v3 vs v1 | latency | 18.2 vs 21.4 s p50 | **< 0.001** | **< 0.001** |
 | v3 vs v1 | hops | 2.12 vs 2.24 | 0.11 | 0.55 |
-| v3 vs v2 | latency | 18.2 vs 13.6 s p50 | 0.44 | 1.00 |
+| v3 vs v2 | latency | 18.2 vs 13.6 s p50 | 0.44 | 0.88 |
 | v3 vs v2 | hops | 2.12 vs 1.77 | **< 0.001** | **0.003** |
-| B vs A | latency | 7.9 vs 2.4 s p50 | **< 0.001** | **< 0.001** |
+| B vs A | latency | 8.3 vs 2.4 s p50 | **< 0.001** | **< 0.001** |
 
 Readings:
 
 * **Multi-hop beats single-pass on lenient accuracy** (v1 vs A, p_Holm = 0.024). On the stricter all-numbers scorer the direction holds but is not significant at n = 63.
 * **XBRL pre-routing (v2) significantly cuts hops and latency** versus v1. The median *paired* latency saving is only about 0.3 s, so the 37% drop in p50 overstates the per-question saving.
 * **v3's accuracy gains over v1 and v2 are in-sample** (Section 7.2) and, for strict accuracy against v1, do not survive Holm correction.
-* **System B is more accurate than System A in direction but not significantly** (77.0% vs 71.3% lenient, 61.9% vs 58.7% strict; p_Holm = 1.00). Its reranking pass adds about 5.5 s of median latency.
+* **System B is more accurate than System A in direction but not significantly** (78.2% vs 71.3% lenient, 63.5% vs 58.7% strict; p_Holm ≥ 0.63). Its reranking pass adds about 6 s of median latency.
 
 ### 6.3 Asymmetric Risk and Break-Even Analysis
 
@@ -218,14 +216,14 @@ When a wrong answer carries a penalty Λ, the expected cost per query is:
 
 Using strict accuracy and the corrected costs in Table 2:
 
-* **System A** is the cheapest option only when Λ < about \$0.04 per error.
-* **System B** is cheapest for Λ between about \$0.04 and \$0.18.
-* **System C v3** is cheapest for any Λ above about **\$0.18** (about the same under lenient accuracy). In audit and compliance settings, where a wrong figure costs far more than \$0.18, the extra \$0.04 of compute per query is justified.
+* **System A** is the cheapest option only when Λ < about \$0.03 per error.
+* **System B** is cheapest for Λ between about \$0.03 and \$0.20.
+* **System C v3** is cheapest for any Λ above about **\$0.20** (about \$0.19 under lenient accuracy). In audit and compliance settings, where a wrong figure costs far more than \$0.20, the extra \$0.04 of compute per query is justified.
 * **System C v1 and v2 are never the cheapest option:** v3 dominates both for Λ above about \$0.05.
 
-At Λ = \$1 per error, the expected loss is \$0.049 for v3, \$0.149 for v1, \$0.212 for v2, \$0.238 for B and \$0.294 for A (lenient; Table 2).
+At Λ = \$1 per error, the expected loss is \$0.049 for v3, \$0.149 for v1, \$0.212 for v2, \$0.227 for B and \$0.294 for A (lenient; Table 2).
 
-A two-tier routing cascade (B first, escalating to v3) is **not** reported as a production result. The harness simulation escalates only when System B's answer is wrong *according to the gold answer*, which a deployed router cannot observe. Read as an oracle ceiling, it reaches 89.7% lenient accuracy at \$24.34 per 1,000 queries and 13.9 s mean latency with 30.9% escalation. A deployable router would need its own confidence signal and would do worse.
+A two-tier routing cascade (B first, escalating to v3) is **not** reported as a production result. The harness simulation escalates only when System B's answer is wrong *according to the gold answer*, which a deployed router cannot observe. Read as an oracle ceiling, it reaches 89.7% lenient accuracy at \$23.28 per 1,000 queries and 13.7 s mean latency with 29.9% escalation. A deployable router would need its own confidence signal and would do worse.
 
 ---
 

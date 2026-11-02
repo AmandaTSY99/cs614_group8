@@ -87,9 +87,9 @@
     "system_b": {
       "scored": {
         "all": {
-          "correct": 67,
+          "correct": 68,
           "n": 87,
-          "pct": 77.0
+          "pct": 78.2
         },
         "single": {
           "correct": 12,
@@ -97,9 +97,9 @@
           "pct": 85.7
         },
         "multi": {
-          "correct": 55,
+          "correct": 56,
           "n": 73,
-          "pct": 75.3
+          "pct": 76.7
         }
       },
       "typed": {
@@ -124,8 +124,8 @@
         "multi": 1.0
       },
       "p50_latency_s": {
-        "single": 7.3,
-        "multi": 8.0
+        "single": 7.5,
+        "multi": 8.4
       }
     },
     "system_c_v1": {
