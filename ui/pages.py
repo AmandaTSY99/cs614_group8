@@ -459,10 +459,16 @@ def page_results() -> None:
         unsafe_allow_html=True,
     )
     be = rq3["break_even_usd"]
+    rq1_overall = rq1[rq1["facet"] == "overall"].set_index(["system", "metric"])["mean"]
+    recall = lambda s: rq1_overall[(s, "recall@all")]
+    no_evidence = lambda s: rq1_overall[(s, "zero_recall")]
+    v1, v3 = f"{recall('system_c_v1'):.2f}", f"{recall('system_c_v3'):.2f}"
+    multi_hop = f"{v1} for C v1 and v3" if v1 == v3 else f"{v1} for C v1 and {v3} for v3"
     rq_cards = [
         ("RQ1 · Retrieval", "Does it retrieve all the evidence?",
-         "Yes, multi-hop finds far more: context recall 0.91 for C v1 and v3 vs 0.73 for System B, and only 3% of questions "
-         "come back with no gold evidence (16% for A and B)."),
+         f"Yes, multi-hop finds more: context recall {multi_hop} "
+         f"vs {recall('system_b'):.2f} for System B and {recall('system_a'):.2f} for A, and only {no_evidence('system_c_v3'):.0%} of "
+         f"questions come back with no gold evidence ({no_evidence('system_b'):.0%} for B, {no_evidence('system_a'):.0%} for A)."),
         ("RQ2 · Accuracy and sources", "Is the answer right and traceable?",
          f"C v3 gets {sysm['system_c_v3']['accuracy']['strict_numeric_correct_pct']:.0f}% of questions fully right on the strict scorer "
          f"(vs {sysm['system_a']['accuracy']['strict_numeric_correct_pct']:.0f}% for A) and cites a source in every answer."),
@@ -509,7 +515,7 @@ def page_results() -> None:
         ).properties(height=90)
         st.altair_chart(_style(chart), use_container_width=True)
         st.caption("Source: reports/rq1 (bootstrap 95% CIs). Relevance is lexical, so these are lower bounds. "
-                   "System B drops on tables; even C v1 finds all table + text evidence only 58% of the time.")
+                   "System B drops on tables (70% vs 89% on text); even C v1 and v3 find all table + text evidence only 58% of the time.")
 
     with t2:
         rows = []
